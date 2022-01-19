@@ -24,7 +24,11 @@ Route::get('/clear', function() {
     return "Cleared!";
 });
 
-Route::get('/user', [\App\Http\Controllers\UserController::class, 'get']);
+Route::middleware('auth')->group(function () {
+    Route::get('/api/user', [\App\Http\Controllers\UserController::class, 'get']);
+    Route::get('/api/buildings', [\App\Http\Controllers\BuildingController::class, 'get']);
+    Route::get('/api/dictionaries', [\App\Http\Controllers\UserController::class, 'getDictionaries']);
+});
 
 Route::get('/', function () {
     return view('welcome');

@@ -5,11 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class City extends Model
+class Building extends Model
 {
     use HasFactory;
-
-    public function buildings() {
-        return $this->hasMany(Building::class);
-    }
 }

@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Building;
 use App\Models\City;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -28,6 +30,26 @@ class DatabaseSeeder extends Seeder
             'title' => 'Остров Alex-a',
             'coord_x' => 1,
             'coord_y' => 1
+        ]);
+
+        $this->call(BuildingDictionarySeeder::class);
+
+        Building::create([
+            'city_id' => 1,
+            'building_id' => 1,
+            'lvl' => 3
+        ]);
+
+        Building::create([
+            'city_id' => 1,
+            'building_id' => 2,
+            'lvl' => 1
+        ]);
+
+        Building::create([
+            'city_id' => 1,
+            'building_id' => 3,
+            'lvl' => 2
         ]);
     }
 }

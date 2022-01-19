@@ -5,11 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class City extends Model
+class BuildingDictionary extends Model
 {
     use HasFactory;
 
-    public function buildings() {
-        return $this->hasMany(Building::class);
-    }
+    protected $table = 'building_dictionary';
 }

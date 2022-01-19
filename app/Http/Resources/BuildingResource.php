@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CityResource extends JsonResource
+class BuildingResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,12 +15,9 @@ class CityResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'coordX' => $this->coord_x,
-            'coordY' => $this->coord_y,
-            'gold' => $this->gold,
-            'population' => $this->population,
+            'id' => $this->building_id,
+            'cityId' => $this->city_id,
+            'lvl' => $this->lvl
         ];
     }
 }

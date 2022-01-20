@@ -13,8 +13,16 @@ export interface ICityBuilding {
     lvl: number;
 }
 
+export interface IBuildingResource {
+    buildingId: number;
+    gold: number;
+    population: number;
+    lvl: number;
+}
+
 export interface IDictionary {
     buildings: IBuilding[];
+    buildingResources: IBuildingResource[];
 }
 
 export interface IBuilding {

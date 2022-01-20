@@ -51,5 +51,7 @@ class DatabaseSeeder extends Seeder
             'building_id' => 3,
             'lvl' => 2
         ]);
+
+        $this->call(BuildingResourceSeeder::class);
     }
 }

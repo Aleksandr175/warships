@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Building extends Model
+class BuildingResource extends Model
 {
     use HasFactory;
 
-    public function buildingResources() {
-        return $this->hasMany(BuildingResource::class);
+    public function building() {
+        return $this->belongsTo(Building::class);
     }
 }

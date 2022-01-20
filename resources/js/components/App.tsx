@@ -72,6 +72,9 @@ const App = () => {
                                             buildingsDictionary={
                                                 dictionaries.buildings
                                             }
+                                            buildingResourcesDictionary={
+                                                dictionaries.buildingResources
+                                            }
                                         />
                                     }
                                 />

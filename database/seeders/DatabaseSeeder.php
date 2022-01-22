@@ -29,29 +29,17 @@ class DatabaseSeeder extends Seeder
             'user_id' => 1,
             'title' => 'Остров Alex-a',
             'coord_x' => 1,
-            'coord_y' => 1
+            'coord_y' => 1,
+            'gold' => 1000,
+            'population' => 200
         ]);
 
         $this->call(BuildingDictionarySeeder::class);
 
-        Building::create([
-            'city_id' => 1,
-            'building_id' => 1,
-            'lvl' => 3
-        ]);
-
-        Building::create([
-            'city_id' => 1,
-            'building_id' => 2,
-            'lvl' => 1
-        ]);
-
-        Building::create([
-            'city_id' => 1,
-            'building_id' => 3,
-            'lvl' => 2
-        ]);
+        $this->call(BuildingSeeder::class);
 
         $this->call(BuildingResourceSeeder::class);
+
+        $this->call(CityBuildingQueueSeeder::class);
     }
 }

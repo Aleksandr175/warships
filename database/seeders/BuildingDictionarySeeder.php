@@ -15,7 +15,7 @@ class BuildingDictionarySeeder extends Seeder
     public function run()
     {
         BuildingDictionary::create(['title' => 'Главное управление', 'description' => 'Главное здание на острове']);
-        BuildingDictionary::create(['title' => 'Шахта', 'description' => 'Здесь добавыется золото']);
+        BuildingDictionary::create(['title' => 'Шахта', 'description' => 'Здесь добывается золото']);
         BuildingDictionary::create(['title' => 'Дом', 'description' => 'Чем больше домов, тем больше рабочих рук!']);
         BuildingDictionary::create(['title' => 'Таверна', 'description' => 'Повышает престиж острова и увеличивает приток населения']);
         BuildingDictionary::create(['title' => 'Ферма', 'description' => 'Здесь добывается еда!']);

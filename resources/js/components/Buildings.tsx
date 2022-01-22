@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { httpClient } from "../httpClient/httpClient";
 import { IBuilding, IBuildingResource, ICityBuilding } from "../types/types";
+import styled from "styled-components";
 
 interface IProps {
     cityId: number;
@@ -37,8 +38,19 @@ export const Buildings = ({
         );
     }
 
+    function build(buildingId: number) {
+        httpClient
+            .post("/build", {
+                cityId,
+                buildingId,
+            })
+            .then((response) => {
+                console.log(response);
+            });
+    }
+
     return (
-        <>
+        <div className={"row"}>
             {buildingsDictionary.map((item) => {
                 const lvl = getLvl(item.id);
                 const buildingResources = getResources(item.id, lvl + 1);
@@ -46,10 +58,13 @@ export const Buildings = ({
                 const population = buildingResources?.population || 0;
 
                 return (
-                    <div key={item.id}>
-                        <h4>
-                            {item.title} (Ур. {lvl})
-                        </h4>
+                    <div className={"col-4"} key={item.id}>
+                        <SBuildingImageWrapper>
+                            <SBuildingLvlWrapper>
+                                <SBuildingLvl>{lvl}</SBuildingLvl>
+                            </SBuildingLvlWrapper>
+                        </SBuildingImageWrapper>
+                        <h4>{item.title}</h4>
                         <span>{item.description}</span>
 
                         {buildingResources && (
@@ -57,7 +72,12 @@ export const Buildings = ({
                                 <p>
                                     Золото: {gold}. Рабочие: {population}
                                 </p>
-                                <button className={"btn btn-primary"}>
+                                <button
+                                    className={"btn btn-primary"}
+                                    onClick={() => {
+                                        build(item.id);
+                                    }}
+                                >
                                     Построить
                                 </button>
                             </>
@@ -68,6 +88,31 @@ export const Buildings = ({
                     </div>
                 );
             })}
-        </>
+        </div>
     );
 };
+
+const SBuildingImageWrapper = styled.div`
+    border: 1px solid black;
+    height: 200px;
+    margin-bottom: 20px;
+    position: relative;
+    background: #ddd;
+`;
+
+const SBuildingLvlWrapper = styled.div`
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: 30px solid transparent;
+    border-top: 30px solid #ccc;
+    border-right: 30px solid #ccc;
+`;
+
+const SBuildingLvl = styled.span`
+    position: absolute;
+    top: -25px;
+    right: -20px;
+    font-size: 16px;
+    font-weight: 700;
+`;

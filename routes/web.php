@@ -28,11 +28,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/user', [\App\Http\Controllers\UserController::class, 'get']);
     Route::get('/api/buildings', [\App\Http\Controllers\BuildingController::class, 'get']);
     Route::get('/api/dictionaries', [\App\Http\Controllers\UserController::class, 'getDictionaries']);
+
+    Route::post('/api/build', [\App\Http\Controllers\CityBuildingQueueController::class, 'build']);
 });
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/buildings', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

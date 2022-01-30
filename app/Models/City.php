@@ -32,6 +32,10 @@ class City extends Model
         return $this->buildings()->where('building_id', $buildingId)->first();
     }
 
+    public function buildingQueue() {
+        return $this->hasOne(CityBuildingQueue::class);
+    }
+
     public function canBuild($buildingId) {
         $nextLvl = 1;
         $cityBuilding = $this->building($buildingId);

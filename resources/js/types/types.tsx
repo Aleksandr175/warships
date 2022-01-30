@@ -13,6 +13,16 @@ export interface ICityBuilding {
     lvl: number;
 }
 
+export interface ICityBuildingQueue {
+    id: number;
+    cityId: number;
+    lvl: number;
+    gold: number;
+    population: number;
+    time: number;
+    deadline: string;
+}
+
 export interface IBuildingResource {
     buildingId: number;
     gold: number;

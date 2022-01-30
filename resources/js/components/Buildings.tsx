@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { httpClient } from "../httpClient/httpClient";
-import { IBuilding, IBuildingResource, ICityBuilding } from "../types/types";
+import {
+    IBuilding,
+    IBuildingResource,
+    ICityBuilding,
+    ICityBuildingQueue,
+} from "../types/types";
 import styled from "styled-components";
+import { Building } from "./Building";
 
 interface IProps {
     cityId: number;
@@ -15,12 +21,18 @@ export const Buildings = ({
     buildingResourcesDictionary,
 }: IProps) => {
     const [buildings, setBuildings] = useState<ICityBuilding[]>();
+    const [queue, setQueue] = useState<ICityBuildingQueue>();
 
     useEffect(() => {
-        httpClient.get("/buildings?cityId=" + cityId).then((response) => {
-            setBuildings(response.data.data);
-        });
+        getBuildings();
     }, []);
+
+    function getBuildings() {
+        httpClient.get("/buildings?cityId=" + cityId).then((response) => {
+            setBuildings(response.data.buildings);
+            setQueue(response.data.buildingQueue);
+        });
+    }
 
     function getLvl(buildingId: number) {
         const building = buildings?.find((b) => b.id === buildingId);
@@ -49,6 +61,10 @@ export const Buildings = ({
             });
     }
 
+    function cancel(buildingId: number) {
+        console.log("cancel");
+    }
+
     return (
         <div className={"row"}>
             {buildingsDictionary.map((item) => {
@@ -58,34 +74,17 @@ export const Buildings = ({
                 const population = buildingResources?.population || 0;
 
                 return (
-                    <div className={"col-4"} key={item.id}>
-                        <SBuildingImageWrapper>
-                            <SBuildingLvlWrapper>
-                                <SBuildingLvl>{lvl}</SBuildingLvl>
-                            </SBuildingLvlWrapper>
-                        </SBuildingImageWrapper>
-                        <h4>{item.title}</h4>
-                        <span>{item.description}</span>
-
-                        {buildingResources && (
-                            <>
-                                <p>
-                                    Золото: {gold}. Рабочие: {population}
-                                </p>
-                                <button
-                                    className={"btn btn-primary"}
-                                    onClick={() => {
-                                        build(item.id);
-                                    }}
-                                >
-                                    Построить
-                                </button>
-                            </>
-                        )}
-
-                        <br />
-                        <br />
-                    </div>
+                    <Building
+                        lvl={lvl}
+                        key={item.id}
+                        building={item}
+                        gold={gold}
+                        population={population}
+                        build={build}
+                        cancel={cancel}
+                        queue={queue}
+                        getBuildings={getBuildings}
+                    />
                 );
             })}
         </div>

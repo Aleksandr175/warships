@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/dictionaries', [\App\Http\Controllers\UserController::class, 'getDictionaries']);
 
     Route::post('/api/build', [\App\Http\Controllers\CityBuildingQueueController::class, 'build']);
+    Route::post('/api/build/{buildingId}/cancel', [\App\Http\Controllers\CityBuildingQueueController::class, 'cancel'])->where('buildingId', '[0-9]+');
 });
 
 Route::get('/', function () {

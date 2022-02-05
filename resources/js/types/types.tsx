@@ -7,6 +7,12 @@ export interface ICity {
     population: number;
 }
 
+export interface ICityResources {
+    id?: number;
+    gold: number;
+    population: number;
+}
+
 export interface ICityBuilding {
     id: number;
     cityId: number;

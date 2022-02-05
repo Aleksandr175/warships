@@ -5,6 +5,7 @@ import {
     IBuildingResource,
     ICityBuilding,
     ICityBuildingQueue,
+    ICityResources,
 } from "../types/types";
 import styled from "styled-components";
 import { Building } from "./Building";
@@ -13,12 +14,16 @@ interface IProps {
     cityId: number;
     buildingsDictionary: IBuilding[];
     buildingResourcesDictionary: IBuildingResource[];
+    updateCityResources: (cityResources: ICityResources) => void;
+    cityResources: ICityResources;
 }
 
 export const Buildings = ({
     cityId,
     buildingsDictionary,
     buildingResourcesDictionary,
+    updateCityResources,
+    cityResources,
 }: IProps) => {
     const [buildings, setBuildings] = useState<ICityBuilding[]>();
     const [queue, setQueue] = useState<ICityBuildingQueue>();
@@ -57,12 +62,23 @@ export const Buildings = ({
                 buildingId,
             })
             .then((response) => {
-                console.log(response);
+                setBuildings(response.data.buildings);
+                setQueue(response.data.buildingQueue);
+                updateCityResources(response.data.cityResources);
             });
     }
 
     function cancel(buildingId: number) {
-        console.log("cancel");
+        httpClient
+            .post("/build/" + buildingId + "/cancel", {
+                cityId,
+            })
+            .then((response) => {
+                setBuildings(response.data.buildings);
+                setQueue(undefined);
+
+                updateCityResources(response.data.cityResources);
+            });
     }
 
     return (
@@ -84,6 +100,7 @@ export const Buildings = ({
                         cancel={cancel}
                         queue={queue}
                         getBuildings={getBuildings}
+                        cityResources={cityResources}
                     />
                 );
             })}

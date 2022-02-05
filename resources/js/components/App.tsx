@@ -5,7 +5,8 @@ import { Buildings } from "./Buildings";
 import { Researches } from "./Researches";
 import { httpClient } from "../httpClient/httpClient";
 import styled from "styled-components";
-import { ICity, IDictionary } from "../types/types";
+import { ICity, IDictionary, ICityResources } from "../types/types";
+import { CityResources } from "./CityResources";
 
 const App = () => {
     const [userInfo, setUserInfo] = useState();
@@ -25,6 +26,15 @@ const App = () => {
         });
     }, []);
 
+    function updateCityResources(cityResources: ICityResources) {
+        const tempCity = Object.assign({}, city);
+
+        tempCity.gold = cityResources.gold;
+        tempCity.population = cityResources.population;
+
+        setCity(tempCity);
+    }
+
     if (isLoading) {
         return <></>;
     }
@@ -41,8 +51,10 @@ const App = () => {
                                     <li>
                                         Координаты: {city.coordX}:{city.coordY}
                                     </li>
-                                    <li>Золото: {city.gold}</li>
-                                    <li>Население: {city.population}</li>
+                                    <CityResources
+                                        gold={city.gold}
+                                        population={city.population}
+                                    />
                                 </SResources>
                             </SResourcesPanel>
                         )}
@@ -75,6 +87,13 @@ const App = () => {
                                             buildingResourcesDictionary={
                                                 dictionaries.buildingResources
                                             }
+                                            updateCityResources={
+                                                updateCityResources
+                                            }
+                                            cityResources={{
+                                                gold: city.gold,
+                                                population: city.population,
+                                            }}
                                         />
                                     }
                                 />

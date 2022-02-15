@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BuildingResource;
 use App\Http\Resources\CityBuildingQueueResource;
+use App\Http\Resources\BuildingProductionsResource;
+use App\Models\BuildingProduction;
 use App\Models\City;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -28,9 +30,12 @@ class BuildingController extends Controller
         }
 
         if ($city && $city->id) {
+            $buildingProductions = BuildingProduction::get();
+
             return [
                 'buildings' => BuildingResource::collection($city->buildings),
-                'buildingQueue' => $city->buildingQueue ? new CityBuildingQueueResource($city->buildingQueue) : []
+                'buildingQueue' => $city->buildingQueue ? new CityBuildingQueueResource($city->buildingQueue) : [],
+                'buildingsProduction' => BuildingProductionsResource::collection($buildingProductions)
             ];
         }
 

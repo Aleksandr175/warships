@@ -1,20 +1,13 @@
 <x-app-layout>
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <div id="app"></div>
+    <div id="app"></div>
 
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
+    <div class="container footer">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
 
-                        <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900">
-                            {{ __('Log Out') }}
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+            <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900">
+                {{ __('Log Out') }}
+            </button>
+        </form>
     </div>
-
 </x-app-layout>

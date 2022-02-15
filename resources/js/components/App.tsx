@@ -41,7 +41,7 @@ const App = () => {
 
     return (
         <Router>
-            <div className="container">
+            <SHeader className="container">
                 <div className={"row"}>
                     <div className={"col-9 offset-3"}>
                         {city && (
@@ -60,16 +60,20 @@ const App = () => {
                         )}
                     </div>
                 </div>
+            </SHeader>
 
+            <div className={"container"}>
                 <div className={"row"}>
-                    <div className={"col-3"}>
-                        <Link to={"/dashboard"}>Обзор</Link>
-                        <br />
-                        <Link to={"/buildings"}>Постройки</Link>
-                        <br />
-                        <Link to={"/researches"}>Исследования</Link>
+                    <div className={"col-3 d-flex align-items-stretch"}>
+                        <SColumnMenu>
+                            <Link to={"/dashboard"}>Обзор</Link>
+                            <br />
+                            <Link to={"/buildings"}>Постройки</Link>
+                            <br />
+                            <Link to={"/researches"}>Исследования</Link>
+                        </SColumnMenu>
                     </div>
-                    <div className={"col-9"}>
+                    <SColumnContent className={"col-9"}>
                         {city && dictionaries && (
                             <Routes>
                                 <Route
@@ -103,7 +107,7 @@ const App = () => {
                                 />
                             </Routes>
                         )}
-                    </div>
+                    </SColumnContent>
                 </div>
             </div>
         </Router>
@@ -113,7 +117,6 @@ const App = () => {
 export default App;
 
 const SResourcesPanel = styled.div`
-    margin-bottom: 20px;
     text-align: right;
 `;
 
@@ -122,4 +125,25 @@ const SResources = styled.div`
         display: inline-block;
         padding-left: 20px;
     }
+`;
+
+const SHeader = styled.div`
+    background: white;
+    padding: 10px 20px;
+    margin-top: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+`;
+
+const SColumnMenu = styled.div`
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-right: 20px;
+    min-height: 200px;
+`;
+const SColumnContent = styled.div`
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
 `;

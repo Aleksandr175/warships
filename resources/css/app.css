@@ -1,3 +1,17 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/utilities';
 @import 'bootstrap';
+
+body {
+  background: url('../images/bg.jpeg') 50% 50% no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.footer {
+  background: white;
+  border-radius: 10px;
+  margin-top: 30px;
+  padding: 20px;
+  margin-bottom: 30px;
+}

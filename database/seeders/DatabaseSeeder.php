@@ -41,5 +41,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BuildingResourceSeeder::class);
 
         $this->call(CityBuildingQueueSeeder::class);
+
+        $this->call(BuildingProductionSeeder::class);
     }
 }

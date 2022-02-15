@@ -28,7 +28,7 @@ export const Building = ({
     getBuildings,
     cityResources,
 }: IProps) => {
-    const [timeLeft, setTimeLeft] = useState(0);
+    const [timeLeft, setTimeLeft] = useState<number | null>(null);
     const timer = useRef();
 
     useEffect(() => {
@@ -45,7 +45,7 @@ export const Building = ({
     }, [queue]);
 
     useEffect(() => {
-        if (!timeLeft) {
+        if (timeLeft === 0) {
             clearInterval(timer.current);
             getBuildings();
         }
@@ -53,7 +53,7 @@ export const Building = ({
 
     function handleTimer() {
         setTimeLeft((lastTimeLeft) => {
-            return lastTimeLeft - 1;
+            return lastTimeLeft ? lastTimeLeft - 1 : 0;
         });
     }
 
@@ -89,25 +89,27 @@ export const Building = ({
             <span>{building.description}</span>
 
             {(gold || population) &&
-                !isBuildingInProcess() &&
-                !Boolean(queue && queue.id) && (
-                    <>
-                        <p>
-                            Золото: {gold}. Рабочие: {population}
-                        </p>
-                        <button
-                            className={"btn btn-primary"}
-                            disabled={isBuildingDisabled()}
-                            onClick={() => {
-                                build(building.id);
-                            }}
-                        >
-                            Построить
-                        </button>
-                    </>
-                )}
+            !isBuildingInProcess() &&
+            !Boolean(queue && queue.id) ? (
+                <>
+                    <p>
+                        Золото: {gold}. Рабочие: {population}
+                    </p>
+                    <button
+                        className={"btn btn-primary"}
+                        disabled={isBuildingDisabled()}
+                        onClick={() => {
+                            build(building.id);
+                        }}
+                    >
+                        Построить
+                    </button>
+                </>
+            ) : (
+                ""
+            )}
 
-            {(gold || population) && isBuildingInProcess() && (
+            {(gold || population) && isBuildingInProcess() ? (
                 <>
                     <p>Окончание через: {timeLeft} сек.</p>
                     <p>
@@ -122,6 +124,8 @@ export const Building = ({
                         Отменить
                     </button>
                 </>
+            ) : (
+                ""
             )}
 
             <br />

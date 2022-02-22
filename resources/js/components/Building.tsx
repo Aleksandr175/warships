@@ -1,5 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { IBuilding, ICityBuildingQueue, ICityResources } from "../types/types";
+import {
+    IBuilding,
+    IBuildingsProduction,
+    ICityBuildingQueue,
+    ICityResources,
+} from "../types/types";
 import styled from "styled-components";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -15,6 +20,7 @@ interface IProps {
     queue: ICityBuildingQueue | undefined;
     getBuildings: () => void;
     cityResources: ICityResources;
+    buildingsProduction: IBuildingsProduction[];
 }
 
 export const Building = ({
@@ -27,6 +33,7 @@ export const Building = ({
     queue,
     getBuildings,
     cityResources,
+    buildingsProduction,
 }: IProps) => {
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
     const timer = useRef();
@@ -78,9 +85,25 @@ export const Building = ({
         );
     }
 
+    function getProductionResource(resource: "population" | "gold") {
+        const production = buildingsProduction.find((bProduction) => {
+            return (
+                bProduction.buildingId === building.id &&
+                bProduction.lvl === lvl + 1 &&
+                bProduction.resource === resource
+            );
+        });
+
+        return production?.qty;
+    }
+
     return (
-        <div className={"col-4"} key={building.id}>
-            <SBuildingImageWrapper>
+        <div className={"col-sm-6 col-md-4"} key={building.id}>
+            <SBuildingImageWrapper
+                style={{
+                    backgroundImage: `url("../images/buildings/${building.id}.svg")`,
+                }}
+            >
                 <SBuildingLvlWrapper>
                     <SBuildingLvl>{lvl}</SBuildingLvl>
                 </SBuildingLvlWrapper>
@@ -95,6 +118,21 @@ export const Building = ({
                     <p>
                         Золото: {gold}. Рабочие: {population}
                     </p>
+                    {getProductionResource("population") ? (
+                        <p>
+                            Прирост населения:{" "}
+                            {getProductionResource("population")}
+                        </p>
+                    ) : (
+                        ""
+                    )}
+                    {getProductionResource("gold") ? (
+                        <p>
+                            Добыча золота / час: {getProductionResource("gold")}
+                        </p>
+                    ) : (
+                        ""
+                    )}
                     <button
                         className={"btn btn-primary"}
                         disabled={isBuildingDisabled()}
@@ -136,10 +174,14 @@ export const Building = ({
 
 const SBuildingImageWrapper = styled.div`
     border: 1px solid black;
-    height: 200px;
+    height: 100px;
     margin-bottom: 20px;
     position: relative;
-    background: #ddd;
+
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: #ddd;
 `;
 
 const SBuildingLvlWrapper = styled.div`

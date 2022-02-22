@@ -11,6 +11,7 @@ export interface ICityResources {
     id?: number;
     gold: number;
     population: number;
+    productionGold?: number;
 }
 
 export interface ICityBuilding {
@@ -45,4 +46,11 @@ export interface IBuilding {
     id: number;
     title: string;
     description: string;
+}
+
+export interface IBuildingsProduction {
+    buildingId: number;
+    lvl: number;
+    qty: number;
+    resource: string;
 }

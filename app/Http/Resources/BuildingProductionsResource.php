@@ -16,7 +16,7 @@ class BuildingProductionsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'building_id' => $this->building_id,
+            'buildingId' => $this->building_id,
             'lvl' => $this->lvl,
             'resource' => $this['resource'],
             'qty' => $this->qty

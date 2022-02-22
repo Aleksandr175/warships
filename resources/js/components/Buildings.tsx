@@ -3,6 +3,7 @@ import { httpClient } from "../httpClient/httpClient";
 import {
     IBuilding,
     IBuildingResource,
+    IBuildingsProduction,
     ICityBuilding,
     ICityBuildingQueue,
     ICityResources,
@@ -26,16 +27,23 @@ export const Buildings = ({
     cityResources,
 }: IProps) => {
     const [buildings, setBuildings] = useState<ICityBuilding[]>();
+    const [buildingsProduction, setBuildingsProduction] =
+        useState<IBuildingsProduction[]>();
     const [queue, setQueue] = useState<ICityBuildingQueue>();
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         getBuildings();
     }, []);
 
     function getBuildings() {
+        setIsLoading(true);
+
         httpClient.get("/buildings?cityId=" + cityId).then((response) => {
             setBuildings(response.data.buildings);
+            setBuildingsProduction(response.data.buildingsProduction);
             setQueue(response.data.buildingQueue);
+            setIsLoading(false);
         });
     }
 
@@ -81,29 +89,35 @@ export const Buildings = ({
             });
     }
 
+    if (isLoading) {
+        return <>Loading...</>;
+    }
+
     return (
         <div className={"row"}>
-            {buildingsDictionary.map((item) => {
-                const lvl = getLvl(item.id);
-                const buildingResources = getResources(item.id, lvl + 1);
-                const gold = buildingResources?.gold || 0;
-                const population = buildingResources?.population || 0;
+            {buildingsProduction &&
+                buildingsDictionary.map((item) => {
+                    const lvl = getLvl(item.id);
+                    const buildingResources = getResources(item.id, lvl + 1);
+                    const gold = buildingResources?.gold || 0;
+                    const population = buildingResources?.population || 0;
 
-                return (
-                    <Building
-                        lvl={lvl}
-                        key={item.id}
-                        building={item}
-                        gold={gold}
-                        population={population}
-                        build={build}
-                        cancel={cancel}
-                        queue={queue}
-                        getBuildings={getBuildings}
-                        cityResources={cityResources}
-                    />
-                );
-            })}
+                    return (
+                        <Building
+                            lvl={lvl}
+                            key={item.id}
+                            building={item}
+                            gold={gold}
+                            population={population}
+                            build={build}
+                            cancel={cancel}
+                            queue={queue}
+                            getBuildings={getBuildings}
+                            cityResources={cityResources}
+                            buildingsProduction={buildingsProduction}
+                        />
+                    );
+                })}
         </div>
     );
 };

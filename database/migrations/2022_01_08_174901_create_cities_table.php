@@ -21,8 +21,10 @@ class CreateCitiesTable extends Migration
             $table->integer('coord_x');
             $table->integer('coord_y');
 
-            $table->integer('gold');
+            $table->float('gold');
             $table->integer('population');
+
+            $table->timestamp('resource_last_updated')->default(Carbon\Carbon::now());
 
             $table->timestamps();
         });

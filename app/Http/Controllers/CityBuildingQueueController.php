@@ -40,7 +40,7 @@ class CityBuildingQueueController extends Controller
         return abort(403);
     }
 
-    public function cancel(BuildingCancelRequest $request, $buildingId) {
+    public function cancel(BuildingCancelRequest $request) {
         $cityId = $request->post('cityId');
 
         $user = Auth::user();

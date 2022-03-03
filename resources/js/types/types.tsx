@@ -40,6 +40,7 @@ export interface IBuildingResource {
 export interface IDictionary {
     buildings: IBuilding[];
     buildingResources: IBuildingResource[];
+    buildingsProduction: IBuildingsProduction[];
 }
 
 export interface IBuilding {

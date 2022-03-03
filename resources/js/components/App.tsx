@@ -18,11 +18,10 @@ import { CityResources } from "./CityResources";
 const App = () => {
     const [userInfo, setUserInfo] = useState();
     const [city, setCity] = useState<ICity>();
+    const [cityResources, setCityResources] = useState<ICityResources>();
     const [isLoading, setIsLoading] = useState(true);
     const [dictionaries, setDictionaries] = useState<IDictionary>();
-    const [buildings, setBuildings] = useState<ICityBuilding[]>();
-    const [buildingsProduction, setBuildingsProduction] =
-        useState<IBuildingsProduction[]>();
+    const [buildings, setBuildings] = useState<ICityBuilding[] | undefined>();
     const [queue, setQueue] = useState<ICityBuildingQueue>();
 
     useEffect(() => {
@@ -38,14 +37,22 @@ const App = () => {
     }, []);
 
     useEffect(() => {
+        if (!city) return;
+
+        httpClient.get("/city/" + city.id).then((response) => {
+            setCityResources(response.data.data);
+        });
+    }, [city]);
+
+    useEffect(() => {
         getBuildings();
     }, [city]);
 
     function updateCityResources(cityResources: ICityResources) {
         const tempCity = Object.assign({}, city);
 
-        tempCity.gold = cityResources.gold;
-        tempCity.population = cityResources.population;
+        tempCity.gold = cityResources.gold || 0;
+        tempCity.population = cityResources.population || 0;
 
         setCity(tempCity);
     }
@@ -57,7 +64,6 @@ const App = () => {
 
         httpClient.get("/buildings?cityId=" + city?.id).then((response) => {
             setBuildings(response.data.buildings);
-            setBuildingsProduction(response.data.buildingsProduction);
         });
     }
 
@@ -71,7 +77,7 @@ const App = () => {
             if (miner) {
                 const lvl = miner.lvl;
 
-                const production = buildingsProduction?.find(
+                const production = dictionaries?.buildingsProduction?.find(
                     (bp) =>
                         bp.buildingId === miner.id &&
                         bp.lvl === lvl &&
@@ -102,8 +108,10 @@ const App = () => {
                                         Координаты: {city.coordX}:{city.coordY}
                                     </li>
                                     <CityResources
-                                        gold={city.gold}
-                                        population={city.population}
+                                        gold={cityResources?.gold || 0}
+                                        population={
+                                            cityResources?.population || 0
+                                        }
                                         productionGold={getProductionGold()}
                                     />
                                 </SResources>
@@ -149,6 +157,12 @@ const App = () => {
                                                 gold: city.gold,
                                                 population: city.population,
                                             }}
+                                            getBuildings={getBuildings}
+                                            buildings={buildings}
+                                            setBuildings={setBuildings}
+                                            buildingsProduction={
+                                                dictionaries.buildingsProduction
+                                            }
                                         />
                                     }
                                 />

@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/user', [\App\Http\Controllers\UserController::class, 'get']);
     Route::get('/api/buildings', [\App\Http\Controllers\BuildingController::class, 'get']);
     Route::get('/api/dictionaries', [\App\Http\Controllers\UserController::class, 'getDictionaries']);
+    Route::get('/api/city/{cityId}', [\App\Http\Controllers\CityController::class, 'getCityResources']);
 
     Route::post('/api/build', [\App\Http\Controllers\CityBuildingQueueController::class, 'build']);
     Route::post('/api/build/{buildingId}/cancel', [\App\Http\Controllers\CityBuildingQueueController::class, 'cancel'])->where('buildingId', '[0-9]+');

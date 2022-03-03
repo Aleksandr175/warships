@@ -17,35 +17,24 @@ interface IProps {
     buildingResourcesDictionary: IBuildingResource[];
     updateCityResources: (cityResources: ICityResources) => void;
     cityResources: ICityResources;
+    buildings: ICityBuilding[] | undefined;
+    setBuildings: (buildings: ICityBuilding[]) => void;
+    getBuildings: () => void;
+    buildingsProduction?: IBuildingsProduction[];
 }
 
 export const Buildings = ({
+    buildings,
+    setBuildings,
+    getBuildings,
     cityId,
     buildingsDictionary,
     buildingResourcesDictionary,
     updateCityResources,
     cityResources,
+    buildingsProduction,
 }: IProps) => {
-    const [buildings, setBuildings] = useState<ICityBuilding[]>();
-    const [buildingsProduction, setBuildingsProduction] =
-        useState<IBuildingsProduction[]>();
     const [queue, setQueue] = useState<ICityBuildingQueue>();
-    const [isLoading, setIsLoading] = useState(false);
-
-    useEffect(() => {
-        getBuildings();
-    }, []);
-
-    function getBuildings() {
-        setIsLoading(true);
-
-        httpClient.get("/buildings?cityId=" + cityId).then((response) => {
-            setBuildings(response.data.buildings);
-            setBuildingsProduction(response.data.buildingsProduction);
-            setQueue(response.data.buildingQueue);
-            setIsLoading(false);
-        });
-    }
 
     function getLvl(buildingId: number) {
         const building = buildings?.find((b) => b.id === buildingId);
@@ -87,10 +76,6 @@ export const Buildings = ({
 
                 updateCityResources(response.data.cityResources);
             });
-    }
-
-    if (isLoading) {
-        return <>Loading...</>;
     }
 
     return (

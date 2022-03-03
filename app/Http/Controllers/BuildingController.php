@@ -30,12 +30,9 @@ class BuildingController extends Controller
         }
 
         if ($city && $city->id) {
-            $buildingProductions = BuildingProduction::get();
-
             return [
                 'buildings' => BuildingResource::collection($city->buildings),
                 'buildingQueue' => $city->buildingQueue ? new CityBuildingQueueResource($city->buildingQueue) : [],
-                'buildingsProduction' => BuildingProductionsResource::collection($buildingProductions)
             ];
         }
 

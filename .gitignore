@@ -19,3 +19,4 @@ pf.bat
 pu.bat
 /storage/logs/laravel.log
 /storage/*.index
+/var

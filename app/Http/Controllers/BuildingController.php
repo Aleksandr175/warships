@@ -25,6 +25,13 @@ class BuildingController extends Controller
             if ($buildingQueue->deadline <= Carbon::now()) {
                 // add lvl
                 $city->building($buildingQueue->building_id)->increment('lvl');
+
+                if ($buildingQueue->building_id === 3) {
+                    $additionalPopulation = BuildingProduction::where('lvl', $buildingQueue->lvl)->where('resource', 'population')->first();
+
+                    $city->increment('population', $additionalPopulation->qty);
+                }
+
                 $city->buildingQueue()->delete();
             }
         }

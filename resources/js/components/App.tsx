@@ -37,16 +37,20 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        if (!city) return;
-
-        httpClient.get("/city/" + city.id).then((response) => {
-            setCityResources(response.data.data);
-        });
+        getCityResources();
     }, [city]);
 
     useEffect(() => {
         getBuildings();
     }, [city]);
+
+    function getCityResources() {
+        if (!city) return;
+
+        httpClient.get("/city/" + city.id).then((response) => {
+            setCityResources(response.data.data);
+        });
+    }
 
     function updateCityResources(cityResources: ICityResources) {
         const tempCity = Object.assign({}, city);
@@ -64,7 +68,10 @@ const App = () => {
 
         httpClient.get("/buildings?cityId=" + city?.id).then((response) => {
             setBuildings(response.data.buildings);
+            setQueue(response.data.buildingQueue);
         });
+
+        getCityResources();
     }
 
     function getProductionGold() {
@@ -163,6 +170,8 @@ const App = () => {
                                             buildingsProduction={
                                                 dictionaries.buildingsProduction
                                             }
+                                            setQueue={setQueue}
+                                            queue={queue}
                                         />
                                     }
                                 />

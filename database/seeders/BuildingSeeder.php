@@ -15,21 +15,27 @@ class BuildingSeeder extends Seeder
     public function run()
     {
         Building::create([
-            'city_id' => 1,
+            'city_id' => 10,
             'building_id' => 1,
             'lvl' => 3
         ]);
 
         Building::create([
-            'city_id' => 1,
+            'city_id' => 10,
             'building_id' => 2,
             'lvl' => 1
         ]);
 
         Building::create([
-            'city_id' => 1,
+            'city_id' => 10,
             'building_id' => 3,
             'lvl' => 2
+        ]);
+
+        Building::create([
+            'city_id' => 11,
+            'building_id' => 1,
+            'lvl' => 1
         ]);
     }
 }

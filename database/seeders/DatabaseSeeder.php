@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        \App\Models\User::factory(4)->create();
+
         \App\Models\User::factory(1)->create([
             'name' => 'Alex',
             'password' => Hash::make('123123'),
@@ -26,12 +28,23 @@ class DatabaseSeeder extends Seeder
         \App\Models\User::factory(10)->create();
 
         \App\Models\City::factory(1)->create([
-            'user_id' => 1,
+            'id' => 10,
+            'user_id' => 5,
             'title' => 'Остров Alex-a',
             'coord_x' => 1,
             'coord_y' => 1,
             'gold' => 1000,
             'population' => 200
+        ]);
+
+        \App\Models\City::factory(1)->create([
+            'id' => 11,
+            'user_id' => 5,
+            'title' => 'Остров Alex-a N2',
+            'coord_x' => 12,
+            'coord_y' => 5,
+            'gold' => 1500,
+            'population' => 300
         ]);
 
         $this->call(BuildingDictionarySeeder::class);

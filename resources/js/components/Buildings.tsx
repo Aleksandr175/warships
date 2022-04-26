@@ -21,6 +21,8 @@ interface IProps {
     setBuildings: (buildings: ICityBuilding[]) => void;
     getBuildings: () => void;
     buildingsProduction?: IBuildingsProduction[];
+    queue?: ICityBuildingQueue;
+    setQueue: (q: ICityBuildingQueue | undefined) => void;
 }
 
 export const Buildings = ({
@@ -33,9 +35,9 @@ export const Buildings = ({
     updateCityResources,
     cityResources,
     buildingsProduction,
+    queue,
+    setQueue,
 }: IProps) => {
-    const [queue, setQueue] = useState<ICityBuildingQueue>();
-
     function getLvl(buildingId: number) {
         const building = buildings?.find((b) => b.id === buildingId);
 

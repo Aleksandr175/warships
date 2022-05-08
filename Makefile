@@ -5,4 +5,4 @@ up:
 down:
 	docker-compose  --file $(ComposeFile) down
 php:
-	docker-compose  --file $(ComposeFile) exec php81 bash
+	docker-compose  --file $(ComposeFile) exec php bash

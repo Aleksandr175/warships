@@ -49,6 +49,7 @@ export interface IDictionary {
     buildingResources: IBuildingResource[];
     buildingsProduction: IBuildingsProduction[];
     researches: IResearch[];
+    userResearches: IUserResearch[];
     researchResources: IResearchResource[];
 }
 
@@ -62,6 +63,12 @@ export interface IResearch {
     id: number;
     title: string;
     description: string;
+}
+
+export interface IUserResearch {
+    id: number;
+    lvl: number;
+    researchId: number;
 }
 
 export interface IBuildingsProduction {

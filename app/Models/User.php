@@ -45,4 +45,8 @@ class User extends Authenticatable
     public function cities() {
         return $this->hasMany(City::class);
     }
+
+    public function researches() {
+        return $this->hasMany(Research::class);
+    }
 }

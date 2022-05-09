@@ -210,10 +210,12 @@ const App = () => {
                                                 gold: city.gold,
                                                 population: city.population,
                                             }}
-                                            /*getBuildings={getBuildings}*/
-                                            /*researches={buildings}*/
+                                            researches={
+                                                dictionaries.userResearches
+                                            }
+
                                             /*setBuildings={setBuildings}
-                                            setQueue={setQueue}
+                                            /*setQueue={setQueue}
                                             queue={queue}*/
                                         />
                                     }

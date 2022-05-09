@@ -8,6 +8,7 @@ import {
     ICityResources,
     IResearch,
     IResearchResource,
+    IUserResearch,
 } from "../types/types";
 import styled from "styled-components";
 import { Research } from "./Research";
@@ -18,6 +19,7 @@ interface IProps {
     resourcesDictionary: IResearchResource[];
     updateCityResources: (cityResources: ICityResources) => void;
     cityResources: ICityResources;
+    researches: IUserResearch[];
     /*setBuildings: (buildings: ICityBuilding[]) => void;
     getBuildings: () => void;
     queue?: ICityBuildingQueue;
@@ -25,25 +27,24 @@ interface IProps {
 }
 
 export const Researches = ({
-    /*setBuildings,
-    getBuildings,*/
     cityId,
     dictionary,
     resourcesDictionary,
     updateCityResources,
     cityResources,
+    researches,
 }: /*queue,
     setQueue,*/
 IProps) => {
-    /*function getLvl(researchId: number) {
-        const research = dictionary?.find((r) => r.id === researchId);
+    function getLvl(researchId: number) {
+        const research = researches?.find((r) => r.researchId === researchId);
 
         if (research) {
-            return building.lvl;
+            return research.lvl;
         }
 
         return 0;
-    }*/
+    }
 
     function getResources(resourceId: number, lvl: number) {
         return resourcesDictionary.find(
@@ -51,39 +52,34 @@ IProps) => {
         );
     }
 
-    /*function build(buildingId: number) {
+    function run(researchId: number) {
         httpClient
-            .post("/build", {
-                cityId,
-                buildingId,
-            })
+            .post("/researches/" + researchId + "/run")
             .then((response) => {
-                setBuildings(response.data.buildings);
-                setQueue(response.data.buildingQueue);
+                /*setBuildings(response.data.buildings);
+                setQueue(response.data.buildingQueue);*/
                 updateCityResources(response.data.cityResources);
             });
-    }*/
+    }
 
-    /*function cancel(buildingId: number) {
+    function cancel(researchId: number) {
         httpClient
-            .post("/build/" + buildingId + "/cancel", {
-                cityId,
-            })
+            .post("/researches/" + researchId + "/cancel")
             .then((response) => {
-                setBuildings(response.data.buildings);
-                setQueue(undefined);
+                /*setBuildings(response.data.buildings);
+                setQueue(undefined);*/
 
                 updateCityResources(response.data.cityResources);
             });
-    }*/
+    }
 
     return (
         <div className={"row"}>
             {dictionary.map((item) => {
-                const lvl = 0; //getLvl(item.id);
-                const buildingResources = getResources(item.id, lvl + 1);
-                const gold = buildingResources?.gold || 0;
-                const population = buildingResources?.population || 0;
+                const lvl = getLvl(item.id);
+                const resources = getResources(item.id, lvl + 1);
+                const gold = resources?.gold || 0;
+                const population = resources?.population || 0;
 
                 return (
                     <Research
@@ -92,7 +88,7 @@ IProps) => {
                         research={item}
                         gold={gold}
                         population={population}
-                        build={() => {} /*build*/}
+                        run={() => {} /*build*/}
                         cancel={() => {} /*cancel*/}
                         queue={() => {} /*queue*/}
                         getBuildings={() => {} /*getBuildings*/}

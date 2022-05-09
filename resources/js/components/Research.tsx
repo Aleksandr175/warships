@@ -15,10 +15,10 @@ interface IProps {
     lvl: number;
     gold: number;
     population: number;
-    build: (buildingId: number) => void;
-    cancel: (buildingId: number) => void;
+    run: (researchId: number) => void;
+    cancel: (researchId: number) => void;
     queue: ICityBuildingQueue | undefined;
-    getBuildings: () => void;
+    /*getBuildings: () => void;*/
     cityResources: ICityResources;
 }
 
@@ -27,17 +27,17 @@ export const Research = ({
     lvl,
     gold,
     population,
-    build,
+    run,
     cancel,
     queue,
-    getBuildings,
+    /*getBuildings,*/
     cityResources,
 }: IProps) => {
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
     const timer = useRef();
 
     useEffect(() => {
-        if (isBuildingInProcess() && getTimeLeft()) {
+        if (isResearchInProcess() && getTimeLeft()) {
             setTimeLeft(getTimeLeft());
 
             // @ts-ignore
@@ -52,7 +52,7 @@ export const Research = ({
     useEffect(() => {
         if (timeLeft === 0) {
             clearInterval(timer.current);
-            getBuildings();
+            /*getBuildings();*/
         }
     }, [timeLeft]);
 
@@ -62,7 +62,7 @@ export const Research = ({
         });
     }
 
-    function isBuildingInProcess() {
+    function isResearchInProcess() {
         return queue && queue.id === research.id;
     }
 
@@ -77,7 +77,7 @@ export const Research = ({
         return dayjs.utc(deadlineDate).unix() - dateUTCNow.unix();
     }
 
-    function isBuildingDisabled() {
+    function isResearchDisabled() {
         return (
             gold > cityResources.gold || population > cityResources.population
         );
@@ -85,7 +85,61 @@ export const Research = ({
 
     return (
         <div className={"col-sm-6 col-md-4"} key={research.id}>
-            {research.title}
+            <SBuildingImageWrapper
+                style={{
+                    backgroundImage: `url("../images/researches/${research.id}.svg")`,
+                }}
+            >
+                <SBuildingLvlWrapper>
+                    <SBuildingLvl>{lvl}</SBuildingLvl>
+                </SBuildingLvlWrapper>
+            </SBuildingImageWrapper>
+            <h4>{research.title}</h4>
+            <span>{research.description}</span>
+
+            {(gold || population) &&
+            !isResearchInProcess() &&
+            !Boolean(queue && queue.id) ? (
+                <>
+                    <p>
+                        Золото: {gold}. Рабочие: {population}
+                    </p>
+
+                    <button
+                        className={"btn btn-primary"}
+                        disabled={isResearchDisabled()}
+                        onClick={() => {
+                            run(research.id);
+                        }}
+                    >
+                        Построить
+                    </button>
+                </>
+            ) : (
+                ""
+            )}
+
+            {(gold || population) && isResearchInProcess() ? (
+                <>
+                    <p>Окончание через: {timeLeft} сек.</p>
+                    <p>
+                        Золото: {gold}. Рабочие: {population}
+                    </p>
+                    <button
+                        className={"btn btn-warning"}
+                        onClick={() => {
+                            cancel(research.id);
+                        }}
+                    >
+                        Отменить
+                    </button>
+                </>
+            ) : (
+                ""
+            )}
+
+            <br />
+            <br />
         </div>
     );
 };

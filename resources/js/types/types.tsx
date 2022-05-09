@@ -37,13 +37,28 @@ export interface IBuildingResource {
     lvl: number;
 }
 
+export interface IResearchResource {
+    researchId: number;
+    gold: number;
+    population: number;
+    lvl: number;
+}
+
 export interface IDictionary {
     buildings: IBuilding[];
     buildingResources: IBuildingResource[];
     buildingsProduction: IBuildingsProduction[];
+    researches: IResearch[];
+    researchResources: IResearchResource[];
 }
 
 export interface IBuilding {
+    id: number;
+    title: string;
+    description: string;
+}
+
+export interface IResearch {
     id: number;
     title: string;
     description: string;

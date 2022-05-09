@@ -16,19 +16,23 @@ class CityController extends Controller
 
         $city = $user->cities()->where('id', $cityId)->first();
         $miner = $city->buildings()->where('id', 2)->first();
-
-        $minerLvl = $miner->lvl;
-
-        $buildingProduction = BuildingProduction::where('building_id', 2)->where('lvl', $minerLvl)->first();
-
+        $gold = 0;
+        $production = 0;
         $now = Carbon::now();
-        $resourceLastUpdated = Carbon::parse($city->resource_last_updated);
 
-        $timeDiff = $now->diffInSeconds($resourceLastUpdated);
+        if ($miner && $miner->lvl) {
+            $minerLvl = $miner->lvl;
 
-        $production = $timeDiff * $buildingProduction->qty / 3600;
+            $buildingProduction = BuildingProduction::where('building_id', 2)->where('lvl', $minerLvl)->first();
 
-        $gold = $city->gold;
+            $resourceLastUpdated = Carbon::parse($city->resource_last_updated);
+
+            $timeDiff = $now->diffInSeconds($resourceLastUpdated);
+
+            $production = $timeDiff * $buildingProduction->qty / 3600;
+
+            $gold = $city->gold;
+        }
 
         $city->update([
             'gold' => $gold + $production,

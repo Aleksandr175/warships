@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBuildingResourcesTable extends Migration
+class CreateResearchResourcesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateBuildingResourcesTable extends Migration
      */
     public function up()
     {
-        Schema::create('building_resources', function (Blueprint $table) {
+        Schema::create('research_resources', function (Blueprint $table) {
             $table->id();
 
-            $table->bigInteger('building_id')->unsigned();
-            $table->foreign('building_id')->references('id')->on('building_dictionary');
+            $table->bigInteger('research_id')->unsigned();
+            $table->foreign('research_id')->references('id')->on('research_dictionary');
 
             $table->integer('gold');
             $table->integer('population');
@@ -35,6 +35,6 @@ class CreateBuildingResourcesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('building_resources');
+        Schema::dropIfExists('research_resources');
     }
 }

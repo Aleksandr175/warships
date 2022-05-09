@@ -18,6 +18,7 @@ import { CityResources } from "./CityResources";
 const App = () => {
     const [userInfo, setUserInfo] = useState();
     const [city, setCity] = useState<ICity>();
+    const [cities, setCities] = useState<ICity[]>();
     const [cityResources, setCityResources] = useState<ICityResources>();
     const [isLoading, setIsLoading] = useState(true);
     const [dictionaries, setDictionaries] = useState<IDictionary>();
@@ -29,6 +30,7 @@ const App = () => {
             httpClient.get("/dictionaries").then((respDictionary) => {
                 setUserInfo(response.data.data);
                 setCity(response.data.data.cities[0]);
+                setCities(response.data.data.cities);
                 setDictionaries(respDictionary.data);
 
                 setIsLoading(false);
@@ -98,6 +100,10 @@ const App = () => {
         return 0;
     }
 
+    function selectCity(c: ICity) {
+        setCity(c);
+    }
+
     if (isLoading) {
         return <></>;
     }
@@ -106,10 +112,23 @@ const App = () => {
         <Router>
             <SHeader className="container">
                 <div className={"row"}>
-                    <div className={"col-9 offset-3"}>
-                        {city && (
+                    <div className={"col-12"}>
+                        {city && cities && (
                             <SResourcesPanel>
-                                <div>Выбранный остров: {city.title}</div>
+                                <div>
+                                    Острова:
+                                    {cities.map((c) => {
+                                        return (
+                                            <SCity
+                                                key={c.id}
+                                                active={c.id === city.id}
+                                                onClick={() => selectCity(c)}
+                                            >
+                                                {c.title}
+                                            </SCity>
+                                        );
+                                    })}
+                                </div>
                                 <SResources>
                                     <li>
                                         Координаты: {city.coordX}:{city.coordY}
@@ -177,7 +196,27 @@ const App = () => {
                                 />
                                 <Route
                                     path={"researches"}
-                                    element={<Researches />}
+                                    element={
+                                        <Researches
+                                            cityId={city.id}
+                                            dictionary={dictionaries.researches}
+                                            resourcesDictionary={
+                                                dictionaries.researchResources
+                                            }
+                                            updateCityResources={
+                                                updateCityResources
+                                            }
+                                            cityResources={{
+                                                gold: city.gold,
+                                                population: city.population,
+                                            }}
+                                            /*getBuildings={getBuildings}*/
+                                            /*researches={buildings}*/
+                                            /*setBuildings={setBuildings}
+                                            setQueue={setQueue}
+                                            queue={queue}*/
+                                        />
+                                    }
                                 />
                             </Routes>
                         )}
@@ -221,4 +260,14 @@ const SColumnContent = styled.div`
     background: white;
     border-radius: 10px;
     padding: 20px;
+`;
+
+const SCity = styled.span<{ active?: boolean }>`
+    cursor: pointer;
+    display: inline-block;
+    margin-left: 10px;
+    text-decoration: underline;
+
+    ${(props) =>
+        props.active ? "text-decoration: none; font-weight: 700;" : ""}
 `;

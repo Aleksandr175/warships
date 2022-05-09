@@ -2,9 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Building;
-use App\Models\City;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -56,5 +53,9 @@ class DatabaseSeeder extends Seeder
         $this->call(CityBuildingQueueSeeder::class);
 
         $this->call(BuildingProductionSeeder::class);
+
+        $this->call(ResearchDictionarySeeder::class);
+
+        $this->call(ResearchResourceSeeder::class);
     }
 }

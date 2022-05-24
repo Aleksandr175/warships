@@ -49,4 +49,12 @@ class User extends Authenticatable
     public function researches() {
         return $this->hasMany(Research::class);
     }
+
+    public function research($researchId) {
+        return $this->researches()->where('research_id', $researchId)->first();
+    }
+
+    public function researchesQueue() {
+        return $this->hasOne(ResearchQueue::class);
+    }
 }

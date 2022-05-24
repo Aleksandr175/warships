@@ -12,6 +12,7 @@ import {
     ICityBuilding,
     IBuildingsProduction,
     ICityBuildingQueue,
+    ICityResearchQueue,
 } from "../types/types";
 import { CityResources } from "./CityResources";
 
@@ -24,6 +25,7 @@ const App = () => {
     const [dictionaries, setDictionaries] = useState<IDictionary>();
     const [buildings, setBuildings] = useState<ICityBuilding[] | undefined>();
     const [queue, setQueue] = useState<ICityBuildingQueue>();
+    const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
 
     useEffect(() => {
         httpClient.get("/user").then((response) => {
@@ -44,6 +46,7 @@ const App = () => {
 
     useEffect(() => {
         getBuildings();
+        getResearches();
     }, [city]);
 
     function getCityResources() {
@@ -74,6 +77,13 @@ const App = () => {
         });
 
         getCityResources();
+    }
+
+    function getResearches() {
+        httpClient.get("/researches").then((response) => {
+            //setBuildings(response.data.buildings);
+            setQueueResearch(response.data.queue);
+        });
     }
 
     function getProductionGold() {
@@ -213,10 +223,9 @@ const App = () => {
                                             researches={
                                                 dictionaries.userResearches
                                             }
-
-                                            /*setBuildings={setBuildings}
-                                            /*setQueue={setQueue}
-                                            queue={queue}*/
+                                            /*setBuildings={setBuildings}*/
+                                            setQueue={setQueueResearch}
+                                            queue={queueResearch}
                                         />
                                     }
                                 />

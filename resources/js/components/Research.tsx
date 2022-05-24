@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
     IBuilding,
     ICityBuildingQueue,
+    ICityResearchQueue,
     ICityResources,
     IResearch,
 } from "../types/types";
@@ -17,8 +18,8 @@ interface IProps {
     population: number;
     run: (researchId: number) => void;
     cancel: (researchId: number) => void;
-    queue: ICityBuildingQueue | undefined;
-    /*getBuildings: () => void;*/
+    queue: ICityResearchQueue | undefined;
+    sync: () => void;
     cityResources: ICityResources;
 }
 
@@ -30,7 +31,7 @@ export const Research = ({
     run,
     cancel,
     queue,
-    /*getBuildings,*/
+    sync,
     cityResources,
 }: IProps) => {
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
@@ -52,7 +53,7 @@ export const Research = ({
     useEffect(() => {
         if (timeLeft === 0) {
             clearInterval(timer.current);
-            /*getBuildings();*/
+            sync();
         }
     }, [timeLeft]);
 
@@ -63,6 +64,7 @@ export const Research = ({
     }
 
     function isResearchInProcess() {
+        // TODO: change queue.id -> researchId
         return queue && queue.id === research.id;
     }
 

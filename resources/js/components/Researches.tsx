@@ -5,6 +5,7 @@ import {
     IBuildingResource,
     ICityBuilding,
     ICityBuildingQueue,
+    ICityResearchQueue,
     ICityResources,
     IResearch,
     IResearchResource,
@@ -20,10 +21,11 @@ interface IProps {
     updateCityResources: (cityResources: ICityResources) => void;
     cityResources: ICityResources;
     researches: IUserResearch[];
+    queue?: ICityResearchQueue;
+    setQueue: (q: ICityResearchQueue | undefined) => void;
     /*setBuildings: (buildings: ICityBuilding[]) => void;
     getBuildings: () => void;
-    queue?: ICityBuildingQueue;
-    setQueue: (q: ICityBuildingQueue | undefined) => void;*/
+    */
 }
 
 export const Researches = ({
@@ -33,9 +35,9 @@ export const Researches = ({
     updateCityResources,
     cityResources,
     researches,
-}: /*queue,
-    setQueue,*/
-IProps) => {
+    queue,
+    setQueue,
+}: IProps) => {
     function getLvl(researchId: number) {
         const research = researches?.find((r) => r.researchId === researchId);
 
@@ -54,7 +56,9 @@ IProps) => {
 
     function run(researchId: number) {
         httpClient
-            .post("/researches/" + researchId + "/run")
+            .post("/researches/" + researchId + "/run", {
+                cityId,
+            })
             .then((response) => {
                 /*setBuildings(response.data.buildings);
                 setQueue(response.data.buildingQueue);*/
@@ -90,8 +94,8 @@ IProps) => {
                         population={population}
                         run={() => {} /*build*/}
                         cancel={() => {} /*cancel*/}
-                        queue={() => {} /*queue*/}
-                        getBuildings={() => {} /*getBuildings*/}
+                        queue={queue}
+                        sync={() => {} /*getBuildings*/}
                         cityResources={cityResources}
                     />
                 );
@@ -99,28 +103,3 @@ IProps) => {
         </div>
     );
 };
-
-const SBuildingImageWrapper = styled.div`
-    border: 1px solid black;
-    height: 200px;
-    margin-bottom: 20px;
-    position: relative;
-    background: #ddd;
-`;
-
-const SBuildingLvlWrapper = styled.div`
-    position: absolute;
-    top: 0;
-    right: 0;
-    border: 30px solid transparent;
-    border-top: 30px solid #ccc;
-    border-right: 30px solid #ccc;
-`;
-
-const SBuildingLvl = styled.span`
-    position: absolute;
-    top: -25px;
-    right: -20px;
-    font-size: 16px;
-    font-weight: 700;
-`;

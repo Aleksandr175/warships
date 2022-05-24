@@ -59,5 +59,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ResearchResourceSeeder::class);
 
         $this->call(ResearchSeeder::class);
+
+        $this->call(ResearchQueueSeeder::class);
     }
 }

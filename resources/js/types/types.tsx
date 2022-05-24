@@ -30,6 +30,16 @@ export interface ICityBuildingQueue {
     deadline: string;
 }
 
+export interface ICityResearchQueue {
+    id: number;
+    cityId: number;
+    lvl: number;
+    gold: number;
+    population: number;
+    time: number;
+    deadline: string;
+}
+
 export interface IBuildingResource {
     buildingId: number;
     gold: number;

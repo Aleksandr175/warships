@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { httpClient } from "../httpClient/httpClient";
 import {
     IBuilding,
@@ -39,7 +39,7 @@ export const Buildings = ({
     setQueue,
 }: IProps) => {
     function getLvl(buildingId: number) {
-        const building = buildings?.find((b) => b.id === buildingId);
+        const building = buildings?.find((b) => b.buildingId === buildingId);
 
         if (building) {
             return building.lvl;
@@ -54,7 +54,7 @@ export const Buildings = ({
         );
     }
 
-    function build(buildingId: number) {
+    function run(buildingId: number) {
         httpClient
             .post("/build", {
                 cityId,
@@ -96,7 +96,7 @@ export const Buildings = ({
                             building={item}
                             gold={gold}
                             population={population}
-                            build={build}
+                            run={run}
                             cancel={cancel}
                             queue={queue}
                             getBuildings={getBuildings}

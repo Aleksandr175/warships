@@ -15,13 +15,13 @@ export interface ICityResources {
 }
 
 export interface ICityBuilding {
-    id: number;
+    buildingId: number;
     cityId: number;
     lvl: number;
 }
 
 export interface ICityBuildingQueue {
-    id: number;
+    buildingId: number;
     cityId: number;
     lvl: number;
     gold: number;
@@ -30,14 +30,8 @@ export interface ICityBuildingQueue {
     deadline: string;
 }
 
-export interface ICityResearchQueue {
-    id: number;
-    cityId: number;
-    lvl: number;
-    gold: number;
-    population: number;
-    time: number;
-    deadline: string;
+export interface ICityResearchQueue extends ICityBuildingQueue {
+    researchId: number;
 }
 
 export interface IBuildingResource {
@@ -47,11 +41,8 @@ export interface IBuildingResource {
     lvl: number;
 }
 
-export interface IResearchResource {
+export interface IResearchResource extends IBuildingResource {
     researchId: number;
-    gold: number;
-    population: number;
-    lvl: number;
 }
 
 export interface IDictionary {
@@ -69,11 +60,7 @@ export interface IBuilding {
     description: string;
 }
 
-export interface IResearch {
-    id: number;
-    title: string;
-    description: string;
-}
+export interface IResearch extends IBuilding {}
 
 export interface IUserResearch {
     id: number;

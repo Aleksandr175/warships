@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class City
@@ -56,6 +57,28 @@ class City extends Model
         return false;
     }
 
+    public function canResearch($id) {
+        $nextLvl = 1;
+
+        $user = Auth::user();
+        $research = $user->research($id)->first();
+
+        if ($research && $research->id) {
+            $nextLvl = $research->lvl + 1;
+        }
+
+        // found out what resources we need for research
+        $resources = ResearchResource::where('research_id', $id)->where('lvl', $nextLvl)->first();
+
+        if ($resources && $resources->id) {
+            if ($this->gold >= $resources->gold && $this->population >= $resources->population) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function build($buildingId) {
         $nextLvl = 1;
         $cityBuilding = $this->building($buildingId);
@@ -81,6 +104,38 @@ class City extends Model
 
             'gold' => $buildingResources->gold,
             'population' => $buildingResources->population,
+            'lvl' => $nextLvl,
+            'time' => $time,
+            'deadline' => Carbon::now()->addSeconds($time)
+        ]);
+    }
+
+    public function orderResearch($researchId) {
+        $nextLvl = 1;
+        $user = Auth::user();
+        $research = $user->research($researchId)->first();
+
+        if ($research && $research->id) {
+            $nextLvl = $research->lvl + 1;
+        }
+
+        // found out what resources we need for research
+        $resources = ResearchResource::where('research_id', $researchId)->where('lvl', $nextLvl)->first();
+
+        $time = ($resources->gold + $resources->population) / 10;
+
+        // take resources from city
+        $this->update([
+            'gold' => $this->gold - $resources->gold,
+            'population' => $this->population - $resources->population
+        ]);
+
+        return ResearchQueue::create([
+            'research_id' => $researchId,
+            'city_id' => $this->id,
+            'user_id' => $user->id,
+            'gold' => $resources->gold,
+            'population' => $resources->population,
             'lvl' => $nextLvl,
             'time' => $time,
             'deadline' => Carbon::now()->addSeconds($time)

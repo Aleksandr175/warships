@@ -64,8 +64,7 @@ export const Research = ({
     }
 
     function isResearchInProcess() {
-        // TODO: change queue.id -> researchId
-        return queue && queue.id === research.id;
+        return queue && queue.researchId === research.id;
     }
 
     function getTimeLeft() {
@@ -101,7 +100,7 @@ export const Research = ({
 
             {(gold || population) &&
             !isResearchInProcess() &&
-            !Boolean(queue && queue.id) ? (
+            !Boolean(queue && queue.researchId) ? (
                 <>
                     <p>
                         Золото: {gold}. Рабочие: {population}
@@ -114,7 +113,7 @@ export const Research = ({
                             run(research.id);
                         }}
                     >
-                        Построить
+                        Исследовать
                     </button>
                 </>
             ) : (

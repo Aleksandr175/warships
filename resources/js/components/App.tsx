@@ -90,7 +90,9 @@ const App = () => {
         if (buildings) {
             // TODO change 2
             const miner = buildings.find((building) => {
-                return building.id === 2 && building.cityId === city?.id;
+                return (
+                    building.buildingId === 2 && building.cityId === city?.id
+                );
             });
 
             if (miner) {
@@ -98,7 +100,7 @@ const App = () => {
 
                 const production = dictionaries?.buildingsProduction?.find(
                     (bp) =>
-                        bp.buildingId === miner.id &&
+                        bp.buildingId === miner.buildingId &&
                         bp.lvl === lvl &&
                         bp.resource === "gold"
                 );

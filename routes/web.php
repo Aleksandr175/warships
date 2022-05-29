@@ -34,7 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/build', [\App\Http\Controllers\CityBuildingQueueController::class, 'build']);
     Route::post('/api/build/{buildingId}/cancel', [\App\Http\Controllers\CityBuildingQueueController::class, 'cancel'])->where('buildingId', '[0-9]+');
 
-    Route::get('/api/researches/{researchId}/run', [\App\Http\Controllers\ResearchController::class, 'run']);
+    Route::post('/api/researches/{researchId}/run', [\App\Http\Controllers\ResearchQueueController::class, 'run']);
 });
 
 Route::get('/', function () {

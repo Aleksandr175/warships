@@ -15,7 +15,7 @@ interface IProps {
     lvl: number;
     gold: number;
     population: number;
-    build: (buildingId: number) => void;
+    run: (buildingId: number) => void;
     cancel: (buildingId: number) => void;
     queue: ICityBuildingQueue | undefined;
     getBuildings: () => void;
@@ -28,7 +28,7 @@ export const Building = ({
     lvl,
     gold,
     population,
-    build,
+    run,
     cancel,
     queue,
     getBuildings,
@@ -65,7 +65,7 @@ export const Building = ({
     }
 
     function isBuildingInProcess() {
-        return queue && queue.id === building.id;
+        return queue && queue.buildingId === building.id;
     }
 
     function getTimeLeft() {
@@ -113,7 +113,7 @@ export const Building = ({
 
             {(gold || population) &&
             !isBuildingInProcess() &&
-            !Boolean(queue && queue.id) ? (
+            !Boolean(queue && queue.buildingId) ? (
                 <>
                     <p>
                         Золото: {gold}. Рабочие: {population}
@@ -137,7 +137,7 @@ export const Building = ({
                         className={"btn btn-primary"}
                         disabled={isBuildingDisabled()}
                         onClick={() => {
-                            build(building.id);
+                            run(building.id);
                         }}
                     >
                         Построить

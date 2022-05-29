@@ -24,6 +24,7 @@ class BuildingController extends Controller
         if ($buildingQueue && $buildingQueue->id) {
             if ($buildingQueue->deadline <= Carbon::now()) {
                 // add lvl
+                // TODO fix if no lvl
                 $city->building($buildingQueue->building_id)->increment('lvl');
 
                 if ($buildingQueue->building_id === 3) {

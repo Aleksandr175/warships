@@ -15,7 +15,7 @@ class ResearchQueueResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->research_id,
+            'researchId' => $this->research_id,
             'cityId' => $this->city_id,
             'gold' => $this->gold,
             'population' => $this->population,

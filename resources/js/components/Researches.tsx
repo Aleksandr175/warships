@@ -58,10 +58,11 @@ export const Researches = ({
         httpClient
             .post("/researches/" + researchId + "/run", {
                 cityId,
+                researchId,
             })
             .then((response) => {
-                /*setBuildings(response.data.buildings);
-                setQueue(response.data.buildingQueue);*/
+                //setResearches(response.data.buildings);
+                setQueue(response.data.queue);
                 updateCityResources(response.data.cityResources);
             });
     }
@@ -92,7 +93,7 @@ export const Researches = ({
                         research={item}
                         gold={gold}
                         population={population}
-                        run={() => {} /*build*/}
+                        run={run}
                         cancel={() => {} /*cancel*/}
                         queue={queue}
                         sync={() => {} /*getBuildings*/}

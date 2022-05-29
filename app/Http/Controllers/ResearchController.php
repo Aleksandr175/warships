@@ -23,7 +23,16 @@ class ResearchController extends Controller
         if ($queue && $queue->id) {
             if ($queue->deadline <= Carbon::now()) {
                 // add lvl
-                $user->research($queue->research_id)->increment('lvl');
+                if ($user->research($queue->research_id)) {
+                    $user->research($queue->research_id)->increment('lvl');
+                } else {
+                    // create new research
+                    $user->researches()->create([
+                        'research_id' => $queue->research_id,
+                        'user_id' => $userId,
+                        'lvl' => 1,
+                    ]);
+                }
 
                 $user->researchesQueue()->delete();
             }

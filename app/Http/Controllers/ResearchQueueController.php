@@ -2,35 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\Api\ResearchRequest;
+use App\Http\Resources\CityResourcesResource;
+use App\Http\Resources\ResearchQueueResource;
+use App\Models\ResearchQueue;
 use Illuminate\Support\Facades\Auth;
 
 class ResearchQueueController extends Controller
 {
-    public function run() {
-        /*$user = Auth::user();
-        $data = $request->only('cityId', 'buildingId');
+    public function run(ResearchRequest $request) {
+        $user = Auth::user();
+        $data = $request->only('cityId', 'researchId');
         $cityId = $data['cityId'];
-        $buildingId = $data['buildingId'];
+        $researchId = $data['researchId'];
 
         $city = $user->cities()->where('id', $cityId)->first();
 
-        if ($city && $city->id && $city->canBuild($buildingId)) {
+        if ($city && $city->id && $city->canResearch($researchId)) {
             // check if queue is empty
-            $queue = CityBuildingQueue::where('city_id', $city->id)->first();
+            $queue = ResearchQueue::where('user_id', $user->id)->where('research_id', $researchId)->first();
 
             if (!$queue) {
-                // order build
-                $city->build($buildingId);
+                // order research
+                $city->orderResearch($researchId);
 
                 return [
-                    'buildings' => BuildingResource::collection($city->buildings),
-                    'buildingQueue' => new CityBuildingQueueResource($city->buildingQueue),
+                    'researches' => [],//BuildingResource::collection($city->buildings),
+                    'queue' => new ResearchQueueResource($user->researchesQueue),
                     'cityResources' => new CityResourcesResource($city)
                 ];
             }
         }
 
-        return abort(403);*/
+        return abort(403);
     }
 }

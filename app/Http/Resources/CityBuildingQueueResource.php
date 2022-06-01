@@ -15,7 +15,7 @@ class CityBuildingQueueResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->building_id,
+            'buildingId' => $this->building_id,
             'cityId' => $this->city_id,
             'gold' => $this->gold,
             'population' => $this->population,

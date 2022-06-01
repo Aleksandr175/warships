@@ -8,6 +8,7 @@ use App\Http\Resources\BuildingResource;
 use App\Http\Resources\CityBuildingQueueResource;
 use App\Http\Resources\CityResource;
 use App\Http\Resources\CityResourcesResource;
+use App\Jobs\BuildJob;
 use App\Models\CityBuildingQueue;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,11 +28,19 @@ class CityBuildingQueueController extends Controller
 
             if (!$queue) {
                 // order build
-                $city->build($buildingId);
+                $newQueue = $city->build($buildingId);
+
+                BuildJob::dispatch([
+                    'cityId' => $cityId,
+                    'buildingId' => $buildingId,
+                    'userId' => $user->id,
+                    'gold' => $newQueue->gold,
+                    'population' => $newQueue->population,
+                ])->delay(now()->addSeconds($newQueue->time));
 
                 return [
                     'buildings' => BuildingResource::collection($city->buildings),
-                    'buildingQueue' => new CityBuildingQueueResource($city->buildingQueue),
+                    'queue' => new CityBuildingQueueResource($city->buildingQueue),
                     'cityResources' => new CityResourcesResource($city)
                 ];
             }

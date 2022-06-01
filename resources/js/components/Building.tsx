@@ -52,7 +52,8 @@ export const Building = ({
     }, [queue]);
 
     useEffect(() => {
-        if (timeLeft === 0) {
+        // TODO strange decision
+        if (timeLeft === -1) {
             clearInterval(timer.current);
             getBuildings();
         }
@@ -60,7 +61,8 @@ export const Building = ({
 
     function handleTimer() {
         setTimeLeft((lastTimeLeft) => {
-            return lastTimeLeft ? lastTimeLeft - 1 : 0;
+            // @ts-ignore
+            return lastTimeLeft - 1;
         });
     }
 

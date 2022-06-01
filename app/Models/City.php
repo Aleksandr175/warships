@@ -90,7 +90,7 @@ class City extends Model
         // found out what resources we need for building
         $buildingResources = BuildingResource::where('building_id', $buildingId)->where('lvl', $nextLvl)->first();
 
-        $time = ($buildingResources->gold + $buildingResources->population) / 10;
+        $time = $buildingResources->time;
 
         // take resources from city
         $this->update([

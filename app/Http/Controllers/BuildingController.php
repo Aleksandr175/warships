@@ -19,24 +19,6 @@ class BuildingController extends Controller
 
         $city = City::where('id', $cityId)->where('user_id', $userId)->first();
 
-        $buildingQueue = $city->buildingQueue()->first();
-
-        if ($buildingQueue && $buildingQueue->id) {
-            if ($buildingQueue->deadline <= Carbon::now()) {
-                // add lvl
-                // TODO fix if no lvl
-                $city->building($buildingQueue->building_id)->increment('lvl');
-
-                if ($buildingQueue->building_id === 3) {
-                    $additionalPopulation = BuildingProduction::where('lvl', $buildingQueue->lvl)->where('resource', 'population')->first();
-
-                    $city->increment('population', $additionalPopulation->qty);
-                }
-
-                $city->buildingQueue()->delete();
-            }
-        }
-
         if ($city && $city->id) {
             return [
                 'buildings' => BuildingResource::collection($city->buildings),

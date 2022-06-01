@@ -33,7 +33,7 @@ class CityBuildingQueueSeeder extends Seeder
         $buildingResources = BuildingResource::where('building_id', $building2->id)->where('lvl', $nextLvl)->first();
 
         if ($buildingResources && $buildingResources->id) {
-            $time = ($buildingResources->gold + $buildingResources->population) / 10;
+            $time = $buildingResources->time;
 
             CityBuildingQueue::create([
                 'city_id' => $city->id,

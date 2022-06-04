@@ -44,6 +44,17 @@ class DatabaseSeeder extends Seeder
             'population' => 300
         ]);
 
+        for ($i = 0; $i < 200; $i++) {
+            \App\Models\City::factory(1)->create([
+                'user_id' => rand(6, 15),
+                'title' => 'Остров',
+                'coord_x' => $i + 10,
+                'coord_y' => $i + 10,
+                'gold' => 500,
+                'population' => 300
+            ]);
+        }
+
         $this->call(BuildingDictionarySeeder::class);
 
         $this->call(BuildingSeeder::class);

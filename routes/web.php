@@ -24,6 +24,10 @@ Route::get('/clear', function() {
     return "Cleared!";
 });
 
+Route::get('/server-start', function() {
+    \App\Jobs\ResourceJob::dispatch();
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/api/user', [\App\Http\Controllers\UserController::class, 'get']);
     Route::get('/api/buildings', [\App\Http\Controllers\BuildingController::class, 'get']);

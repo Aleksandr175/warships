@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\ShipDictionary;
+use App\Models\ShipResource;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -72,5 +74,9 @@ class DatabaseSeeder extends Seeder
         $this->call(ResearchSeeder::class);
 
         $this->call(ResearchQueueSeeder::class);
+
+        $this->call(ShipDictionarySeeder::class);
+
+        $this->call(ShipResourceSeeder::class);
     }
 }

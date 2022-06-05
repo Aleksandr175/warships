@@ -9,12 +9,16 @@ use App\Http\Resources\ResearchDictionaryResource;
 use App\Http\Resources\ResearchResourceResource;
 use App\Http\Resources\UserResearchResource;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\WarshipDictionaryResource;
+use App\Http\Resources\WarshipResourceResource;
 use App\Models\BuildingDictionary;
 use App\Models\BuildingProduction;
 use App\Models\BuildingResource;
 use App\Models\Research;
 use App\Models\ResearchDictionary;
 use App\Models\ResearchResource;
+use App\Models\ShipDictionary;
+use App\Models\ShipResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,13 +41,17 @@ class UserController extends Controller
         $researchResources = ResearchResource::get();
         $userResearches = $user->researches;
 
+        $warships = ShipDictionary::get();
+        $warshipsResources = ShipResource::get();
+
         return [
             'buildings' => BuildingDictionaryResource::collection($buildings),
             'buildingResources' => BuildingResourceResource::collection($buildingResources),
             'researches' => ResearchDictionaryResource::collection($researches),
             'researchResources' => ResearchResourceResource::collection($researchResources),
             'userResearches' => UserResearchResource::collection($userResearches),
-            'warships' => [],
+            'warships' => WarshipDictionaryResource::collection($warships),
+            'warshipsResources' => WarshipResourceResource::collection($warshipsResources),
             'buildingsProduction' => BuildingProductionsResource::collection($buildingProductions)
         ];
     }

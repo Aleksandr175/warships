@@ -45,6 +45,11 @@ export interface IResearchResource extends IBuildingResource {
     researchId: number;
 }
 
+export interface IWarshipResource extends IBuildingResource {
+    warshipId: number;
+    time: number;
+}
+
 export interface IDictionary {
     buildings: IBuilding[];
     buildingResources: IBuildingResource[];
@@ -52,6 +57,8 @@ export interface IDictionary {
     researches: IResearch[];
     userResearches: IUserResearch[];
     researchResources: IResearchResource[];
+    warships: IWarship[];
+    warshipsResources: IWarshipResource[];
 }
 
 export interface IBuilding {
@@ -61,6 +68,12 @@ export interface IBuilding {
 }
 
 export interface IResearch extends IBuilding {}
+
+export interface IWarship extends IBuilding {
+    attack: number;
+    speed: number;
+    capacity: number;
+}
 
 export interface IUserResearch {
     id: number;

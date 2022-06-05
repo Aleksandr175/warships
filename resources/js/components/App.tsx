@@ -14,6 +14,7 @@ import {
     ICityResearchQueue,
 } from "../types/types";
 import { CityResources } from "./CityResources";
+import { Warships } from "./Warships/Warships";
 
 const App = () => {
     const [userInfo, setUserInfo] = useState();
@@ -167,6 +168,8 @@ const App = () => {
                             <Link to={"/buildings"}>Buildings</Link>
                             <br />
                             <Link to={"/researches"}>Researches</Link>
+                            <br />
+                            <Link to={"/warships"}>Warships</Link>
                         </SColumnMenu>
                     </div>
                     <SColumnContent className={"col-9"}>
@@ -227,6 +230,33 @@ const App = () => {
                                             /*setBuildings={setBuildings}*/
                                             setQueue={setQueueResearch}
                                             queue={queueResearch}
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path={"warships"}
+                                    element={
+                                        <Warships
+                                            cityId={city.id}
+                                            dictionary={dictionaries.warships}
+                                            resourcesDictionary={
+                                                dictionaries.warshipsResources
+                                            }
+                                            updateCityResources={
+                                                updateCityResources
+                                            }
+                                            cityResources={{
+                                                gold: city.gold,
+                                                population: city.population,
+                                            }}
+                                            getBuildings={getBuildings}
+                                            buildings={buildings}
+                                            setBuildings={setBuildings}
+                                            buildingsProduction={
+                                                dictionaries.buildingsProduction
+                                            }
+                                            setQueue={setQueue}
+                                            queue={queue}
                                         />
                                     }
                                 />

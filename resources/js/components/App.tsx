@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Overview } from "./Overview";
-import { Buildings } from "./Buildings";
-import { Researches } from "./Researches";
+import { Buildings } from "./Buildings/Buildings";
+import { Researches } from "./Researches/Researches";
 import { httpClient } from "../httpClient/httpClient";
 import styled from "styled-components";
 import {
@@ -10,7 +10,6 @@ import {
     IDictionary,
     ICityResources,
     ICityBuilding,
-    IBuildingsProduction,
     ICityBuildingQueue,
     ICityResearchQueue,
 } from "../types/types";
@@ -128,7 +127,7 @@ const App = () => {
                         {city && cities && (
                             <SResourcesPanel>
                                 <div>
-                                    Острова:
+                                    Islands:
                                     {cities.map((c) => {
                                         return (
                                             <SCity
@@ -143,7 +142,7 @@ const App = () => {
                                 </div>
                                 <SResources>
                                     <li>
-                                        Координаты: {city.coordX}:{city.coordY}
+                                        Coords: {city.coordX}:{city.coordY}
                                     </li>
                                     <CityResources
                                         gold={cityResources?.gold || 0}
@@ -163,11 +162,11 @@ const App = () => {
                 <div className={"row"}>
                     <div className={"col-3 d-flex align-items-stretch"}>
                         <SColumnMenu>
-                            <Link to={"/dashboard"}>Обзор</Link>
+                            <Link to={"/dashboard"}>Overview</Link>
                             <br />
-                            <Link to={"/buildings"}>Постройки</Link>
+                            <Link to={"/buildings"}>Buildings</Link>
                             <br />
-                            <Link to={"/researches"}>Исследования</Link>
+                            <Link to={"/researches"}>Researches</Link>
                         </SColumnMenu>
                     </div>
                     <SColumnContent className={"col-9"}>

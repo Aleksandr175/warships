@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-    IBuilding,
-    ICityBuildingQueue,
     ICityResearchQueue,
     ICityResources,
     IResearch,
-} from "../types/types";
+} from "../../types/types";
 import styled from "styled-components";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -103,7 +101,7 @@ export const Research = ({
             !Boolean(queue && queue.researchId) ? (
                 <>
                     <p>
-                        Золото: {gold}. Рабочие: {population}
+                        Gold: {gold}. Workers: {population}
                     </p>
 
                     <button
@@ -113,7 +111,7 @@ export const Research = ({
                             run(research.id);
                         }}
                     >
-                        Исследовать
+                        Research
                     </button>
                 </>
             ) : (
@@ -122,9 +120,9 @@ export const Research = ({
 
             {(gold || population) && isResearchInProcess() ? (
                 <>
-                    <p>Окончание через: {timeLeft} сек.</p>
+                    <p>Ending in: {timeLeft} sec.</p>
                     <p>
-                        Золото: {gold}. Рабочие: {population}
+                        Gold: {gold}. Workers: {population}
                     </p>
                     <button
                         className={"btn btn-warning"}
@@ -132,7 +130,7 @@ export const Research = ({
                             cancel(research.id);
                         }}
                     >
-                        Отменить
+                        Cancel
                     </button>
                 </>
             ) : (

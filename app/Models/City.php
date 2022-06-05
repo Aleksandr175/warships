@@ -61,7 +61,7 @@ class City extends Model
         $nextLvl = 1;
 
         $user = Auth::user();
-        $research = $user->research($id)->first();
+        $research = $user->research($id);
 
         if ($research && $research->id) {
             $nextLvl = $research->lvl + 1;
@@ -113,7 +113,7 @@ class City extends Model
     public function orderResearch($researchId) {
         $nextLvl = 1;
         $user = Auth::user();
-        $research = $user->research($researchId)->first();
+        $research = $user->research($researchId);
 
         if ($research && $research->id) {
             $nextLvl = $research->lvl + 1;

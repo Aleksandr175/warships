@@ -1,5 +1,5 @@
 import React from "react";
-import { httpClient } from "../httpClient/httpClient";
+import { httpClient } from "../../httpClient/httpClient";
 import {
     IBuilding,
     IBuildingResource,
@@ -7,7 +7,7 @@ import {
     ICityBuilding,
     ICityBuildingQueue,
     ICityResources,
-} from "../types/types";
+} from "../../types/types";
 import styled from "styled-components";
 import { Building } from "./Building";
 

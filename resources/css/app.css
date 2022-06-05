@@ -3,7 +3,7 @@
 @import 'bootstrap';
 
 body {
-  background: url('../images/bg.jpeg') 50% 50% no-repeat;
+  background: url('../images/bg.svg') 50% 50% no-repeat;
   background-size: cover;
   background-attachment: fixed;
 }

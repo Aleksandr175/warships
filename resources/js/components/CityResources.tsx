@@ -38,10 +38,10 @@ export const CityResources = ({
     return (
         <>
             <li>
-                Золото: {Math.floor(goldValue)}{" "}
+                Gold: {Math.floor(goldValue)}{" "}
                 {productionGold ? `(+${productionGold})` : ""}
             </li>
-            <li>Население: {population}</li>
+            <li>Workers: {population}</li>
         </>
     );
 };

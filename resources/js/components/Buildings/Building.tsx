@@ -4,7 +4,7 @@ import {
     IBuildingsProduction,
     ICityBuildingQueue,
     ICityResources,
-} from "../types/types";
+} from "../../types/types";
 import styled from "styled-components";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -118,11 +118,11 @@ export const Building = ({
             !Boolean(queue && queue.buildingId) ? (
                 <>
                     <p>
-                        Золото: {gold}. Рабочие: {population}
+                        Gold: {gold}. Workers: {population}
                     </p>
                     {getProductionResource("population") ? (
                         <p>
-                            Прирост населения:{" "}
+                            Population growth:{" "}
                             {getProductionResource("population")}
                         </p>
                     ) : (
@@ -130,7 +130,8 @@ export const Building = ({
                     )}
                     {getProductionResource("gold") ? (
                         <p>
-                            Добыча золота / час: {getProductionResource("gold")}
+                            Gold production / hour:{" "}
+                            {getProductionResource("gold")}
                         </p>
                     ) : (
                         ""
@@ -151,9 +152,9 @@ export const Building = ({
 
             {(gold || population) && isBuildingInProcess() ? (
                 <>
-                    <p>Окончание через: {timeLeft} сек.</p>
+                    <p>Ending in: {timeLeft} sec.</p>
                     <p>
-                        Золото: {gold}. Рабочие: {population}
+                        Gold: {gold}. Workers: {population}
                     </p>
                     <button
                         className={"btn btn-warning"}
@@ -161,7 +162,7 @@ export const Building = ({
                             cancel(building.id);
                         }}
                     >
-                        Отменить
+                        Cancel
                     </button>
                 </>
             ) : (

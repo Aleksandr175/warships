@@ -14,13 +14,13 @@ class BuildingDictionarySeeder extends Seeder
      */
     public function run()
     {
-        BuildingDictionary::create(['title' => 'Главное управление', 'description' => 'Главное здание на острове']);
-        BuildingDictionary::create(['title' => 'Шахта', 'description' => 'Здесь добывается золото']);
-        BuildingDictionary::create(['title' => 'Дом', 'description' => 'Чем больше домов, тем больше рабочих рук!']);
-        BuildingDictionary::create(['title' => 'Таверна', 'description' => 'Повышает престиж острова и увеличивает приток населения']);
-        BuildingDictionary::create(['title' => 'Ферма', 'description' => 'Здесь добывается еда!']);
-        BuildingDictionary::create(['title' => 'Верфь', 'description' => 'Здесь производятся военные корабли']);
-        BuildingDictionary::create(['title' => 'Пристань', 'description' => 'Позволяет рыбакам ловить рыбу, а торговцам проводить свои операции']);
-        BuildingDictionary::create(['title' => 'Форт', 'description' => 'Основное защитное сооружение на острове']);
+        BuildingDictionary::create(['title' => 'Headquarters', 'description' => 'Main building on the island']);
+        BuildingDictionary::create(['title' => 'Mine', 'description' => 'It produces gold']);
+        BuildingDictionary::create(['title' => 'Houses', 'description' => 'The more houses, the more workers!']);
+        BuildingDictionary::create(['title' => 'Tavern', 'description' => 'Increases the prestige of the island and increases population']);
+        BuildingDictionary::create(['title' => 'Farm', 'description' => 'it produces food']);
+        BuildingDictionary::create(['title' => 'Shipyard', 'description' => 'It produces warships']);
+        BuildingDictionary::create(['title' => 'Dock', 'description' => 'Allows sea merchants to trade on the island']);
+        BuildingDictionary::create(['title' => 'Fort', 'description' => 'The main defensive structure']);
     }
 }

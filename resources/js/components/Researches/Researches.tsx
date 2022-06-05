@@ -1,17 +1,12 @@
 import React from "react";
-import { httpClient } from "../httpClient/httpClient";
+import { httpClient } from "../../httpClient/httpClient";
 import {
-    IBuilding,
-    IBuildingResource,
-    ICityBuilding,
-    ICityBuildingQueue,
     ICityResearchQueue,
     ICityResources,
     IResearch,
     IResearchResource,
     IUserResearch,
-} from "../types/types";
-import styled from "styled-components";
+} from "../../types/types";
 import { Research } from "./Research";
 
 interface IProps {
@@ -71,9 +66,8 @@ export const Researches = ({
         httpClient
             .post("/researches/" + researchId + "/cancel")
             .then((response) => {
-                /*setBuildings(response.data.buildings);
-                setQueue(undefined);*/
-
+                /*setBuildings(response.data.buildings);*/
+                setQueue(undefined);
                 updateCityResources(response.data.cityResources);
             });
     }
@@ -94,7 +88,7 @@ export const Researches = ({
                         gold={gold}
                         population={population}
                         run={run}
-                        cancel={() => {} /*cancel*/}
+                        cancel={cancel}
                         queue={queue}
                         sync={() => {} /*getBuildings*/}
                         cityResources={cityResources}

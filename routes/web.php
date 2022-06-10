@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/api/researches/{researchId}/run', [\App\Http\Controllers\ResearchQueueController::class, 'run']);
     Route::post('/api/researches/{researchId}/cancel', [\App\Http\Controllers\ResearchQueueController::class, 'cancel']);
+
+    Route::post('/api/warships/create', [\App\Http\Controllers\WarshipQueueController::class, 'run']);
 });
 
 Route::get('/', function () {

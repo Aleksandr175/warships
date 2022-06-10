@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\ShipDictionary;
+use App\Models\WarshipDictionary;
 use Illuminate\Database\Seeder;
 
-class ShipDictionarySeeder extends Seeder
+class WarshipDictionarySeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,7 +14,7 @@ class ShipDictionarySeeder extends Seeder
      */
     public function run()
     {
-        ShipDictionary::create([
+        WarshipDictionary::create([
             'title' => 'Ship 1',
             'description' => 'Description ship 1',
             'attack' => 10,
@@ -25,7 +25,7 @@ class ShipDictionarySeeder extends Seeder
             'time' => 10,
         ]);
 
-        ShipDictionary::create([
+        WarshipDictionary::create([
             'title' => 'Ship 2',
             'description' => 'Description ship 2',
             'attack' => 20,
@@ -36,7 +36,7 @@ class ShipDictionarySeeder extends Seeder
             'time' => 20,
         ]);
 
-        ShipDictionary::create([
+        WarshipDictionary::create([
             'title' => 'Ship 3',
             'description' => 'Description ship 3',
             'attack' => 10,
@@ -47,7 +47,7 @@ class ShipDictionarySeeder extends Seeder
             'time' => 40,
         ]);
 
-        ShipDictionary::create([
+        WarshipDictionary::create([
             'title' => 'Ship 4',
             'description' => 'Description ship 4',
             'attack' => 10,
@@ -58,7 +58,7 @@ class ShipDictionarySeeder extends Seeder
             'time' => 100,
         ]);
 
-        ShipDictionary::create([
+        WarshipDictionary::create([
             'title' => 'Ship 5',
             'description' => 'Description ship 5',
             'attack' => 100,

@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ShipDictionary extends Model
+class WarshipQueue extends Model
 {
     use HasFactory;
 
-    protected $table = 'ship_dictionary';
+    protected $guarded = [];
+
+    protected $table = 'warship_queues';
 }

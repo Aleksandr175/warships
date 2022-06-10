@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
  * Class City
  *
  * @property integer $user_id
- * @property string $title
+ * @property string  $title
  * @property integer $coord_x
  * @property integer $coord_y
  * @property integer $gold
@@ -25,20 +25,29 @@ class City extends Model
 
     protected $guarded = [];
 
-    public function buildings() {
+    public function buildings()
+    {
         return $this->hasMany(Building::class);
     }
 
-    public function building($buildingId) {
+    public function building($buildingId)
+    {
         return $this->buildings()->where('building_id', $buildingId)->first();
     }
 
-    public function buildingQueue() {
+    public function buildingQueue()
+    {
         return $this->hasOne(CityBuildingQueue::class);
     }
 
-    public function canBuild($buildingId) {
-        $nextLvl = 1;
+    public function warshipQueues()
+    {
+        return $this->hasMany(WarshipQueue::class);
+    }
+
+    public function canBuild($buildingId)
+    {
+        $nextLvl      = 1;
         $cityBuilding = $this->building($buildingId);
 
         if ($cityBuilding && $cityBuilding->id) {
@@ -57,10 +66,11 @@ class City extends Model
         return false;
     }
 
-    public function canResearch($id) {
+    public function canResearch($id)
+    {
         $nextLvl = 1;
 
-        $user = Auth::user();
+        $user     = Auth::user();
         $research = $user->research($id);
 
         if ($research && $research->id) {
@@ -79,8 +89,9 @@ class City extends Model
         return false;
     }
 
-    public function build($buildingId) {
-        $nextLvl = 1;
+    public function build($buildingId)
+    {
+        $nextLvl      = 1;
         $cityBuilding = $this->building($buildingId);
 
         if ($cityBuilding && $cityBuilding->id) {
@@ -94,25 +105,26 @@ class City extends Model
 
         // take resources from city
         $this->update([
-            'gold' => $this->gold - $buildingResources->gold,
+            'gold'       => $this->gold - $buildingResources->gold,
             'population' => $this->population - $buildingResources->population
         ]);
 
         return CityBuildingQueue::create([
             'building_id' => $buildingId,
-            'city_id' => $this->id,
+            'city_id'     => $this->id,
 
-            'gold' => $buildingResources->gold,
+            'gold'       => $buildingResources->gold,
             'population' => $buildingResources->population,
-            'lvl' => $nextLvl,
-            'time' => $time,
-            'deadline' => Carbon::now()->addSeconds($time)
+            'lvl'        => $nextLvl,
+            'time'       => $time,
+            'deadline'   => Carbon::now()->addSeconds($time)
         ]);
     }
 
-    public function orderResearch($researchId) {
-        $nextLvl = 1;
-        $user = Auth::user();
+    public function orderResearch($researchId)
+    {
+        $nextLvl  = 1;
+        $user     = Auth::user();
         $research = $user->research($researchId);
 
         if ($research && $research->id) {
@@ -126,19 +138,70 @@ class City extends Model
 
         // take resources from city
         $this->update([
-            'gold' => $this->gold - $resources->gold,
+            'gold'       => $this->gold - $resources->gold,
             'population' => $this->population - $resources->population
         ]);
 
         return ResearchQueue::create([
             'research_id' => $researchId,
-            'city_id' => $this->id,
-            'user_id' => $user->id,
-            'gold' => $resources->gold,
-            'population' => $resources->population,
-            'lvl' => $nextLvl,
-            'time' => $time,
-            'deadline' => Carbon::now()->addSeconds($time)
+            'city_id'     => $this->id,
+            'user_id'     => $user->id,
+            'gold'        => $resources->gold,
+            'population'  => $resources->population,
+            'lvl'         => $nextLvl,
+            'time'        => $time,
+            'deadline'    => Carbon::now()->addSeconds($time)
         ]);
     }
+
+    public function orderWarship($warshipId, $qty)
+    {
+        $user        = Auth::user();
+        $warshipDict = WarshipDictionary::find($warshipId);
+
+        $totalWarshipGold       = $qty * $warshipDict->gold;
+        $totalWarshipPopulation = $qty * $warshipDict->population;
+        $time                   = $qty * $warshipDict->time;
+
+        if ($qty > $this->gold / $warshipDict->gold) {
+            $qty = floor($this->gold / $warshipDict->gold);
+        }
+
+        if ($qty > $this->population / $warshipDict->population) {
+            $qty = floor($this->population / $warshipDict->population);
+        }
+
+        if ($qty) {
+            $queue = WarshipQueue::where('user_id', $user->id)->where('city_id', $this->id)->orderBy('deadline', 'DESC')->first();
+
+            if (!$queue) {
+                // create queue
+                WarshipQueue::create([
+                    'user_id'    => $user->id,
+                    'city_id'    => $this->id,
+                    'warship_id' => $warshipId,
+                    'qty'        => $qty,
+                    'time'       => $time,
+                    'deadline'   => Carbon::now()->addSeconds($time)
+                ]);
+            } else {
+                // add new queue
+                WarshipQueue::create([
+                    'user_id'    => $user->id,
+                    'city_id'    => $this->id,
+                    'warship_id' => $warshipId,
+                    'qty'        => $qty,
+                    'time'       => $time,
+                    'deadline'   => Carbon::create($queue->deadline)->addSeconds($time)
+                ]);
+            }
+
+            // take resources from city
+            $this->update([
+                'gold'       => $this->gold - $totalWarshipGold,
+                'population' => $this->population - $totalWarshipPopulation
+            ]);
+        }
+    }
+
 }

@@ -22,6 +22,9 @@ class CreateShipDictionaryTable extends Migration
             $table->integer('attack');
             $table->integer('speed');
             $table->integer('capacity');
+            $table->integer('gold');
+            $table->integer('population');
+            $table->integer('time');
 
             $table->timestamps();
         });

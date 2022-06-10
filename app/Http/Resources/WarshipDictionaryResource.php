@@ -20,7 +20,10 @@ class WarshipDictionaryResource extends JsonResource
             'description' => $this->description,
             'attack' => $this->attack,
             'speed' => $this->speed,
-            'capacity' => $this->capacity
+            'capacity' => $this->capacity,
+            'gold' => $this->gold,
+            'population' => $this->population,
+            'time' => $this->time
         ];
     }
 }

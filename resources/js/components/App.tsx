@@ -12,6 +12,7 @@ import {
     ICityBuilding,
     ICityBuildingQueue,
     ICityResearchQueue,
+    ICityWarship,
 } from "../types/types";
 import { CityResources } from "./CityResources";
 import { Warships } from "./Warships/Warships";
@@ -24,6 +25,7 @@ const App = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [dictionaries, setDictionaries] = useState<IDictionary>();
     const [buildings, setBuildings] = useState<ICityBuilding[] | undefined>();
+    const [warships, setWarships] = useState<ICityWarship[] | undefined>();
     const [queue, setQueue] = useState<ICityBuildingQueue>();
     const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
 
@@ -74,6 +76,19 @@ const App = () => {
         httpClient.get("/buildings?cityId=" + city?.id).then((response) => {
             setBuildings(response.data.buildings);
             setQueue(response.data.buildingQueue);
+        });
+
+        getCityResources();
+    }
+
+    function getWarships() {
+        if (!city?.id) {
+            return;
+        }
+
+        httpClient.get("/warships?cityId=" + city?.id).then((response) => {
+            setWarships(response.data.warships);
+            setQueue(response.data.queue);
         });
 
         getCityResources();
@@ -249,12 +264,9 @@ const App = () => {
                                                 gold: city.gold,
                                                 population: city.population,
                                             }}
-                                            getBuildings={getBuildings}
-                                            buildings={buildings}
-                                            setBuildings={setBuildings}
-                                            buildingsProduction={
-                                                dictionaries.buildingsProduction
-                                            }
+                                            getWarships={getWarships}
+                                            warships={warships}
+                                            setWarships={setWarships}
                                             setQueue={setQueue}
                                             queue={queue}
                                         />

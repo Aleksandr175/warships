@@ -20,6 +20,12 @@ export interface ICityBuilding {
     lvl: number;
 }
 
+export interface ICityWarship {
+    warshipId: number;
+    cityId: number;
+    qty: number;
+}
+
 export interface ICityBuildingQueue {
     buildingId: number;
     cityId: number;
@@ -73,6 +79,8 @@ export interface IWarship extends IBuilding {
     attack: number;
     speed: number;
     capacity: number;
+    gold: number;
+    population: number;
 }
 
 export interface IUserResearch {

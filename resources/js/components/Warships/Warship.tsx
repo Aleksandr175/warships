@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-    IBuilding,
-    IBuildingsProduction,
     ICityBuildingQueue,
     ICityResources,
+    IWarship,
 } from "../../types/types";
 import styled from "styled-components";
 import dayjs from "dayjs";
@@ -11,35 +10,37 @@ import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);
 
 interface IProps {
-    building: IBuilding;
-    lvl: number;
-    gold: number;
-    population: number;
-    run: (buildingId: number) => void;
-    cancel: (buildingId: number) => void;
+    warship: IWarship;
+    run: (warshipId: number, qty: number) => void;
     queue: ICityBuildingQueue | undefined;
-    getBuildings: () => void;
+    getWarships: () => void;
     cityResources: ICityResources;
-    buildingsProduction: IBuildingsProduction[];
+    currentQty?: number;
 }
 
 export const Warship = ({
-    building,
-    lvl,
-    gold,
-    population,
+    warship,
     run,
-    cancel,
     queue,
-    getBuildings,
+    getWarships,
     cityResources,
-    buildingsProduction,
+    currentQty,
 }: IProps) => {
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
     const timer = useRef();
+    const [qty, setQty] = useState(null);
+
+    let maxShips = 0;
+
+    const maxShipsByGold = Math.floor(cityResources.gold / warship.gold);
+    const maxShipsByPopulation = Math.floor(
+        cityResources.population / warship.population
+    );
+
+    maxShips = Math.min(maxShipsByGold, maxShipsByPopulation);
 
     useEffect(() => {
-        if (isBuildingInProcess() && getTimeLeft()) {
+        if (isWarshipInProcess() && getTimeLeft()) {
             setTimeLeft(getTimeLeft());
 
             // @ts-ignore
@@ -55,7 +56,7 @@ export const Warship = ({
         // TODO strange decision
         if (timeLeft === -1) {
             clearInterval(timer.current);
-            getBuildings();
+            getWarships();
         }
     }, [timeLeft]);
 
@@ -66,8 +67,8 @@ export const Warship = ({
         });
     }
 
-    function isBuildingInProcess() {
-        return queue && queue.buildingId === building.id;
+    function isWarshipInProcess() {
+        return false; //queue && queue.buildingId === building.id;
     }
 
     function getTimeLeft() {
@@ -81,93 +82,65 @@ export const Warship = ({
         return dayjs.utc(deadlineDate).unix() - dateUTCNow.unix();
     }
 
-    function isBuildingDisabled() {
+    function isWarshipDisabled() {
         return (
-            gold > cityResources.gold || population > cityResources.population
+            warship.gold > cityResources.gold ||
+            warship.population > cityResources.population
         );
     }
 
-    function getProductionResource(resource: "population" | "gold") {
-        const production = buildingsProduction.find((bProduction) => {
-            return (
-                bProduction.buildingId === building.id &&
-                bProduction.lvl === lvl + 1 &&
-                bProduction.resource === resource
-            );
-        });
-
-        return production?.qty;
-    }
-
     return (
-        <div className={"col-sm-6 col-md-4"} key={building.id}>
+        <div className={"col-sm-6 col-md-4"} key={warship.id}>
             <SBuildingImageWrapper
                 style={{
-                    backgroundImage: `url("../images/warships/${building.id}.svg")`,
+                    backgroundImage: `url("../images/warships/${warship.id}.svg")`,
                 }}
             >
                 <SBuildingLvlWrapper>
-                    <SBuildingLvl>{lvl}</SBuildingLvl>
+                    <SBuildingLvl>{currentQty}</SBuildingLvl>
                 </SBuildingLvlWrapper>
             </SBuildingImageWrapper>
-            <h4>{building.title}</h4>
-            <span>{building.description}</span>
+            <h4>{warship.title}</h4>
+            <span>{warship.description}</span>
 
-            {(gold || population) &&
-            !isBuildingInProcess() &&
-            !Boolean(queue && queue.buildingId) ? (
-                <>
-                    <p>
-                        Gold: {gold}. Workers: {population}
-                    </p>
-                    {getProductionResource("population") ? (
-                        <p>
-                            Population growth:{" "}
-                            {getProductionResource("population")}
-                        </p>
-                    ) : (
-                        ""
-                    )}
-                    {getProductionResource("gold") ? (
-                        <p>
-                            Gold production / hour:{" "}
-                            {getProductionResource("gold")}
-                        </p>
-                    ) : (
-                        ""
-                    )}
-                    <button
-                        className={"btn btn-primary"}
-                        disabled={isBuildingDisabled()}
-                        onClick={() => {
-                            run(building.id);
-                        }}
-                    >
-                        Построить
-                    </button>
-                </>
-            ) : (
-                ""
-            )}
+            <p>
+                Gold: {warship.gold}. Workers: {warship.population}
+            </p>
+            <p>You can create: {maxShips}</p>
+            <SInput
+                type="number"
+                value={qty || ""}
+                onChange={(e) => {
+                    let number: string | number = e.currentTarget.value;
 
-            {(gold || population) && isBuildingInProcess() ? (
-                <>
-                    <p>Ending in: {timeLeft} sec.</p>
-                    <p>
-                        Gold: {gold}. Workers: {population}
-                    </p>
-                    <button
-                        className={"btn btn-warning"}
-                        onClick={() => {
-                            cancel(building.id);
-                        }}
-                    >
-                        Cancel
-                    </button>
-                </>
-            ) : (
-                ""
-            )}
+                    if (!number) {
+                        number = 0;
+                    }
+
+                    number = parseInt(String(number), 10);
+
+                    if (number > 0) {
+                        if (number > maxShips) {
+                            number = maxShips;
+                        }
+
+                        // @ts-ignore
+                        setQty(number);
+                    } else {
+                        setQty(null);
+                    }
+                }}
+            />
+            <button
+                className={"btn btn-primary"}
+                disabled={isWarshipDisabled() || !qty}
+                onClick={() => {
+                    run(warship.id, qty ? qty : 0);
+                    setQty(null);
+                }}
+            >
+                Create
+            </button>
 
             <br />
             <br />
@@ -202,4 +175,10 @@ const SBuildingLvl = styled.span`
     right: -20px;
     font-size: 16px;
     font-weight: 700;
+`;
+
+const SInput = styled.input`
+    display: inline-block;
+    margin-bottom: 10px;
+    width: 100%;
 `;

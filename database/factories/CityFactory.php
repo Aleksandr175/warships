@@ -14,7 +14,7 @@ class CityFactory extends Factory
     public function definition()
     {
         return [
-            'title' => 'Остров',
+            'title' => 'Island',
             'gold' => 100,
             'population' => 50
         ];

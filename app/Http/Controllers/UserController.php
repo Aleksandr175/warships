@@ -42,7 +42,6 @@ class UserController extends Controller
         $userResearches = $user->researches;
 
         $warships = ShipDictionary::get();
-        $warshipsResources = ShipResource::get();
 
         return [
             'buildings' => BuildingDictionaryResource::collection($buildings),
@@ -51,7 +50,6 @@ class UserController extends Controller
             'researchResources' => ResearchResourceResource::collection($researchResources),
             'userResearches' => UserResearchResource::collection($userResearches),
             'warships' => WarshipDictionaryResource::collection($warships),
-            'warshipsResources' => WarshipResourceResource::collection($warshipsResources),
             'buildingsProduction' => BuildingProductionsResource::collection($buildingProductions)
         ];
     }

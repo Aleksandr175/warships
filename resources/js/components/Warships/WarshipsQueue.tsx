@@ -1,8 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-    ICityWarshipQueue,
-    IWarship,
-} from "../../types/types";
+import { ICityWarshipQueue, IWarship } from "../../types/types";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -76,11 +73,13 @@ export const WarshipsQueue = ({ dictionary, queue, sync }: IProps) => {
 
             <tbody>
                 {queue?.map((item) => {
+                    const time = getTimeLeft(item.deadline);
+
                     return (
                         <tr>
                             <td>{getWarshipName(item.warshipId)}</td>
                             <td>{item.qty}</td>
-                            <td>{getTimeLeft(item.deadline)}</td>
+                            <td>{time > 0 ? time : 0}</td>
                             <td>{item.deadline}</td>
                         </tr>
                     );

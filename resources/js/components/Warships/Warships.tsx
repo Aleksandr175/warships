@@ -53,6 +53,13 @@ export const Warships = ({
             });
     }
 
+    function getQty(warshipId: number): number {
+        return (
+            warships?.find((warship) => warship.warshipId === warshipId)?.qty ||
+            0
+        );
+    }
+
     return (
         <div className={"row"}>
             {dictionary.map((item) => {
@@ -61,7 +68,7 @@ export const Warships = ({
                         key={item.id}
                         warship={item}
                         run={run}
-                        currentQty={100}
+                        currentQty={getQty(item.id)}
                         getWarships={getWarships}
                         cityResources={cityResources}
                     />

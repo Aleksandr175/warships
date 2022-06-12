@@ -16,13 +16,13 @@ class CreateWarshipsTable extends Migration
         Schema::create('warships', function (Blueprint $table) {
             $table->id();
 
-            $table->bigInteger('warships_id')->unsigned();
+            $table->bigInteger('warship_id')->unsigned();
             $table->bigInteger('city_id')->unsigned();
             $table->bigInteger('user_id')->unsigned();
 
             $table->integer('qty')->default(0);
 
-            $table->foreign('warships_id')->references('id')->on('warship_dictionary')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('warship_id')->references('id')->on('warship_dictionary')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
 

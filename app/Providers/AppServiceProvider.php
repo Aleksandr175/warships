@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Jobs\ResourceJob;
+use App\Jobs\WarshipQueueJob;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
@@ -27,7 +28,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Queue::after(function (JobProcessed $event) {
-            ResourceJob::dispatch();
+            if ($event->job->getQueue() === 'resource') {
+                sleep(1);
+                ResourceJob::dispatch()->onQueue('resource');;
+            }
+
+            if ($event->job->getQueue() === 'warshipQueue') {
+                sleep(1);
+                WarshipQueueJob::dispatch()->onQueue('warshipQueue');;
+            }
         });
     }
 }

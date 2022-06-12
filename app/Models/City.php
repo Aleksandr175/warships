@@ -44,6 +44,11 @@ class City extends Model
         return $this->hasMany(WarshipQueue::class);
     }
 
+    public function warships()
+    {
+        return $this->hasMany(Warship::class);
+    }
+
     public function canBuild($buildingId)
     {
         $nextLvl      = 1;

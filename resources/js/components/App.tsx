@@ -13,6 +13,7 @@ import {
     ICityBuildingQueue,
     ICityResearchQueue,
     ICityWarship,
+    ICityWarshipQueue,
 } from "../types/types";
 import { CityResources } from "./CityResources";
 import { Warships } from "./Warships/Warships";
@@ -27,6 +28,7 @@ const App = () => {
     const [buildings, setBuildings] = useState<ICityBuilding[] | undefined>();
     const [warships, setWarships] = useState<ICityWarship[] | undefined>();
     const [queue, setQueue] = useState<ICityBuildingQueue>();
+    const [queueWarship, setQueueWarship] = useState<ICityWarshipQueue[]>();
     const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
 
     useEffect(() => {
@@ -49,6 +51,7 @@ const App = () => {
     useEffect(() => {
         getBuildings();
         getResearches();
+        getWarships();
     }, [city]);
 
     function getCityResources() {
@@ -88,7 +91,7 @@ const App = () => {
 
         httpClient.get("/warships?cityId=" + city?.id).then((response) => {
             setWarships(response.data.warships);
-            setQueue(response.data.queue);
+            setQueueWarship(response.data.queue);
         });
 
         getCityResources();
@@ -267,8 +270,8 @@ const App = () => {
                                             getWarships={getWarships}
                                             warships={warships}
                                             setWarships={setWarships}
-                                            setQueue={setQueue}
-                                            queue={queue}
+                                            setQueue={setQueueWarship}
+                                            queue={queueWarship}
                                         />
                                     }
                                 />

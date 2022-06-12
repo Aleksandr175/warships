@@ -1,18 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-    ICityBuildingQueue,
-    ICityResources,
-    IWarship,
-} from "../../types/types";
+import { ICityResources, IWarship } from "../../types/types";
 import styled from "styled-components";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-dayjs.extend(utc);
 
 interface IProps {
     warship: IWarship;
     run: (warshipId: number, qty: number) => void;
-    queue: ICityBuildingQueue | undefined;
     getWarships: () => void;
     cityResources: ICityResources;
     currentQty?: number;
@@ -21,7 +13,6 @@ interface IProps {
 export const Warship = ({
     warship,
     run,
-    queue,
     getWarships,
     cityResources,
     currentQty,
@@ -40,19 +31,6 @@ export const Warship = ({
     maxShips = Math.min(maxShipsByGold, maxShipsByPopulation);
 
     useEffect(() => {
-        if (isWarshipInProcess() && getTimeLeft()) {
-            setTimeLeft(getTimeLeft());
-
-            // @ts-ignore
-            timer.current = setInterval(handleTimer, 1000);
-
-            return () => {
-                clearInterval(timer.current);
-            };
-        }
-    }, [queue]);
-
-    useEffect(() => {
         // TODO strange decision
         if (timeLeft === -1) {
             clearInterval(timer.current);
@@ -65,21 +43,6 @@ export const Warship = ({
             // @ts-ignore
             return lastTimeLeft - 1;
         });
-    }
-
-    function isWarshipInProcess() {
-        return false; //queue && queue.buildingId === building.id;
-    }
-
-    function getTimeLeft() {
-        const dateUTCNow = dayjs.utc(new Date());
-        let deadline = dayjs(new Date(queue?.deadline || ""));
-
-        let deadlineString = deadline.format().toString().replace("T", " ");
-        let dateArray = deadlineString.split("+");
-        const deadlineDate = dateArray[0];
-
-        return dayjs.utc(deadlineDate).unix() - dateUTCNow.unix();
     }
 
     function isWarshipDisabled() {

@@ -40,6 +40,14 @@ export interface ICityResearchQueue extends ICityBuildingQueue {
     researchId: number;
 }
 
+export interface ICityWarshipQueue {
+    warshipId: number;
+    cityId: number;
+    qty: number;
+    time: number;
+    deadline: string;
+}
+
 export interface IBuildingResource {
     buildingId: number;
     gold: number;

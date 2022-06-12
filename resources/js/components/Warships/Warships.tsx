@@ -2,12 +2,18 @@ import React from "react";
 import { httpClient } from "../../httpClient/httpClient";
 import {
     IBuildingResource,
-    ICityBuildingQueue,
     ICityResources,
     ICityWarship,
+    ICityWarshipQueue,
     IWarship,
 } from "../../types/types";
 import { Warship } from "./Warship";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import { WarshipsQueue } from "./WarshipsQueue";
+dayjs.extend(utc);
+dayjs.extend(customParseFormat);
 
 interface IProps {
     cityId: number;
@@ -18,8 +24,8 @@ interface IProps {
     warships: ICityWarship[] | undefined;
     setWarships: (warships: ICityWarship[]) => void;
     getWarships: () => void;
-    queue?: ICityBuildingQueue;
-    setQueue: (q: ICityBuildingQueue | undefined) => void;
+    queue?: ICityWarshipQueue[];
+    setQueue: (q: ICityWarshipQueue[] | undefined) => void;
 }
 
 export const Warships = ({
@@ -56,12 +62,19 @@ export const Warships = ({
                         warship={item}
                         run={run}
                         currentQty={100}
-                        queue={queue}
                         getWarships={getWarships}
                         cityResources={cityResources}
                     />
                 );
             })}
+
+            {queue && queue.length > 0 && (
+                <WarshipsQueue
+                    queue={queue}
+                    dictionary={dictionary}
+                    sync={getWarships}
+                />
+            )}
         </div>
     );
 };

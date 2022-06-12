@@ -6,44 +6,27 @@ use App\Http\Requests\Api\BuildingCancelRequest;
 use App\Http\Requests\Api\BuildRequest;
 use App\Http\Resources\BuildingResource;
 use App\Http\Resources\CityBuildingQueueResource;
-use App\Http\Resources\CityResource;
 use App\Http\Resources\CityResourcesResource;
-use App\Jobs\BuildJob;
-use App\Models\CityBuildingQueue;
+use App\Services\BuildingQueueService;
 use Illuminate\Support\Facades\Auth;
 
 class CityBuildingQueueController extends Controller
 {
-    public function build(BuildRequest $request) {
+    public function build(BuildRequest $request, BuildingQueueService $buildingQueueService) {
         $user = Auth::user();
-        $data = $request->only('cityId', 'buildingId');
+        $data = $request->only('cityId');
         $cityId = $data['cityId'];
-        $buildingId = $data['buildingId'];
 
         $city = $user->cities()->where('id', $cityId)->first();
 
-        if ($city && $city->id && $city->canBuild($buildingId)) {
-            // check if queue is empty
-            $queue = CityBuildingQueue::where('city_id', $city->id)->first();
+        $queue = $buildingQueueService->store($user->id, $request, $city);
 
-            if (!$queue) {
-                // order build
-                $newQueue = $city->build($buildingId);
-
-                BuildJob::dispatch([
-                    'cityId' => $cityId,
-                    'buildingId' => $buildingId,
-                    'userId' => $user->id,
-                    'gold' => $newQueue->gold,
-                    'population' => $newQueue->population,
-                ])->delay(now()->addSeconds($newQueue->time));
-
-                return [
-                    'buildings' => BuildingResource::collection($city->buildings),
-                    'queue' => new CityBuildingQueueResource($city->buildingQueue),
-                    'cityResources' => new CityResourcesResource($city)
-                ];
-            }
+        if ($queue && $queue->id) {
+            return [
+                'buildings' => BuildingResource::collection($city->buildings),
+                'queue' => new CityBuildingQueueResource($city->buildingQueue),
+                'cityResources' => new CityResourcesResource($city)
+            ];
         }
 
         return abort(403);

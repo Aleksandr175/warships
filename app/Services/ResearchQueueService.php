@@ -48,10 +48,8 @@ class ResearchQueueService
 
         $this->city = City::where('id', $this->city->id)->where('user_id', $this->userId)->first();
 
-        if ($this->city && $this->city->id) {
-            if ($this->canResearch()) {
-                $queue = $this->updateResearchQueue();
-            }
+        if ($this->city && $this->city->id && $this->canResearch()) {
+            $queue = $this->updateQueue();
         } else {
             return abort(403);
         }
@@ -59,7 +57,7 @@ class ResearchQueueService
         return $queue;
     }
 
-    public function updateResearchQueue(): ResearchQueue
+    public function updateQueue(): ResearchQueue
     {
         // found out what resources we need for research
         $resources = ResearchResource::where('research_id', $this->researchId)->where('lvl', $this->nextLvl)->first();

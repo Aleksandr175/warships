@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\Auth;
 
 class ResearchQueueController extends Controller
 {
-    public function run(ResearchRequest $request, ResearchQueueService $researchQueueService) {
-        $user = Auth::user();
-        $data = $request->only('cityId');
+    public function run(ResearchRequest $request, ResearchQueueService $researchQueueService)
+    {
+        $user   = Auth::user();
+        $data   = $request->only('cityId');
         $cityId = $data['cityId'];
 
         $city = $user->cities()->where('id', $cityId)->first();
@@ -23,8 +24,8 @@ class ResearchQueueController extends Controller
 
         if ($queue && $queue->id) {
             return [
-                'researches' => [],//BuildingResource::collection($city->buildings),
-                'queue' => new ResearchQueueResource($queue),
+                'researches'    => [],//BuildingResource::collection($city->buildings),
+                'queue'         => new ResearchQueueResource($queue),
                 'cityResources' => new CityResourcesResource($city)
             ];
         }
@@ -32,28 +33,15 @@ class ResearchQueueController extends Controller
         return abort(403);
     }
 
-    public function cancel() {
+    public function cancel(ResearchQueueService $researchQueueService)
+    {
         $user = Auth::user();
 
-        $researchQueue = ResearchQueue::where('user_id', $user->id)->first();
+        $city = $researchQueueService->cancel($user->id);
 
-        if ($researchQueue && $researchQueue->id) {
-            // update resource
-            $city = City::find($researchQueue->city_id);
-
-            $city->update([
-                'gold' => $city->gold + $researchQueue->gold,
-                'population' => $city->population + $researchQueue->population,
-            ]);
-
-            $researchQueue->delete();
-
-            return [
-                'queue' => [],
-                'cityResources' => new CityResourcesResource($city)
-            ];
-        }
-
-        return abort(403);
+        return [
+            'queue'         => [],
+            'cityResources' => new CityResourcesResource($city)
+        ];
     }
 }

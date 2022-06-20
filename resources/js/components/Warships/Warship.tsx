@@ -68,6 +68,16 @@ export const Warship = ({
 
             <p>
                 Gold: {warship.gold}. Workers: {warship.population}
+                <br />
+                Attack: {warship.attack}.
+                <br />
+                Speed: {warship.speed}
+                <br />
+                Capacity: {warship.capacity}. <br />
+                Health: {warship.health}
+                <br />
+                Time: {warship.time}
+                <br />
             </p>
             <p>You can create: {maxShips}</p>
             <SInput

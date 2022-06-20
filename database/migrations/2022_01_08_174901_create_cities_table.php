@@ -15,6 +15,7 @@ class CreateCitiesTable extends Migration
     {
         Schema::create('cities', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('city_id')->unsigned()->default(1);
 
             $table->integer('user_id');
             $table->string('title', 50);
@@ -24,6 +25,7 @@ class CreateCitiesTable extends Migration
             $table->float('gold');
             $table->integer('population');
 
+            $table->foreign('city_id')->references('id')->on('city_dictionary')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamp('resource_last_updated')->default(Carbon\Carbon::now());
 
             $table->timestamps();

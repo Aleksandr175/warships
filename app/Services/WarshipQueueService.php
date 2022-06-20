@@ -31,8 +31,6 @@ class WarshipQueueService
 
         if ($this->city && $this->city->id) {
             $queue = $this->updateWarshipQueue();
-        } else {
-            return abort(403);
         }
 
         return $queue;
@@ -45,7 +43,6 @@ class WarshipQueueService
         $totalWarshipGold       = $this->qty * $warshipDict->gold;
         $totalWarshipPopulation = $this->qty * $warshipDict->population;
         $time                   = $this->qty * $warshipDict->time;
-        $deadline               = null;
 
         $cityGold       = $this->city->gold;
         $cityPopulation = $this->city->population;

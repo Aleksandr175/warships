@@ -23,6 +23,7 @@ class WarshipDictionarySeeder extends Seeder
             'gold' => 100,
             'population' => 10,
             'time' => 10,
+            'health' => 100,
         ]);
 
         WarshipDictionary::create([
@@ -34,6 +35,7 @@ class WarshipDictionarySeeder extends Seeder
             'gold' => 200,
             'population' => 100,
             'time' => 20,
+            'health' => 200,
         ]);
 
         WarshipDictionary::create([
@@ -45,6 +47,7 @@ class WarshipDictionarySeeder extends Seeder
             'gold' => 300,
             'population' => 100,
             'time' => 40,
+            'health' => 400,
         ]);
 
         WarshipDictionary::create([
@@ -56,6 +59,7 @@ class WarshipDictionarySeeder extends Seeder
             'gold' => 1500,
             'population' => 200,
             'time' => 100,
+            'health' => 1000,
         ]);
 
         WarshipDictionary::create([
@@ -67,6 +71,7 @@ class WarshipDictionarySeeder extends Seeder
             'gold' => 1000,
             'population' => 500,
             'time' => 1000,
+            'health' => 5000,
         ]);
     }
 }

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/clear', function() {
+Route::get('/clear', function () {
 
     Artisan::call('cache:clear');
     Artisan::call('config:clear');
@@ -24,7 +24,7 @@ Route::get('/clear', function() {
     return "Cleared!";
 });
 
-Route::get('/server-start', function() {
+Route::get('/server-start', function () {
     \App\Jobs\ResourceJob::dispatch()->onQueue('resource');
     \App\Jobs\WarshipQueueJob::dispatch()->onQueue('warshipQueue');
 });
@@ -44,6 +44,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/researches/{researchId}/cancel', [\App\Http\Controllers\ResearchQueueController::class, 'cancel']);
 
     Route::post('/api/warships/create', [\App\Http\Controllers\WarshipQueueController::class, 'run']);
+
+    Route::get('/api/map', [\App\Http\Controllers\MapController::class, 'get']);
 });
 
 Route::get('/', function () {
@@ -66,4 +68,8 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-require __DIR__.'/auth.php';
+Route::get('/map', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+require __DIR__ . '/auth.php';

@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call(CityDictionarySeeder::class);
+
         \App\Models\User::factory(4)->create();
 
         \App\Models\User::factory(1)->create([
@@ -38,7 +40,7 @@ class DatabaseSeeder extends Seeder
             'id' => 11,
             'user_id' => 5,
             'title' => 'Island Alex N2',
-            'coord_x' => 12,
+            'coord_x' => 3,
             'coord_y' => 5,
             'gold' => 1500,
             'population' => 300
@@ -48,8 +50,8 @@ class DatabaseSeeder extends Seeder
             \App\Models\City::factory(1)->create([
                 'user_id' => rand(6, 15),
                 'title' => 'Island',
-                'coord_x' => $i + 10,
-                'coord_y' => $i + 10,
+                'coord_x' => $i + 5,
+                'coord_y' => $i + 5,
                 'gold' => 500,
                 'population' => 300
             ]);

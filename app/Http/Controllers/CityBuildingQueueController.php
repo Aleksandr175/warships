@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\Auth;
 
 class CityBuildingQueueController extends Controller
 {
-    public function build(BuildRequest $request, BuildingQueueService $buildingQueueService) {
-        $user = Auth::user();
-        $data = $request->only('cityId');
+    public function build(BuildRequest $request, BuildingQueueService $buildingQueueService)
+    {
+        $user   = Auth::user();
+        $data   = $request->only('cityId');
         $cityId = $data['cityId'];
 
         $city = $user->cities()->where('id', $cityId)->first();
@@ -23,8 +24,8 @@ class CityBuildingQueueController extends Controller
 
         if ($queue && $queue->id) {
             return [
-                'buildings' => BuildingResource::collection($city->buildings),
-                'queue' => new CityBuildingQueueResource($city->buildingQueue),
+                'buildings'     => BuildingResource::collection($city->buildings),
+                'queue'         => new CityBuildingQueueResource($city->buildingQueue),
                 'cityResources' => new CityResourcesResource($city)
             ];
         }
@@ -32,7 +33,8 @@ class CityBuildingQueueController extends Controller
         return abort(403);
     }
 
-    public function cancel(BuildingCancelRequest $request) {
+    public function cancel(BuildingCancelRequest $request, BuildingQueueService $buildingQueueService)
+    {
         $cityId = $request->post('cityId');
 
         $user = Auth::user();
@@ -40,23 +42,13 @@ class CityBuildingQueueController extends Controller
         $city = $user->cities()->where('id', $cityId)->first();
 
         if ($city && $city->id) {
-            $buildingQueue = $city->buildingQueue;
+            $buildingQueueService->cancel($city);
 
-            if ($buildingQueue && $buildingQueue->id) {
-                // update resource
-                $city->update([
-                    'gold' => $city->gold + $buildingQueue->gold,
-                    'population' => $city->population + $buildingQueue->population,
-                ]);
-
-                $city->buildingQueue()->delete();
-
-                return [
-                    'buildings' => BuildingResource::collection($city->buildings),
-                    'buildingQueue' => [],
-                    'cityResources' => new CityResourcesResource($city)
-                ];
-            }
+            return [
+                'buildings'     => BuildingResource::collection($city->buildings),
+                'buildingQueue' => [],
+                'cityResources' => new CityResourcesResource($city)
+            ];
         }
 
         return abort(403);

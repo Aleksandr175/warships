@@ -17,6 +17,7 @@ import {
 } from "../types/types";
 import { CityResources } from "./CityResources";
 import { Warships } from "./Warships/Warships";
+import { Map } from "./Map/Map";
 
 const App = () => {
     const [userInfo, setUserInfo] = useState();
@@ -179,7 +180,10 @@ const App = () => {
 
             <div className={"container"}>
                 <div className={"row"}>
-                    <div className={"col-3 d-flex align-items-stretch"}>
+                    <div
+                        className={"col-3 d-flex align-items-stretch"}
+                        style={{ paddingLeft: "0" }}
+                    >
                         <SColumnMenu>
                             <Link to={"/dashboard"}>Overview</Link>
                             <br />
@@ -188,6 +192,8 @@ const App = () => {
                             <Link to={"/researches"}>Researches</Link>
                             <br />
                             <Link to={"/warships"}>Warships</Link>
+                            <br />
+                            <Link to={"/map"}>Map</Link>
                         </SColumnMenu>
                     </div>
                     <SColumnContent className={"col-9"}>
@@ -275,6 +281,10 @@ const App = () => {
                                         />
                                     }
                                 />
+                                <Route
+                                    path={"map"}
+                                    element={<Map cityId={city.id} />}
+                                />
                             </Routes>
                         )}
                     </SColumnContent>
@@ -301,21 +311,18 @@ const SHeader = styled.div`
     background: white;
     padding: 10px 20px;
     margin-top: 20px;
-    border-radius: 10px;
     margin-bottom: 20px;
 `;
 
 const SColumnMenu = styled.div`
     width: 100%;
     background: white;
-    border-radius: 10px;
     padding: 20px;
     margin-right: 20px;
     min-height: 200px;
 `;
 const SColumnContent = styled.div`
     background: white;
-    border-radius: 10px;
     padding: 20px;
 `;
 

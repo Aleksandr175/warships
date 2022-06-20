@@ -7,6 +7,13 @@ export interface ICity {
     population: number;
 }
 
+export interface IMapCity {
+    id: number;
+    title: string;
+    coordX: number;
+    coordY: number;
+}
+
 export interface ICityResources {
     id?: number;
     gold: number;
@@ -87,6 +94,8 @@ export interface IWarship extends IBuilding {
     attack: number;
     speed: number;
     capacity: number;
+    health: number;
+    time: number;
     gold: number;
     population: number;
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateWarshipDictionaryTable extends Migration
+class CreateCityDictionaryTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,11 @@ class CreateWarshipDictionaryTable extends Migration
      */
     public function up()
     {
-        Schema::create('warship_dictionary', function (Blueprint $table) {
+        Schema::create('city_dictionary', function (Blueprint $table) {
             $table->id();
 
             $table->string('title', 50);
             $table->text('description');
-
-            $table->integer('attack');
-            $table->integer('speed');
-            $table->integer('capacity');
-            $table->integer('gold');
-            $table->integer('population');
-            $table->integer('health');
-            $table->integer('time');
 
             $table->timestamps();
         });
@@ -38,6 +30,6 @@ class CreateWarshipDictionaryTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('warship_dictionary');
+        Schema::dropIfExists('city_dictionary');
     }
 }

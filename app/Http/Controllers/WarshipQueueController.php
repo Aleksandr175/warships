@@ -11,9 +11,10 @@ use Illuminate\Support\Facades\Auth;
 
 class WarshipQueueController extends Controller
 {
-    public function run(WarshipCreateRequest $request, WarshipQueueService $warshipQueueService) {
-        $user = Auth::user();
-        $data = $request->only('cityId');
+    public function run(WarshipCreateRequest $request, WarshipQueueService $warshipQueueService)
+    {
+        $user   = Auth::user();
+        $data   = $request->only('cityId');
         $cityId = $data['cityId'];
 
         $queue = $warshipQueueService->store($user->id, $request);
@@ -21,8 +22,8 @@ class WarshipQueueController extends Controller
         $city = City::where('id', $cityId)->where('user_id', $user->id)->first();
 
         return [
-            'warships' => [],//BuildingResource::collection($city->buildings),
-            'queue' => WarshipQueueResource::collection($queue),
+            'warships'      => [],//BuildingResource::collection($city->buildings),
+            'queue'         => WarshipQueueResource::collection($queue),
             'cityResources' => new CityResourcesResource($city)
         ];
     }

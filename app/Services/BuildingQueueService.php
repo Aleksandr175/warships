@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Requests\Api\BuildRequest;
+use App\Http\Resources\CityResourcesResource;
 use App\Models\BuildingResource;
 use App\Models\CityBuildingQueue;
 use Carbon\Carbon;
@@ -16,7 +17,7 @@ class BuildingQueueService
 
     public function canBuild($city, $buildingId): bool
     {
-         $cityBuilding = $city->building($buildingId);
+        $cityBuilding = $city->building($buildingId);
 
         if ($cityBuilding && $cityBuilding->id) {
             $this->nextLvl = $cityBuilding->lvl + 1;
@@ -69,11 +70,28 @@ class BuildingQueueService
         return CityBuildingQueue::create([
             'building_id' => $this->buildingId,
             'city_id'     => $this->city->id,
-            'gold'       => $buildingResources->gold,
-            'population' => $buildingResources->population,
-            'lvl'        => $this->nextLvl,
-            'time'       => $time,
-            'deadline'   => Carbon::now()->addSeconds($time)
+            'gold'        => $buildingResources->gold,
+            'population'  => $buildingResources->population,
+            'lvl'         => $this->nextLvl,
+            'time'        => $time,
+            'deadline'    => Carbon::now()->addSeconds($time)
         ]);
+    }
+
+    public function cancel($city): void
+    {
+        if ($city && $city->id) {
+            $buildingQueue = $city->buildingQueue;
+
+            if ($buildingQueue && $buildingQueue->id) {
+                // update resource
+                $city->update([
+                    'gold'       => $city->gold + $buildingQueue->gold,
+                    'population' => $city->population + $buildingQueue->population,
+                ]);
+
+                $city->buildingQueue()->delete();
+            }
+        }
     }
 }

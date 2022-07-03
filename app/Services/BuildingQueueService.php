@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Requests\Api\BuildRequest;
 use App\Http\Resources\CityResourcesResource;
+use App\Jobs\BuildJob;
 use App\Models\BuildingResource;
 use App\Models\CityBuildingQueue;
 use Carbon\Carbon;
@@ -47,6 +48,14 @@ class BuildingQueueService
 
         if ($this->city && $this->city->id && $this->canBuild($this->city, $buildingId)) {
             $queue = $this->updateQueue();
+
+            BuildJob::dispatch([
+                'cityId' => $this->city->id,
+                'buildingId' => $buildingId,
+                'userId' => $this->userId,
+                'gold' => $queue->gold,
+                'population' => $queue->population,
+            ])->delay(now()->addSeconds($queue->time));
         } else {
             return abort(403);
         }

@@ -76,5 +76,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ResearchQueueSeeder::class);
 
         $this->call(WarshipDictionarySeeder::class);
+
+        $this->call(WarshipSeeder::class);
     }
 }

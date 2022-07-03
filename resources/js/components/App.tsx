@@ -18,6 +18,7 @@ import {
 import { CityResources } from "./CityResources";
 import { Warships } from "./Warships/Warships";
 import { Map } from "./Map/Map";
+import { Fleet } from "./Fleet/Fleet";
 
 const App = () => {
     const [userInfo, setUserInfo] = useState();
@@ -193,6 +194,8 @@ const App = () => {
                             <br />
                             <Link to={"/warships"}>Warships</Link>
                             <br />
+                            <Link to={"/fleet"}>Fleet</Link>
+                            <br />
                             <Link to={"/map"}>Map</Link>
                         </SColumnMenu>
                     </div>
@@ -278,6 +281,16 @@ const App = () => {
                                             setWarships={setWarships}
                                             setQueue={setQueueWarship}
                                             queue={queueWarship}
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path={"fleet"}
+                                    element={
+                                        <Fleet
+                                            warships={warships}
+                                            dictionary={dictionaries.warships}
+                                            cityId={city.id}
                                         />
                                     }
                                 />

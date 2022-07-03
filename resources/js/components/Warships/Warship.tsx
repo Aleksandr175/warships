@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ICityResources, IWarship } from "../../types/types";
 import styled from "styled-components";
+import { SItemCorner, SItemCornerWrapper, SItemImageWrapper } from "../styles";
+import { Card } from "../Common/Card";
 
 interface IProps {
     warship: IWarship;
@@ -54,17 +56,7 @@ export const Warship = ({
 
     return (
         <div className={"col-sm-6 col-md-4"} key={warship.id}>
-            <SBuildingImageWrapper
-                style={{
-                    backgroundImage: `url("../images/warships/${warship.id}.svg")`,
-                }}
-            >
-                <SBuildingLvlWrapper>
-                    <SBuildingLvl>{currentQty}</SBuildingLvl>
-                </SBuildingLvlWrapper>
-            </SBuildingImageWrapper>
-            <h4>{warship.title}</h4>
-            <span>{warship.description}</span>
+            <Card object={warship} qty={currentQty} imagePath={"warships"} />
 
             <p>
                 Gold: {warship.gold}. Workers: {warship.population}
@@ -120,35 +112,6 @@ export const Warship = ({
         </div>
     );
 };
-
-const SBuildingImageWrapper = styled.div`
-    border: 1px solid black;
-    height: 100px;
-    margin-bottom: 20px;
-    position: relative;
-
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-color: #ddd;
-`;
-
-const SBuildingLvlWrapper = styled.div`
-    position: absolute;
-    top: 0;
-    right: 0;
-    border: 30px solid transparent;
-    border-top: 30px solid #ccc;
-    border-right: 30px solid #ccc;
-`;
-
-const SBuildingLvl = styled.span`
-    position: absolute;
-    top: -25px;
-    right: -20px;
-    font-size: 16px;
-    font-weight: 700;
-`;
 
 const SInput = styled.input`
     display: inline-block;

@@ -8,6 +8,7 @@ import {
 import styled from "styled-components";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { Card } from "../Common/Card";
 dayjs.extend(utc);
 
 interface IProps {
@@ -101,17 +102,7 @@ export const Building = ({
 
     return (
         <div className={"col-sm-6 col-md-4"} key={building.id}>
-            <SBuildingImageWrapper
-                style={{
-                    backgroundImage: `url("../images/buildings/${building.id}.svg")`,
-                }}
-            >
-                <SBuildingLvlWrapper>
-                    <SBuildingLvl>{lvl}</SBuildingLvl>
-                </SBuildingLvlWrapper>
-            </SBuildingImageWrapper>
-            <h4>{building.title}</h4>
-            <span>{building.description}</span>
+            <Card object={building} qty={lvl} imagePath={"buildings"} />
 
             {(gold || population) &&
             !isBuildingInProcess() &&
@@ -174,32 +165,3 @@ export const Building = ({
         </div>
     );
 };
-
-const SBuildingImageWrapper = styled.div`
-    border: 1px solid black;
-    height: 100px;
-    margin-bottom: 20px;
-    position: relative;
-
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-color: #ddd;
-`;
-
-const SBuildingLvlWrapper = styled.div`
-    position: absolute;
-    top: 0;
-    right: 0;
-    border: 30px solid transparent;
-    border-top: 30px solid #ccc;
-    border-right: 30px solid #ccc;
-`;
-
-const SBuildingLvl = styled.span`
-    position: absolute;
-    top: -25px;
-    right: -20px;
-    font-size: 16px;
-    font-weight: 700;
-`;

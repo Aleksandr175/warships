@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { httpClient } from "../../httpClient/httpClient";
 import styled from "styled-components";
-import { ICityWarship, IMapCity, IWarship } from "../../types/types";
-import { Warship } from "../Warships/Warship";
-import { Card } from "../Common/Card";
+import { ICityWarship, IWarship } from "../../types/types";
 import { FleetCard } from "./FleetCard";
 
 interface IProps {
@@ -21,6 +19,7 @@ interface IFleetDetail {
 }
 
 interface IFleet {
+    cityId: number;
     coordX: number;
     coordY: number;
     fleetDetails: IFleetDetail[];
@@ -50,8 +49,9 @@ export const Fleet = ({ cityId, dictionary, warships }: IProps) => {
             fleetDetails: details,
             recursive: 0,
             taskType: "trade",
+            cityId,
         });
-    }, [warships]);
+    }, [, warships]);
 
     useEffect(() => {
         let tempFleet = { ...fleet };
@@ -86,18 +86,25 @@ export const Fleet = ({ cityId, dictionary, warships }: IProps) => {
     const onChangeQty = (warshipId: number, qty: number) => {
         let tempFleet = { ...fleet };
         console.log(warshipId, qty);
-        tempFleet.fleetDetails = tempFleet.fleetDetails.map((detail) => {
-            if (detail.warshipId === warshipId) {
-                detail.qty = qty;
-            }
+        tempFleet.fleetDetails =
+            tempFleet?.fleetDetails?.map((detail) => {
+                if (detail.warshipId === warshipId) {
+                    detail.qty = qty + 10;
+                }
 
-            return detail;
-        });
+                return detail;
+            }) || [];
 
         setFleet(tempFleet);
     };
 
     console.log(fleet);
+
+    const sendFleet = (): void => {
+        httpClient
+            .post("/fleet/send", fleet)
+            .then((response) => console.log(response));
+    };
 
     return (
         <div className={"row"}>
@@ -138,6 +145,7 @@ export const Fleet = ({ cityId, dictionary, warships }: IProps) => {
             </div>
             <div className={"col-12"}>
                 Task:
+                {/* TODO use dictionary for Task Types */}
                 <STaskType
                     selected={taskType === "attack" ? 1 : 0}
                     onClick={() => setTaskType("attack")}
@@ -186,7 +194,9 @@ export const Fleet = ({ cityId, dictionary, warships }: IProps) => {
                     className={"btn btn-primary"}
                     disabled={!taskType}
                     onClick={() => {
+                        console.log(fleet);
                         console.log("send ships");
+                        sendFleet();
                     }}
                 >
                     Send

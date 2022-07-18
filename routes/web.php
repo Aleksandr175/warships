@@ -46,6 +46,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/warships/create', [\App\Http\Controllers\WarshipQueueController::class, 'run']);
 
     Route::get('/api/map', [\App\Http\Controllers\MapController::class, 'get']);
+
+    Route::post('/api/fleet/send', [\App\Http\Controllers\FleetController::class, 'send']);
 });
 
 Route::get('/', function () {

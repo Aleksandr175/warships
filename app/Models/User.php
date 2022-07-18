@@ -46,6 +46,10 @@ class User extends Authenticatable
         return $this->hasMany(City::class);
     }
 
+    public function city($cityId) {
+        return $this->cities()->where('id', $cityId)->first();
+    }
+
     public function researches() {
         return $this->hasMany(Research::class);
     }

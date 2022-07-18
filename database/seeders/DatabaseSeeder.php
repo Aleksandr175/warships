@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\FleetTaskDictionary;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -78,5 +79,11 @@ class DatabaseSeeder extends Seeder
         $this->call(WarshipDictionarySeeder::class);
 
         $this->call(WarshipSeeder::class);
+
+        $this->call(FleetTaskDictionarySeeder::class);
+        $this->call(FleetStatusDictionarySeeder::class);
+
+        $this->call(FleetDetailSeeder::class);
+        $this->call(FleetSeeder::class);
     }
 }

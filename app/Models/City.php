@@ -48,4 +48,9 @@ class City extends Model
     {
         return $this->hasMany(Warship::class);
     }
+
+    public function fleets()
+    {
+        return $this->hasMany(Fleet::class);
+    }
 }

@@ -112,3 +112,32 @@ export interface IBuildingsProduction {
     qty: number;
     resource: string;
 }
+
+export type TTask = "attack" | "move" | "trade" | "transport";
+
+export interface IFleetDetail {
+    warshipId: number;
+    qty: number;
+}
+
+export interface IFleet {
+    cityId: number;
+    coordX: number;
+    coordY: number;
+    fleetDetails: IFleetDetail[];
+    recursive?: 1 | 0;
+    taskType: TTask;
+}
+
+export interface ICityFleet {
+    cityId: number;
+    targetCityId: number;
+    fleetDetails: IFleetDetail[];
+    recursive?: 1 | 0;
+    /*taskType: TTask;*/
+    fleetTaskId: number;
+    speed: number;
+    gold: number;
+    time: number;
+    deadline: string;
+}

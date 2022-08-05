@@ -14,6 +14,7 @@ import {
     ICityResearchQueue,
     ICityWarship,
     ICityWarshipQueue,
+    ICityFleet,
 } from "../types/types";
 import { CityResources } from "./CityResources";
 import { Warships } from "./Warships/Warships";
@@ -29,6 +30,7 @@ const App = () => {
     const [dictionaries, setDictionaries] = useState<IDictionary>();
     const [buildings, setBuildings] = useState<ICityBuilding[] | undefined>();
     const [warships, setWarships] = useState<ICityWarship[] | undefined>();
+    const [fleets, setFleets] = useState<ICityFleet[]>();
     const [queue, setQueue] = useState<ICityBuildingQueue>();
     const [queueWarship, setQueueWarship] = useState<ICityWarshipQueue[]>();
     const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
@@ -54,6 +56,7 @@ const App = () => {
         getBuildings();
         getResearches();
         getWarships();
+        getFleets();
     }, [city]);
 
     function getCityResources() {
@@ -97,6 +100,16 @@ const App = () => {
         });
 
         getCityResources();
+    }
+
+    function getFleets() {
+        if (!city?.id) {
+            return;
+        }
+
+        httpClient.get("/fleets?cityId=" + city?.id).then((response) => {
+            setFleets(response.data.fleets);
+        });
     }
 
     function getResearches() {
@@ -179,6 +192,24 @@ const App = () => {
                 </div>
             </SHeader>
 
+            {fleets && fleets.length > 0 && (
+                <div className={"container"}>
+                    <div className={"row"}>
+                        <SColumnFleets className={"col-12"}>
+                            {fleets.map((fleet) => {
+                                return (
+                                    <div>
+                                        Fleet: cityId: {fleet.cityId}, target
+                                        cityID: {fleet.targetCityId}, task:{" "}
+                                        {fleet.fleetTaskId}
+                                    </div>
+                                );
+                            })}
+                        </SColumnFleets>
+                    </div>
+                </div>
+            )}
+
             <div className={"container"}>
                 <div className={"row"}>
                     <div
@@ -194,7 +225,7 @@ const App = () => {
                             <br />
                             <Link to={"/warships"}>Warships</Link>
                             <br />
-                            <Link to={"/fleet"}>Fleet</Link>
+                            <Link to={"/fleets"}>Fleets</Link>
                             <br />
                             <Link to={"/map"}>Map</Link>
                         </SColumnMenu>
@@ -285,7 +316,7 @@ const App = () => {
                                     }
                                 />
                                 <Route
-                                    path={"fleet"}
+                                    path={"fleets"}
                                     element={
                                         <Fleet
                                             warships={warships}
@@ -347,4 +378,9 @@ const SCity = styled.span<{ active?: boolean }>`
 
     ${(props) =>
         props.active ? "text-decoration: none; font-weight: 700;" : ""}
+`;
+
+const SColumnFleets = styled.div`
+    margin-bottom: 20px;
+    background: white;
 `;

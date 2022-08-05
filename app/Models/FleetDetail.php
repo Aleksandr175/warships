@@ -12,4 +12,8 @@ class FleetDetail extends Model
     protected $table = 'fleet_details';
 
     protected $guarded = [];
+
+    static function getFleetDetails($fleetIds) {
+        return FleetDetail::whereIn('fleet_id', $fleetIds)->get();
+    }
 }

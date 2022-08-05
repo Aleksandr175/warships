@@ -2,29 +2,19 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { httpClient } from "../../httpClient/httpClient";
 import styled from "styled-components";
-import { ICityWarship, IWarship } from "../../types/types";
+import {
+    ICityWarship,
+    IFleet,
+    IFleetDetail,
+    IWarship,
+    TTask,
+} from "../../types/types";
 import { FleetCard } from "./FleetCard";
 
 interface IProps {
     cityId: number;
     dictionary: IWarship[];
     warships: ICityWarship[] | undefined;
-}
-
-type TTask = "attack" | "move" | "trade" | "transport";
-
-interface IFleetDetail {
-    warshipId: number;
-    qty: number;
-}
-
-interface IFleet {
-    cityId: number;
-    coordX: number;
-    coordY: number;
-    fleetDetails: IFleetDetail[];
-    recursive?: 1 | 0;
-    taskType: TTask;
 }
 
 export const Fleet = ({ cityId, dictionary, warships }: IProps) => {
@@ -102,7 +92,7 @@ export const Fleet = ({ cityId, dictionary, warships }: IProps) => {
 
     const sendFleet = (): void => {
         httpClient
-            .post("/fleet/send", fleet)
+            .post("/fleets/send", fleet)
             .then((response) => console.log(response));
     };
 

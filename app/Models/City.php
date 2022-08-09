@@ -49,6 +49,11 @@ class City extends Model
         return $this->hasMany(Warship::class);
     }
 
+    public function warship($warshipId)
+    {
+        return $this->hasMany(Warship::class)->where('warship_id', $warshipId)->first();
+    }
+
     public function fleets()
     {
         return $this->hasMany(Fleet::class);

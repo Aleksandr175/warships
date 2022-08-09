@@ -27,6 +27,7 @@ Route::get('/clear', function () {
 Route::get('/server-start', function () {
     \App\Jobs\ResourceJob::dispatch()->onQueue('resource');
     \App\Jobs\WarshipQueueJob::dispatch()->onQueue('warshipQueue');
+    \App\Jobs\FleetJob::dispatch()->onQueue('fleet');
 });
 
 Route::middleware('auth')->group(function () {

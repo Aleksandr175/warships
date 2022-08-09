@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Auth;
 
 class FleetController extends Controller
 {
-    public function get(Request $request) {
+    public function get(Request $request)
+    {
         $userId = Auth::user()->id;
         $cityId = $request->get('cityId');
 
@@ -20,12 +21,12 @@ class FleetController extends Controller
 
         $fleets = $city->fleets;
 
-        $fleetIds = $fleets->pluck('id');
+        $fleetIds     = $fleets->pluck('id');
         $fleetDetails = FleetDetail::getFleetDetails($fleetIds);
 
         if ($city && $city->id) {
             return [
-                'fleets' => FleetResource::collection($fleets),
+                'fleets'       => FleetResource::collection($fleets),
                 'fleetDetails' => FleetDetailResource::collection($fleetDetails)
             ];
         }
@@ -33,7 +34,8 @@ class FleetController extends Controller
         return abort(403);
     }
 
-    public function send(Request $request, FleetService $fleetService) {
+    public function send(Request $request, FleetService $fleetService)
+    {
         //dump($request->coordX);
         //dd($request->all());
 

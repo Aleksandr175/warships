@@ -16,6 +16,11 @@ class Fleet extends Model
         return $this->fleet_task_id === 1;
     }
 
+    public function isMovingFleet()
+    {
+        return $this->fleet_task_id === 2;
+    }
+
     public function isTradeGoingToTarget()
     {
         return $this->isTradeFleet() && $this->status_id === 1;
@@ -30,4 +35,15 @@ class Fleet extends Model
     {
         return $this->isTradeFleet() && $this->status_id === 3;
     }
+
+    public function isMovingFleetGoingToTarget()
+    {
+        return $this->isMovingFleet() && $this->status_id === 1;
+    }
+
+    public function isMovingFleetGoingBack()
+    {
+        return $this->isMovingFleet() && $this->status_id === 3;
+    }
+
 }

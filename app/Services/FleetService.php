@@ -140,8 +140,8 @@ class FleetService
             // task: trade
             if ($fleet->isTradeFleet()) {
                 if ($fleet->isTradeGoingToTarget()) {
-                    dump('fleet trade');
-                    $statusId = 2;
+                    dump('trade: fleet starts to trade');
+                    $statusId = Fleet::FLEET_STATUS_TRADING_ID;
                     // how long?
                     $deadline = Carbon::create($fleet->deadline)->addSecond(10);
 
@@ -151,16 +151,15 @@ class FleetService
 
                     if ($city->user_id === $targetCity->user_id) {
                         // send fleet back because we cant trade with ourselves
-                        $statusId  = 3;
+                        $statusId  = Fleet::FLEET_STATUS_TRADE_GOING_BACK_ID;
                         $deadline  = Carbon::create($fleet->deadline)->addSecond(10);
-                        $gold      = 0;
                         $recursive = 0;
                     }
                 }
 
                 if ($fleet->isTrading()) {
-                    dump('fleet trading...');
-                    $statusId = 3;
+                    dump('trade: fleet completed trading');
+                    $statusId = Fleet::FLEET_STATUS_TRADE_GOING_BACK_ID;;
                     // how long?
                     $deadline = Carbon::create($fleet->deadline)->addSecond(5);
                     // add gold to fleet? Formula?
@@ -168,43 +167,29 @@ class FleetService
                 }
 
                 if ($fleet->isTradeGoingBack()) {
-                    dump('fleet returns');
+                    dump('trade: fleet has returned to home');
 
                     $city         = City::find($fleet->city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
                     $city->increment('gold', $fleet->gold);
 
                     if ($fleet->recursive) {
+                        dump('trade: fleet repeats trade task, going to target');
                         // just repeat task
                         $gold     = 0;
-                        $statusId = 1;
+                        $statusId = Fleet::FLEET_STATUS_TRADE_GOING_TO_TARGET_ID;
                         // TODO: how long? // distance?
                         $deadline = Carbon::create($fleet->deadline)->addSecond(10);
                     } else {
                         // transfer fleet to warships in the island
-                        foreach ($fleetDetails as $fleetDetail) {
-                            $warship = $city->warship($fleetDetail->warship_id);
-
-                            if (!$warship) {
-                                Warship::create([
-                                    'warship_id' => $fleetDetail->warship_id,
-                                    'qty'        => $fleetDetail->qty,
-                                    'city_id'    => $city->id,
-                                    'user_id'    => $city->user_id
-                                ]);
-                            } else {
-                                $city->warship($fleetDetail->warship_id)->increment('qty', $fleetDetail->qty);
-                            }
-
-                            $fleetDetail->delete();
-                        }
+                        $this->convertFleetDetailsToWarships($fleetDetails, $city);
 
                         $shouldDeleteFleet = true;
                     }
                 }
             }
 
-            // TODO: task: move fleet to other island
+            // task: move fleet to another island
             if ($fleet->isMovingFleet()) {
                 if ($fleet->isMovingFleetGoingToTarget()) {
                     // check user of island (we can move fleet between not ours islands)
@@ -213,35 +198,64 @@ class FleetService
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
 
                     if ($city->user_id === $targetCity->user_id) {
+                        dump('move: fleet moved to another island');
                         // transfer fleet to warships in the island
-                        foreach ($fleetDetails as $fleetDetail) {
-                            $warship = $targetCity->warship($fleetDetail->warship_id);
-
-                            if (!$warship) {
-                                Warship::create([
-                                    'warship_id' => $fleetDetail->warship_id,
-                                    'qty'        => $fleetDetail->qty,
-                                    'city_id'    => $targetCity->id,
-                                    'user_id'    => $targetCity->user_id
-                                ]);
-                            } else {
-                                $targetCity->warship($fleetDetail->warship_id)->increment('qty', $fleetDetail->qty);
-                            }
-                            $fleetDetail->delete();
-                        }
+                        $this->convertFleetDetailsToWarships($fleetDetails, $targetCity);
 
                         $shouldDeleteFleet = true;
                     } else {
+                        dump('move: fleet is returning to original island');
                         // return fleet back
-                        $statusId = 3;
+                        $statusId = Fleet::FLEET_STATUS_MOVING_GOING_BACK_ID;
                         // TODO: calculate distance and secs
                         $deadline  = Carbon::create($fleet->deadline)->addSecond(10);
-                        $gold      = 0;
                         $recursive = 0;
                     }
 
                 }
+
+                if ($fleet->isMovingFleetGoingBack()) {
+                    dump('move: fleet has returned');
+                    $city         = City::find($fleet->city_id);
+                    $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
+
+                    // transfer fleet to warships in the island
+                    $this->convertFleetDetailsToWarships($fleetDetails, $city);
+
+                    $shouldDeleteFleet = true;
+                }
             }
+
+            // TODO: task: transport
+            if ($fleet->isTrasnsportFleet()) {
+                if ($fleet->isTransportFleetGoingToTarget()) {
+                    dump('transport: fleet delivered resource, fleet is going back');
+                    $statusId = Fleet::FLEET_STATUS_TRANSPORT_GOING_BACK_ID;
+                    // TODO: how long? // distance?
+                    $deadline = Carbon::create($fleet->deadline)->addSecond(10);
+
+                    $gold = 0;
+
+                    $targetCity = City::find($fleet->target_city_id);
+                    $targetCity->increment('gold', $fleet->gold);
+                }
+
+                if ($fleet->isTransportFleetGoingBack()) {
+                    dump('transport: fleet has returned to original island');
+
+                    $city = City::find($fleet->city_id);
+                    $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
+
+                    $this->convertFleetDetailsToWarships($fleetDetails, $city);
+
+                    $shouldDeleteFleet = true;
+                }
+            }
+
+
+            // ----------------------------------
+            // TODO: task: attack? // DO it later
+            // ----------------------------------
 
             if ($deadline && $statusId) {
                 // update fleet
@@ -256,11 +270,27 @@ class FleetService
             if ($shouldDeleteFleet) {
                 $fleet->delete();
             }
-
-            // task: attack?
-
-            // task: transport
         }
 
+    }
+
+    public function convertFleetDetailsToWarships($fleetDetails, $city): void
+    {
+        foreach ($fleetDetails as $fleetDetail) {
+            $warship = $city->warship($fleetDetail->warship_id);
+
+            if (!$warship) {
+                Warship::create([
+                    'warship_id' => $fleetDetail->warship_id,
+                    'qty'        => $fleetDetail->qty,
+                    'city_id'    => $city->id,
+                    'user_id'    => $city->user_id
+                ]);
+            } else {
+                $city->warship($fleetDetail->warship_id)->increment('qty', $fleetDetail->qty);
+            }
+
+            $fleetDetail->delete();
+        }
     }
 }

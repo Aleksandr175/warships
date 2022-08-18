@@ -130,6 +130,7 @@ export interface IFleet {
 }
 
 export interface ICityFleet {
+    id: number;
     cityId: number;
     targetCityId: number;
     fleetDetails: IFleetDetail[];

@@ -2,12 +2,18 @@
 
 namespace App\Services;
 
+use App\Events\FleetUpdatedEvent;
+use App\Events\TestEvent;
+use App\Http\Resources\FleetDetailResource;
+use App\Http\Resources\FleetResource;
 use App\Models\City;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
 use App\Models\FleetTaskDictionary;
+use App\Models\User;
 use App\Models\Warship;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class FleetService
 {
@@ -137,6 +143,8 @@ class FleetService
             $recursive         = null;
             $shouldDeleteFleet = false;
 
+            $city = City::find($fleet->city_id);
+
             // task: trade
             if ($fleet->isTradeFleet()) {
                 if ($fleet->isTradeGoingToTarget()) {
@@ -243,7 +251,7 @@ class FleetService
                 if ($fleet->isTransportFleetGoingBack()) {
                     dump('transport: fleet has returned to original island');
 
-                    $city = City::find($fleet->city_id);
+                    $city         = City::find($fleet->city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
 
                     $this->convertFleetDetailsToWarships($fleetDetails, $city);
@@ -269,6 +277,13 @@ class FleetService
 
             if ($shouldDeleteFleet) {
                 $fleet->delete();
+            }
+
+            if ($statusId || $deadline || $shouldDeleteFleet) {
+                $fleets = $city->fleets;
+                $fleetsDetails = FleetDetail::getFleetDetails($fleets->pluck('id'));
+
+                FleetUpdatedEvent::dispatch($fleets, $fleetsDetails);
             }
         }
 

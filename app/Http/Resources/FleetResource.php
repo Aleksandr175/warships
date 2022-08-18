@@ -16,6 +16,7 @@ class FleetResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id'           => $this->id,
             'cityId'       => $this->city_id,
             'targetCityId' => $this->target_city_id,
             'fleetTaskId'  => $this->fleet_task_id,

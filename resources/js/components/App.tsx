@@ -9,6 +9,7 @@ import { Warships } from "./Warships/Warships";
 import { Map } from "./Map/Map";
 import { Fleet } from "./Fleet/Fleet";
 import { useAppLogic } from "./hooks/useAppLogic";
+import { Fleets } from "./Fleets";
 
 const App = () => {
     const {
@@ -81,17 +82,7 @@ const App = () => {
             {fleets && fleets.length > 0 && (
                 <div className={"container"}>
                     <div className={"row"}>
-                        <SColumnFleets className={"col-12"}>
-                            {fleets.map((fleet) => {
-                                return (
-                                    <div>
-                                        Fleet: cityId: {fleet.cityId}, target
-                                        cityID: {fleet.targetCityId}, task:{" "}
-                                        {fleet.fleetTaskId}
-                                    </div>
-                                );
-                            })}
-                        </SColumnFleets>
+                        <Fleets fleets={fleets} />
                     </div>
                 </div>
             )}
@@ -264,9 +255,4 @@ const SCity = styled.span<{ active?: boolean }>`
 
     ${(props) =>
         props.active ? "text-decoration: none; font-weight: 700;" : ""}
-`;
-
-const SColumnFleets = styled.div`
-    margin-bottom: 20px;
-    background: white;
 `;

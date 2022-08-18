@@ -11,6 +11,7 @@ import {
     IDictionary,
 } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
+import Echo from "laravel-echo";
 
 export const useAppLogic = () => {
     const [city, setCity] = useState<ICity>();
@@ -24,6 +25,28 @@ export const useAppLogic = () => {
     const [queue, setQueue] = useState<ICityBuildingQueue>();
     const [queueWarship, setQueueWarship] = useState<ICityWarshipQueue[]>();
     const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
+
+    useEffect(() => {
+        // @ts-ignore
+        window.Echo = new Echo({
+            broadcaster: "pusher",
+            key: "ASDF",
+            wsHost: "127.0.0.1",
+            wsPort: 6001,
+            //wssport: 8000,
+            transports: ["websocket"],
+            //enabledTransports: ["ws", "wss"],
+            enabledTransports: ["ws"],
+            forceTLS: false,
+            disableStats: true,
+        });
+
+        // @ts-ignore
+        window.Echo.channel("fleets").listen("FleetUpdatedEvent", (event) => {
+            console.log(event);
+            setFleets(event.fleets);
+        });
+    }, []);
 
     useEffect(() => {
         httpClient.get("/user").then((response) => {

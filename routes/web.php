@@ -24,6 +24,8 @@ Route::get('/clear', function () {
     return "Cleared!";
 });
 
+Route::get('/test-event', [\App\Http\Controllers\TestController::class, 'index']);
+
 Route::get('/server-start', function () {
     \App\Jobs\ResourceJob::dispatch()->onQueue('resource');
     \App\Jobs\WarshipQueueJob::dispatch()->onQueue('warshipQueue');

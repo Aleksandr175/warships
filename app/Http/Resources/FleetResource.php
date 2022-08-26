@@ -16,15 +16,16 @@ class FleetResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'           => $this->id,
-            'cityId'       => $this->city_id,
-            'targetCityId' => $this->target_city_id,
-            'fleetTaskId'  => $this->fleet_task_id,
-            'speed'        => $this->speed,
-            'gold'         => $this->gold,
-            'recursive'    => $this->recursive,
-            'time'         => $this->time,
-            'deadline'     => $this->deadline,
+            'id'            => $this->id,
+            'cityId'        => $this->city_id,
+            'targetCityId'  => $this->target_city_id,
+            'fleetTaskId'   => $this->fleet_task_id,
+            'fleetStatusId' => $this->status_id,
+            'speed'         => $this->speed,
+            'gold'          => $this->gold,
+            'recursive'     => $this->recursive,
+            'time'          => $this->time,
+            'deadline'      => $this->deadline,
         ];
     }
 }

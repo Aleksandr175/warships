@@ -30,6 +30,8 @@ Route::get('/server-start', function () {
     \App\Jobs\ResourceJob::dispatch()->onQueue('resource');
     \App\Jobs\WarshipQueueJob::dispatch()->onQueue('warshipQueue');
     \App\Jobs\FleetJob::dispatch()->onQueue('fleet');
+
+    return "Server started!";
 });
 
 Route::middleware('auth')->group(function () {

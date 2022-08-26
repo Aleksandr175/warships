@@ -9,6 +9,8 @@ import {
     ICityWarship,
     ICityWarshipQueue,
     IDictionary,
+    IFleetDetail,
+    IMapCity,
 } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import Echo from "laravel-echo";
@@ -22,6 +24,8 @@ export const useAppLogic = () => {
     const [buildings, setBuildings] = useState<ICityBuilding[] | undefined>();
     const [warships, setWarships] = useState<ICityWarship[] | undefined>();
     const [fleets, setFleets] = useState<ICityFleet[]>();
+    const [fleetDetails, setFleetDetails] = useState<IFleetDetail[]>();
+    const [fleetCities, setFleetCities] = useState<IMapCity[]>();
     const [queue, setQueue] = useState<ICityBuildingQueue>();
     const [queueWarship, setQueueWarship] = useState<ICityWarshipQueue[]>();
     const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
@@ -43,8 +47,10 @@ export const useAppLogic = () => {
 
         // @ts-ignore
         window.Echo.channel("fleets").listen("FleetUpdatedEvent", (event) => {
-            console.log(event);
+            console.log("new fleet data", event);
             setFleets(event.fleets);
+            setFleetDetails(event.fleetDetails);
+            setFleetCities(event.data.cities);
         });
     }, []);
 
@@ -121,6 +127,8 @@ export const useAppLogic = () => {
 
         httpClient.get("/fleets?cityId=" + city?.id).then((response) => {
             setFleets(response.data.fleets);
+            setFleetDetails(response.data.fleetDetails);
+            setFleetCities(response.data.cities);
         });
     };
 
@@ -169,6 +177,7 @@ export const useAppLogic = () => {
         cityResources,
         getProductionGold,
         fleets,
+        fleetCities,
         dictionaries,
         updateCityResources,
         buildings,
@@ -183,5 +192,6 @@ export const useAppLogic = () => {
         getWarships,
         queueWarship,
         setQueueWarship,
+        fleetDetails,
     };
 };

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CityShortInfoResource;
 use App\Http\Resources\FleetDetailResource;
 use App\Http\Resources\FleetResource;
 use App\Models\City;
@@ -24,10 +25,16 @@ class FleetController extends Controller
         $fleetIds     = $fleets->pluck('id');
         $fleetDetails = FleetDetail::getFleetDetails($fleetIds);
 
+        $cityIds       = $fleets->pluck('city_id')->toArray();;
+        $targetCityIds = $fleets->pluck('target_city_id')->toArray();;
+
+        $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds))->get();
+
         if ($city && $city->id) {
             return [
                 'fleets'       => FleetResource::collection($fleets),
-                'fleetDetails' => FleetDetailResource::collection($fleetDetails)
+                'fleetDetails' => FleetDetailResource::collection($fleetDetails),
+                'cities'       => CityShortInfoResource::collection($cities)
             ];
         }
 

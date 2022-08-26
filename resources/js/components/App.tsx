@@ -32,6 +32,8 @@ const App = () => {
         setBuildings,
         getBuildings,
         fleets,
+        fleetDetails,
+        fleetCities,
         getProductionGold,
         dictionaries,
     } = useAppLogic();
@@ -79,13 +81,22 @@ const App = () => {
                 </div>
             </SHeader>
 
-            {fleets && fleets.length > 0 && (
-                <div className={"container"}>
-                    <div className={"row"}>
-                        <Fleets fleets={fleets} />
+            {dictionaries &&
+                fleetCities &&
+                fleets &&
+                fleetDetails &&
+                fleets.length > 0 && (
+                    <div className={"container"}>
+                        <div className={"row"}>
+                            <Fleets
+                                fleets={fleets}
+                                fleetDetails={fleetDetails}
+                                dictionaries={dictionaries}
+                                fleetCities={fleetCities}
+                            />
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
 
             <div className={"container"}>
                 <div className={"row"}>

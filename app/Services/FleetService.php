@@ -283,6 +283,7 @@ class FleetService
                 $fleets = $city->fleets;
                 $fleetsDetails = FleetDetail::getFleetDetails($fleets->pluck('id'));
 
+                dump('Dispatch new fleet event');
                 FleetUpdatedEvent::dispatch($fleets, $fleetsDetails);
             }
         }

@@ -71,6 +71,19 @@ export interface IWarshipResource extends IBuildingResource {
     time: number;
 }
 
+export interface IFleetTasksDictionary {
+    id: number;
+    slug: string;
+    title: string;
+    description: string;
+}
+
+export interface IFleetStatusesDictionary {
+    id: number;
+    title: string;
+    description: string;
+}
+
 export interface IDictionary {
     buildings: IBuilding[];
     buildingResources: IBuildingResource[];
@@ -80,6 +93,8 @@ export interface IDictionary {
     researchResources: IResearchResource[];
     warships: IWarship[];
     warshipsResources: IWarshipResource[];
+    fleetTasksDictionary: IFleetTasksDictionary[];
+    fleetStatusesDictionary: IFleetStatusesDictionary[];
 }
 
 export interface IBuilding {
@@ -116,6 +131,7 @@ export interface IBuildingsProduction {
 export type TTask = "attack" | "move" | "trade" | "transport";
 
 export interface IFleetDetail {
+    fleetId?: number;
     warshipId: number;
     qty: number;
 }
@@ -137,6 +153,7 @@ export interface ICityFleet {
     recursive?: 1 | 0;
     /*taskType: TTask;*/
     fleetTaskId: number;
+    fleetStatusId: number;
     speed: number;
     gold: number;
     time: number;

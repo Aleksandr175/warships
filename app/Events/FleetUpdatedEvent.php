@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Http\Resources\CityShortInfoResource;
 use App\Http\Resources\FleetDetailResource;
 use App\Http\Resources\FleetResource;
 use App\Models\Fleet;
@@ -20,16 +21,18 @@ class FleetUpdatedEvent implements ShouldBroadcast
 
     public $fleets;
     public $fleetsDetails;
+    public $cities;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($fleets, $fleetsDetails)
+    public function __construct($fleets, $fleetsDetails, $cities)
     {
         $this->fleets = FleetResource::collection($fleets);
         $this->fleetsDetails = FleetDetailResource::collection($fleetsDetails);
+        $this->cities = CityShortInfoResource::collection($cities);
     }
 
     /**

@@ -50,7 +50,7 @@ class FleetController extends Controller
         // TODO calculate gold for sending fleet
         $response = $fleetService->send($request, $user);
 
-        //dd($response);
+        return $response;
 
         // check target coords - that it exists
         // check task id

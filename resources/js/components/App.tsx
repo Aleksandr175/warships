@@ -33,7 +33,7 @@ const App = () => {
         getBuildings,
         fleets,
         fleetDetails,
-        fleetCities,
+        fleetCitiesDictionary,
         getProductionGold,
         dictionaries,
     } = useAppLogic();
@@ -82,7 +82,7 @@ const App = () => {
             </SHeader>
 
             {dictionaries &&
-                fleetCities &&
+                fleetCitiesDictionary &&
                 fleets &&
                 fleetDetails &&
                 fleets.length > 0 && (
@@ -92,7 +92,7 @@ const App = () => {
                                 fleets={fleets}
                                 fleetDetails={fleetDetails}
                                 dictionaries={dictionaries}
-                                fleetCities={fleetCities}
+                                fleetCitiesDictionary={fleetCitiesDictionary}
                             />
                         </div>
                     </div>
@@ -119,7 +119,7 @@ const App = () => {
                         </SColumnMenu>
                     </div>
                     <SColumnContent className={"col-9"}>
-                        {city && dictionaries && (
+                        {city && dictionaries && cities && (
                             <Routes>
                                 <Route
                                     path={"dashboard"}
@@ -210,6 +210,7 @@ const App = () => {
                                             warships={warships}
                                             dictionary={dictionaries.warships}
                                             cityId={city.id}
+                                            cities={cities}
                                         />
                                     }
                                 />

@@ -94,7 +94,8 @@ export const Fleet = ({
         <SFleetRow>
             <SFleetRowTitle>
                 <SFleetTaskIcon type={getFleetTaskSlug(fleet.fleetTaskId)}>
-                    {getFleetTaskSlug(fleet.fleetTaskId)[0].toUpperCase()}
+                    {getFleetTaskSlug(fleet.fleetTaskId)[0].toUpperCase()}{" "}
+                    {fleet.recursive ? " R" : ""}
                 </SFleetTaskIcon>
                 <div>
                     {getCityName(fleet.cityId)}, {getCityCoords(fleet.cityId)}
@@ -115,21 +116,27 @@ export const Fleet = ({
                     {getFleetStatusTitle(fleet.fleetStatusId)}
                 </SFleetStatus>
             </SFleetRowTitle>
-            <div>
+            <SFleetDetails>
                 {fleetDetails.map((fDetails) => {
                     return (
-                        <div>
-                            {getWarshipTitle(fDetails.warshipId)}:{" "}
-                            {fDetails.qty}
-                        </div>
+                        <SFleetDetail>
+                            <SWarshipIcon
+                                style={{
+                                    backgroundImage: `url("../images/warships/${fDetails.warshipId}.svg")`,
+                                }}
+                            />
+                            <span>{fDetails.qty}</span>
+                        </SFleetDetail>
                     );
                 })}
-            </div>
+            </SFleetDetails>
         </SFleetRow>
     );
 };
 
-const SFleetRow = styled.div``;
+const SFleetRow = styled.div`
+    margin-bottom: 10px;
+`;
 
 const SFleetRowTitle = styled.div`
     display: flex;
@@ -137,9 +144,11 @@ const SFleetRowTitle = styled.div`
 `;
 
 const SFleetTaskIcon = styled.div<{ type?: string }>`
-    width: 20px;
-    height: 20px;
+    display: flex;
+    align-items: center;
     text-align: center;
+    width: 25px;
+    justify-content: center;
     font-size: 12px;
     font-weight: bold;
     color: white;
@@ -181,4 +190,27 @@ const SFleetTimer = styled.div`
 
 const SFleetStatus = styled.div`
     margin-left: 10px;
+`;
+
+const SFleetDetails = styled.div`
+    display: flex;
+    font-size: 12px;
+`;
+
+const SWarshipIcon = styled.div`
+    display: inline-block;
+    background-size: contain;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    margin-right: 10px;
+
+    width: 40px;
+    height: 24px;
+`;
+
+const SFleetDetail = styled.div`
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    font-weight: bold;
 `;

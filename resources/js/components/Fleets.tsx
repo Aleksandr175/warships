@@ -11,12 +11,12 @@ import {
 export const Fleets = ({
     fleets,
     dictionaries,
-    fleetCities,
+    fleetCitiesDictionary,
     fleetDetails,
 }: {
     fleets: ICityFleet[];
     dictionaries: IDictionary;
-    fleetCities: IMapCity[];
+    fleetCitiesDictionary: IMapCity[];
     fleetDetails: IFleetDetail[];
 }) => {
     const getFleetDetails = (fleetId: number): IFleetDetail[] => {
@@ -32,7 +32,8 @@ export const Fleets = ({
                         fleet={fleet}
                         fleetDetails={getFleetDetails(fleet.id)}
                         dictionaries={dictionaries}
-                        fleetCities={fleetCities}
+                        // TODO: sent city and target city, not whole dictionary of cities
+                        fleetCities={fleetCitiesDictionary}
                     />
                 );
             })}
@@ -42,4 +43,5 @@ export const Fleets = ({
 const SColumnFleets = styled.div`
     margin-bottom: 20px;
     background: white;
+    padding: 20px;
 `;

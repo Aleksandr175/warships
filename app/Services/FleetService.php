@@ -6,6 +6,7 @@ use App\Events\FleetUpdatedEvent;
 use App\Events\TestEvent;
 use App\Http\Resources\FleetDetailResource;
 use App\Http\Resources\FleetResource;
+use App\Http\Resources\WarshipResource;
 use App\Models\City;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
@@ -37,7 +38,6 @@ class FleetService
         $this->recursive           = $params->recursive ? 1 : 0;
         $this->taskType            = $params->taskType;
         $this->updatedFleetDetails = [];
-
 
         // check target coords - that it exists
         $this->targetCity = $this->getCityByCoords($this->coordX, $this->coordY);
@@ -100,6 +100,7 @@ class FleetService
                 'time'           => $timeToTarget,
                 'gold'           => 0,
                 'recursive'      => $this->recursive,
+                'status_id'      => 1, // TODO: set default value for fleet status id
                 'deadline'       => Carbon::now()->addSeconds($timeToTarget)
             ])->id;
 
@@ -113,6 +114,13 @@ class FleetService
                 // remove warships from city
                 $warships->where('warship_id', $fleetDetail['warshipId'])->first()->increment('qty', -$fleetDetail['qty']);
             }
+
+            return [
+                'success'  => true,
+                'warships' => WarshipResource::collection($warships)
+            ];
+        } else {
+            return 'No warships in fleet';
         }
     }
 
@@ -280,11 +288,16 @@ class FleetService
             }
 
             if ($statusId || $deadline || $shouldDeleteFleet) {
-                $fleets = $city->fleets;
+                $fleets        = $city->fleets;
                 $fleetsDetails = FleetDetail::getFleetDetails($fleets->pluck('id'));
 
+                $cityIds       = $fleets->pluck('city_id')->toArray();;
+                $targetCityIds = $fleets->pluck('target_city_id')->toArray();;
+
+                $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds))->get();
+
                 dump('Dispatch new fleet event');
-                FleetUpdatedEvent::dispatch($fleets, $fleetsDetails);
+                FleetUpdatedEvent::dispatch($fleets, $fleetsDetails, $cities);
             }
         }
 

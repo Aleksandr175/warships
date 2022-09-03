@@ -11,18 +11,19 @@ import {
     TTask,
 } from "../../types/types";
 import { FleetCard } from "./FleetCard";
+import { InputNumber } from "../Common/InputNumber";
 
 interface IProps {
-    cityId: number;
     dictionary: IWarship[];
     warships: ICityWarship[] | undefined;
     cities: ICity[];
+    city: ICity;
 }
 
-export const Fleet = ({ cityId, dictionary, warships, cities }: IProps) => {
+export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
     const [taskType, setTaskType] = useState<TTask>("trade");
-    const [coordX, setCoordX] = useState<number | string>("");
-    const [coordY, setCoordY] = useState<number | string>("");
+    const [coordX, setCoordX] = useState<number>(0);
+    const [coordY, setCoordY] = useState<number>(0);
     const [actualCityWarships, setActualCityWarships] = useState(warships);
     const [gold, setGold] = useState(0);
 
@@ -54,9 +55,9 @@ export const Fleet = ({ cityId, dictionary, warships, cities }: IProps) => {
         setFleet({
             coordX: 0,
             coordY: 0,
-            recursive: 0,
+            repeating: 0,
             taskType: "trade",
-            cityId,
+            cityId: city.id,
         });
     }, [warships]);
 
@@ -84,7 +85,7 @@ export const Fleet = ({ cityId, dictionary, warships, cities }: IProps) => {
         setFleet(tempFleet);
     }, [coordY]);
 
-    const [recursive, setRecursive] = useState(false);
+    const [repeating, setRepeating] = useState(false);
 
     function getCityWarship(warshipId: number): ICityWarship | undefined {
         return actualCityWarships?.find(
@@ -142,7 +143,7 @@ export const Fleet = ({ cityId, dictionary, warships, cities }: IProps) => {
                     <div className={"col-sm-6 col-md-4"} key={item.id}>
                         <FleetCard
                             key={renderKey}
-                            cityId={cityId}
+                            cityId={city.id}
                             item={item}
                             cityWarship={getCityWarship(item.id)}
                             onChangeQty={(qty) => onChangeQty(item.id, qty)}
@@ -175,38 +176,37 @@ export const Fleet = ({ cityId, dictionary, warships, cities }: IProps) => {
                     })}
                 </div>
                 <SCoordinatesBlock className={"row"}>
-                    <div className={"col-2"}>
+                    <div className={"col-3"}>
                         Coord X:{" "}
-                        <SInput
-                            type="number"
-                            value={coordX || ""}
-                            onChange={(e) => {
-                                setCoordX(Number(e.currentTarget.value));
-                            }}
+                        <InputNumber
+                            value={coordX}
+                            onChange={(value) => setCoordX(value)}
+                            maxNumber={100}
                         />
                     </div>
-                    <div className={"col-2"}>
+                    <div className={"col-3"}>
                         Coord Y:{" "}
-                        <SInput
-                            type="number"
-                            value={coordY || ""}
-                            onChange={(e) => {
-                                setCoordY(Number(e.currentTarget.value));
-                            }}
+                        <InputNumber
+                            value={coordY}
+                            onChange={(value) => setCoordY(value)}
+                            maxNumber={100}
                         />
                     </div>
                 </SCoordinatesBlock>
             </div>
             <div className={"col-4"}>
                 Gold:
-                <SInput
-                    type="number"
-                    value={gold || ""}
-                    onChange={(e) => {
-                        setGold(Number(e.currentTarget.value));
-                    }}
+                <InputNumber
+                    value={gold}
+                    onChange={(value) => setGold(value)}
+                    maxNumber={city.gold}
                 />
             </div>
+
+            <div className={"col-12"}>
+                <br />
+            </div>
+
             <div className={"col-12"}>
                 Task:
                 {/* TODO use dictionary for Task Types */}
@@ -239,14 +239,14 @@ export const Fleet = ({ cityId, dictionary, warships, cities }: IProps) => {
             </div>
 
             <div className={"col-12"}>
-                <span>Recursive:</span>
+                <span>Repeating:</span>
                 <input
                     type={"checkbox"}
-                    value={Number(recursive)}
+                    value={Number(repeating)}
                     onChange={(e) => {
                         const tempFleet = { ...fleet };
 
-                        tempFleet.recursive = Number(e.currentTarget.checked)
+                        tempFleet.repeating = Number(e.currentTarget.checked)
                             ? 1
                             : 0;
 

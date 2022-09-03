@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { httpClient } from "../../httpClient/httpClient";
 import styled from "styled-components";
-import { ICityWarship, IMapCity, IWarship } from "../../types/types";
-import { Warship } from "../Warships/Warship";
+import { ICityWarship, IWarship } from "../../types/types";
 import { Card } from "../Common/Card";
+import { InputNumber } from "../Common/InputNumber";
 
 interface IProps {
     cityId: number;
@@ -14,9 +13,13 @@ interface IProps {
 }
 
 export const FleetCard = ({ item, cityWarship, onChangeQty }: IProps) => {
-    const [qty, setQty] = useState(null);
+    const [qty, setQty] = useState<number>(0);
 
     const maxShips = cityWarship?.qty || 0;
+
+    useEffect(() => {
+        onChangeQty(qty);
+    }, [qty]);
 
     return (
         <>
@@ -27,39 +30,18 @@ export const FleetCard = ({ item, cityWarship, onChangeQty }: IProps) => {
                 qty={maxShips}
             />
 
-            <SInput
-                type="number"
-                value={qty || ""}
-                onChange={(e) => {
-                    let number: string | number = e.currentTarget.value;
-
-                    if (!number) {
-                        number = 0;
-                    }
-
-                    number = parseInt(String(number), 10);
-                    console.log(number);
-                    if (number > 0) {
-                        console.log(maxShips);
-                        if (number > maxShips) {
-                            number = maxShips;
-                        }
-
-                        // @ts-ignore
-                        setQty(number);
-                    } else {
-                        setQty(null);
-                    }
-
-                    onChangeQty(number);
-                }}
-            />
+            <SInputWrapper>
+                <InputNumber
+                    value={qty}
+                    onChange={(value) => setQty(value)}
+                    maxNumber={maxShips}
+                    disabled={!maxShips}
+                />
+            </SInputWrapper>
         </>
     );
 };
 
-const SInput = styled.input`
-    display: inline-block;
+const SInputWrapper = styled.div`
     margin-bottom: 10px;
-    width: 100%;
 `;

@@ -209,8 +209,8 @@ const App = () => {
                                         <Fleet
                                             warships={warships}
                                             dictionary={dictionaries.warships}
-                                            cityId={city.id}
                                             cities={cities}
+                                            city={city}
                                         />
                                     }
                                 />

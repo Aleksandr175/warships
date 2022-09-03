@@ -28,7 +28,7 @@ class CreateFleetsTable extends Migration
 
             $table->integer('speed')->default(0);
             $table->integer('gold')->default(0);
-            $table->integer('recursive')->default(0); // 0|1
+            $table->integer('repeating')->default(0); // 0|1
 
             $table->integer('time')->default(0);
             $table->timestamp('deadline');

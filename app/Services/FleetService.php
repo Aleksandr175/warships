@@ -13,6 +13,7 @@ use App\Models\FleetDetail;
 use App\Models\FleetTaskDictionary;
 use App\Models\User;
 use App\Models\Warship;
+use App\Models\WarshipDictionary;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,7 +24,7 @@ class FleetService
     private $coordY              = null;
     private $fleetDetails        = [];
     private $updatedFleetDetails = [];
-    private $recursive           = false;
+    private $repeating           = false;
     private $taskType            = null;
     private $targetCity          = null;
     private $taskTypeId          = null;
@@ -36,7 +37,7 @@ class FleetService
         $this->coordY              = $params->coordY;
         $this->gold                = $params->gold;
         $this->fleetDetails        = $params->fleetDetails;
-        $this->recursive           = $params->recursive ? 1 : 0;
+        $this->repeating           = $params->repeating ? 1 : 0;
         $this->taskType            = $params->taskType;
         $this->updatedFleetDetails = [];
 
@@ -83,21 +84,19 @@ class FleetService
                 return 'no warships selected';
             }
 
-            // TODO calculate gold for sending fleet
-            // ...
-
             // calculate time to target
             $distance = abs($userCity->coord_x - $this->coordX) + abs($userCity->coord_y - $this->coordY);
             // TODO: add speed param for time
             $timeToTarget = $distance * 5; // in seconds
 
-            // TODO: check gold
-            // check max value and capacity of warships
-            if (!($this->gold && $this->gold > 0)) {
+            if (($this->gold && !is_numeric($this->gold))) {
                 return 'Wrong gold number';
             }
 
-            $userCity->increment('gold', -$this->gold);
+            $gold = $this->handleGold($this->gold, $userCity, $this->updatedFleetDetails);
+
+            // update gold for island
+            $userCity->increment('gold', -$gold);
 
             // create fleet and details
             $fleetId = Fleet::create([
@@ -106,8 +105,8 @@ class FleetService
                 'fleet_task_id'  => $this->taskTypeId,
                 'speed'          => 100,
                 'time'           => $timeToTarget,
-                'gold'           => $this->gold,
-                'recursive'      => $this->recursive,
+                'gold'           => $gold,
+                'repeating'      => $this->repeating,
                 'status_id'      => 1, // TODO: set default value for fleet status id
                 'deadline'       => Carbon::now()->addSeconds($timeToTarget)
             ])->id;
@@ -130,6 +129,36 @@ class FleetService
         } else {
             return 'No warships in fleet';
         }
+    }
+
+    // get maximum gold which we can carry
+    // - gold should be not more than we have on island
+    // - gold should be not more than fleet can carry
+    public function handleGold($gold, $city, $fleetDetails): int {
+        $actualGold = $gold;
+
+        if ($city->gold < $actualGold) {
+            $actualGold = $city->gold;
+        }
+
+        $warshipsDictionary = WarshipDictionary::get();
+
+        $capacity = 0;
+
+        foreach ($warshipsDictionary as $warshipDictionary) {
+            foreach ($fleetDetails as $fleetDetail) {
+                if ($fleetDetail['warshipId'] == $warshipDictionary['id']) {
+                    $capacity += $fleetDetail['qty'] * $warshipDictionary['capacity'];
+                    break;
+                }
+            }
+        }
+
+        if ($capacity < $actualGold) {
+            $actualGold = $capacity;
+        }
+
+        return $actualGold;
     }
 
     public function isCity($city): bool
@@ -156,7 +185,7 @@ class FleetService
             $statusId          = null;
             $deadline          = null;
             $gold              = null;
-            $recursive         = null;
+            $repeating         = null;
             $shouldDeleteFleet = false;
 
             $city = City::find($fleet->city_id);
@@ -177,7 +206,7 @@ class FleetService
                         // send fleet back because we cant trade with ourselves
                         $statusId  = Fleet::FLEET_STATUS_TRADE_GOING_BACK_ID;
                         $deadline  = Carbon::create($fleet->deadline)->addSecond(10);
-                        $recursive = 0;
+                        $repeating = 0;
                     }
                 }
 
@@ -197,7 +226,7 @@ class FleetService
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
                     $city->increment('gold', $fleet->gold);
 
-                    if ($fleet->recursive) {
+                    if ($fleet->repeating) {
                         dump('trade: fleet repeats trade task, going to target');
                         // just repeat task
                         $gold     = 0;
@@ -233,7 +262,7 @@ class FleetService
                         $statusId = Fleet::FLEET_STATUS_MOVING_GOING_BACK_ID;
                         // TODO: calculate distance and secs
                         $deadline  = Carbon::create($fleet->deadline)->addSecond(10);
-                        $recursive = 0;
+                        $repeating = 0;
                     }
 
                 }
@@ -287,7 +316,7 @@ class FleetService
                     'status_id' => $statusId,
                     'gold'      => $gold !== null ? $gold : $fleet->gold,
                     'deadline'  => $deadline,
-                    'recursive' => $recursive !== null ? $recursive : $fleet->recursive
+                    'repeating' => $repeating !== null ? $repeating : $fleet->repeating
                 ]);
             }
 

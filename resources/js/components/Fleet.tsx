@@ -95,7 +95,7 @@ export const Fleet = ({
             <SFleetRowTitle>
                 <SFleetTaskIcon type={getFleetTaskSlug(fleet.fleetTaskId)}>
                     {getFleetTaskSlug(fleet.fleetTaskId)[0].toUpperCase()}{" "}
-                    {fleet.recursive ? " R" : ""}
+                    {fleet.repeating ? " R" : ""}
                 </SFleetTaskIcon>
                 <div>
                     {getCityName(fleet.cityId)}, {getCityCoords(fleet.cityId)}

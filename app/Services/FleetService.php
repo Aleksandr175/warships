@@ -34,6 +34,7 @@ class FleetService
         $this->cityId              = $params->cityId;
         $this->coordX              = $params->coordX;
         $this->coordY              = $params->coordY;
+        $this->gold                = $params->gold;
         $this->fleetDetails        = $params->fleetDetails;
         $this->recursive           = $params->recursive ? 1 : 0;
         $this->taskType            = $params->taskType;
@@ -90,6 +91,13 @@ class FleetService
             // TODO: add speed param for time
             $timeToTarget = $distance * 5; // in seconds
 
+            // TODO: check gold
+            // check max value and capacity of warships
+            if (!($this->gold && $this->gold > 0)) {
+                return 'Wrong gold number';
+            }
+
+            $userCity->increment('gold', -$this->gold);
 
             // create fleet and details
             $fleetId = Fleet::create([
@@ -98,7 +106,7 @@ class FleetService
                 'fleet_task_id'  => $this->taskTypeId,
                 'speed'          => 100,
                 'time'           => $timeToTarget,
-                'gold'           => 0,
+                'gold'           => $this->gold,
                 'recursive'      => $this->recursive,
                 'status_id'      => 1, // TODO: set default value for fleet status id
                 'deadline'       => Carbon::now()->addSeconds($timeToTarget)
@@ -291,7 +299,7 @@ class FleetService
                 $fleets        = $city->fleets;
                 $fleetsDetails = FleetDetail::getFleetDetails($fleets->pluck('id'));
 
-                $cityIds       = $fleets->pluck('city_id')->toArray();;
+                $cityIds = $fleets->pluck('city_id')->toArray();;
                 $targetCityIds = $fleets->pluck('target_city_id')->toArray();;
 
                 $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds))->get();

@@ -140,7 +140,6 @@ export interface IFleet {
     cityId: number;
     coordX: number;
     coordY: number;
-    fleetDetails: IFleetDetail[];
     recursive?: 1 | 0;
     taskType: TTask;
 }

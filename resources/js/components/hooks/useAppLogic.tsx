@@ -31,7 +31,7 @@ export const useAppLogic = () => {
     const [queueWarship, setQueueWarship] = useState<ICityWarshipQueue[]>();
     const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
 
-    useEffect(() => {
+    const setWebsockets = (userId: number): void => {
         // @ts-ignore
         window.Echo = new Echo({
             broadcaster: "pusher",
@@ -47,20 +47,25 @@ export const useAppLogic = () => {
         });
 
         // @ts-ignore
-        window.Echo.channel("fleets").listen(
-            "FleetUpdatedEvent",
-            (event: {
-                fleets: ICityFleet[];
-                fleetsDetails: IFleetDetail[];
-                cities: ICity[];
-            }) => {
-                console.log("new fleet data", event);
-                setFleets(event.fleets);
-                setFleetDetails(event.fleetsDetails);
-                setFleetCitiesDictionary(event.cities);
-            }
-        );
-    }, []);
+        window.Echo.private("user." + userId)
+            .listen(
+                "FleetUpdatedEvent",
+                (event: {
+                    fleets: ICityFleet[];
+                    fleetsDetails: IFleetDetail[];
+                    cities: ICity[];
+                }) => {
+                    console.log("new fleet data", event);
+                    setFleets(event.fleets);
+                    setFleetDetails(event.fleetsDetails);
+                    setFleetCitiesDictionary(event.cities);
+                }
+            )
+            .listen("CityDataUpdatedEvent", (event: { cities: ICity[] }) => {
+                console.log("new city data", event);
+                setCities(event.cities);
+            });
+    };
 
     useEffect(() => {
         httpClient.get("/user").then((response) => {
@@ -69,6 +74,7 @@ export const useAppLogic = () => {
                 setCities(response.data.data.cities);
                 setDictionaries(respDictionary.data);
 
+                setWebsockets(response.data.data.userId);
                 setIsLoading(false);
             });
         });
@@ -77,6 +83,12 @@ export const useAppLogic = () => {
     useEffect(() => {
         getCityResources();
     }, [city]);
+
+    useEffect(() => {
+        const cityInfo = cities?.find((c) => c.id === city?.id);
+
+        setCity(cityInfo);
+    }, [cities]);
 
     useEffect(() => {
         getBuildings();

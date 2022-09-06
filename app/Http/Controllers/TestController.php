@@ -10,7 +10,8 @@ class TestController extends Controller
 {
     public function index() {
         $user = Auth::user();
+        $cities = $user->cities()->get();
 
-        TestEvent::dispatch($user);
+        TestEvent::dispatch($cities);
     }
 }

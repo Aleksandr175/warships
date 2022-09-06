@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\User;
+use App\Http\Resources\CityResource;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -11,26 +11,22 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class TestEvent implements ShouldBroadcast
+class CityDataUpdatedEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * The user that created the server.
-     *
-     * @var \App\Models\User
-     */
     public $cities;
+    public $user;
 
     /**
      * Create a new event instance.
      *
-     * @param  \App\Models\User  $user
      * @return void
      */
-    public function __construct($cities)
+    public function __construct($user, $cities)
     {
-        $this->cities = $cities;
+        $this->cities = CityResource::collection($cities);
+        $this->user   = $user;
     }
 
     /**
@@ -40,8 +36,6 @@ class TestEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        //return new PrivateChannel('channel-name');
-        //return new Channel('testChannel');
-        return new PrivateChannel('user.5');
+        return new PrivateChannel('user.' . $this->user->id);
     }
 }

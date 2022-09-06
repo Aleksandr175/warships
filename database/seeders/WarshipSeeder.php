@@ -18,21 +18,21 @@ class WarshipSeeder extends Seeder
             'warship_id' => 1,
             'city_id' => 10,
             'user_id' => 5,
-            'qty' => 3
+            'qty' => 30
         ]);
 
         Warship::create([
             'warship_id' => 2,
             'city_id' => 10,
             'user_id' => 5,
-            'qty' => 2
+            'qty' => 20
         ]);
 
         Warship::create([
             'warship_id' => 3,
             'city_id' => 10,
             'user_id' => 5,
-            'qty' => 1
+            'qty' => 10
         ]);
     }
 }

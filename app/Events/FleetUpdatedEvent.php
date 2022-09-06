@@ -21,6 +21,7 @@ class FleetUpdatedEvent implements ShouldBroadcast
 
     public $fleets;
     public $fleetsDetails;
+    public $user;
     public $cities;
 
     /**
@@ -28,11 +29,12 @@ class FleetUpdatedEvent implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($fleets, $fleetsDetails, $cities)
+    public function __construct($user, $fleets, $fleetsDetails, $cities)
     {
-        $this->fleets = FleetResource::collection($fleets);
+        $this->user          = $user;
+        $this->fleets        = FleetResource::collection($fleets);
         $this->fleetsDetails = FleetDetailResource::collection($fleetsDetails);
-        $this->cities = CityShortInfoResource::collection($cities);
+        $this->cities        = CityShortInfoResource::collection($cities);
     }
 
     /**
@@ -42,6 +44,6 @@ class FleetUpdatedEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('fleets');
+        return new PrivateChannel('user.' . $this->user['id']);
     }
 }

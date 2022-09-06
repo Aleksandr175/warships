@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\CityDataUpdatedEvent;
 use App\Events\FleetUpdatedEvent;
 use App\Events\TestEvent;
 use App\Http\Resources\FleetDetailResource;
@@ -122,6 +123,9 @@ class FleetService
                 $warships->where('warship_id', $fleetDetail['warshipId'])->first()->increment('qty', -$fleetDetail['qty']);
             }
 
+            $this->sendFleetUpdatedEvent($user, $userCity);
+            $this->sendCityDataUpdatedEvent($user);
+
             return [
                 'success'  => true,
                 'warships' => WarshipResource::collection($warships)
@@ -129,6 +133,24 @@ class FleetService
         } else {
             return 'No warships in fleet';
         }
+    }
+
+    public function sendFleetUpdatedEvent($user, $city) {
+        $fleets        = $city->fleets;
+        $fleetsDetails = FleetDetail::getFleetDetails($fleets->pluck('id'));
+
+        $cityIds = $fleets->pluck('city_id')->toArray();;
+        $targetCityIds = $fleets->pluck('target_city_id')->toArray();;
+
+        $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds))->get();
+
+        FleetUpdatedEvent::dispatch($user, $fleets, $fleetsDetails, $cities);
+    }
+
+    public function sendCityDataUpdatedEvent($user) {
+        $cities = $user->cities;
+
+        CityDataUpdatedEvent::dispatch($user, $cities);
     }
 
     // get maximum gold which we can carry
@@ -325,16 +347,10 @@ class FleetService
             }
 
             if ($statusId || $deadline || $shouldDeleteFleet) {
-                $fleets        = $city->fleets;
-                $fleetsDetails = FleetDetail::getFleetDetails($fleets->pluck('id'));
-
-                $cityIds = $fleets->pluck('city_id')->toArray();;
-                $targetCityIds = $fleets->pluck('target_city_id')->toArray();;
-
-                $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds))->get();
-
                 dump('Dispatch new fleet event');
-                FleetUpdatedEvent::dispatch($fleets, $fleetsDetails, $cities);
+
+                $user = User::find($city->user_id);
+                $this->sendFleetUpdatedEvent($user, $city);
             }
         }
 

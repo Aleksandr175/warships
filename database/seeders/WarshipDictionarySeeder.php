@@ -15,8 +15,8 @@ class WarshipDictionarySeeder extends Seeder
     public function run()
     {
         WarshipDictionary::create([
-            'title' => 'Ship 1',
-            'description' => 'Description ship 1',
+            'title' => 'Lugger',
+            'description' => 'Description for Lugger',
             'attack' => 10,
             'speed' => 10,
             'capacity' => 100,
@@ -27,32 +27,32 @@ class WarshipDictionarySeeder extends Seeder
         ]);
 
         WarshipDictionary::create([
-            'title' => 'Ship 2',
-            'description' => 'Description ship 2',
+            'title' => 'Caravel',
+            'description' => 'Description for Caravel',
             'attack' => 20,
             'speed' => 5,
-            'capacity' => 200,
+            'capacity' => 500,
             'gold' => 200,
             'population' => 100,
             'time' => 20,
+            'health' => 300,
+        ]);
+
+        WarshipDictionary::create([
+            'title' => 'Galera',
+            'description' => 'Description for Galera',
+            'attack' => 10,
+            'speed' => 8,
+            'capacity' => 200,
+            'gold' => 300,
+            'population' => 100,
+            'time' => 40,
             'health' => 200,
         ]);
 
         WarshipDictionary::create([
-            'title' => 'Ship 3',
-            'description' => 'Description ship 3',
-            'attack' => 10,
-            'speed' => 8,
-            'capacity' => 500,
-            'gold' => 300,
-            'population' => 100,
-            'time' => 40,
-            'health' => 400,
-        ]);
-
-        WarshipDictionary::create([
-            'title' => 'Ship 4',
-            'description' => 'Description ship 4',
+            'title' => 'Frigate',
+            'description' => 'Description for Frigate',
             'attack' => 10,
             'speed' => 15,
             'capacity' => 1000,
@@ -63,8 +63,8 @@ class WarshipDictionarySeeder extends Seeder
         ]);
 
         WarshipDictionary::create([
-            'title' => 'Ship 5',
-            'description' => 'Description ship 5',
+            'title' => 'Battleship',
+            'description' => 'Description for Battleship',
             'attack' => 100,
             'speed' => 5,
             'capacity' => 1000,

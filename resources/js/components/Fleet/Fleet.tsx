@@ -136,11 +136,33 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
         setCoordY(city.coordY);
     };
 
+    const getMaxCapacity = (): number => {
+        let maxCapacity = 0;
+
+        fleetDetails?.forEach((fDetail) => {
+            const dictWarship = dictionary.find(
+                (warship) => warship.id === fDetail.warshipId
+            );
+
+            if (dictWarship) {
+                maxCapacity += dictWarship.capacity * fDetail.qty;
+            }
+        });
+
+        return maxCapacity;
+    };
+
+    const maxCapacity = getMaxCapacity();
+
+    if (gold > maxCapacity) {
+        setGold(maxCapacity);
+    }
+
     return (
         <div className={"row"}>
             {dictionary.map((item) => {
                 return (
-                    <div className={"col-sm-6 col-md-4"} key={item.id}>
+                    <div className={"col-sm-6 col-md-2"} key={item.id}>
                         <FleetCard
                             key={renderKey}
                             cityId={city.id}
@@ -176,7 +198,7 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
                     })}
                 </div>
                 <SCoordinatesBlock className={"row"}>
-                    <div className={"col-3"}>
+                    <div className={"col-2"}>
                         Coord X:{" "}
                         <InputNumber
                             value={coordX}
@@ -184,7 +206,7 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
                             maxNumber={100}
                         />
                     </div>
-                    <div className={"col-3"}>
+                    <div className={"col-2"}>
                         Coord Y:{" "}
                         <InputNumber
                             value={coordY}
@@ -195,11 +217,13 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
                 </SCoordinatesBlock>
             </div>
             <div className={"col-4"}>
-                Gold:
+                Gold (Capacity: {maxCapacity}):
                 <InputNumber
                     value={gold}
                     onChange={(value) => setGold(value)}
-                    maxNumber={city.gold}
+                    maxNumber={
+                        city.gold > maxCapacity ? maxCapacity : city.gold
+                    }
                 />
             </div>
 
@@ -239,7 +263,7 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
             </div>
 
             <div className={"col-12"}>
-                <span>Repeating:</span>
+                <span>Repeating: </span>
                 <input
                     type={"checkbox"}
                     value={Number(repeating)}
@@ -266,7 +290,7 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
                         sendFleet();
                     }}
                 >
-                    Send
+                    Send Fleet
                 </button>
             </div>
         </div>
@@ -306,4 +330,8 @@ const SCityPreset = styled.div<{ active?: boolean }>`
 const SCoordinatesBlock = styled.div`
     margin-top: 20px;
     margin-bottom: 20px;
+`;
+
+const SGoldInputWrapper = styled.div`
+    display: flex;
 `;

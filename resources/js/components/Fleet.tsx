@@ -82,14 +82,6 @@ export const Fleet = ({
         return city ? city.coordY + ":" + city.coordX : "";
     };
 
-    const getWarshipTitle = (warshipId: number): string => {
-        const warship = dictionaries.warships.find(
-            (warship) => warship.id === warshipId
-        );
-
-        return warship ? warship.title : "";
-    };
-
     return (
         <SFleetRow>
             <SFleetRowTitle>
@@ -97,14 +89,14 @@ export const Fleet = ({
                     {getFleetTaskSlug(fleet.fleetTaskId)[0].toUpperCase()}{" "}
                     {fleet.repeating ? " R" : ""}
                 </SFleetTaskIcon>
-                <div>
-                    {getCityName(fleet.cityId)}, {getCityCoords(fleet.cityId)}
-                </div>
-                <div>{" -> "}</div>
-                <div>
-                    {getCityName(fleet.targetCityId)},{" "}
-                    {getCityCoords(fleet.targetCityId)}
-                </div>
+                <SCityName>
+                    {getCityCoords(fleet.cityId)}, {getCityName(fleet.cityId)}
+                </SCityName>
+                <SArrow>{" -> "}</SArrow>
+                <SCityName>
+                    {getCityCoords(fleet.targetCityId)},{" "}
+                    {getCityName(fleet.targetCityId)}
+                </SCityName>
                 <SFleetTimer>
                     {timeLeft ? (
                         <>Time Left: {timeLeft} sec.</>
@@ -122,7 +114,7 @@ export const Fleet = ({
                         <SFleetDetail>
                             <SWarshipIcon
                                 style={{
-                                    backgroundImage: `url("../images/warships/${fDetails.warshipId}.svg")`,
+                                    backgroundImage: `url("../images/warships/simple/${fDetails.warshipId}.svg")`,
                                 }}
                             />
                             <span>{fDetails.qty}</span>
@@ -135,12 +127,13 @@ export const Fleet = ({
 };
 
 const SFleetRow = styled.div`
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 `;
 
 const SFleetRowTitle = styled.div`
     display: flex;
     align-items: center;
+    justify-content: flex-start;
 `;
 
 const SFleetTaskIcon = styled.div<{ type?: string }>`
@@ -186,6 +179,7 @@ const SFleetTaskIcon = styled.div<{ type?: string }>`
 
 const SFleetTimer = styled.div`
     margin-left: 10px;
+    width: 200px;
 `;
 
 const SFleetStatus = styled.div`
@@ -213,4 +207,14 @@ const SFleetDetail = styled.div`
     align-items: center;
     margin-right: 20px;
     font-weight: bold;
+`;
+
+const SCityName = styled.div`
+    width: 150px;
+    text-overflow: ellipsis;
+`;
+
+const SArrow = styled.div`
+    font-weight: 700;
+    margin-right: 20px;
 `;

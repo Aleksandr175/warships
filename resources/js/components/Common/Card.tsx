@@ -13,16 +13,16 @@ interface IProps {
 export const Card = ({ object, qty, imagePath }: IProps) => {
     return (
         <>
-            <SItemImageWrapper
+            <SCardImageWrapper
                 style={{
                     backgroundImage: `url("../images/${imagePath}/${object.id}.svg")`,
                 }}
             >
-                <SItemCornerWrapper>
-                    <SItemCorner>{qty}</SItemCorner>
-                </SItemCornerWrapper>
-            </SItemImageWrapper>
-            <h4>{object.title}</h4>
+                <SCardCornerWrapper>
+                    <SCardCorner>{qty}</SCardCorner>
+                </SCardCornerWrapper>
+            </SCardImageWrapper>
+            <SCardName>{object.title}</SCardName>
             <span>{object.description}</span>
         </>
     );
@@ -30,9 +30,9 @@ export const Card = ({ object, qty, imagePath }: IProps) => {
 
 import styled from "styled-components";
 
-const SItemImageWrapper = styled.div`
+const SCardImageWrapper = styled.div`
     border: 1px solid black;
-    height: 100px;
+    height: 80px;
     margin-bottom: 20px;
     position: relative;
 
@@ -42,7 +42,7 @@ const SItemImageWrapper = styled.div`
     background-color: #ddd;
 `;
 
-const SItemCornerWrapper = styled.div`
+const SCardCornerWrapper = styled.div`
     position: absolute;
     top: 0;
     right: 0;
@@ -51,10 +51,15 @@ const SItemCornerWrapper = styled.div`
     border-right: 30px solid #ccc;
 `;
 
-const SItemCorner = styled.span`
+const SCardCorner = styled.span`
     position: absolute;
     top: -25px;
     right: -20px;
     font-size: 16px;
+    font-weight: 700;
+`;
+
+const SCardName = styled.h2`
+    font-size: 20px;
     font-weight: 700;
 `;

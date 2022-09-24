@@ -14,3 +14,21 @@ body {
   padding: 20px;
   margin-bottom: 30px;
 }
+
+.link {
+  display: block;
+  color: #333;
+  text-decoration: none;
+  padding: 10px;
+}
+
+.link:hover {
+  color: #333;
+  text-decoration: underline;
+}
+
+.selected-link {
+  font-weight: 700;
+
+  background: #eee;
+}

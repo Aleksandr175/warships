@@ -1,5 +1,11 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    Link,
+    NavLink,
+} from "react-router-dom";
 import { Overview } from "./Overview";
 import { Buildings } from "./Buildings/Buildings";
 import { Researches } from "./Researches/Researches";
@@ -105,17 +111,54 @@ const App = () => {
                         style={{ paddingLeft: "0" }}
                     >
                         <SColumnMenu>
-                            <Link to={"/dashboard"}>Overview</Link>
-                            <br />
-                            <Link to={"/buildings"}>Buildings</Link>
-                            <br />
-                            <Link to={"/researches"}>Researches</Link>
-                            <br />
-                            <Link to={"/warships"}>Warships</Link>
-                            <br />
-                            <Link to={"/fleets"}>Fleets</Link>
-                            <br />
-                            <Link to={"/map"}>Map</Link>
+                            <NavLink
+                                to={"/dashboard"}
+                                className={({ isActive }) =>
+                                    isActive ? "link selected-link" : "link"
+                                }
+                            >
+                                Overview
+                            </NavLink>
+                            <NavLink
+                                to={"/buildings"}
+                                className={({ isActive }) =>
+                                    isActive ? "link selected-link" : "link"
+                                }
+                            >
+                                Buildings
+                            </NavLink>
+                            <NavLink
+                                to={"/researches"}
+                                className={({ isActive }) =>
+                                    isActive ? "link selected-link" : "link"
+                                }
+                            >
+                                Researches
+                            </NavLink>
+                            <NavLink
+                                to={"/warships"}
+                                className={({ isActive }) =>
+                                    isActive ? "link selected-link" : "link"
+                                }
+                            >
+                                Warships
+                            </NavLink>
+                            <NavLink
+                                to={"/fleets"}
+                                className={({ isActive }) =>
+                                    isActive ? "link selected-link" : "link"
+                                }
+                            >
+                                Fleets
+                            </NavLink>
+                            <NavLink
+                                to={"/map"}
+                                className={({ isActive }) =>
+                                    isActive ? "link selected-link" : "link"
+                                }
+                            >
+                                Map
+                            </NavLink>
                         </SColumnMenu>
                     </div>
                     <SColumnContent className={"col-9"}>

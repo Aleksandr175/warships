@@ -19,7 +19,7 @@ export const InputNumber: React.FC<IProps> = ({
         <SInput
             {...rest}
             disabled={disabled}
-            type="number"
+            type="text"
             value={value || ""}
             onKeyPress={(event) => {
                 if (!/[0-9]/.test(event.key)) {
@@ -36,7 +36,7 @@ export const InputNumber: React.FC<IProps> = ({
                 }
 
                 if (number > 0) {
-                    if (maxNumber && number > maxNumber) {
+                    if (maxNumber !== undefined && number > maxNumber) {
                         number = maxNumber;
                     }
                 }
@@ -50,6 +50,7 @@ export const InputNumber: React.FC<IProps> = ({
 const SInput = styled.input`
     display: inline-block;
     width: 100%;
+    padding: 5px;
 
     &:disabled {
         background: #eee;

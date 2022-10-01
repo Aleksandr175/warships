@@ -20,43 +20,53 @@ class DatabaseSeeder extends Seeder
         \App\Models\User::factory(4)->create();
 
         \App\Models\User::factory(1)->create([
-            'name' => 'Alex',
+            'name'     => 'Alex',
             'password' => Hash::make('123123'),
-            'email' => 'alex@test.ru'
+            'email'    => 'alex@test.ru'
         ]);
 
         \App\Models\User::factory(10)->create();
 
         \App\Models\City::factory(1)->create([
-            'id' => 10,
-            'user_id' => 5,
-            'title' => 'Island Alex-a',
-            'coord_x' => 1,
-            'coord_y' => 1,
-            'gold' => 1000,
+            'id'         => 10,
+            'user_id'    => 5,
+            'title'      => 'Island Alex-a',
+            'coord_x'    => 1,
+            'coord_y'    => 1,
+            'gold'       => 1000,
             'population' => 200
         ]);
 
         \App\Models\City::factory(1)->create([
-            'id' => 11,
-            'user_id' => 5,
-            'title' => 'Island Alex N2',
-            'coord_x' => 3,
-            'coord_y' => 5,
-            'gold' => 1500,
+            'id'         => 11,
+            'user_id'    => 5,
+            'title'      => 'Island Alex N2',
+            'coord_x'    => 3,
+            'coord_y'    => 5,
+            'gold'       => 1500,
             'population' => 300
         ]);
 
         for ($i = 0; $i < 200; $i++) {
             \App\Models\City::factory(1)->create([
-                'user_id' => rand(6, 15),
-                'title' => 'Island',
-                'coord_x' => $i + 5,
-                'coord_y' => $i + 5,
-                'gold' => 500,
+                'user_id'    => rand(6, 15),
+                'title'      => 'Island',
+                'coord_x'    => $i + 5,
+                'coord_y'    => $i + 5,
+                'gold'       => 500,
                 'population' => 300
             ]);
         }
+
+        \App\Models\City::factory(1)->create([
+            'user_id'            => null,
+            'city_dictionary_id' => 2,
+            'title'              => 'Pirate Bay',
+            'coord_x'            => 2,
+            'coord_y'            => 1,
+            'gold'               => 200,
+            'population'         => 50
+        ]);
 
         $this->call(BuildingDictionarySeeder::class);
 

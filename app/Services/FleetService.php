@@ -53,6 +53,10 @@ class FleetService
             return 'no such task type';
         }
 
+        if ($this->taskType === 'attack' && $this->targetCity->city_dictionary_id !== 2) {
+            return 'We can attack pirate bay only';
+        }
+
         $this->taskTypeId = FleetTaskDictionary::where('slug', $this->taskType)->first()->id;
 
         // check details

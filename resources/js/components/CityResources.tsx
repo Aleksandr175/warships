@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ICityResources } from "../types/types";
+import { Icon } from "./Common/Icon";
 
 export const CityResources = ({
     gold,
@@ -38,10 +39,14 @@ export const CityResources = ({
     return (
         <>
             <li>
-                Gold: {Math.floor(goldValue)}{" "}
+                <Icon title={"gold"} />
+                {Math.floor(goldValue)}{" "}
                 {productionGold ? `(+${productionGold})` : ""}
             </li>
-            <li>Workers: {population}</li>
+            <li>
+                <Icon title={"worker"} />
+                {population}
+            </li>
         </>
     );
 };

@@ -17,7 +17,7 @@ class CreateCitiesTable extends Migration
             $table->id();
             $table->bigInteger('city_dictionary_id')->unsigned()->default(1);
 
-            $table->integer('user_id');
+            $table->integer('user_id')->nullable();
             $table->string('title', 50);
             $table->integer('coord_x');
             $table->integer('coord_y');

@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ICityResources, IWarship } from "../../types/types";
 import styled from "styled-components";
-import { SItemCorner, SItemCornerWrapper, SItemImageWrapper } from "../styles";
 import { Card } from "../Common/Card";
+import { Icon } from "../Common/Icon";
 
 interface IProps {
     warship: IWarship;
@@ -57,20 +57,43 @@ export const Warship = ({
     return (
         <div className={"col-sm-6 col-md-4"} key={warship.id}>
             <Card object={warship} qty={currentQty} imagePath={"warships"} />
+            <div className={"row"}>
+                <div className={"col-6"}>
+                    <Icon title={"gold"} />
+                    <SText>{warship.gold}</SText>
+                </div>
 
-            <p>
-                Gold: {warship.gold}. Workers: {warship.population}
-                <br />
-                Attack: {warship.attack}.
-                <br />
-                Speed: {warship.speed}
-                <br />
-                Capacity: {warship.capacity}. <br />
-                Health: {warship.health}
-                <br />
-                Time: {warship.time}
-                <br />
-            </p>
+                <div className={"col-6"}>
+                    <Icon title={"worker"} />
+                    <SText>{warship.population}</SText>
+                </div>
+
+                <div className={"col-6"}>
+                    <Icon title={"attack"} />
+                    <SText>{warship.attack}</SText>
+                </div>
+
+                <div className={"col-6"}>
+                    <Icon title={"speed"} />
+                    <SText>{warship.speed}</SText>
+                </div>
+
+                <div className={"col-6"}>
+                    <Icon title={"capacity"} />
+                    <SText>{warship.capacity}</SText>
+                </div>
+
+                <div className={"col-6"}>
+                    <Icon title={"heart"} />
+                    <SText>{warship.health}</SText>
+                </div>
+
+                <div className={"col-6"}>
+                    <Icon title={"time"} />
+                    <SText>{warship.time}</SText>
+                </div>
+            </div>
+
             <p>You can create: {maxShips}</p>
             <SInput
                 type="number"
@@ -106,7 +129,6 @@ export const Warship = ({
             >
                 Create
             </button>
-
             <br />
             <br />
         </div>
@@ -117,4 +139,12 @@ const SInput = styled.input`
     display: inline-block;
     margin-bottom: 10px;
     width: 100%;
+`;
+
+const SText = styled.span`
+    line-height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    padding-left: 10px;
+    font-size: 14px;
 `;

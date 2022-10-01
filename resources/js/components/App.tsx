@@ -16,6 +16,7 @@ import { Map } from "./Map/Map";
 import { Fleet } from "./Fleet/Fleet";
 import { useAppLogic } from "./hooks/useAppLogic";
 import { Fleets } from "./Fleets";
+import { Icon } from "./Common/Icon";
 
 const App = () => {
     const {
@@ -71,7 +72,8 @@ const App = () => {
                                 </div>
                                 <SResources>
                                     <li>
-                                        Coords: {city.coordX}:{city.coordY}
+                                        <Icon title={"island"} />
+                                        {city.coordX}:{city.coordY}
                                     </li>
                                     <CityResources
                                         gold={cityResources?.gold || 0}

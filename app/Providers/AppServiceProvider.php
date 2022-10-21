@@ -31,17 +31,17 @@ class AppServiceProvider extends ServiceProvider
         Queue::after(function (JobProcessed $event) {
             if ($event->job->getQueue() === 'resource') {
                 sleep(1);
-                ResourceJob::dispatch()->onQueue('resource');;
+                ResourceJob::dispatch()->onQueue('resource');
             }
 
             if ($event->job->getQueue() === 'warshipQueue') {
                 sleep(1);
-                WarshipQueueJob::dispatch()->onQueue('warshipQueue');;
+                WarshipQueueJob::dispatch()->onQueue('warshipQueue');
             }
 
             if ($event->job->getQueue() === 'fleet') {
                 sleep(1);
-                FleetJob::dispatch()->onQueue('fleet');;
+                FleetJob::dispatch()->onQueue('fleet');
             }
         });
     }

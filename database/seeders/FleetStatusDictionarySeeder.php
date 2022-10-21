@@ -28,5 +28,10 @@ class FleetStatusDictionarySeeder extends Seeder
             'title' => 'On way back',
             'description' => 'On way back'
         ]);
+
+        FleetStatusDictionary::create([
+            'title' => 'Attack',
+            'description' => 'Attack in progress'
+        ]);
     }
 }

@@ -8,6 +8,7 @@ use App\Events\TestEvent;
 use App\Http\Resources\FleetDetailResource;
 use App\Http\Resources\FleetResource;
 use App\Http\Resources\WarshipResource;
+use App\Jobs\AttackProcessJob;
 use App\Models\City;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
@@ -204,7 +205,12 @@ class FleetService
         return City::where('coord_x', $coordX)->where('coord_y', $coordY)->first();
     }
 
-    public function handleFleet($fleet)
+    /**
+     * @param Fleet $fleet
+     *
+     * @return void
+     */
+    public function handleFleet(Fleet $fleet)
     {
         // only if deadline is expired
         if ($fleet->deadline < Carbon::now()) {
@@ -217,7 +223,7 @@ class FleetService
             $city = City::find($fleet->city_id);
 
             // task: trade
-            if ($fleet->isTradeFleet()) {
+            if ($fleet->isTradeTask()) {
                 if ($fleet->isTradeGoingToTarget()) {
                     dump('trade: fleet starts to trade');
                     $statusId = Fleet::FLEET_STATUS_TRADING_ID;
@@ -269,7 +275,7 @@ class FleetService
             }
 
             // task: move fleet to another island
-            if ($fleet->isMovingFleet()) {
+            if ($fleet->isMovingTask()) {
                 if ($fleet->isMovingFleetGoingToTarget()) {
                     // check user of island (we can move fleet between not ours islands)
                     $city         = City::find($fleet->city_id);
@@ -305,8 +311,7 @@ class FleetService
                 }
             }
 
-            // TODO: task: transport
-            if ($fleet->isTrasnsportFleet()) {
+            if ($fleet->isTrasnsportTask()) {
                 if ($fleet->isTransportFleetGoingToTarget()) {
                     dump('transport: fleet delivered resource, fleet is going back');
                     $statusId = Fleet::FLEET_STATUS_TRANSPORT_GOING_BACK_ID;
@@ -331,10 +336,32 @@ class FleetService
                 }
             }
 
+            if ($fleet->isAttackTask()) {
+                if ($fleet->isAttackFleetGoingToTarget()) {
+                    dump('attack fleet: fleet achieved target city');
+                    $statusId = Fleet::FLEET_STATUS_ATTACK_IN_PROGRESS;
 
-            // ----------------------------------
-            // TODO: task: attack? // DO it later
-            // ----------------------------------
+                    // TODO: how long? // distance?
+                    $deadline = Carbon::create($fleet->deadline);
+
+                    AttackProcessJob::dispatch()->onQueue('attack');
+                }
+
+                if ($fleet->isAttackFleetAttackInProgress()) {
+                    // todo
+                }
+
+                if ($fleet->isAttackFleetGoingBack()) {
+                    dump('attack: fleet has returned to original island');
+
+                    $city         = City::find($fleet->city_id);
+                    $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
+
+                    $this->convertFleetDetailsToWarships($fleetDetails, $city);
+
+                    $shouldDeleteFleet = true;
+                }
+            }
 
             if ($deadline && $statusId) {
                 // update fleet

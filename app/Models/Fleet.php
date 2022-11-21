@@ -5,6 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property integer $id
+ * @property integer $city_id
+ * @property integer $target_city_id
+ * @property integer $fleet_task_id
+ * @property integer $status_id
+ * @property integer $speed
+ * @property integer $gold
+ * @property integer $repeating
+ * @property integer $time
+ * @property integer $deadline
+ */
 class Fleet extends Model
 {
     use HasFactory;

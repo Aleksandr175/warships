@@ -8,7 +8,7 @@ use App\Events\TestEvent;
 use App\Http\Resources\FleetDetailResource;
 use App\Http\Resources\FleetResource;
 use App\Http\Resources\WarshipResource;
-use App\Jobs\AttackProcessJob;
+use App\Jobs\BattleJob;
 use App\Models\City;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
@@ -81,7 +81,7 @@ class FleetService
                             'warshipId' => $warship->id
                         ];
 
-                        array_push($this->updatedFleetDetails, $detail);
+                        $this->updatedFleetDetails[] = $detail;
                     }
                 }
             }
@@ -174,7 +174,7 @@ class FleetService
 
         foreach ($warshipsDictionary as $warshipDictionary) {
             foreach ($fleetDetails as $fleetDetail) {
-                if ($fleetDetail['warshipId'] == $warshipDictionary['id']) {
+                if ($fleetDetail['warshipId'] === $warshipDictionary['id']) {
                     $capacity += $fleetDetail['qty'] * $warshipDictionary['capacity'];
                     break;
                 }
@@ -338,17 +338,21 @@ class FleetService
 
             if ($fleet->isAttackTask()) {
                 if ($fleet->isAttackFleetGoingToTarget()) {
-                    dump('attack fleet: fleet achieved target city');
+                    dump('attack fleet: fleet achieved target island');
                     $statusId = Fleet::FLEET_STATUS_ATTACK_IN_PROGRESS;
 
                     // TODO: how long? // distance?
                     $deadline = Carbon::create($fleet->deadline);
 
-                    AttackProcessJob::dispatch()->onQueue('attack');
+                    BattleJob::dispatch()->onQueue('attack');
                 }
 
                 if ($fleet->isAttackFleetAttackInProgress()) {
-                    // todo
+                    dump('fleets\'s attack is completed: fleet is going back');
+                    $statusId = Fleet::FLEET_STATUS_ATTACK_GOING_BACK_ID;
+
+                    // TODO: how long? // distance?
+                    $deadline = Carbon::create($fleet->deadline);
                 }
 
                 if ($fleet->isAttackFleetGoingBack()) {

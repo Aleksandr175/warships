@@ -18,7 +18,7 @@ class CreateWarshipsTable extends Migration
 
             $table->bigInteger('warship_id')->unsigned();
             $table->bigInteger('city_id')->unsigned();
-            $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('user_id')->unsigned()->nullable();
 
             $table->integer('qty')->default(0);
 

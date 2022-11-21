@@ -2,6 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\Fleet;
+use App\Services\BattleService;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -9,7 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class AttackProcessJob implements ShouldQueue
+class BattleJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -28,8 +31,14 @@ class AttackProcessJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(BattleService $battleService)
     {
+        // TODO add limit?
+        $fleetQueue = Fleet::where('deadline', '<', Carbon::now())->get();
+
+        foreach ($fleetQueue as $fleet) {
+            $battleService->handle($fleet);
+        }
         //
     }
 }

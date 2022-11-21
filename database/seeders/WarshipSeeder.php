@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\City;
+use App\Models\CityDictionary;
 use App\Models\Warship;
 use Illuminate\Database\Seeder;
 
@@ -34,5 +36,31 @@ class WarshipSeeder extends Seeder
             'user_id' => 5,
             'qty' => 10
         ]);
+
+        // set some warships for pirate bays
+        $pirateBays = City::where('city_dictionary_id', CityDictionary::PIRATE_BAY)->get();
+
+        foreach ($pirateBays as $pirateBay) {
+            Warship::create([
+                'warship_id' => 1,
+                'city_id' => $pirateBay->id,
+                'user_id' => null,
+                'qty' => 3
+            ]);
+
+            Warship::create([
+                'warship_id' => 2,
+                'city_id' => $pirateBay->id,
+                'user_id' => null,
+                'qty' => 2
+            ]);
+
+            Warship::create([
+                'warship_id' => 3,
+                'city_id' => $pirateBay->id,
+                'user_id' => null,
+                'qty' => 1
+            ]);
+        }
     }
 }

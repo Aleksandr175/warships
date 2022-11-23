@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Fleet;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +33,14 @@ Route::get('/server-start', function () {
     \App\Jobs\FleetJob::dispatch()->onQueue('fleet');
 
     return "Server started!";
+});
+
+Route::get('/test-battle', function (\App\Services\BattleService $battleService) {
+    $fleetQueue = Fleet::where('fleet_task_id', 3)->get();
+
+    foreach ($fleetQueue as $fleet) {
+        $battleService->handle($fleet);
+    }
 });
 
 Route::middleware('auth')->group(function () {

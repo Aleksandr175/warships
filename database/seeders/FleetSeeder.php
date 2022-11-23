@@ -27,6 +27,7 @@ class FleetSeeder extends Seeder
         $statusTrade1     = FleetStatusDictionary::find(1);
         $statusMove1      = FleetStatusDictionary::find(1);
         $statusTransport1 = FleetStatusDictionary::find(1);
+        $statusAttack1    = FleetStatusDictionary::find(1);
         $time             = 10;
 
         Fleet::create([
@@ -61,6 +62,19 @@ class FleetSeeder extends Seeder
             'repeating'      => 0,
             'fleet_task_id'  => $taskTransport->id,
             'status_id'      => $statusTransport1->id,
+            'time'           => $time,
+            'deadline'       => Carbon::now()->addSeconds($time)
+        ]);
+
+        // attack
+        Fleet::create([
+            'city_id'        => $myCity->id,
+            'target_city_id' => 212,
+            'speed'          => 70,
+            'gold'           => 0,
+            'repeating'      => 0,
+            'fleet_task_id'  => $taskAttack->id,
+            'status_id'      => $statusAttack1->id,
             'time'           => $time,
             'deadline'       => Carbon::now()->addSeconds($time)
         ]);

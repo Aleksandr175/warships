@@ -34,7 +34,8 @@ class BattleJob implements ShouldQueue
     public function handle(BattleService $battleService)
     {
         // TODO add limit?
-        $fleetQueue = Fleet::where('deadline', '<', Carbon::now())->get();
+        // TODO - 3 to constant
+        $fleetQueue = Fleet::where('deadline', '<', Carbon::now())->where('fleet_task_id', 3)->get();
 
         foreach ($fleetQueue as $fleet) {
             $battleService->handle($fleet);

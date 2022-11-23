@@ -42,28 +42,29 @@ class BattleService
         $warshipsDictionary = WarshipDictionary::get();
 
         if ($targetCity->city_dictionary_id === CityDictionary::PIRATE_BAY) {
+            dump('pirate bay');
+
             // get warships for pirate bay
             $enemyWarships = $targetCity->warships;
-
-            $fleetForce            = 0;
-            $enemyForce            = 0;
-            $fleetTypes            = 0;
-            $pirateBayWarshipTypes = 0;
+            foreach ($enemyWarships as $warship) {
+                $enemyFleetDetails[] = [
+                    'warship_id' => $warship['warship_id'],
+                    'qty'        => $warship['qty']
+                ];
+            }
 
             // set needed data, like health
             foreach ($warshipsDictionary as $warshipDictionary) {
                 for ($i = 0, $iMax = count($fleetDetails); $i < $iMax; $i++) {
-                    if ($fleetDetails[$i]['warshipId'] === $warshipDictionary['id']) {
+                    if ($fleetDetails[$i]['warship_id'] === $warshipDictionary['id']) {
                         $fleetDetails[$i]['health'] = $warshipDictionary['health'];
-                        ++$fleetTypes;
                         break;
                     }
                 }
 
-                for ($i = 0, $iMax = count($enemyWarships); $i < $iMax; $i++) {
-                    if ($enemyWarships[$i]['warshipId'] === $warshipDictionary['id']) {
-                        $enemyWarships[$i]['health'] = $warshipDictionary['health'];
-                        ++$pirateBayWarshipTypes;
+                for ($i = 0, $iMax = count($enemyFleetDetails); $i < $iMax; $i++) {
+                    if ($enemyFleetDetails[$i]['warship_id'] === $warshipDictionary['id']) {
+                        $enemyFleetDetails[$i]['health'] = $warshipDictionary['health'];
                         break;
                     }
                 }
@@ -71,18 +72,23 @@ class BattleService
 
             // calculate rounds while we have warships on each side
             do {
+                $fleetForce            = 0;
+                $enemyForce            = 0;
+                $fleetTypes            = 0;
+                $pirateBayWarshipTypes = 0;
+
                 foreach ($warshipsDictionary as $warshipDictionary) {
                     foreach ($fleetDetails as $fleetDetail) {
-                        if ($fleetDetail['warshipId'] === $warshipDictionary['id']) {
+                        if ($fleetDetail['warship_id'] === $warshipDictionary['id']) {
                             $fleetForce += $fleetDetail['qty'] * $warshipDictionary['attack'];
                             ++$fleetTypes;
                             break;
                         }
                     }
 
-                    foreach ($enemyWarships as $fleetDetail) {
-                        if ($fleetDetail['warshipId'] === $warshipDictionary['id']) {
-                            $enemyForce += $enemyWarships['qty'] * $warshipDictionary['attack'];
+                    foreach ($enemyFleetDetails as $fleetDetail) {
+                        if ($fleetDetail['warship_id'] === $warshipDictionary['id']) {
+                            $enemyForce += $fleetDetail['qty'] * $warshipDictionary['attack'];
                             ++$pirateBayWarshipTypes;
                             break;
                         }
@@ -91,24 +97,17 @@ class BattleService
 
                 $damageToEachType = $fleetForce / $pirateBayWarshipTypes;
 
-                [$enemyWarships, $pirateBayWarshipTypes] = $this->shoot($damageToEachType, $enemyWarships, $pirateBayWarshipTypes);
+                [$enemyFleetDetails, $pirateBayWarshipTypes] = $this->shoot($damageToEachType, $enemyFleetDetails, $pirateBayWarshipTypes);
 
                 $enemyDamageToEachType = $enemyForce / $fleetTypes;
 
                 [$fleetDetails, $fleetTypes] = $this->shoot($enemyDamageToEachType, $fleetDetails, $fleetTypes);
             } while ($pirateBayWarshipTypes > 0 && $fleetTypes > 0);
 
+
+            dd($fleetDetails, $enemyFleetDetails);
             // TODO calculate result of whole battle
             // ...
-
-
-            // calc force of warships = qty * attack
-            //
-
-            //
-
-
-            dump($fleetDetails, $enemyWarships);
         }
 
         if ($targetCity->city_dictionary_id === CityDictionary::PLAYERS_ISLAND) {
@@ -134,11 +133,13 @@ class BattleService
                 $wholeHealth = 0;
             }
 
-            $warships[$i]['qty'] = $wholeHealth / $warships[$i]['health'];
+            $warships[$i]['qty'] = ceil($wholeHealth / $warships[$i]['health']);
 
-            if ($warships[$i]['qty'] === 0) {
+            if ($warships[$i]['qty'] < 1) {
                 --$warshipTypes;
-                array_splice($warships[$i], $i, 1);
+                array_splice($warships, $i, 1);
+                $i--;
+                $iMax--;
             }
         }
 

@@ -17,7 +17,7 @@ class WarshipDictionarySeeder extends Seeder
         WarshipDictionary::create([
             'title' => 'Lugger',
             'description' => 'Description for Lugger',
-            'attack' => 10,
+            'attack' => 50,
             'speed' => 10,
             'capacity' => 100,
             'gold' => 100,
@@ -29,7 +29,7 @@ class WarshipDictionarySeeder extends Seeder
         WarshipDictionary::create([
             'title' => 'Caravel',
             'description' => 'Description for Caravel',
-            'attack' => 20,
+            'attack' => 70,
             'speed' => 5,
             'capacity' => 500,
             'gold' => 200,
@@ -41,7 +41,7 @@ class WarshipDictionarySeeder extends Seeder
         WarshipDictionary::create([
             'title' => 'Galera',
             'description' => 'Description for Galera',
-            'attack' => 10,
+            'attack' => 150,
             'speed' => 8,
             'capacity' => 200,
             'gold' => 300,
@@ -53,7 +53,7 @@ class WarshipDictionarySeeder extends Seeder
         WarshipDictionary::create([
             'title' => 'Frigate',
             'description' => 'Description for Frigate',
-            'attack' => 10,
+            'attack' => 300,
             'speed' => 15,
             'capacity' => 1000,
             'gold' => 1500,
@@ -65,7 +65,7 @@ class WarshipDictionarySeeder extends Seeder
         WarshipDictionary::create([
             'title' => 'Battleship',
             'description' => 'Description for Battleship',
-            'attack' => 100,
+            'attack' => 700,
             'speed' => 5,
             'capacity' => 1000,
             'gold' => 1000,

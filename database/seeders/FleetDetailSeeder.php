@@ -49,5 +49,22 @@ class FleetDetailSeeder extends Seeder
             'warship_id' => 3,
             'qty'        => 5,
         ]);
+
+        // fleet details for attack
+        FleetDetail::create([
+            'fleet_id'   => 4,
+            'warship_id' => 1,
+            'qty'        => 10,
+        ]);
+        FleetDetail::create([
+            'fleet_id'   => 4,
+            'warship_id' => 2,
+            'qty'        => 5,
+        ]);
+        FleetDetail::create([
+            'fleet_id'   => 4,
+            'warship_id' => 3,
+            'qty'        => 2,
+        ]);
     }
 }

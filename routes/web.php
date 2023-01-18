@@ -36,6 +36,8 @@ Route::get('/server-start', function () {
 });
 
 Route::get('/test-battle', function (\App\Services\BattleService $battleService) {
+    \App\Jobs\BattleJob::dispatch()->onQueue('battle');
+
     $fleetQueue = Fleet::where('fleet_task_id', 3)->get();
 
     foreach ($fleetQueue as $fleet) {

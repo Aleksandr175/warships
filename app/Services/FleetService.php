@@ -344,7 +344,7 @@ class FleetService
                     // TODO: how long? // distance?
                     $deadline = Carbon::create($fleet->deadline);
 
-                    BattleJob::dispatch()->onQueue('attack');
+                    BattleJob::dispatch()->onQueue('battle');
                 }
 
                 if ($fleet->isAttackFleetAttackInProgress()) {

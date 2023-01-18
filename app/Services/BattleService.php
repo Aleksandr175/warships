@@ -9,6 +9,8 @@ use App\Http\Resources\FleetDetailResource;
 use App\Http\Resources\FleetResource;
 use App\Http\Resources\WarshipResource;
 use App\Jobs\BattleJob;
+use App\Models\BattleLog;
+use App\Models\BattleLogDetail;
 use App\Models\City;
 use App\Models\CityDictionary;
 use App\Models\Fleet;
@@ -26,6 +28,8 @@ class BattleService
     public function handle(Fleet $fleet)
     {
         $targetCity = City::find($fleet->target_city_id);
+        //$city = City::find($fleet->city_id);
+        //$userId = $city->user_id;
 
         $attackingFleetDetails = FleetDetail::getFleetDetails([$fleet->id])->toArray();
 
@@ -60,9 +64,9 @@ class BattleService
                 }
             }
 
-            $logAttacking  = [];
-            $logDefending  = [];
-            $round = 0;
+            $logAttacking = [];
+            $logDefending = [];
+            $round        = 0;
 
             // calculate rounds while we have warships on each side
             do {
@@ -94,9 +98,51 @@ class BattleService
                 $round++;
             } while (count($defendingFleetDetails) > 0 && count($attackingFleetDetails) > 0);
 
+            // get battle id
+            $battleLog = BattleLog::latest()->first();
+
+            if ($battleLog) {
+                $battleLogId = $battleLog->battle_log_id + 1;
+            } else {
+                $battleLogId = 1;
+            }
+
+            for ($i = 0; $i < $round; $i++) {
+                for ($logIndex = 0, $logIndexMax = count($logAttacking[$i]); $logIndex < $logIndexMax; $logIndex++) {
+                    BattleLogDetail::create([
+                        'warship_id' => $logAttacking[$i][$logIndex]['warship_id'],
+                        'qty'        => $logAttacking[$i][$logIndex]['qty'],
+                        'destroyed'  => $logAttacking[$i][$logIndex]['destroyed'],
+                        'battle_log_id'  => $battleLogId,
+                        'round'      => $i + 1
+                    ]);
+                }
+
+                for ($logIndex = 0, $logIndexMax = count($logDefending[$i]); $logIndex < $logIndexMax; $logIndex++) {
+                    BattleLogDetail::create([
+                        'warship_id' => $logDefending[$i][$logIndex]['warship_id'],
+                        'qty'        => $logDefending[$i][$logIndex]['qty'],
+                        'destroyed'  => $logDefending[$i][$logIndex]['destroyed'],
+                        'battle_log_id'  => $battleLogId,
+                        'round'      => $i + 1
+                    ]);
+                }
+
+                BattleLog::create([
+                    'battle_log_id' => $battleLogId,
+                    'round' => $i + 1,
+                    'type' => 'attack'
+                ]);
+
+                BattleLog::create([
+                    'battle_log_id' => $battleLogId,
+                    'round' => $i + 1,
+                    'type' => 'defend'
+                ]);
+            }
 
             dump('LOGS', $logAttacking, $logDefending);
-            dd($attackingFleetDetails, $defendingFleetDetails);
+            //dd($attackingFleetDetails, $defendingFleetDetails);
             // TODO calculate result of whole battle
             // TODO put logs to db
             // ...
@@ -125,7 +171,7 @@ class BattleService
         $restDamage = 0;
         $log        = [];
 
-        dump('SHOOT');
+        //dump('SHOOT');
 
         for ($i = 0, $iMax = count($warships); $i < $iMax; $i++) {
             $wholeHealth = $warships[$i]['qty'] * $warships[$i]['health'];
@@ -148,6 +194,7 @@ class BattleService
             //dump('$warships[$i]', $warships[$i], $wholeHealth, $restDamage);
 
             $log[] = [
+                'qty'        => $startQty,
                 'destroyed'  => $startQty - ceil($warships[$i]['qty']),
                 'warship_id' => $warships[$i]['warship_id'],
                 'damage'     => $logDamage,

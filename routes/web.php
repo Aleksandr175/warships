@@ -65,6 +65,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/api/fleets', [\App\Http\Controllers\FleetController::class, 'get']);
     Route::post('/api/fleets/send', [\App\Http\Controllers\FleetController::class, 'send']);
+
+    Route::get('/api/battle-logs', [\App\Http\Controllers\BattleLogController::class, 'get']);
 });
 
 Route::get('/', function () {
@@ -92,6 +94,10 @@ Route::get('/map', function () {
 })->middleware(['auth'])->name('dashboard');
 
 Route::get('/fleets', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+Route::get('/logs', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 

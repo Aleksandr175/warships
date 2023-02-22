@@ -30,6 +30,7 @@ export const useAppLogic = () => {
     const [queue, setQueue] = useState<ICityBuildingQueue>();
     const [queueWarship, setQueueWarship] = useState<ICityWarshipQueue[]>();
     const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
+    const [userId, setUserId] = useState<number>();
 
     const setWebsockets = (userId: number): void => {
         // @ts-ignore
@@ -73,6 +74,7 @@ export const useAppLogic = () => {
                 setCity(response.data.data.cities[0]);
                 setCities(response.data.data.cities);
                 setDictionaries(respDictionary.data);
+                setUserId(response.data.data.userId);
 
                 setWebsockets(response.data.data.userId);
                 setIsLoading(false);
@@ -213,5 +215,6 @@ export const useAppLogic = () => {
         queueWarship,
         setQueueWarship,
         fleetDetails,
+        userId,
     };
 };

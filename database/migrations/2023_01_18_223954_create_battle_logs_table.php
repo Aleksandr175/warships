@@ -18,15 +18,10 @@ class CreateBattleLogsTable extends Migration
 
             $table->integer('battle_log_id');
 
-            //$table->bigInteger('battle_log_detail_id')->unsigned();
-            //$table->bigInteger('fleet_id')->unsigned();
+            $table->bigInteger('attacker_user_id')->nullable();
+            $table->bigInteger('defender_user_id')->nullable();
 
-            $table->integer('round');
-            //$table->integer('damage');
-            $table->string('type', 10); // attack or defend
-
-            //$table->foreign('battle_log_detail_id')->references('id')->on('battle_log_details')->onDelete('cascade')->onUpdate('cascade');
-            //$table->foreign('fleet_id')->references('id')->on('fleets')->onDelete('cascade')->onUpdate('cascade');
+            $table->integer('round')->default(1);
 
             $table->timestamps();
         });

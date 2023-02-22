@@ -17,6 +17,7 @@ class CreateBattleLogDetailsTable extends Migration
             $table->id();
 
             $table->integer('battle_log_id');
+            $table->integer('user_id')->nullable();
             $table->integer('round');
             $table->integer('warship_id');
             $table->integer('qty');

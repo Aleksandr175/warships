@@ -27,9 +27,10 @@ class BattleService
     // handle battle process
     public function handle(Fleet $fleet)
     {
-        $targetCity = City::find($fleet->target_city_id);
-        //$city = City::find($fleet->city_id);
-        //$userId = $city->user_id;
+        $targetCity       = City::find($fleet->target_city_id);
+        $city             = City::find($fleet->city_id);
+        $userId           = $city->user_id;
+        $targetCityUserId = $targetCity->user_id;
 
         $attackingFleetDetails = FleetDetail::getFleetDetails([$fleet->id])->toArray();
 
@@ -110,42 +111,35 @@ class BattleService
             for ($i = 0; $i < $round; $i++) {
                 for ($logIndex = 0, $logIndexMax = count($logAttacking[$i]); $logIndex < $logIndexMax; $logIndex++) {
                     BattleLogDetail::create([
-                        'warship_id' => $logAttacking[$i][$logIndex]['warship_id'],
-                        'qty'        => $logAttacking[$i][$logIndex]['qty'],
-                        'destroyed'  => $logAttacking[$i][$logIndex]['destroyed'],
-                        'battle_log_id'  => $battleLogId,
-                        'round'      => $i + 1
+                        'warship_id'    => $logAttacking[$i][$logIndex]['warship_id'],
+                        'qty'           => $logAttacking[$i][$logIndex]['qty'],
+                        'destroyed'     => $logAttacking[$i][$logIndex]['destroyed'],
+                        'battle_log_id' => $battleLogId,
+                        'round'         => $i + 1,
+                        'user_id'       => $userId
                     ]);
                 }
 
                 for ($logIndex = 0, $logIndexMax = count($logDefending[$i]); $logIndex < $logIndexMax; $logIndex++) {
                     BattleLogDetail::create([
-                        'warship_id' => $logDefending[$i][$logIndex]['warship_id'],
-                        'qty'        => $logDefending[$i][$logIndex]['qty'],
-                        'destroyed'  => $logDefending[$i][$logIndex]['destroyed'],
-                        'battle_log_id'  => $battleLogId,
-                        'round'      => $i + 1
+                        'warship_id'    => $logDefending[$i][$logIndex]['warship_id'],
+                        'qty'           => $logDefending[$i][$logIndex]['qty'],
+                        'destroyed'     => $logDefending[$i][$logIndex]['destroyed'],
+                        'battle_log_id' => $battleLogId,
+                        'round'         => $i + 1,
+                        'user_id'       => null
                     ]);
                 }
-
-                BattleLog::create([
-                    'battle_log_id' => $battleLogId,
-                    'round' => $i + 1,
-                    'type' => 'attack'
-                ]);
-
-                BattleLog::create([
-                    'battle_log_id' => $battleLogId,
-                    'round' => $i + 1,
-                    'type' => 'defend'
-                ]);
             }
 
+            BattleLog::create([
+                'battle_log_id'    => $battleLogId,
+                'attacker_user_id' => $userId,
+                'defender_user_id' => $targetCityUserId,
+                'round'            => $round
+            ]);
+
             dump('LOGS', $logAttacking, $logDefending);
-            //dd($attackingFleetDetails, $defendingFleetDetails);
-            // TODO calculate result of whole battle
-            // TODO put logs to db
-            // ...
         }
 
         if ($targetCity->city_dictionary_id === CityDictionary::PLAYERS_ISLAND) {

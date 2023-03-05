@@ -21,6 +21,8 @@ class BattleLogResource extends JsonResource
             'defenderUserId' => $this->defender_user_id,
             'date'           => $this->created_at,
             'round'          => $this->round,
+            'winner'         => $this->winner,
+            'cityId'         => $this->city_id,
         ];
     }
 }

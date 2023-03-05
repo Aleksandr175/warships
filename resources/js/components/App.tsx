@@ -17,6 +17,7 @@ import { Fleet } from "./Fleet/Fleet";
 import { useAppLogic } from "./hooks/useAppLogic";
 import { Fleets } from "./Fleets";
 import { Logs } from "./Logs/Logs";
+import { Log } from "./Logs/Log";
 import { Icon } from "./Common/Icon";
 
 const App = () => {
@@ -272,6 +273,15 @@ const App = () => {
                                 <Route
                                     path={"map"}
                                     element={<Map cityId={city.id} />}
+                                />
+                                <Route
+                                    path="logs/:id"
+                                    element={
+                                        <Log
+                                            dictionary={dictionaries.warships}
+                                            userId={userId || 0}
+                                        />
+                                    }
                                 />
                                 <Route
                                     path={"logs"}

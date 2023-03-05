@@ -18,8 +18,11 @@ class CreateBattleLogsTable extends Migration
 
             $table->integer('battle_log_id');
 
-            $table->bigInteger('attacker_user_id')->nullable();
-            $table->bigInteger('defender_user_id')->nullable();
+            $table->integer('attacker_user_id')->nullable();
+            $table->integer('defender_user_id')->nullable();
+
+            $table->integer('city_id')->nullable();
+            $table->string('winner')->nullable();
 
             $table->integer('round')->default(1);
 

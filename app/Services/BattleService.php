@@ -136,7 +136,9 @@ class BattleService
                 'battle_log_id'    => $battleLogId,
                 'attacker_user_id' => $userId,
                 'defender_user_id' => $targetCityUserId,
-                'round'            => $round
+                'round'            => $round,
+                'city_id'          => $targetCity->id,
+                'winner'           => count($attackingFleetDetails) > 0 ? 'attacker' : 'defender'
             ]);
 
             dump('LOGS', $logAttacking, $logDefending);

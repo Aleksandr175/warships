@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { IWarship } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
+import ReactPaginate from "react-paginate";
+import { NavLink } from "react-router-dom";
 
 interface IProps {
     dictionary: IWarship[];
@@ -11,6 +13,7 @@ interface IBattleLog {
     battleLogId: number;
     attackerUserId: number;
     defenderUserId: number;
+    winner: "attacker" | "defender";
     date: string;
 }
 
@@ -25,53 +28,80 @@ interface IBattleLogDetail {
 export const Logs = ({ dictionary, userId }: IProps) => {
     const [logs, setLogs] = useState<IBattleLog[]>([]);
     const [logsDetails, setLogsDetails] = useState<IBattleLogDetail[]>([]);
+    const [logsCount, setLogsCount] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        httpClient.get("/battle-logs").then((resp) => {
+        getLogs(1);
+    }, []);
+
+    const getLogs = (page: number) => {
+        setIsLoading(true);
+
+        httpClient.get("/battle-logs?page=" + page).then((resp) => {
             console.log(resp.data);
             setLogs(resp.data.battleLogs);
             setLogsDetails(resp.data.battleLogsDetails);
+            setLogsCount(resp.data.battleLogsCount);
+            setIsLoading(false);
         });
-    }, []);
+    };
 
-    const getNextRoundDetails = () => {};
-
-    // TODO: print logs details!!!
     return (
         <>
             {logs.map((log) => {
-                let round = 1;
-                let battleLogId = log.battleLogId;
-
                 return (
                     <>
                         <div className={"row"}>
-                            <div className={"col-6"}>Date</div>
-                            <div className={"col-6"}>Type</div>
+                            <div className={"col-4"}>Date</div>
+                            <div className={"col-4"}>Type</div>
+                            <div className={"col-4"}>Result</div>
                         </div>
 
                         <div className={"row"}>
-                            <div className={"col-6"}>{log.date}</div>
-                            <div className={"col-6"}>
+                            <div className={"col-4"}>{log.date}</div>
+                            <div className={"col-4"}>
                                 {log.attackerUserId === userId
                                     ? "Attack"
                                     : "Defend"}
                             </div>
+                            <div className={"col-4"}>
+                                {log.winner === "attacker"
+                                    ? "Victory"
+                                    : "Defeat"}
+                            </div>
                         </div>
 
-                        <p>Log Info</p>
+                        <NavLink to={"/logs/" + log.battleLogId}>Show</NavLink>
 
-                        {getNextRoundDetails(battleLogId, round).map(() => {
-                            <>
-                                <div className={"row"}>
-                                    <div className={"col-6"}>Warship</div>
-                                    <div className={"col-6"}>Destroyed</div>
-                                </div>
-                            </>;
-                        })}
+                        <hr />
                     </>
                 );
             })}
+
+            {logsCount && (
+                <ReactPaginate
+                    breakLabel="..."
+                    nextLabel="next >"
+                    onPageChange={(page) => {
+                        getLogs(page.selected + 1);
+                        console.log("change page");
+                    }}
+                    pageRangeDisplayed={10}
+                    pageCount={Math.ceil(logsCount / 10)}
+                    previousLabel="< previous"
+                    containerClassName="pagination"
+                    activeClassName="active"
+                    pageClassName="page-item"
+                    pageLinkClassName="page-link"
+                    previousClassName="page-item"
+                    previousLinkClassName="page-link"
+                    nextClassName="page-item"
+                    nextLinkClassName="page-link"
+                    breakClassName="page-item"
+                    breakLinkClassName="page-link"
+                />
+            )}
         </>
     );
 };

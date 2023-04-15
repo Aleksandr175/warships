@@ -56,7 +56,13 @@ export const Warship = ({
 
     return (
         <div className={"col-sm-6 col-md-4"} key={warship.id}>
-            <Card object={warship} qty={currentQty} imagePath={"warships"} />
+            <Card
+                object={warship}
+                qty={currentQty}
+                imagePath={"warships"}
+                // TODO: fix it
+                timer={0}
+            />
             <div className={"row"}>
                 <div className={"col-6"}>
                     <Icon title={"gold"} />

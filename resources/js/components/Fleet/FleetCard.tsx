@@ -28,6 +28,8 @@ export const FleetCard = ({ item, cityWarship, onChangeQty }: IProps) => {
                 imagePath={"warships"}
                 object={item}
                 qty={maxShips}
+                // TODO: fix it
+                timer={0}
             />
 
             <SInputWrapper>

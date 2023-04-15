@@ -1,5 +1,20 @@
 import styled from "styled-components";
 
+export const SH1 = styled.h1`
+    font-size: 14px;
+    font-weight: 700;
+`;
+
+export const SH2 = styled.h2`
+    font-size: 14px;
+    font-weight: 700;
+`;
+
+export const SText = styled.p`
+    color: var(--text-color);
+    margin-bottom: 5px;
+`;
+
 export const SItemImageWrapper = styled.div`
     border: 1px solid black;
     height: 100px;

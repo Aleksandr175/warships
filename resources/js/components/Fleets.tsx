@@ -42,6 +42,6 @@ export const Fleets = ({
 };
 const SColumnFleets = styled.div`
     margin-bottom: 20px;
-    background: white;
+    background: var(--background-color);
     padding: 20px;
 `;

@@ -85,7 +85,13 @@ export const Research = ({
 
     return (
         <div className={"col-sm-6 col-md-4"} key={research.id}>
-            <Card object={research} qty={lvl} imagePath={"researches"} />
+            <Card
+                object={research}
+                qty={lvl}
+                imagePath={"researches"}
+                // TODO: fix it
+                timer={0}
+            />
 
             {(gold || population) &&
             !isResearchInProcess() &&

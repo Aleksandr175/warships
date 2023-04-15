@@ -1,4 +1,6 @@
 import React from "react";
+import styled from "styled-components";
+import { convertSecondsToTime } from "../../utils";
 
 interface IProps {
     object: {
@@ -8,33 +10,29 @@ interface IProps {
     };
     qty?: number;
     imagePath: string;
+    timer: number;
 }
 
-export const Card = ({ object, qty, imagePath }: IProps) => {
+export const Card = ({ object, qty, imagePath, timer }: IProps) => {
     return (
-        <>
-            <SCardImageWrapper
-                style={{
-                    backgroundImage: `url("../images/${imagePath}/${object.id}.svg")`,
-                }}
-            >
-                <SCardCornerWrapper>
-                    <SCardCorner>{qty}</SCardCorner>
-                </SCardCornerWrapper>
-            </SCardImageWrapper>
-            <SCardName>{object.title}</SCardName>
-            <span>{object.description}</span>
-        </>
+        <SCardImageWrapper
+            style={{
+                backgroundImage: `url("../images/${imagePath}/${object.id}.svg")`,
+            }}
+        >
+            <SLabelWrapper>
+                {timer > 0 && <STimer>{convertSecondsToTime(timer)}</STimer>}{" "}
+                {qty}
+            </SLabelWrapper>
+        </SCardImageWrapper>
     );
 };
 
-import styled from "styled-components";
-
 const SCardImageWrapper = styled.div`
-    border: 1px solid black;
     height: 80px;
     margin-bottom: 20px;
     position: relative;
+    border-radius: var(--block-border-radius-small);
 
     background-position: 50% 50%;
     background-repeat: no-repeat;
@@ -42,24 +40,27 @@ const SCardImageWrapper = styled.div`
     background-color: #ddd;
 `;
 
-const SCardCornerWrapper = styled.div`
+const SLabelWrapper = styled.div`
     position: absolute;
-    top: 0;
-    right: 0;
-    border: 30px solid transparent;
-    border-top: 30px solid #ccc;
-    border-right: 30px solid #ccc;
+    bottom: 5px;
+    right: 5px;
+    height: 24px;
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: 24px;
+    width: auto;
+    border-radius: 24px;
+    background: #6f4ca4;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
 `;
 
-const SCardCorner = styled.span`
-    position: absolute;
-    top: -25px;
-    right: -20px;
-    font-size: 16px;
-    font-weight: 700;
-`;
-
-const SCardName = styled.h2`
-    font-size: 20px;
-    font-weight: 700;
+const STimer = styled.span`
+    display: inline-block;
+    padding-right: 5px;
+    font-size: 10px;
 `;

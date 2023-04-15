@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ICityResources } from "../types/types";
 import { Icon } from "./Common/Icon";
+import styled from "styled-components";
 
 export const CityResources = ({
     gold,
@@ -37,16 +38,38 @@ export const CityResources = ({
     };
 
     return (
-        <>
-            <li>
+        <SResources className={"d-flex"}>
+            <SResource>
                 <Icon title={"gold"} />
                 {Math.floor(goldValue)}{" "}
-                {productionGold ? `(+${productionGold})` : ""}
-            </li>
-            <li>
+                <SProducation>
+                    {productionGold ? `+${productionGold}` : ""}
+                </SProducation>
+            </SResource>
+            <SResource>
                 <Icon title={"worker"} />
                 {population}
-            </li>
-        </>
+            </SResource>
+        </SResources>
     );
 };
+
+const SResources = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 20px;
+`;
+const SResource = styled.div`
+    position: relative;
+    display: flex;
+    align-items: center;
+`;
+const SProducation = styled.span`
+    position: relative;
+    display: inline-block;
+    top: -5px;
+    padding-left: 5px;
+    color: green;
+    font-size: 12px;
+    font-weight: 600;
+`;

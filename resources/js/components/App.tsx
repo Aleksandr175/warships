@@ -54,68 +54,10 @@ const App = () => {
 
     return (
         <Router>
-            <SHeader className="container">
+            <SAppContainer className={"container"}>
                 <div className={"row"}>
-                    <div className={"col-12"}>
-                        {city && cities && (
-                            <SResourcesPanel>
-                                <div>
-                                    Islands:
-                                    {cities.map((c) => {
-                                        return (
-                                            <SCity
-                                                key={c.id}
-                                                active={c.id === city.id}
-                                                onClick={() => selectCity(c)}
-                                            >
-                                                {c.title}
-                                            </SCity>
-                                        );
-                                    })}
-                                </div>
-                                <SResources>
-                                    <li>
-                                        <Icon title={"island"} />
-                                        {city.coordX}:{city.coordY}
-                                    </li>
-                                    <CityResources
-                                        gold={cityResources?.gold || 0}
-                                        population={
-                                            cityResources?.population || 0
-                                        }
-                                        productionGold={getProductionGold()}
-                                    />
-                                </SResources>
-                            </SResourcesPanel>
-                        )}
-                    </div>
-                </div>
-            </SHeader>
-
-            {dictionaries &&
-                fleetCitiesDictionary &&
-                fleets &&
-                fleetDetails &&
-                fleets.length > 0 && (
-                    <div className={"container"}>
-                        <div className={"row"}>
-                            <Fleets
-                                fleets={fleets}
-                                fleetDetails={fleetDetails}
-                                dictionaries={dictionaries}
-                                fleetCitiesDictionary={fleetCitiesDictionary}
-                            />
-                        </div>
-                    </div>
-                )}
-
-            <div className={"container"}>
-                <div className={"row"}>
-                    <div
-                        className={"col-3 d-flex align-items-stretch"}
-                        style={{ paddingLeft: "0" }}
-                    >
-                        <SColumnMenu>
+                    <div className="col-2">
+                        <SColumn>
                             <NavLink
                                 to={"/dashboard"}
                                 className={({ isActive }) =>
@@ -172,165 +114,221 @@ const App = () => {
                             >
                                 Battle Logs
                             </NavLink>
-                        </SColumnMenu>
+                        </SColumn>
                     </div>
-                    <SColumnContent className={"col-9"}>
-                        {city && dictionaries && cities && (
-                            <Routes>
-                                <Route
-                                    path={"dashboard"}
-                                    element={<Overview />}
-                                />
-                                <Route
-                                    path={"buildings"}
-                                    element={
-                                        <Buildings
-                                            cityId={city.id}
-                                            buildingsDictionary={
-                                                dictionaries.buildings
+                    <div className={"col-7"}>
+                        {city && cities && (
+                            <div className={"row"}>
+                                <div className={"col-5"}>
+                                    <SColumn>
+                                        <CityResources
+                                            gold={cityResources?.gold || 0}
+                                            population={
+                                                cityResources?.population || 0
                                             }
-                                            buildingResourcesDictionary={
-                                                dictionaries.buildingResources
-                                            }
-                                            updateCityResources={
-                                                updateCityResources
-                                            }
-                                            cityResources={{
-                                                gold: city.gold,
-                                                population: city.population,
-                                            }}
-                                            getBuildings={getBuildings}
-                                            buildings={buildings}
-                                            setBuildings={setBuildings}
-                                            buildingsProduction={
-                                                dictionaries.buildingsProduction
-                                            }
-                                            setQueue={setQueue}
-                                            queue={queue}
+                                            productionGold={getProductionGold()}
                                         />
-                                    }
-                                />
-                                <Route
-                                    path={"researches"}
-                                    element={
-                                        <Researches
-                                            cityId={city.id}
-                                            dictionary={dictionaries.researches}
-                                            resourcesDictionary={
-                                                dictionaries.researchResources
-                                            }
-                                            updateCityResources={
-                                                updateCityResources
-                                            }
-                                            cityResources={{
-                                                gold: city.gold,
-                                                population: city.population,
-                                            }}
-                                            researches={
-                                                dictionaries.userResearches
-                                            }
-                                            /*setBuildings={setBuildings}*/
-                                            setQueue={setQueueResearch}
-                                            queue={queueResearch}
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path={"warships"}
-                                    element={
-                                        <Warships
-                                            cityId={city.id}
-                                            dictionary={dictionaries.warships}
-                                            resourcesDictionary={
-                                                dictionaries.warshipsResources
-                                            }
-                                            updateCityResources={
-                                                updateCityResources
-                                            }
-                                            cityResources={{
-                                                gold: city.gold,
-                                                population: city.population,
-                                            }}
-                                            getWarships={getWarships}
-                                            warships={warships}
-                                            setWarships={setWarships}
-                                            setQueue={setQueueWarship}
-                                            queue={queueWarship}
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path={"fleets"}
-                                    element={
-                                        <Fleet
-                                            warships={warships}
-                                            dictionary={dictionaries.warships}
-                                            cities={cities}
-                                            city={city}
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path={"map"}
-                                    element={<Map cityId={city.id} />}
-                                />
-                                <Route
-                                    path="logs/:id"
-                                    element={
-                                        <Log
-                                            dictionary={dictionaries.warships}
-                                            userId={userId || 0}
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path={"logs"}
-                                    element={
-                                        <Logs
-                                            dictionary={dictionaries.warships}
-                                            userId={userId || 0}
-                                        />
-                                    }
-                                />
-                            </Routes>
+                                    </SColumn>
+                                </div>
+                                <div className={"col-5"}>
+                                    <SColumn>
+                                        <SIsland>
+                                            <Icon title={"island"} />[
+                                            {city.coordX}:{city.coordY}]
+                                        </SIsland>
+                                        {/*Islands:
+                                        {cities.map((c) => {
+                                            return (
+                                                <SCity
+                                                    key={c.id}
+                                                    active={c.id === city.id}
+                                                    onClick={() =>
+                                                        selectCity(c)
+                                                    }
+                                                >
+                                                    {c.title}
+                                                </SCity>
+                                            );
+                                        })}*/}
+                                    </SColumn>
+                                </div>
+                                <div className={"col-2 text-center"}>
+                                    <SColumn>
+                                        <Icon title={"messages"} />
+                                    </SColumn>
+                                </div>
+                            </div>
                         )}
-                    </SColumnContent>
+
+                        <SColumn>
+                            {city && dictionaries && cities && (
+                                <Routes>
+                                    <Route
+                                        path={"dashboard"}
+                                        element={<Overview />}
+                                    />
+                                    <Route
+                                        path={"buildings"}
+                                        element={
+                                            <Buildings
+                                                cityId={city.id}
+                                                buildingsDictionary={
+                                                    dictionaries.buildings
+                                                }
+                                                buildingResourcesDictionary={
+                                                    dictionaries.buildingResources
+                                                }
+                                                updateCityResources={
+                                                    updateCityResources
+                                                }
+                                                cityResources={{
+                                                    gold: city.gold,
+                                                    population: city.population,
+                                                }}
+                                                getBuildings={getBuildings}
+                                                buildings={buildings}
+                                                setBuildings={setBuildings}
+                                                buildingsProduction={
+                                                    dictionaries.buildingsProduction
+                                                }
+                                                setQueue={setQueue}
+                                                queue={queue}
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path={"researches"}
+                                        element={
+                                            <Researches
+                                                cityId={city.id}
+                                                dictionary={
+                                                    dictionaries.researches
+                                                }
+                                                resourcesDictionary={
+                                                    dictionaries.researchResources
+                                                }
+                                                updateCityResources={
+                                                    updateCityResources
+                                                }
+                                                cityResources={{
+                                                    gold: city.gold,
+                                                    population: city.population,
+                                                }}
+                                                researches={
+                                                    dictionaries.userResearches
+                                                }
+                                                /*setBuildings={setBuildings}*/
+                                                setQueue={setQueueResearch}
+                                                queue={queueResearch}
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path={"warships"}
+                                        element={
+                                            <Warships
+                                                cityId={city.id}
+                                                dictionary={
+                                                    dictionaries.warships
+                                                }
+                                                resourcesDictionary={
+                                                    dictionaries.warshipsResources
+                                                }
+                                                updateCityResources={
+                                                    updateCityResources
+                                                }
+                                                cityResources={{
+                                                    gold: city.gold,
+                                                    population: city.population,
+                                                }}
+                                                getWarships={getWarships}
+                                                warships={warships}
+                                                setWarships={setWarships}
+                                                setQueue={setQueueWarship}
+                                                queue={queueWarship}
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path={"fleets"}
+                                        element={
+                                            <Fleet
+                                                warships={warships}
+                                                dictionary={
+                                                    dictionaries.warships
+                                                }
+                                                cities={cities}
+                                                city={city}
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path={"map"}
+                                        element={<Map cityId={city.id} />}
+                                    />
+                                    <Route
+                                        path="logs/:id"
+                                        element={
+                                            <Log
+                                                dictionary={
+                                                    dictionaries.warships
+                                                }
+                                                userId={userId || 0}
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path={"logs"}
+                                        element={
+                                            <Logs
+                                                dictionary={
+                                                    dictionaries.warships
+                                                }
+                                                userId={userId || 0}
+                                            />
+                                        }
+                                    />
+                                </Routes>
+                            )}
+                        </SColumn>
+                    </div>
+                    <div className={"col-3"}>
+                        <SColumn>Fleet Panel</SColumn>
+                    </div>
                 </div>
-            </div>
+            </SAppContainer>
+
+            {dictionaries &&
+                fleetCitiesDictionary &&
+                fleets &&
+                fleetDetails &&
+                fleets.length > 0 && (
+                    <div className={"container"}>
+                        <div className={"row"}>
+                            <Fleets
+                                fleets={fleets}
+                                fleetDetails={fleetDetails}
+                                dictionaries={dictionaries}
+                                fleetCitiesDictionary={fleetCitiesDictionary}
+                            />
+                        </div>
+                    </div>
+                )}
         </Router>
     );
 };
 
 export default App;
 
-const SResourcesPanel = styled.div`
-    text-align: right;
+const SAppContainer = styled.div`
+    padding-top: var(--block-gutter-y);
 `;
 
-const SResources = styled.div`
-    li {
-        display: inline-block;
-        padding-left: 20px;
-    }
-`;
-
-const SHeader = styled.div`
-    background: white;
-    padding: 10px 20px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-`;
-
-const SColumnMenu = styled.div`
-    width: 100%;
-    background: white;
-    padding: 20px;
-    margin-right: 20px;
-    min-height: 200px;
-`;
-const SColumnContent = styled.div`
-    background: white;
-    padding: 20px;
+const SColumn = styled.div`
+    background: var(--background-color);
+    padding: var(--block-padding);
+    border-radius: var(--block-border-radius);
+    margin-bottom: var(--block-gutter-y);
 `;
 
 const SCity = styled.span<{ active?: boolean }>`
@@ -341,4 +339,10 @@ const SCity = styled.span<{ active?: boolean }>`
 
     ${(props) =>
         props.active ? "text-decoration: none; font-weight: 700;" : ""}
+`;
+
+const SIsland = styled.div`
+    > i {
+        padding-right: 5px;
+    }
 `;

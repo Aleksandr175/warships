@@ -4,10 +4,10 @@ import {
     ICityResources,
     IResearch,
 } from "../../types/types";
-import styled from "styled-components";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { Card } from "../Common/Card";
+import { getTimeLeft } from "../../utils";
 dayjs.extend(utc);
 
 interface IProps {
@@ -37,8 +37,8 @@ export const Research = ({
     const timer = useRef();
 
     useEffect(() => {
-        if (isResearchInProcess() && getTimeLeft()) {
-            setTimeLeft(getTimeLeft());
+        if (isResearchInProcess() && getTimeLeft(queue?.deadline || "")) {
+            setTimeLeft(getTimeLeft(queue?.deadline || ""));
 
             // @ts-ignore
             timer.current = setInterval(handleTimer, 1000);
@@ -64,17 +64,6 @@ export const Research = ({
 
     function isResearchInProcess() {
         return queue && queue.researchId === research.id;
-    }
-
-    function getTimeLeft() {
-        const dateUTCNow = dayjs.utc(new Date());
-        let deadline = dayjs(new Date(queue?.deadline || ""));
-
-        let deadlineString = deadline.format().toString().replace("T", " ");
-        let dateArray = deadlineString.split("+");
-        const deadlineDate = dateArray[0];
-
-        return dayjs.utc(deadlineDate).unix() - dateUTCNow.unix();
     }
 
     function isResearchDisabled() {

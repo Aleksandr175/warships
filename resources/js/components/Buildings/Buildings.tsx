@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { httpClient } from "../../httpClient/httpClient";
 import {
-    IBuilding,
-    IBuildingResource,
-    IBuildingsProduction,
-    ICityBuilding,
-    ICityBuildingQueue,
-    ICityResources,
+  IBuilding,
+  IBuildingResource,
+  IBuildingsProduction,
+  ICityBuilding,
+  ICityBuildingQueue,
+  ICityResources,
 } from "../../types/types";
 import styled from "styled-components";
 import { Building } from "./Building";
@@ -15,328 +15,282 @@ import { Card } from "../Common/Card";
 import { Icon } from "../Common/Icon";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { convertSecondsToTime } from "../../utils";
+import { convertSecondsToTime, getTimeLeft } from "../../utils";
 dayjs.extend(utc);
 
 interface IProps {
-    cityId: number;
-    buildingsDictionary: IBuilding[];
-    buildingResourcesDictionary: IBuildingResource[];
-    updateCityResources: (cityResources: ICityResources) => void;
-    cityResources: ICityResources;
-    buildings: ICityBuilding[] | undefined;
-    setBuildings: (buildings: ICityBuilding[]) => void;
-    getBuildings: () => void;
-    buildingsProduction?: IBuildingsProduction[];
-    queue?: ICityBuildingQueue;
-    setQueue: (q: ICityBuildingQueue | undefined) => void;
+  cityId: number;
+  buildingsDictionary: IBuilding[];
+  buildingResourcesDictionary: IBuildingResource[];
+  updateCityResources: (cityResources: ICityResources) => void;
+  cityResources: ICityResources;
+  buildings: ICityBuilding[] | undefined;
+  setBuildings: (buildings: ICityBuilding[]) => void;
+  getBuildings: () => void;
+  buildingsProduction?: IBuildingsProduction[];
+  queue?: ICityBuildingQueue;
+  setQueue: (q: ICityBuildingQueue | undefined) => void;
 }
 
 export const Buildings = ({
-    buildings,
-    setBuildings,
-    getBuildings,
-    cityId,
-    buildingsDictionary,
-    buildingResourcesDictionary,
-    updateCityResources,
-    cityResources,
-    buildingsProduction,
-    queue,
-    setQueue,
+  buildings,
+  setBuildings,
+  getBuildings,
+  cityId,
+  buildingsDictionary,
+  buildingResourcesDictionary,
+  updateCityResources,
+  cityResources,
+  buildingsProduction,
+  queue,
+  setQueue,
 }: IProps) => {
-    const [selectedBuildingId, setSelectedBuildingId] = useState(0);
-    const [timeLeft, setTimeLeft] = useState<number>(0);
-    const timer = useRef();
+  const [selectedBuildingId, setSelectedBuildingId] = useState(0);
+  const [timeLeft, setTimeLeft] = useState<number>(0);
+  const timer = useRef();
 
-    useEffect(() => {
-        setSelectedBuildingId(buildingsDictionary[0]?.id || 0);
-    }, [buildingsDictionary]);
+  useEffect(() => {
+    setSelectedBuildingId(buildingsDictionary[0]?.id || 0);
+  }, [buildingsDictionary]);
 
-    function getLvl(buildingId: number) {
-        const building = buildings?.find((b) => b.buildingId === buildingId);
+  function getLvl(buildingId: number) {
+    const building = buildings?.find((b) => b.buildingId === buildingId);
 
-        if (building) {
-            return building.lvl;
-        }
-
-        return 0;
+    if (building) {
+      return building.lvl;
     }
 
-    function getResourcesForBuilding(buildingId: number, lvl: number) {
-        return buildingResourcesDictionary.find(
-            (br) => br.buildingId === buildingId && br.lvl === lvl
-        );
-    }
+    return 0;
+  }
 
-    function run(buildingId: number) {
-        httpClient
-            .post("/build", {
-                cityId,
-                buildingId,
-            })
-            .then((response) => {
-                setBuildings(response.data.buildings);
-                setQueue(response.data.buildingQueue);
-                updateCityResources(response.data.cityResources);
-            });
-    }
-
-    function cancel(buildingId: number) {
-        httpClient
-            .post("/build/" + buildingId + "/cancel", {
-                cityId,
-            })
-            .then((response) => {
-                setBuildings(response.data.buildings);
-                setQueue(undefined);
-
-                updateCityResources(response.data.cityResources);
-            });
-    }
-
-    function isBuildingInProcess() {
-        return queue && queue.buildingId === selectedBuildingId;
-    }
-
-    function getBuilding(buildingId: number): IBuilding | undefined {
-        return buildingsDictionary.find(
-            (building) => building.id === buildingId
-        );
-    }
-
-    const selectedBuilding = getBuilding(selectedBuildingId);
-    const lvl = getLvl(selectedBuildingId);
-    const buildingResources = getResourcesForBuilding(
-        selectedBuildingId,
-        lvl + 1
+  function getResourcesForBuilding(buildingId: number, lvl: number) {
+    return buildingResourcesDictionary.find(
+      (br) => br.buildingId === buildingId && br.lvl === lvl
     );
-    const gold = buildingResources?.gold || 0;
-    const population = buildingResources?.population || 0;
-    const time = buildingResources?.time || 0;
+  }
 
-    function isBuildingDisabled() {
-        return (
-            gold > cityResources.gold ||
-            population > cityResources.population ||
-            !buildingResources
-        );
-    }
+  function run(buildingId: number) {
+    httpClient
+      .post("/build", {
+        cityId,
+        buildingId,
+      })
+      .then((response) => {
+        setBuildings(response.data.buildings);
+        setQueue(response.data.buildingQueue);
+        updateCityResources(response.data.cityResources);
+      });
+  }
 
-    function getProductionResource(resource: "population" | "gold") {
-        const production = buildingsProduction?.find((bProduction) => {
-            return (
-                bProduction.buildingId === selectedBuildingId &&
-                bProduction.lvl === lvl + 1 &&
-                bProduction.resource === resource
-            );
-        });
+  function cancel(buildingId: number) {
+    httpClient
+      .post("/build/" + buildingId + "/cancel", {
+        cityId,
+      })
+      .then((response) => {
+        setBuildings(response.data.buildings);
+        setQueue(undefined);
 
-        return production?.qty;
-    }
+        updateCityResources(response.data.cityResources);
+      });
+  }
 
-    function getTimeLeft() {
-        const dateUTCNow = dayjs.utc(new Date());
-        let deadline = dayjs(new Date(queue?.deadline || ""));
+  function isBuildingInProcess() {
+    return queue && queue.buildingId === selectedBuildingId;
+  }
 
-        let deadlineString = deadline.format().toString().replace("T", " ");
-        let dateArray = deadlineString.split("+");
-        const deadlineDate = dateArray[0];
+  function getBuilding(buildingId: number): IBuilding | undefined {
+    return buildingsDictionary.find((building) => building.id === buildingId);
+  }
 
-        return dayjs.utc(deadlineDate).unix() - dateUTCNow.unix();
-    }
+  const selectedBuilding = getBuilding(selectedBuildingId);
+  const lvl = getLvl(selectedBuildingId);
+  const buildingResources = getResourcesForBuilding(
+    selectedBuildingId,
+    lvl + 1
+  );
+  const gold = buildingResources?.gold || 0;
+  const population = buildingResources?.population || 0;
+  const time = buildingResources?.time || 0;
 
-    useEffect(() => {
-        if (getTimeLeft()) {
-            setTimeLeft(getTimeLeft());
-
-            // @ts-ignore
-            timer.current = setInterval(handleTimer, 1000);
-
-            return () => {
-                clearInterval(timer.current);
-            };
-        } else {
-            setTimeLeft(0);
-        }
-    }, [queue, selectedBuildingId]);
-
-    useEffect(() => {
-        // TODO strange decision
-        if (timeLeft === -1) {
-            clearInterval(timer.current);
-            getBuildings();
-        }
-    }, [timeLeft]);
-
-    function handleTimer() {
-        setTimeLeft((lastTimeLeft) => {
-            // @ts-ignore
-            return lastTimeLeft - 1;
-        });
-    }
-
+  function isBuildingDisabled() {
     return (
-        <div>
-            <SH1>Buildings</SH1>
-            {selectedBuildingId && selectedBuilding && (
-                <SSelectedBuilding className={"row"}>
-                    <div className={"col-4"}>
-                        <SCardWrapper>
-                            <Card
-                                object={selectedBuilding}
-                                qty={lvl}
-                                timer={
-                                    queue?.buildingId === selectedBuildingId
-                                        ? timeLeft
-                                        : 0
-                                }
-                                imagePath={"buildings"}
-                            />
-                        </SCardWrapper>
-                    </div>
-                    <div className={"col-8"}>
-                        <SH2>{selectedBuilding?.title}</SH2>
-                        <div>
-                            {Boolean(gold || population) && (
-                                <>
-                                    <SText>Required resources:</SText>
-                                    <Icon title={"gold"} /> {gold}
-                                    <Icon title={"worker"} /> {population}
-                                    <Icon title={"time"} />{" "}
-                                    {convertSecondsToTime(time)}
-                                </>
-                            )}
-                        </div>
-                        <div>
-                            {(getProductionResource("gold") ||
-                                getProductionResource("population")) && (
-                                <SText>It provides:</SText>
-                            )}
-                            {getProductionResource("gold") ? (
-                                <span>
-                                    <Icon title={"gold"} />
-                                    {getProductionResource("gold")}
-                                </span>
-                            ) : (
-                                ""
-                            )}
-                            {getProductionResource("population") ? (
-                                <span>
-                                    <Icon title={"worker"} />
-                                    {getProductionResource("population")}
-                                </span>
-                            ) : (
-                                ""
-                            )}
-                        </div>
-                        <br />
-                        {!isBuildingInProcess() && (
-                            <button
-                                className={"btn btn-primary"}
-                                disabled={isBuildingDisabled()}
-                                onClick={() => {
-                                    run(selectedBuildingId);
-                                }}
-                            >
-                                Build
-                            </button>
-                        )}
+      gold > cityResources.gold ||
+      population > cityResources.population ||
+      !buildingResources
+    );
+  }
 
-                        {isBuildingInProcess() && (
-                            <button
-                                className={"btn btn-warning"}
-                                onClick={() => {
-                                    cancel(selectedBuildingId);
-                                }}
-                            >
-                                Cancel
-                            </button>
-                        )}
-                        <br />
-                        <br />
-                        <SText>{selectedBuilding?.description}</SText>
-                    </div>
-                </SSelectedBuilding>
+  function getProductionResource(resource: "population" | "gold") {
+    const production = buildingsProduction?.find((bProduction) => {
+      return (
+        bProduction.buildingId === selectedBuildingId &&
+        bProduction.lvl === lvl + 1 &&
+        bProduction.resource === resource
+      );
+    });
+
+    return production?.qty;
+  }
+
+  useEffect(() => {
+    if (getTimeLeft(queue?.deadline || "")) {
+      setTimeLeft(getTimeLeft(queue?.deadline || ""));
+
+      // @ts-ignore
+      timer.current = setInterval(handleTimer, 1000);
+
+      return () => {
+        clearInterval(timer.current);
+      };
+    } else {
+      setTimeLeft(0);
+    }
+  }, [queue, selectedBuildingId]);
+
+  useEffect(() => {
+    // TODO strange decision
+    if (timeLeft === -1) {
+      clearInterval(timer.current);
+      getBuildings();
+    }
+  }, [timeLeft]);
+
+  function handleTimer() {
+    setTimeLeft((lastTimeLeft) => {
+      // @ts-ignore
+      return lastTimeLeft - 1;
+    });
+  }
+
+  return (
+    <div>
+      <SH1>Buildings</SH1>
+      {selectedBuildingId && selectedBuilding && (
+        <SSelectedBuilding className={"row"}>
+          <div className={"col-4"}>
+            <SCardWrapper>
+              <Card
+                object={selectedBuilding}
+                qty={lvl}
+                timer={queue?.buildingId === selectedBuildingId ? timeLeft : 0}
+                imagePath={"buildings"}
+              />
+            </SCardWrapper>
+          </div>
+          <div className={"col-8"}>
+            <SH2>{selectedBuilding?.title}</SH2>
+            <div>
+              {Boolean(gold || population) && (
+                <>
+                  <SText>Required resources:</SText>
+                  <Icon title={"gold"} /> {gold}
+                  <Icon title={"worker"} /> {population}
+                  <Icon title={"time"} /> {convertSecondsToTime(time)}
+                </>
+              )}
+            </div>
+            <div>
+              {(getProductionResource("gold") ||
+                getProductionResource("population")) && (
+                <SText>It provides:</SText>
+              )}
+              {getProductionResource("gold") ? (
+                <span>
+                  <Icon title={"gold"} />
+                  {getProductionResource("gold")}
+                </span>
+              ) : (
+                ""
+              )}
+              {getProductionResource("population") ? (
+                <span>
+                  <Icon title={"worker"} />
+                  {getProductionResource("population")}
+                </span>
+              ) : (
+                ""
+              )}
+            </div>
+            <br />
+            {!isBuildingInProcess() && (
+              <button
+                className={"btn btn-primary"}
+                disabled={isBuildingDisabled()}
+                onClick={() => {
+                  run(selectedBuildingId);
+                }}
+              >
+                Build
+              </button>
             )}
 
-            {buildingsProduction &&
-                buildingsDictionary.map((item) => {
-                    const lvl = getLvl(item.id);
-                    const buildingResources = getResourcesForBuilding(
-                        item.id,
-                        lvl + 1
-                    );
-                    const gold = buildingResources?.gold || 0;
-                    const population = buildingResources?.population || 0;
+            {isBuildingInProcess() && (
+              <button
+                className={"btn btn-warning"}
+                onClick={() => {
+                  cancel(selectedBuildingId);
+                }}
+              >
+                Cancel
+              </button>
+            )}
+            <br />
+            <br />
+            <SText>{selectedBuilding?.description}</SText>
+          </div>
+        </SSelectedBuilding>
+      )}
 
-                    return (
-                        <SBuildingWrapper
-                            onClick={() => {
-                                setSelectedBuildingId(item.id);
-                            }}
-                        >
-                            <Building
-                                lvl={lvl}
-                                key={item.id}
-                                building={item}
-                                gold={gold}
-                                population={population}
-                                run={run}
-                                cancel={cancel}
-                                queue={queue}
-                                timeLeft={
-                                    queue?.buildingId === item.id
-                                        ? getTimeLeft()
-                                        : 0
-                                }
-                                getBuildings={getBuildings}
-                                cityResources={cityResources}
-                                buildingsProduction={buildingsProduction}
-                                selected={selectedBuildingId === item.id}
-                            />
-                        </SBuildingWrapper>
-                    );
-                })}
-        </div>
-    );
+      {buildingsProduction &&
+        buildingsDictionary.map((item) => {
+          const lvl = getLvl(item.id);
+          const buildingResources = getResourcesForBuilding(item.id, lvl + 1);
+          const gold = buildingResources?.gold || 0;
+          const population = buildingResources?.population || 0;
+
+          return (
+            <SBuildingWrapper
+              onClick={() => {
+                setSelectedBuildingId(item.id);
+              }}
+            >
+              <Building
+                lvl={lvl}
+                key={item.id}
+                building={item}
+                gold={gold}
+                population={population}
+                run={run}
+                cancel={cancel}
+                queue={queue}
+                timeLeft={
+                  queue?.buildingId === item.id
+                    ? getTimeLeft(queue?.deadline || "")
+                    : 0
+                }
+                getBuildings={getBuildings}
+                cityResources={cityResources}
+                buildingsProduction={buildingsProduction}
+                selected={selectedBuildingId === item.id}
+              />
+            </SBuildingWrapper>
+          );
+        })}
+    </div>
+  );
 };
 
-const SBuildingImageWrapper = styled.div`
-    border: 1px solid black;
-    height: 200px;
-    margin-bottom: 20px;
-    position: relative;
-    background: #ddd;
-`;
-
-const SBuildingLvlWrapper = styled.div`
-    position: absolute;
-    top: 0;
-    right: 0;
-    border: 30px solid transparent;
-    border-top: 30px solid #ccc;
-    border-right: 30px solid #ccc;
-`;
-
-const SBuildingLvl = styled.span`
-    position: absolute;
-    top: -25px;
-    right: -20px;
-    font-size: 16px;
-    font-weight: 700;
-`;
-
 const SBuildingWrapper = styled.div`
-    display: inline-block;
+  display: inline-block;
 `;
 
 const SSelectedBuilding = styled.div`
-    margin-bottom: calc(var(--block-gutter-y) * 2);
+  margin-bottom: calc(var(--block-gutter-y) * 2);
 `;
 
 const SCardWrapper = styled.div`
-    height: 120px;
-    border-radius: var(--block-border-radius-small);
-    overflow: hidden;
+  height: 120px;
+  border-radius: var(--block-border-radius-small);
+  overflow: hidden;
 `;

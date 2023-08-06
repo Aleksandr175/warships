@@ -11,6 +11,9 @@
   --block-gutter-x: 20px;
 
   --text-color: #949494;
+
+  --button-bg-primary: #39A0FF;
+  --button-bg-secondary: #E78A00;
 }
 
 body {
@@ -49,4 +52,37 @@ body {
 .row {
   --bs-gutter-x: 20px;
   --bs-gutter-y: 20px;
+}
+
+.btn {
+  border: none;
+}
+
+.btn:focus,
+.btn:active {
+  box-shadow: none;
+  outline: none;
+}
+
+.btn-primary {
+  background: var(--button-bg-primary);
+}
+
+.btn-warning {
+  background: var(--button-bg-secondary);
+  color: white;
+}
+
+.btn-primary:active:focus, .btn-primary.active:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+.btn-warning:active:focus, .btn-warning.active:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+.btn-warning:hover {
+  color: white;
 }

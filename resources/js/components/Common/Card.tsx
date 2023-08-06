@@ -29,10 +29,10 @@ export const Card = ({ object, qty, imagePath, timer }: IProps) => {
 };
 
 const SCardImageWrapper = styled.div`
-    height: 80px;
-    margin-bottom: 20px;
     position: relative;
-    border-radius: var(--block-border-radius-small);
+
+    display: flex;
+    height: 100%;
 
     background-position: 50% 50%;
     background-repeat: no-repeat;

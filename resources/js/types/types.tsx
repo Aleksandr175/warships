@@ -60,6 +60,7 @@ export interface IBuildingResource {
     gold: number;
     population: number;
     lvl: number;
+    time: number;
 }
 
 export interface IResearchResource extends IBuildingResource {

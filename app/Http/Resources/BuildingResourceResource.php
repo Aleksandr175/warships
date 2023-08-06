@@ -18,7 +18,8 @@ class BuildingResourceResource extends JsonResource
             'buildingId' => $this->building_id,
             'gold' => $this->gold,
             'population' => $this->population,
-            'lvl' => $this->lvl
+            'lvl' => $this->lvl,
+            'time' => $this->time
         ];
     }
 }

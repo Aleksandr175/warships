@@ -5,7 +5,7 @@ import {
     ICityBuildingQueue,
     ICityResources,
 } from "../../types/types";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { Card } from "../Common/Card";
@@ -23,41 +23,12 @@ interface IProps {
     cityResources: ICityResources;
     buildingsProduction: IBuildingsProduction[];
     timeLeft: number;
+    selected?: boolean;
 }
 
-export const Building = ({
-    building,
-    lvl,
-    gold,
-    population,
-    run,
-    cancel,
-    queue,
-    getBuildings,
-    cityResources,
-    buildingsProduction,
-    timeLeft,
-}: IProps) => {
-    function isBuildingDisabled() {
-        return (
-            gold > cityResources.gold || population > cityResources.population
-        );
-    }
-
-    function getProductionResource(resource: "population" | "gold") {
-        const production = buildingsProduction.find((bProduction) => {
-            return (
-                bProduction.buildingId === building.id &&
-                bProduction.lvl === lvl + 1 &&
-                bProduction.resource === resource
-            );
-        });
-
-        return production?.qty;
-    }
-
+export const Building = ({ building, lvl, timeLeft, selected }: IProps) => {
     return (
-        <SBuilding key={building.id}>
+        <SBuilding key={building.id} selected={selected}>
             <Card
                 object={building}
                 qty={lvl}
@@ -68,10 +39,21 @@ export const Building = ({
     );
 };
 
-const SBuilding = styled.div`
+const SBuilding = styled.div<{ selected?: boolean }>`
     border-radius: var(--block-border-radius-small);
     width: 140px;
+    height: 80px;
     display: inline-block;
     margin-right: calc(var(--block-gutter-x) / 2);
     margin-bottom: calc(var(--block-gutter-y) / 2);
+    overflow: hidden;
+
+    cursor: pointer;
+
+    ${({ selected }) =>
+        selected
+            ? css`
+                  border: 2px solid #6f4ca4;
+              `
+            : ""};
 `;

@@ -15,6 +15,7 @@ import { Card } from "../Common/Card";
 import { Icon } from "../Common/Icon";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { convertSecondsToTime } from "../../utils";
 dayjs.extend(utc);
 
 interface IProps {
@@ -112,10 +113,13 @@ export const Buildings = ({
     );
     const gold = buildingResources?.gold || 0;
     const population = buildingResources?.population || 0;
+    const time = buildingResources?.time || 0;
 
     function isBuildingDisabled() {
         return (
-            gold > cityResources.gold || population > cityResources.population
+            gold > cityResources.gold ||
+            population > cityResources.population ||
+            !buildingResources
         );
     }
 
@@ -172,36 +176,36 @@ export const Buildings = ({
         });
     }
 
-    console.log("queue", queue);
-
     return (
         <div>
             <SH1>Buildings</SH1>
             {selectedBuildingId && selectedBuilding && (
                 <SSelectedBuilding className={"row"}>
                     <div className={"col-4"}>
-                        <Card
-                            object={selectedBuilding}
-                            qty={lvl}
-                            timer={
-                                queue?.buildingId === selectedBuildingId
-                                    ? timeLeft
-                                    : 0
-                            }
-                            imagePath={"buildings"}
-                        />
+                        <SCardWrapper>
+                            <Card
+                                object={selectedBuilding}
+                                qty={lvl}
+                                timer={
+                                    queue?.buildingId === selectedBuildingId
+                                        ? timeLeft
+                                        : 0
+                                }
+                                imagePath={"buildings"}
+                            />
+                        </SCardWrapper>
                     </div>
                     <div className={"col-8"}>
                         <SH2>{selectedBuilding?.title}</SH2>
                         <div>
-                            {gold || population ? (
+                            {Boolean(gold || population) && (
                                 <>
                                     <SText>Required resources:</SText>
                                     <Icon title={"gold"} /> {gold}
                                     <Icon title={"worker"} /> {population}
+                                    <Icon title={"time"} />{" "}
+                                    {convertSecondsToTime(time)}
                                 </>
-                            ) : (
-                                ""
                             )}
                         </div>
                         <div>
@@ -227,15 +231,28 @@ export const Buildings = ({
                             )}
                         </div>
                         <br />
-                        <button
-                            className={"btn btn-primary"}
-                            disabled={isBuildingDisabled()}
-                            onClick={() => {
-                                run(selectedBuildingId);
-                            }}
-                        >
-                            Build
-                        </button>
+                        {!isBuildingInProcess() && (
+                            <button
+                                className={"btn btn-primary"}
+                                disabled={isBuildingDisabled()}
+                                onClick={() => {
+                                    run(selectedBuildingId);
+                                }}
+                            >
+                                Build
+                            </button>
+                        )}
+
+                        {isBuildingInProcess() && (
+                            <button
+                                className={"btn btn-warning"}
+                                onClick={() => {
+                                    cancel(selectedBuildingId);
+                                }}
+                            >
+                                Cancel
+                            </button>
+                        )}
                         <br />
                         <br />
                         <SText>{selectedBuilding?.description}</SText>
@@ -276,6 +293,7 @@ export const Buildings = ({
                                 getBuildings={getBuildings}
                                 cityResources={cityResources}
                                 buildingsProduction={buildingsProduction}
+                                selected={selectedBuildingId === item.id}
                             />
                         </SBuildingWrapper>
                     );
@@ -315,4 +333,10 @@ const SBuildingWrapper = styled.div`
 
 const SSelectedBuilding = styled.div`
     margin-bottom: calc(var(--block-gutter-y) * 2);
+`;
+
+const SCardWrapper = styled.div`
+    height: 120px;
+    border-radius: var(--block-border-radius-small);
+    overflow: hidden;
 `;

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { ICityResources } from "../types/types";
 import { Icon } from "./Common/Icon";
 import styled from "styled-components";
@@ -8,46 +8,39 @@ export const CityResources = ({
     population,
     productionGold,
 }: ICityResources) => {
-    const timer = useRef();
-    const productionGoldRef = useRef(0);
-    productionGoldRef.current = productionGold ? productionGold : 0;
+    const timer = useRef<NodeJS.Timeout | null>(null);
+    const [goldValue, setGoldValue] = useState<number>(gold || 0);
 
-    const [goldValue, setGoldValue] = useState(gold || 0);
+    const updateGoldValue = useCallback(() => {
+        setGoldValue((oldGoldValue) => {
+            const production = (productionGold ?? 0) / 3600;
+            return oldGoldValue + production;
+        });
+    }, [productionGold]);
 
     useEffect(() => {
-        // @ts-ignore
-        timer.current = setInterval(handleTimer, 1000);
+        timer.current = setInterval(updateGoldValue, 1000);
 
         return () => {
-            clearInterval(timer.current);
+            if (timer.current) clearInterval(timer.current);
         };
-    }, []);
+    }, [updateGoldValue]);
 
     useEffect(() => {
         setGoldValue(gold || 0);
     }, [gold]);
 
-    const handleTimer = () => {
-        setGoldValue((oldGoldValue) => {
-            const production = productionGoldRef.current
-                ? productionGoldRef.current / 3600
-                : 0;
-
-            return oldGoldValue + production;
-        });
-    };
-
     return (
-        <SResources className={"d-flex"}>
+        <SResources className="d-flex">
             <SResource>
-                <Icon title={"gold"} />
+                <Icon title="gold" />
                 {Math.floor(goldValue)}{" "}
-                <SProducation>
+                <SProduction>
                     {productionGold ? `+${productionGold}` : ""}
-                </SProducation>
+                </SProduction>
             </SResource>
             <SResource>
-                <Icon title={"worker"} />
+                <Icon title="worker" />
                 {population}
             </SResource>
         </SResources>
@@ -59,12 +52,14 @@ const SResources = styled.div`
     align-items: center;
     gap: 20px;
 `;
+
 const SResource = styled.div`
     position: relative;
     display: flex;
     align-items: center;
 `;
-const SProducation = styled.span`
+
+const SProduction = styled.span`
     position: relative;
     display: inline-block;
     top: -5px;

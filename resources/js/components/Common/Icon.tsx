@@ -1,32 +1,57 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
-export const Icon = ({ title }: { title: string }) => {
-    return (
-        <SIconWrapper>
-            <SIcon
-                style={{
-                    backgroundImage: `url("../images/icons/${title}.svg")`,
-                }}
-            />
-        </SIconWrapper>
-    );
+type TSize = "small" | "big" | "normal";
+
+export const Icon = ({
+  title,
+  size = "normal",
+}: {
+  title: string;
+  size?: TSize;
+}) => {
+  return (
+    <SIconWrapper size={size}>
+      <SIcon
+        size={size}
+        style={{
+          backgroundImage: `url("../images/icons/${title}.svg")`,
+        }}
+      />
+    </SIconWrapper>
+  );
 };
 
-const SIconWrapper = styled.i`
-    width: 30px;
-    height: 30px;
-    display: inline-block;
-    position: relative;
-    vertical-align: middle;
+const SIconWrapper = styled.i<{ size?: TSize }>`
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+
+  ${({ size }) =>
+    size === "small"
+      ? css`
+          width: 16px;
+          height: 16px;
+        `
+      : ""};
 `;
 
-const SIcon = styled.i`
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    left: 0;
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center center;
+const SIcon = styled.i<{ size?: TSize }>`
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  left: 0;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center center;
+
+  ${({ size }) =>
+    size === "small"
+      ? css`
+          width: 16px;
+          height: 16px;
+        `
+      : ""};
 `;

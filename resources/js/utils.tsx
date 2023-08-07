@@ -1,6 +1,10 @@
 import dayjs from "dayjs";
 
 export const convertSecondsToTime = (seconds: number): string => {
+  if (seconds < 0) {
+    return "00:00";
+  }
+
   const minutes: number = Math.floor(seconds / 60);
   const remainingSeconds: number = seconds % 60;
   const paddedMinutes: string = minutes.toString().padStart(2, "0");

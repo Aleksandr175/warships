@@ -7,6 +7,8 @@ import {
 } from "../types/types";
 import dayjs from "dayjs";
 import styled, { css } from "styled-components";
+import { Icon } from "./Common/Icon";
+import { convertSecondsToTime } from "../utils";
 
 export const Fleet = ({
   fleet,
@@ -56,12 +58,27 @@ export const Fleet = ({
     return dayjs.utc(deadlineDate).unix() - dateUTCNow.unix();
   }
 
-  const getFleetTaskSlug = (fleetTaskId: number): string => {
+  const getFleetTaskIconName = (fleetTaskId: number): string => {
     const fleetTask = dictionaries.fleetTasksDictionary.find(
       (task) => fleetTaskId === task.id
     );
 
-    return fleetTask?.slug || "";
+    if (fleetTask?.slug) {
+      if (fleetTask.slug === "trade") {
+        return "refresh";
+      }
+      if (fleetTask.slug === "move") {
+        return "pin-2";
+      }
+      if (fleetTask.slug === "attack") {
+        return "attack";
+      }
+      if (fleetTask.slug === "transport") {
+        return "refresh";
+      }
+    }
+
+    return "";
   };
 
   const getFleetStatusTitle = (fleetStatusId: number): string => {
@@ -85,21 +102,39 @@ export const Fleet = ({
   return (
     <SFleetRow>
       <SFleetRowTitle>
-        <SFleetTaskIcon type={getFleetTaskSlug(fleet.fleetTaskId)}>
-          {getFleetTaskSlug(fleet.fleetTaskId)[0].toUpperCase()}{" "}
-          {fleet.repeating ? " R" : ""}
-        </SFleetTaskIcon>
-        <SCityName>
-          {getCityCoords(fleet.cityId)}, {getCityName(fleet.cityId)}
-        </SCityName>
-        <SArrow>{" -> "}</SArrow>
-        <SCityName>
-          {getCityCoords(fleet.targetCityId)}, {getCityName(fleet.targetCityId)}
-        </SCityName>
-        <SFleetTimer>
-          {timeLeft ? <>Time Left: {timeLeft} sec.</> : <>Processing...</>}
-        </SFleetTimer>
-        <SFleetStatus>{getFleetStatusTitle(fleet.fleetStatusId)}</SFleetStatus>
+        <SFleetInfo>
+          <SFleetTaskIcon>
+            <Icon title={getFleetTaskIconName(fleet.fleetTaskId)} />
+            {fleet.repeating ? "R" : ""}
+          </SFleetTaskIcon>
+          <SFleetDestinations>
+            <SCityName>
+              {getCityName(fleet.cityId)} [{getCityCoords(fleet.cityId)}]
+            </SCityName>
+            <SCityNameMine>
+              {getCityName(fleet.targetCityId)} [
+              {getCityCoords(fleet.targetCityId)}]
+            </SCityNameMine>
+          </SFleetDestinations>
+        </SFleetInfo>
+        <SFleetInfoSecond>
+          <div>
+            {timeLeft ? (
+              <>
+                <Icon title={"clock"} size={"small"} />
+                <span>{convertSecondsToTime(timeLeft)}</span>
+              </>
+            ) : (
+              <>Processing</>
+            )}
+          </div>
+          <div>
+            <>
+              <Icon title={"pin"} size={"small"} />
+              <span>{getFleetStatusTitle(fleet.fleetStatusId)}</span>
+            </>
+          </div>
+        </SFleetInfoSecond>
       </SFleetRowTitle>
       <SFleetDetails>
         {fleetDetails.map((fDetails) => {
@@ -127,57 +162,14 @@ const SFleetRowTitle = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  margin-bottom: 5px;
 `;
 
-const SFleetTaskIcon = styled.div<{ type?: string }>`
-  display: flex;
-  align-items: center;
-  text-align: center;
-  width: 25px;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: bold;
-  color: white;
-  margin-right: 10px;
-  background-color: white;
+const SFleetTaskIcon = styled.div<{ type?: string }>``;
 
-  ${({ type }) =>
-    type === "trade"
-      ? css`
-          background-color: #166741;
-        `
-      : ""};
+const SFleetTimer = styled.div``;
 
-  ${({ type }) =>
-    type === "move"
-      ? css`
-          background-color: #033b64;
-        `
-      : ""};
-
-  ${({ type }) =>
-    type === "attack"
-      ? css`
-          background-color: #5e0505;
-        `
-      : ""};
-
-  ${({ type }) =>
-    type === "transport"
-      ? css`
-          background-color: #2cc27a;
-        `
-      : ""};
-`;
-
-const SFleetTimer = styled.div`
-  margin-left: 10px;
-  width: 200px;
-`;
-
-const SFleetStatus = styled.div`
-  margin-left: 10px;
-`;
+const SFleetStatus = styled.div``;
 
 const SFleetDetails = styled.div`
   display: flex;
@@ -191,14 +183,14 @@ const SWarshipIcon = styled.div`
   background-repeat: no-repeat;
   margin-right: 10px;
 
-  width: 40px;
-  height: 24px;
+  width: 20px;
+  height: 15px;
 `;
 
 const SFleetDetail = styled.div`
   display: flex;
   align-items: center;
-  margin-right: 20px;
+  margin-right: 10px;
   font-weight: bold;
 `;
 
@@ -207,7 +199,29 @@ const SCityName = styled.div`
   text-overflow: ellipsis;
 `;
 
+const SCityNameMine = styled.div`
+  opacity: 0.4;
+`;
+
 const SArrow = styled.div`
   font-weight: 700;
   margin-right: 20px;
+`;
+
+const SFleetInfo = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+`;
+const SFleetDestinations = styled.div``;
+
+const SFleetInfoSecond = styled.div`
+  width: 100px;
+
+  span {
+    display: inline-block;
+    margin-left: 5px;
+    opacity: 0.4;
+  }
 `;

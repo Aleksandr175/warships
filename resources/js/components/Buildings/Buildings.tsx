@@ -167,7 +167,7 @@ export const Buildings = ({
     <div>
       <SH1>Buildings</SH1>
       {selectedBuildingId && selectedBuilding && (
-        <SSelectedBuilding className={"row"}>
+        <SSelectedItem className={"row"}>
           <div className={"col-4"}>
             <SCardWrapper>
               <Card
@@ -239,7 +239,7 @@ export const Buildings = ({
             <br />
             <SText>{selectedBuilding?.description}</SText>
           </div>
-        </SSelectedBuilding>
+        </SSelectedItem>
       )}
 
       {buildingsProduction &&
@@ -250,7 +250,7 @@ export const Buildings = ({
           const population = buildingResources?.population || 0;
 
           return (
-            <SBuildingWrapper
+            <SItemWrapper
               onClick={() => {
                 setSelectedBuildingId(item.id);
               }}
@@ -274,18 +274,18 @@ export const Buildings = ({
                 buildingsProduction={buildingsProduction}
                 selected={selectedBuildingId === item.id}
               />
-            </SBuildingWrapper>
+            </SItemWrapper>
           );
         })}
     </div>
   );
 };
 
-const SBuildingWrapper = styled.div`
+const SItemWrapper = styled.div`
   display: inline-block;
 `;
 
-const SSelectedBuilding = styled.div`
+const SSelectedItem = styled.div`
   margin-bottom: calc(var(--block-gutter-y) * 2);
 `;
 

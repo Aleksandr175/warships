@@ -2,19 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\BuildingResource;
-use App\Http\Resources\CityBuildingQueueResource;
 use App\Http\Resources\ResearchQueueResource;
-use App\Models\BuildingProduction;
-use App\Models\City;
+use App\Http\Resources\ResearchResource;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ResearchController extends Controller
 {
-    public function get(Request $request) {
+    public function get() {
         $userId = Auth::user()->id;
 
         $user = User::where('id', $userId)->first();
@@ -40,6 +36,7 @@ class ResearchController extends Controller
 
         return [
             'queue' => $user->researchesQueue ? new ResearchQueueResource($user->researchesQueue) : [],
+            'researches' => ResearchResource::collection($user->researches)
         ];
     }
 }

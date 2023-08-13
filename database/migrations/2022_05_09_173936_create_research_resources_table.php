@@ -22,6 +22,8 @@ class CreateResearchResourcesTable extends Migration
             $table->integer('gold');
             $table->integer('population');
 
+            $table->integer('time');
+
             $table->integer('lvl');
 
             $table->timestamps();

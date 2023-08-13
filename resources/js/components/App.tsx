@@ -39,6 +39,7 @@ const App = () => {
     buildings,
     setBuildings,
     getBuildings,
+    getResearches,
     fleets,
     fleetDetails,
     fleetCitiesDictionary,
@@ -189,7 +190,9 @@ const App = () => {
                       <Researches
                         cityId={city.id}
                         dictionary={dictionaries.researches}
-                        resourcesDictionary={dictionaries.researchResources}
+                        researchResourcesDictionary={
+                          dictionaries.researchResources
+                        }
                         updateCityResources={updateCityResources}
                         cityResources={{
                           gold: city.gold,
@@ -199,6 +202,7 @@ const App = () => {
                         /*setBuildings={setBuildings}*/
                         setQueue={setQueueResearch}
                         queue={queueResearch}
+                        getResearches={getResearches}
                       />
                     }
                   />

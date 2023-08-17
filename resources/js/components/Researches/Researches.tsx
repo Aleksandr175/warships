@@ -8,7 +8,7 @@ import {
   IUserResearch,
 } from "../../types/types";
 import { Research } from "./Research";
-import { SH1, SH2, SText } from "../styles";
+import { SContent, SH1, SH2, SText } from "../styles";
 import { Card } from "../Common/Card";
 import { Icon } from "../Common/Icon";
 import { convertSecondsToTime, getTimeLeft } from "../../utils";
@@ -143,7 +143,7 @@ export const Researches = ({
   }
 
   return (
-    <>
+    <SContent>
       <SH1>Researches</SH1>
       {selectedResearchId && selectedResearch && (
         <SSelectedItem className={"row"}>
@@ -163,9 +163,17 @@ export const Researches = ({
               {Boolean(gold || population) && (
                 <>
                   <SText>Required resources:</SText>
-                  <Icon title={"gold"} /> {gold}
-                  <Icon title={"worker"} /> {population}
-                  <Icon title={"time"} /> {convertSecondsToTime(time)}
+                  <SParams>
+                    <SParam>
+                      <Icon title={"gold"} /> {gold}
+                    </SParam>
+                    <SParam>
+                      <Icon title={"worker"} /> {population}
+                    </SParam>
+                    <SParam>
+                      <Icon title={"time"} /> {convertSecondsToTime(time)}
+                    </SParam>
+                  </SParams>
                 </>
               )}
             </div>
@@ -232,7 +240,7 @@ export const Researches = ({
           </SItemWrapper>
         );
       })}
-    </>
+    </SContent>
   );
 };
 
@@ -248,4 +256,13 @@ const SCardWrapper = styled.div`
   height: 120px;
   border-radius: var(--block-border-radius-small);
   overflow: hidden;
+`;
+
+const SParams = styled.div`
+  display: flex;
+`;
+
+const SParam = styled.div`
+  width: 80px;
+  color: #949494;
 `;

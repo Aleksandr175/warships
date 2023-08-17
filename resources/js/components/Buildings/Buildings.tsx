@@ -10,7 +10,7 @@ import {
 } from "../../types/types";
 import styled from "styled-components";
 import { Building } from "./Building";
-import { SH1, SH2, SText } from "../styles";
+import { SContent, SH1, SH2, SText } from "../styles";
 import { Card } from "../Common/Card";
 import { Icon } from "../Common/Icon";
 import dayjs from "dayjs";
@@ -164,7 +164,7 @@ export const Buildings = ({
   }
 
   return (
-    <div>
+    <SContent>
       <SH1>Buildings</SH1>
       {selectedBuildingId && selectedBuilding && (
         <SSelectedItem className={"row"}>
@@ -184,9 +184,17 @@ export const Buildings = ({
               {Boolean(gold || population) && (
                 <>
                   <SText>Required resources:</SText>
-                  <Icon title={"gold"} /> {gold}
-                  <Icon title={"worker"} /> {population}
-                  <Icon title={"time"} /> {convertSecondsToTime(time)}
+                  <SParams>
+                    <SParam>
+                      <Icon title={"gold"} /> {gold}
+                    </SParam>
+                    <SParam>
+                      <Icon title={"worker"} /> {population}
+                    </SParam>
+                    <SParam>
+                      <Icon title={"time"} /> {convertSecondsToTime(time)}
+                    </SParam>
+                  </SParams>
                 </>
               )}
             </div>
@@ -195,22 +203,24 @@ export const Buildings = ({
                 getProductionResource("population")) && (
                 <SText>It provides:</SText>
               )}
-              {getProductionResource("gold") ? (
-                <span>
-                  <Icon title={"gold"} />
-                  {getProductionResource("gold")}
-                </span>
-              ) : (
-                ""
-              )}
-              {getProductionResource("population") ? (
-                <span>
-                  <Icon title={"worker"} />
-                  {getProductionResource("population")}
-                </span>
-              ) : (
-                ""
-              )}
+              <SParams>
+                {getProductionResource("gold") ? (
+                  <SParam>
+                    <Icon title={"gold"} />
+                    {getProductionResource("gold")}
+                  </SParam>
+                ) : (
+                  ""
+                )}
+                {getProductionResource("population") ? (
+                  <SParam>
+                    <Icon title={"worker"} />
+                    {getProductionResource("population")}
+                  </SParam>
+                ) : (
+                  ""
+                )}
+              </SParams>
             </div>
             <br />
             {!isBuildingInProcess() && (
@@ -277,7 +287,7 @@ export const Buildings = ({
             </SItemWrapper>
           );
         })}
-    </div>
+    </SContent>
   );
 };
 
@@ -293,4 +303,13 @@ const SCardWrapper = styled.div`
   height: 120px;
   border-radius: var(--block-border-radius-small);
   overflow: hidden;
+`;
+
+const SParams = styled.div`
+  display: flex;
+`;
+
+const SParam = styled.div`
+  width: 80px;
+  color: #949494;
 `;

@@ -18,6 +18,7 @@ import { Fleets } from "./Fleets";
 import { Logs } from "./Logs/Logs";
 import { Log } from "./Logs/Log";
 import { Icon } from "./Common/Icon";
+import { SAppContainer, SColumn } from "./styles";
 
 const App = () => {
   const {
@@ -157,7 +158,7 @@ const App = () => {
               </div>
             )}
 
-            <SColumn>
+            <div>
               {city && dictionaries && cities && (
                 <Routes>
                   <Route path={"dashboard"} element={<Overview />} />
@@ -258,7 +259,7 @@ const App = () => {
                   />
                 </Routes>
               )}
-            </SColumn>
+            </div>
           </div>
           <div className={"col-3"}>
             <SColumn>
@@ -283,26 +284,6 @@ const App = () => {
 };
 
 export default App;
-
-const SAppContainer = styled.div`
-  padding-top: var(--block-gutter-y);
-`;
-
-const SColumn = styled.div`
-  background: var(--background-color);
-  padding: var(--block-padding);
-  border-radius: var(--block-border-radius);
-  margin-bottom: var(--block-gutter-y);
-`;
-
-const SCity = styled.span<{ active?: boolean }>`
-  cursor: pointer;
-  display: inline-block;
-  margin-left: 10px;
-  text-decoration: underline;
-
-  ${(props) => (props.active ? "text-decoration: none; font-weight: 700;" : "")}
-`;
 
 const SIsland = styled.div`
   > i {

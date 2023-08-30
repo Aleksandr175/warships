@@ -37,3 +37,12 @@ start job (default, fleet, resource)
 
 > ./vendor/bin/sail artisan queue:work --queue=attack
 
+> ./vendor/bin/sail artisan queue:work --queue=warshipQueue
+
+> ./vendor/bin/sail artisan queue:work --queue=battle
+
+All together
+> ./vendor/bin/sail artisan queue:work --queue=default,fleet,resource,attack,warshipQueue,battle
+
+### Start first jobs
+> http://localhost/server-start

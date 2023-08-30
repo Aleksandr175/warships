@@ -13,7 +13,15 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { WarshipsQueue } from "./WarshipsQueue";
-import { SContent, SH1, SH2, SText } from "../styles";
+import {
+  SButtonsBlock,
+  SContent,
+  SH1,
+  SH2,
+  SParam,
+  SParams,
+  SText,
+} from "../styles";
 import { Card } from "../Common/Card";
 import { Icon } from "../Common/Icon";
 import { convertSecondsToTime } from "../../utils";
@@ -157,11 +165,10 @@ export const Warships = ({
                   </SParam>
                 </SParams>
               </div>
-              <br />
               <div>
                 <SText>You can build: {maxShips}</SText>
               </div>
-              <div>
+              <SButtonsBlock>
                 <SInput
                   type="number"
                   value={selectedQty || ""}
@@ -196,10 +203,8 @@ export const Warships = ({
                 >
                   Create
                 </button>
-              </div>
+              </SButtonsBlock>
 
-              <br />
-              <br />
               <SText>{selectedWarship?.description}</SText>
             </div>
           </SSelectedItem>
@@ -225,15 +230,15 @@ export const Warships = ({
         })}
       </SContent>
 
-      <SContent>
-        {queue && queue.length > 0 && (
+      {queue && queue.length > 0 && (
+        <SContent>
           <WarshipsQueue
             queue={queue}
             dictionary={dictionary}
             sync={getWarships}
           />
-        )}
-      </SContent>
+        </SContent>
+      )}
     </>
   );
 };
@@ -254,17 +259,8 @@ const SCardWrapper = styled.div`
 
 const SInput = styled.input`
   display: inline-block;
-  margin-bottom: 10px;
   width: 80px;
   border: none;
   border-radius: 5px;
-`;
-
-const SParams = styled.div`
-  display: flex;
-`;
-
-const SParam = styled.div`
-  width: 80px;
-  color: #949494;
+  margin-right: 10px;
 `;

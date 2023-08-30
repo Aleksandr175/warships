@@ -2,6 +2,7 @@ import React from "react";
 import { IWarship } from "../../types/types";
 import styled, { css } from "styled-components";
 import { Card } from "../Common/Card";
+import { SCardWrapper } from "../styles";
 
 interface IProps {
   selected?: boolean;
@@ -21,22 +22,3 @@ export const Warship = ({ warship, selected, currentQty }: IProps) => {
     </SCardWrapper>
   );
 };
-
-const SCardWrapper = styled.div<{ selected?: boolean }>`
-  border-radius: var(--block-border-radius-small);
-  width: 140px;
-  height: 80px;
-  display: inline-block;
-  margin-right: calc(var(--block-gutter-x) / 2);
-  margin-bottom: calc(var(--block-gutter-y) / 2);
-  overflow: hidden;
-
-  cursor: pointer;
-
-  ${({ selected }) =>
-    selected
-      ? css`
-          border: 2px solid #6f4ca4;
-        `
-      : ""};
-`;

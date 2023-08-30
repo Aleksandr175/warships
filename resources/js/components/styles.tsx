@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 export const SH1 = styled.h1`
   font-size: 14px;
@@ -62,4 +62,39 @@ export const SContent = styled.div`
   border-radius: var(--block-border-radius);
   padding: var(--block-padding);
   margin-bottom: var(--block-gutter-y);
+`;
+
+export const SButtonsBlock = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
+export const SParams = styled.div`
+  display: flex;
+  margin-bottom: 20px;
+`;
+
+export const SParam = styled.div`
+  width: 80px;
+  color: #949494;
+`;
+
+export const SCardWrapper = styled.div<{ selected?: boolean }>`
+  border-radius: var(--block-border-radius-small);
+  width: 132px;
+  height: 80px;
+  display: inline-block;
+  margin-right: calc(var(--block-gutter-x) / 2);
+  margin-bottom: calc(var(--block-gutter-y) / 2);
+  overflow: hidden;
+
+  cursor: pointer;
+
+  ${({ selected }) =>
+    selected
+      ? css`
+          border: 2px solid #6f4ca4;
+        `
+      : ""};
 `;

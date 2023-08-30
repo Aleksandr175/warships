@@ -8,7 +8,15 @@ import {
   IUserResearch,
 } from "../../types/types";
 import { Research } from "./Research";
-import { SContent, SH1, SH2, SText } from "../styles";
+import {
+  SButtonsBlock,
+  SContent,
+  SH1,
+  SH2,
+  SParam,
+  SParams,
+  SText,
+} from "../styles";
 import { Card } from "../Common/Card";
 import { Icon } from "../Common/Icon";
 import { convertSecondsToTime, getTimeLeft } from "../../utils";
@@ -177,31 +185,30 @@ export const Researches = ({
                 </>
               )}
             </div>
-            <br />
-            {!isResearchInProcess() && (
-              <button
-                className={"btn btn-primary"}
-                disabled={isResearchDisabled()}
-                onClick={() => {
-                  run(selectedResearchId);
-                }}
-              >
-                Research
-              </button>
-            )}
+            <SButtonsBlock>
+              {!isResearchInProcess() && (
+                <button
+                  className={"btn btn-primary"}
+                  disabled={isResearchDisabled()}
+                  onClick={() => {
+                    run(selectedResearchId);
+                  }}
+                >
+                  Research
+                </button>
+              )}
 
-            {isResearchInProcess() && (
-              <button
-                className={"btn btn-warning"}
-                onClick={() => {
-                  cancel(selectedResearchId);
-                }}
-              >
-                Cancel
-              </button>
-            )}
-            <br />
-            <br />
+              {isResearchInProcess() && (
+                <button
+                  className={"btn btn-warning"}
+                  onClick={() => {
+                    cancel(selectedResearchId);
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
+            </SButtonsBlock>
             <SText>{selectedResearch?.description}</SText>
           </div>
         </SSelectedItem>
@@ -256,13 +263,4 @@ const SCardWrapper = styled.div`
   height: 120px;
   border-radius: var(--block-border-radius-small);
   overflow: hidden;
-`;
-
-const SParams = styled.div`
-  display: flex;
-`;
-
-const SParam = styled.div`
-  width: 80px;
-  color: #949494;
 `;

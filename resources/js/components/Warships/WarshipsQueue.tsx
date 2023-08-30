@@ -3,88 +3,135 @@ import { ICityWarshipQueue, IWarship } from "../../types/types";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { SH2 } from "../styles";
+import styled from "styled-components";
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
 interface IProps {
-    dictionary: IWarship[];
-    queue?: ICityWarshipQueue[];
-    sync: () => void;
+  dictionary: IWarship[];
+  queue?: ICityWarshipQueue[];
+  sync: () => void;
 }
 
 export const WarshipsQueue = ({ dictionary, queue, sync }: IProps) => {
-    const timer = useRef();
-    const [tempQueue, setTempQueue] = useState(queue || []);
+  const timer = useRef();
+  const [tempQueue, setTempQueue] = useState(queue || []);
 
-    useEffect(() => {
-        setTempQueue(queue || []);
+  useEffect(() => {
+    setTempQueue(queue || []);
 
-        // @ts-ignore
-        timer.current = setInterval(handleTimer, 1000);
+    // @ts-ignore
+    timer.current = setInterval(handleTimer, 1000);
 
-        return () => {
-            clearInterval(timer.current);
-        };
-    }, [queue]);
+    return () => {
+      clearInterval(timer.current);
+    };
+  }, [queue]);
 
-    function handleTimer() {
-        const q: ICityWarshipQueue[] = tempQueue;
+  function handleTimer() {
+    const q: ICityWarshipQueue[] = tempQueue;
 
-        const newQ = q?.map((item) => {
-            if (item.time > 0) {
-                item.time -= 1;
-            }
+    const newQ = q?.map((item) => {
+      if (item.time > 0) {
+        item.time -= 1;
+      }
 
-            if (item.time === 0) {
-                sync();
-            }
+      if (item.time === 0) {
+        sync();
+      }
 
-            return item;
-        });
+      return item;
+    });
 
-        setTempQueue(newQ);
-    }
+    setTempQueue(newQ);
+  }
 
-    function getTimeLeft(deadlineStr: string): number {
-        const dateUTCNow = dayjs.utc(new Date());
-        let deadline = dayjs(new Date(deadlineStr));
+  function getTimeLeft(deadlineStr: string): number {
+    const dateUTCNow = dayjs.utc(new Date());
+    let deadline = dayjs(new Date(deadlineStr));
 
-        let deadlineString = deadline.format().toString().replace("T", " ");
-        let dateArray = deadlineString.split("+");
-        const deadlineDate = dateArray[0];
+    let deadlineString = deadline.format().toString().replace("T", " ");
+    let dateArray = deadlineString.split("+");
+    const deadlineDate = dateArray[0];
 
-        return dayjs.utc(deadlineDate).unix() - dateUTCNow.unix();
-    }
+    return dayjs.utc(deadlineDate).unix() - dateUTCNow.unix();
+  }
 
-    function getWarshipName(warshipId: number): string | undefined {
-        return dictionary.find((warship) => warship.id === warshipId)?.title;
-    }
+  function getWarshipName(warshipId: number): string | undefined {
+    return dictionary.find((warship) => warship.id === warshipId)?.title;
+  }
 
-    return (
-        <table>
-            <thead>
-                <tr>
-                    <th>Warship</th>
-                    <th>Qty</th>
-                    <th>Time Left</th>
-                    <th>Deadline</th>
-                </tr>
-            </thead>
+  return (
+    <>
+      <SH2>Warships Queue</SH2>
+      <STable>
+        <div>
+          <SCellHeader>Warship</SCellHeader>
+          <SCellHeader>Qty</SCellHeader>
+          <SCellHeader>Time Left</SCellHeader>
+          <SCellHeader>Deadline</SCellHeader>
+        </div>
 
-            <tbody>
-                {queue?.map((item) => {
-                    const time = getTimeLeft(item.deadline);
+        {queue?.map((item) => {
+          const time = getTimeLeft(item.deadline);
 
-                    return (
-                        <tr>
-                            <td>{getWarshipName(item.warshipId)}</td>
-                            <td>{item.qty}</td>
-                            <td>{time > 0 ? time : 0}</td>
-                            <td>{item.deadline}</td>
-                        </tr>
-                    );
-                })}
-            </tbody>
-        </table>
-    );
+          return (
+            <div>
+              <SCell>
+                <SWarshipIcon
+                  style={{
+                    backgroundImage: `url("../images/warships/simple/${item.warshipId}.svg")`,
+                  }}
+                />
+                {getWarshipName(item.warshipId)}
+              </SCell>
+              <SCell>{item.qty}</SCell>
+              <SCell>{time > 0 ? time : 0}</SCell>
+              <SCell>
+                {dayjs(item.deadline).format("DD MMM, YYYY HH:mm:ss")}
+              </SCell>
+            </div>
+          );
+        })}
+      </STable>
+    </>
+  );
 };
+
+const SWarshipIcon = styled.div`
+  display: inline-block;
+  background-size: contain;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  margin-right: 10px;
+
+  width: 28px;
+  height: 24px;
+`;
+
+const SCellHeader = styled.div`
+  display: flex;
+  align-items: center;
+  color: #949494;
+  width: 25%;
+`;
+
+const SCell = styled.div`
+  display: flex;
+  gap: 10px;
+  width: 25%;
+  align-items: center;
+`;
+
+const STable = styled.div`
+  padding-top: 10px;
+  font-size: 12px;
+
+  > div {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    padding-bottom: 20px;
+  }
+`;

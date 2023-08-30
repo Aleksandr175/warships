@@ -10,7 +10,15 @@ import {
 } from "../../types/types";
 import styled from "styled-components";
 import { Building } from "./Building";
-import { SContent, SH1, SH2, SText } from "../styles";
+import {
+  SButtonsBlock,
+  SContent,
+  SH1,
+  SH2,
+  SParam,
+  SParams,
+  SText,
+} from "../styles";
 import { Card } from "../Common/Card";
 import { Icon } from "../Common/Icon";
 import dayjs from "dayjs";
@@ -222,31 +230,30 @@ export const Buildings = ({
                 )}
               </SParams>
             </div>
-            <br />
-            {!isBuildingInProcess() && (
-              <button
-                className={"btn btn-primary"}
-                disabled={isBuildingDisabled()}
-                onClick={() => {
-                  run(selectedBuildingId);
-                }}
-              >
-                Build
-              </button>
-            )}
+            <SButtonsBlock>
+              {!isBuildingInProcess() && (
+                <button
+                  className={"btn btn-primary"}
+                  disabled={isBuildingDisabled()}
+                  onClick={() => {
+                    run(selectedBuildingId);
+                  }}
+                >
+                  Build
+                </button>
+              )}
 
-            {isBuildingInProcess() && (
-              <button
-                className={"btn btn-warning"}
-                onClick={() => {
-                  cancel(selectedBuildingId);
-                }}
-              >
-                Cancel
-              </button>
-            )}
-            <br />
-            <br />
+              {isBuildingInProcess() && (
+                <button
+                  className={"btn btn-warning"}
+                  onClick={() => {
+                    cancel(selectedBuildingId);
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
+            </SButtonsBlock>
             <SText>{selectedBuilding?.description}</SText>
           </div>
         </SSelectedItem>
@@ -303,13 +310,4 @@ const SCardWrapper = styled.div`
   height: 120px;
   border-radius: var(--block-border-radius-small);
   overflow: hidden;
-`;
-
-const SParams = styled.div`
-  display: flex;
-`;
-
-const SParam = styled.div`
-  width: 80px;
-  color: #949494;
 `;

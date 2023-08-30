@@ -9,6 +9,7 @@ import styled, { css } from "styled-components";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { Card } from "../Common/Card";
+import { SCardWrapper } from "../styles";
 dayjs.extend(utc);
 
 interface IProps {
@@ -38,22 +39,3 @@ export const Building = ({ building, lvl, timeLeft, selected }: IProps) => {
     </SCardWrapper>
   );
 };
-
-const SCardWrapper = styled.div<{ selected?: boolean }>`
-  border-radius: var(--block-border-radius-small);
-  width: 140px;
-  height: 80px;
-  display: inline-block;
-  margin-right: calc(var(--block-gutter-x) / 2);
-  margin-bottom: calc(var(--block-gutter-y) / 2);
-  overflow: hidden;
-
-  cursor: pointer;
-
-  ${({ selected }) =>
-    selected
-      ? css`
-          border: 2px solid #6f4ca4;
-        `
-      : ""};
-`;

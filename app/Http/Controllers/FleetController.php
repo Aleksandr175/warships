@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CityShortInfoResource;
 use App\Http\Resources\FleetDetailResource;
+use App\Http\Resources\FleetIncomingResource;
 use App\Http\Resources\FleetResource;
 use App\Models\City;
 use App\Models\FleetDetail;
@@ -20,21 +21,26 @@ class FleetController extends Controller
 
         $city = City::where('id', $cityId)->where('user_id', $userId)->first();
 
-        $fleets = $city->fleets;
+        $fleets         = $city->fleets;
+        $incomingFleets = $city->incomingFleets;
 
         $fleetIds     = $fleets->pluck('id');
         $fleetDetails = FleetDetail::getFleetDetails($fleetIds);
 
-        $cityIds       = $fleets->pluck('city_id')->toArray();;
-        $targetCityIds = $fleets->pluck('target_city_id')->toArray();;
+        $cityIds       = $fleets->pluck('city_id')->toArray();
+        $targetCityIds = $fleets->pluck('target_city_id')->toArray();
 
-        $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds))->get();
+        $incomingCityIds       = $incomingFleets->pluck('city_id')->toArray();
+        $incomingTargetCityIds = $incomingFleets->pluck('target_city_id')->toArray();
+
+        $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds, $incomingCityIds, $incomingTargetCityIds))->get();
 
         if ($city && $city->id) {
             return [
-                'fleets'       => FleetResource::collection($fleets),
-                'fleetDetails' => FleetDetailResource::collection($fleetDetails),
-                'cities'       => CityShortInfoResource::collection($cities)
+                'fleets'         => FleetResource::collection($fleets),
+                'fleetDetails'   => FleetDetailResource::collection($fleetDetails),
+                'cities'         => CityShortInfoResource::collection($cities),
+                'incomingFleets' => FleetIncomingResource::collection($incomingFleets),
             ];
         }
 

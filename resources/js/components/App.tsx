@@ -44,6 +44,7 @@ const App = () => {
     fleets,
     fleetDetails,
     fleetCitiesDictionary,
+    fleetsIncoming,
     getProductionGold,
     dictionaries,
     userId,
@@ -270,6 +271,7 @@ const App = () => {
                 fleets.length > 0 && (
                   <Fleets
                     fleets={fleets}
+                    fleetsIncoming={fleetsIncoming}
                     fleetDetails={fleetDetails}
                     dictionaries={dictionaries}
                     fleetCitiesDictionary={fleetCitiesDictionary}

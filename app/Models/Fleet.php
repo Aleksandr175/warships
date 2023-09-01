@@ -44,6 +44,16 @@ class Fleet extends Model
 
     protected $guarded = [];
 
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function targetCity()
+    {
+        return $this->belongsTo(City::class, 'target_city_id');
+    }
+
     public function isTradeTask()
     {
         return $this->fleet_task_id === self::FLEET_TASK_TRADE_ID;

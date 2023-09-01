@@ -3,6 +3,7 @@ import {
   ICityFleet,
   IDictionary,
   IFleetDetail,
+  IFleetIncoming,
   IMapCity,
 } from "../types/types";
 import dayjs from "dayjs";
@@ -16,7 +17,7 @@ export const Fleet = ({
   fleetCities,
   fleetDetails,
 }: {
-  fleet: ICityFleet;
+  fleet: ICityFleet | IFleetIncoming;
   dictionaries: IDictionary;
   fleetCities: IMapCity[];
   fleetDetails: IFleetDetail[];
@@ -105,7 +106,7 @@ export const Fleet = ({
         <SFleetInfo>
           <SFleetTaskIcon>
             <Icon title={getFleetTaskIconName(fleet.fleetTaskId)} />
-            {fleet.repeating ? "R" : ""}
+            {fleet?.repeating ? "R" : ""}
           </SFleetTaskIcon>
           <SFleetDestinations>
             <SCityName>

@@ -10,6 +10,7 @@ import {
   ICityWarshipQueue,
   IDictionary,
   IFleetDetail,
+  IFleetIncoming,
   IMapCity,
   IUserResearch,
 } from "../../types/types";
@@ -26,6 +27,7 @@ export const useAppLogic = () => {
   const [researches, setResearches] = useState<IUserResearch[] | undefined>();
   const [warships, setWarships] = useState<ICityWarship[] | undefined>();
   const [fleets, setFleets] = useState<ICityFleet[]>();
+  const [fleetsIncoming, setFleetsIncoming] = useState<IFleetIncoming[]>();
   const [fleetDetails, setFleetDetails] = useState<IFleetDetail[]>();
   const [fleetCitiesDictionary, setFleetCitiesDictionary] =
     useState<IMapCity[]>();
@@ -55,11 +57,13 @@ export const useAppLogic = () => {
         "FleetUpdatedEvent",
         (event: {
           fleets: ICityFleet[];
+          fleetsIncoming: IFleetIncoming[];
           fleetsDetails: IFleetDetail[];
           cities: ICity[];
         }) => {
           console.log("new fleet data", event);
           setFleets(event.fleets);
+          setFleetsIncoming(event.fleetsIncoming);
           setFleetDetails(event.fleetsDetails);
           setFleetCitiesDictionary(event.cities);
         }
@@ -151,6 +155,7 @@ export const useAppLogic = () => {
 
     httpClient.get("/fleets?cityId=" + city?.id).then((response) => {
       setFleets(response.data.fleets);
+      setFleetsIncoming(response.data.incomingFleets);
       setFleetDetails(response.data.fleetDetails);
       setFleetCitiesDictionary(response.data.cities);
     });
@@ -200,6 +205,7 @@ export const useAppLogic = () => {
     getProductionGold,
     fleets,
     fleetCitiesDictionary,
+    fleetsIncoming,
     dictionaries,
     updateCityResources,
     buildings,

@@ -5,16 +5,19 @@ import {
   ICityFleet,
   IDictionary,
   IFleetDetail,
+  IFleetIncoming,
   IMapCity,
 } from "../types/types";
 
 export const Fleets = ({
   fleets,
+  fleetsIncoming,
   dictionaries,
   fleetCitiesDictionary,
   fleetDetails,
 }: {
   fleets: ICityFleet[];
+  fleetsIncoming: IFleetIncoming[] | undefined;
   dictionaries: IDictionary;
   fleetCitiesDictionary: IMapCity[];
   fleetDetails: IFleetDetail[];
@@ -25,18 +28,37 @@ export const Fleets = ({
 
   return (
     <SColumnFleets className={"col-12"}>
-      {fleets.map((fleet) => {
-        return (
-          <Fleet
-            key={fleet.id}
-            fleet={fleet}
-            fleetDetails={getFleetDetails(fleet.id)}
-            dictionaries={dictionaries}
-            // TODO: sent city and target city, not whole dictionary of cities
-            fleetCities={fleetCitiesDictionary}
-          />
-        );
-      })}
+      {fleets &&
+        fleets.map((fleet) => {
+          return (
+            <Fleet
+              key={fleet.id}
+              fleet={fleet}
+              fleetDetails={getFleetDetails(fleet.id)}
+              dictionaries={dictionaries}
+              // TODO: sent city and target city, not whole dictionary of cities
+              fleetCities={fleetCitiesDictionary}
+            />
+          );
+        })}
+
+      {fleetsIncoming && fleetsIncoming.length > 0 && (
+        <>
+          <p>Incoming Fleets</p>
+          {fleetsIncoming.map((fleet) => {
+            return (
+              <Fleet
+                key={fleet.id}
+                fleet={fleet}
+                fleetDetails={getFleetDetails(fleet.id)}
+                dictionaries={dictionaries}
+                // TODO: sent city and target city, not whole dictionary of cities
+                fleetCities={fleetCitiesDictionary}
+              />
+            );
+          })}
+        </>
+      )}
     </SColumnFleets>
   );
 };

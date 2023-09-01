@@ -140,19 +140,21 @@ class FleetService
         }
     }
 
-    public function sendFleetUpdatedEvent($user, $city) {
+    public function sendFleetUpdatedEvent($user, $city)
+    {
         $fleets        = $city->fleets;
         $fleetsDetails = FleetDetail::getFleetDetails($fleets->pluck('id'));
 
-        $cityIds = $fleets->pluck('city_id')->toArray();;
-        $targetCityIds = $fleets->pluck('target_city_id')->toArray();;
+        $cityIds       = $fleets->pluck('city_id')->toArray();
+        $targetCityIds = $fleets->pluck('target_city_id')->toArray();
 
         $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds))->get();
 
         FleetUpdatedEvent::dispatch($user, $fleets, $fleetsDetails, $cities);
     }
 
-    public function sendCityDataUpdatedEvent($user) {
+    public function sendCityDataUpdatedEvent($user)
+    {
         $cities = $user->cities;
 
         CityDataUpdatedEvent::dispatch($user, $cities);
@@ -161,7 +163,8 @@ class FleetService
     // get maximum gold which we can carry
     // - gold should be not more than we have on island
     // - gold should be not more than fleet can carry
-    public function handleGold($gold, $city, $fleetDetails): int {
+    public function handleGold($gold, $city, $fleetDetails): int
+    {
         $actualGold = $gold;
 
         if ($city->gold < $actualGold) {
@@ -311,6 +314,7 @@ class FleetService
                 }
             }
 
+            // task: transport resources to another island and go back
             if ($fleet->isTrasnsportTask()) {
                 if ($fleet->isTransportFleetGoingToTarget()) {
                     dump('transport: fleet delivered resource, fleet is going back');
@@ -336,6 +340,7 @@ class FleetService
                 }
             }
 
+            // task: attack island and go back
             if ($fleet->isAttackTask()) {
                 if ($fleet->isAttackFleetGoingToTarget()) {
                     dump('attack fleet: fleet achieved target island');
@@ -347,6 +352,7 @@ class FleetService
                     BattleJob::dispatch()->onQueue('battle');
                 }
 
+                // TODO: i think we should have status isAttackCompleted
                 if ($fleet->isAttackFleetAttackInProgress()) {
                     dump('fleets\'s attack is completed: fleet is going back');
                     $statusId = Fleet::FLEET_STATUS_ATTACK_GOING_BACK_ID;

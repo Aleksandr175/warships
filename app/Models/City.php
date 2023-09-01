@@ -59,4 +59,9 @@ class City extends Model
     {
         return $this->hasMany(Fleet::class);
     }
+
+    public function incomingFleets()
+    {
+        return $this->hasMany(Fleet::class, 'target_city_id');
+    }
 }

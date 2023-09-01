@@ -40,6 +40,5 @@ class BattleJob implements ShouldQueue
         foreach ($fleetQueue as $fleet) {
             $battleService->handle($fleet);
         }
-        //
     }
 }

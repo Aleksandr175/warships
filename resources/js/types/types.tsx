@@ -159,3 +159,14 @@ export interface ICityFleet {
   time: number;
   deadline: string;
 }
+
+export type IFleetIncoming = Pick<
+  ICityFleet,
+  | "id"
+  | "cityId"
+  | "targetCityId"
+  | "fleetTaskId"
+  | "fleetStatusId"
+  | "deadline"
+  | "repeating"
+>;

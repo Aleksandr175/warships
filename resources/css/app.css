@@ -17,10 +17,36 @@
 }
 
 body {
+  position: relative;
   background: url('../images/bg.svg') 50% 50% no-repeat;
   background-size: cover;
   background-attachment: fixed;
   font-size: 14px;
+  min-height: 100vh;
+}
+
+.main-page-links {
+  position: absolute;
+  top: 45%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+.main-page-links h1 {
+  color: white;
+}
+
+.main-page-links a {
+  background: white;
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: black;
 }
 
 .footer {

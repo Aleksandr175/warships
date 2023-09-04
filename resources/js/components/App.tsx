@@ -48,6 +48,7 @@ const App = () => {
     getProductionGold,
     dictionaries,
     userId,
+    logout,
   } = useAppLogic();
 
   if (isLoading) {
@@ -115,6 +116,10 @@ const App = () => {
                 }
               >
                 Battle Logs
+              </NavLink>
+              <SSeparator />
+              <NavLink className={"link"} to={"/"} onClick={logout}>
+                Logout
               </NavLink>
             </SColumn>
           </div>
@@ -264,19 +269,15 @@ const App = () => {
           </div>
           <div className={"col-3"}>
             <SColumn>
-              {dictionaries &&
-                fleetCitiesDictionary &&
-                fleets &&
-                fleetDetails &&
-                fleets.length > 0 && (
-                  <Fleets
-                    fleets={fleets}
-                    fleetsIncoming={fleetsIncoming}
-                    fleetDetails={fleetDetails}
-                    dictionaries={dictionaries}
-                    fleetCitiesDictionary={fleetCitiesDictionary}
-                  />
-                )}
+              {dictionaries && fleetCitiesDictionary && (
+                <Fleets
+                  fleets={fleets}
+                  fleetsIncoming={fleetsIncoming}
+                  fleetDetails={fleetDetails}
+                  dictionaries={dictionaries}
+                  fleetCitiesDictionary={fleetCitiesDictionary}
+                />
+              )}
             </SColumn>
           </div>
         </div>
@@ -291,4 +292,11 @@ const SIsland = styled.div`
   > i {
     padding-right: 5px;
   }
+`;
+
+const SSeparator = styled.div`
+  height: 1px;
+  background: black;
+  opacity: 0.2;
+  margin: 10px 10px;
 `;

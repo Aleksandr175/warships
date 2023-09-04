@@ -196,6 +196,15 @@ export const useAppLogic = () => {
     setCity(c);
   };
 
+  // @ts-ignore
+  const logout = (e) => {
+    e.preventDefault();
+
+    httpClient.get("/logout").then(() => {
+      window.location.pathname = "/";
+    });
+  };
+
   return {
     isLoading,
     city,
@@ -223,5 +232,6 @@ export const useAppLogic = () => {
     fleetDetails,
     userId,
     getResearches,
+    logout,
   };
 };

@@ -16,14 +16,14 @@ export const Fleets = ({
   fleetCitiesDictionary,
   fleetDetails,
 }: {
-  fleets: ICityFleet[];
+  fleets: ICityFleet[] | undefined;
   fleetsIncoming: IFleetIncoming[] | undefined;
   dictionaries: IDictionary;
   fleetCitiesDictionary: IMapCity[];
-  fleetDetails: IFleetDetail[];
+  fleetDetails: IFleetDetail[] | undefined;
 }) => {
   const getFleetDetails = (fleetId: number): IFleetDetail[] => {
-    return fleetDetails.filter((detail) => detail.fleetId === fleetId);
+    return fleetDetails?.filter((detail) => detail.fleetId === fleetId)!;
   };
 
   return (

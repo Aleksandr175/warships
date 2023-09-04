@@ -1,15 +1,26 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Warships</title>
-        <script src="{{ asset('js/app.js') }}" defer></script>
-    </head>
-    <body>
-        Main page
+    <!-- Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+
+    <title>Warships</title>
+    <script src="{{ asset('js/app.js') }}" defer></script>
+</head>
+<body>
+<div class="main-page-links font-sans">
+    <div>
+        <h1>Warships</h1>
         <a href="{{ route('login') }}">Login</a>
         <a href="{{ route('register') }}">Register</a>
-    </body>
+    </div>
+</div>
+</body>
 </html>

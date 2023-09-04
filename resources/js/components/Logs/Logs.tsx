@@ -4,6 +4,7 @@ import { httpClient } from "../../httpClient/httpClient";
 import ReactPaginate from "react-paginate";
 import { NavLink } from "react-router-dom";
 import { SContent } from "../styles";
+import dayjs from "dayjs";
 
 interface IProps {
   dictionary: IWarship[];
@@ -16,6 +17,7 @@ interface IBattleLog {
   defenderUserId: number;
   winner: "attacker" | "defender";
   date: string;
+  cityId: number;
 }
 
 interface IBattleLogDetail {
@@ -52,21 +54,31 @@ export const Logs = ({ dictionary, userId }: IProps) => {
     <SContent>
       {!logs?.length && <>No logs yet</>}
 
+      {logs?.length > 0 && (
+        <>
+          <div className={"row"}>
+            <div className={"col-3"}>Date</div>
+            <div className={"col-3"}>City</div>
+            <div className={"col-3"}>Type</div>
+            <div className={"col-3"}>Result</div>
+          </div>
+
+          <hr />
+        </>
+      )}
+
       {logs.map((log) => {
         return (
           <>
             <div className={"row"}>
-              <div className={"col-4"}>Date</div>
-              <div className={"col-4"}>Type</div>
-              <div className={"col-4"}>Result</div>
-            </div>
-
-            <div className={"row"}>
-              <div className={"col-4"}>{log.date}</div>
-              <div className={"col-4"}>
+              <div className={"col-3"}>
+                {dayjs(log.date).format("DD MMM, YYYY HH:mm:ss")}
+              </div>
+              <div className={"col-3"}>{log.cityId}</div>
+              <div className={"col-3"}>
                 {log.attackerUserId === userId ? "Attack" : "Defend"}
               </div>
-              <div className={"col-4"}>
+              <div className={"col-3"}>
                 {log.winner === "attacker" ? "Victory" : "Defeat"}
               </div>
             </div>

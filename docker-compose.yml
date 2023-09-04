@@ -99,6 +99,44 @@ services:
             - '/dev/shm:/dev/shm'
         networks:
             - sail
+    job-listener-resources:
+        build:
+            context: ./vendor/laravel/sail/runtimes/8.2
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        volumes:
+            - '.:/var/www/html'
+        command: php artisan queue:listen --queue=resource
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            IGNITION_LOCAL_SITES_PATH: '${PWD}'
+            DB_HOST: mysql
+            # Add other environment variables as needed
+        networks:
+            - sail
+    job-listener-fleet:
+        build:
+            context: ./vendor/laravel/sail/runtimes/8.2
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        volumes:
+            - '.:/var/www/html'
+        command: php artisan queue:listen --queue=fleet
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            IGNITION_LOCAL_SITES_PATH: '${PWD}'
+            DB_HOST: mysql
+            # Add other environment variables as needed
+        networks:
+            - sail
 networks:
     sail:
         driver: bridge

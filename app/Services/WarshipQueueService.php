@@ -36,6 +36,26 @@ class WarshipQueueService
         return $queue;
     }
 
+    public function orderWarship($userId, $data)
+    {
+        $queue     = null;
+        $cityId    = $data['cityId'];
+        $warshipId = $data['warshipId'];
+        $qty       = $data['qty'];
+
+        $this->userId    = $userId;
+        $this->warshipId = $warshipId;
+        $this->qty       = $qty;
+
+        $this->city = City::where('id', $cityId)->where('user_id', $this->userId)->first();
+
+        if ($this->city && $this->city->id) {
+            $queue = $this->updateWarshipQueue();
+        }
+
+        return $queue;
+    }
+
     public function updateWarshipQueue()
     {
         $warshipDict = WarshipDictionary::find($this->warshipId);

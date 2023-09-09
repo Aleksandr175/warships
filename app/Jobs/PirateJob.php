@@ -38,13 +38,7 @@ class PirateJob implements ShouldQueue
         $pirateService = new PirateService();
 
         foreach ($cities as $city) {
-            // if no fleets -> send fleet to player
-            if ($city->fleets) {
-                $pirateService->handle($city);
-            } else {
-                // check resources and build some new warship
-                $pirateService->buildFleet($city);
-            }
+            $pirateService->handle($city);
         }
     }
 }

@@ -17,7 +17,12 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(CityDictionarySeeder::class);
 
-        \App\Models\User::factory(4)->create();
+        // pirates id 1
+        \App\Models\User::factory(1)->create([
+            'name' => 'Pirates'
+        ]);
+
+        \App\Models\User::factory(3)->create();
 
         \App\Models\User::factory(1)->create([
             'name'     => 'Alex',
@@ -59,13 +64,13 @@ class DatabaseSeeder extends Seeder
         }
 
         \App\Models\City::factory(1)->create([
-            'user_id'            => null,
+            'user_id'            => 1,
             'city_dictionary_id' => 2,
             'title'              => 'Pirate Bay',
             'coord_x'            => 2,
             'coord_y'            => 1,
-            'gold'               => 200,
-            'population'         => 50
+            'gold'               => 2000,
+            'population'         => 500
         ]);
 
         $this->call(BuildingDictionarySeeder::class);

@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\City;
 use App\Models\Fleet;
+use App\Services\PirateService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +46,15 @@ Route::get('/test-battle', function (\App\Services\BattleService $battleService)
 
     foreach ($fleetQueue as $fleet) {
         $battleService->handle($fleet);
+    }
+});
+
+Route::get('/test-pirate-logic', function (\App\Services\BattleService $battleService) {
+    $cities = City::get()->where('city_dictionary_id', 2);
+    $pirateService = new PirateService();
+
+    foreach ($cities as $city) {
+        $pirateService->handle($city);
     }
 });
 

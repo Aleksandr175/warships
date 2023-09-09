@@ -23,5 +23,10 @@ class CityDictionarySeeder extends Seeder
             'title' => 'Pirate Bay',
             'description' => 'This island is full of pirates'
         ]);
+
+        CityDictionary::create([
+            'title' => 'Colony',
+            'description' => 'This island is full of resources and can provide you resources'
+        ]);
     }
 }

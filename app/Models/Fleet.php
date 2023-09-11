@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $status_id
  * @property integer $speed
  * @property integer $gold
+ * @property integer $population
  * @property integer $repeating
  * @property integer $time
  * @property integer $deadline

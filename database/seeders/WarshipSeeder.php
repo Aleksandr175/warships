@@ -45,21 +45,21 @@ class WarshipSeeder extends Seeder
                 'warship_id' => 1,
                 'city_id' => $pirateBay->id,
                 'user_id' => null,
-                'qty' => 3
+                'qty' => 5
             ]);
 
             Warship::create([
                 'warship_id' => 2,
                 'city_id' => $pirateBay->id,
                 'user_id' => null,
-                'qty' => 2
+                'qty' => 3
             ]);
 
             Warship::create([
                 'warship_id' => 3,
                 'city_id' => $pirateBay->id,
                 'user_id' => null,
-                'qty' => 1
+                'qty' => 2
             ]);
         }
     }

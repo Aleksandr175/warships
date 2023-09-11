@@ -46,3 +46,7 @@ All together
 
 ### Start first jobs
 > http://localhost/server-start
+
+### Docs
+
+All docs are in docs folder

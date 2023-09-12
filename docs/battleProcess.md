@@ -62,4 +62,4 @@ If sum of all resources is bigger than capacity -> first we get all gold and if 
 - add fortress, increase damage & defence ability
 - add ability to attack alien trade fleet in the city (while it is process of trading)
 - add notifications about battle result in real time
-- when getting resources -> check capacity depends on what fleet had. Cas it could be sent with some resource to attack city.
+- when getting resources -> check capacity depends on what fleet had. Cas it could be sent with some resource to attack city. +

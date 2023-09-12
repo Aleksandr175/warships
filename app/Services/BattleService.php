@@ -36,8 +36,11 @@ class BattleService
 
         $warshipsDictionary = WarshipDictionary::get();
 
-        dump('Battle logic...');
+        dump("Battle logic. FleetID: $fleet->id, CityId: $city->id, TargetCityId: $targetCity->id, UserId: $userId");
 
+        dump('AttackingFleetDetails', $attackingFleetDetails);
+
+        // TODO: do i need it?
         if ($targetCity->city_dictionary_id === CityDictionary::PIRATE_BAY) {
             $attackingUserId = $userId;
             $defendingUserId = $targetCityUserId;
@@ -46,7 +49,8 @@ class BattleService
             $defendingUserId = $userId;
         }
 
-        //if ($targetCity->city_dictionary_id === CityDictionary::PIRATE_BAY) {
+        dump("Attacker is $attackingUserId, Defender is: $defendingUserId");
+
         $defendingFleetDetails = [];
 
         // TODO if we attack player's island
@@ -69,7 +73,8 @@ class BattleService
         foreach ($warshipsDictionary as $warshipDictionary) {
             for ($i = 0, $iMax = count($attackingFleetDetails); $i < $iMax; $i++) {
                 if ($attackingFleetDetails[$i]['warship_id'] === $warshipDictionary['id']) {
-                    $attackingFleetDetails[$i]['health'] = $warshipDictionary['health'];
+                    $attackingFleetDetails[$i]['health']   = $warshipDictionary['health'];
+                    $attackingFleetDetails[$i]['capacity'] = $warshipDictionary['capacity'];
                     break;
                 }
             }
@@ -116,13 +121,13 @@ class BattleService
             $round++;
         } while (count($defendingFleetDetails) > 0 && count($attackingFleetDetails) > 0);
 
-        // get battle id
+        // get latest battle id
         $battleLog = BattleLog::latest()->first();
 
         if ($battleLog) {
-            $battleLogId = $battleLog->battle_log_id + 1;
+            $newBattleLogId = $battleLog->battle_log_id + 1;
         } else {
-            $battleLogId = 1;
+            $newBattleLogId = 1;
         }
 
         for ($i = 0; $i < $round; $i++) {
@@ -132,7 +137,7 @@ class BattleService
                     'warship_id'    => $logAttacking[$i][$logIndex]['warship_id'],
                     'qty'           => $logAttacking[$i][$logIndex]['qty'],
                     'destroyed'     => $logAttacking[$i][$logIndex]['destroyed'],
-                    'battle_log_id' => $battleLogId,
+                    'battle_log_id' => $newBattleLogId,
                     'round'         => $i + 1,
                     'user_id'       => $attackingUserId
                 ];
@@ -148,7 +153,7 @@ class BattleService
                     'warship_id'    => $logDefending[$i][$logIndex]['warship_id'],
                     'qty'           => $logDefending[$i][$logIndex]['qty'],
                     'destroyed'     => $logDefending[$i][$logIndex]['destroyed'],
-                    'battle_log_id' => $battleLogId,
+                    'battle_log_id' => $newBattleLogId,
                     'round'         => $i + 1,
                     'user_id'       => $defendingUserId
                 ];
@@ -159,16 +164,81 @@ class BattleService
             BattleLogDetail::insert($data);
         }
 
+        $winner = count($attackingFleetDetails) > 0 ? 'attacker' : 'defender';
+
+        // $logAttacking - information about how much damage was dealt to the opposing side.
+        dump('LOGS', 'Attack log: ', $logAttacking, 'Defence log: ', $logDefending);
+
+        $takeGold       = 0;
+        $takePopulation = 0;
+
+        // calculate resources if attacker wins
+        if ($winner === 'attacker') {
+            [$takeGold, $takePopulation] = $this->moveResourcesToAttackerFleet($fleet, $attackingFleetDetails, $targetCity);
+            $this->removeResourcesFromCity($targetCity, $takeGold, $takePopulation);
+        }
+
+
         BattleLog::create([
-            'battle_log_id'    => $battleLogId,
+            'battle_log_id'    => $newBattleLogId,
             'attacker_user_id' => $userId,
             'defender_user_id' => $targetCityUserId,
             'round'            => $round,
             'city_id'          => $targetCity->id,
-            'winner'           => count($attackingFleetDetails) > 0 ? 'attacker' : 'defender'
+            'winner'           => $winner,
+            'gold'             => $takeGold,
+            'population'       => $takePopulation
         ]);
 
-        dump('LOGS', $logAttacking, $logDefending);
+        $fleetDetails = FleetDetail::where('fleet_id', $fleet->id)->get();
+        // remove warships from fleet
+        for ($i = 0, $iMax = count($fleetDetails); $i < $iMax; $i++) {
+            $actualFleetDetails = null;
+            for ($j = 0, $jMax = count($attackingFleetDetails); $j < $jMax; $j++) {
+                if ($attackingFleetDetails[$j]['id'] === $fleetDetails[$i]->id) {
+                    $actualFleetDetails = $attackingFleetDetails[$j];
+                }
+            }
+
+            if ($actualFleetDetails) {
+                $fleetDetails[$i]->update(['qty' => ceil($actualFleetDetails['qty'])]);
+            } else {
+                // remove fleet detail
+                FleetDetail::where('id', $fleetDetails[$i]->id)->delete();
+            }
+        }
+
+        // remove fleet without any details
+        $updatedFleetDetails = FleetDetail::where('fleet_id', $fleet->id)->get();
+        if (!count($updatedFleetDetails)) {
+            Fleet::where('id', $fleet->id)->delete();
+        }
+
+        // remove destroyed warships from city
+        $defendingWarships = $targetCity->warships;
+        //dump('$defendingFleetDetails',$defendingFleetDetails);
+        //dump('$defendingWarships',$defendingWarships);
+        for ($i = 0, $iMax = count($defendingWarships); $i < $iMax; $i++) {
+            $actualDefendingWarships = null;
+            for ($j = 0, $jMax = count($defendingFleetDetails); $j < $jMax; $j++) {
+                if ($defendingFleetDetails[$j]['warship_id'] === $defendingWarships[$i]->warship_id) {
+                    $actualDefendingWarships = $defendingFleetDetails[$j];
+                }
+            }
+
+            if ($actualDefendingWarships) {
+                $defendingWarships[$i]->update(['qty' => ceil($actualDefendingWarships['qty'])]);
+            } else {
+                // remove warships from city
+                $defendingWarships[$i]->delete();
+            }
+        }
+
+
+        // TODO: notify user about result somehow
+        // ...
+        // ...
+
 
         if ($targetCity->city_dictionary_id === CityDictionary::PLAYERS_ISLAND) {
             // TODO if we attack player's island
@@ -182,27 +252,81 @@ class BattleService
 
     }
 
+    // move resources from city to fleet (can't move more than capacity of fleet)
+    public function moveResourcesToAttackerFleet(Fleet $fleet, $fleetDetails, City $city)
+    {
+        $freeCapacity = 0;
+
+        for ($i = 0, $iMax = count($fleetDetails); $i < $iMax; $i++) {
+            $freeCapacity += ceil($fleetDetails[$i]['qty']) * $fleetDetails[$i]['capacity'];
+        }
+
+        if ($fleet->gold) {
+            $freeCapacity -= $fleet->gold;
+        }
+
+        if ($fleet->population) {
+            $freeCapacity -= $fleet->population;
+        }
+
+        // we can take only 50% or resources
+        $cityGold       = floor($city->gold / 2);
+        $cityPopulation = floor($city->population / 2);
+
+        dump("freeCapacity $freeCapacity, cityGold $cityGold, cityPopulation $cityPopulation");
+
+        if ($cityGold > $freeCapacity) {
+            $takeGold     = $freeCapacity;
+            $freeCapacity = 0;
+        } else {
+            $freeCapacity -= $cityGold;
+            $takeGold     = $cityGold;
+        }
+
+        if ($freeCapacity) {
+            if ($cityPopulation > $freeCapacity) {
+                $takePopulation = $freeCapacity;
+                $freeCapacity   = 0;
+            } else {
+                $freeCapacity   -= $cityPopulation;
+                $takePopulation = $cityPopulation;
+            }
+        }
+
+        $fleet->increment('gold', $takeGold);
+        $fleet->increment('population', $takePopulation);
+
+        dump("freeCapacity left $freeCapacity, takeGold $takeGold, takePopulation $takePopulation");
+
+        return [$takeGold, $takePopulation];
+    }
+
+    public function removeResourcesFromCity($city, $gold, $population)
+    {
+        $city->decrement('gold', $gold);
+        $city->decrement('population', $population);
+    }
+
     /**
-     * @param $damage - int
+     * @param $damageToEachWarshipType - int
      * @param $warships
      *
      * @return array
      */
-    public function shoot($damage, $warships): array
+    public function shoot($damageToEachWarshipType, $warshipGroups): array
     {
         $restDamage = 0;
         $log        = [];
 
         //dump('SHOOT');
 
-        for ($i = 0, $iMax = count($warships); $i < $iMax; $i++) {
-            $wholeHealth = $warships[$i]['qty'] * $warships[$i]['health'];
-            $restDamage  += $damage;
+        for ($i = 0, $iMax = count($warshipGroups); $i < $iMax; $i++) {
+            $initialQty = ceil($warshipGroups[$i]['qty']);
+            $wholeHealth = $warshipGroups[$i]['qty'] * $warshipGroups[$i]['health'];
+            $restDamage  += $damageToEachWarshipType;
             $logDamage   = $restDamage;
 
-            $startQty = ceil($warships[$i]['qty']);
-
-            // if we did 100 damage, but health was 80 -> it means that 20 damage will be done to another warship type
+            // if we did 100 damage, but health was 80 -> it means that 20 damage will be done to next warship type
             // we save 20 to $restDamage
             if ($wholeHealth < $restDamage) {
                 $restDamage  -= $wholeHealth;
@@ -212,27 +336,27 @@ class BattleService
                 $restDamage  = 0;
             }
 
-            $warships[$i]['qty'] = $wholeHealth / $warships[$i]['health'];
-            //dump('$warships[$i]', $warships[$i], $wholeHealth, $restDamage);
+            $warshipGroups[$i]['qty'] = $wholeHealth / $warshipGroups[$i]['health'];
+            //dump('$warshipGroups[$i]', $warshipGroups[$i], $wholeHealth, $restDamage);
 
             $log[] = [
-                'qty'        => $startQty,
-                'destroyed'  => $startQty - ceil($warships[$i]['qty']),
-                'warship_id' => $warships[$i]['warship_id'],
+                'qty'        => $initialQty,
+                'destroyed'  => $initialQty - ceil($warshipGroups[$i]['qty']),
+                'warship_id' => $warshipGroups[$i]['warship_id'],
                 'damage'     => $logDamage,
             ];
 
-            if ($warships[$i]['qty'] === 0) {
-                array_splice($warships, $i, 1);
+            if ($warshipGroups[$i]['qty'] === 0) {
+                array_splice($warshipGroups, $i, 1);
                 $i--;
                 $iMax--;
 
-                if (count($warships) === 0) {
+                if (count($warshipGroups) === 0) {
                     break;
                 }
             }
         }
 
-        return [$warships, $log];
+        return [$warshipGroups, $log];
     }
 }

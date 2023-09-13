@@ -47,6 +47,11 @@ All together
 ### Start first jobs
 > http://localhost/server-start
 
+### Test
+
+Run PHPUnit tests with command:
+> /vendor/bin/sail artisan test
+
 ### Docs
 
 All docs are in docs folder

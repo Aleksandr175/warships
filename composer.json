@@ -7,7 +7,6 @@
     "require": {
         "php": "^8.1",
         "beyondcode/laravel-websockets": "^1.13",
-        "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^3.2",

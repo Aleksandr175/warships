@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,9 +12,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $id
  * @property integer $fleet_id
  * @property integer $warship_id
- * @property integer  $qty
+ * @property integer $qty
  *
  * @package App\Models
+ * @mixin Builder
  */
 class FleetDetail extends Model
 {
@@ -23,7 +25,8 @@ class FleetDetail extends Model
 
     protected $guarded = [];
 
-    public static function getFleetDetails($fleetIds) {
+    public static function getFleetDetails($fleetIds)
+    {
         return self::whereIn('fleet_id', $fleetIds)->get();
     }
 }

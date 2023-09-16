@@ -15,16 +15,16 @@ class CreateFleetsTable extends Migration
     {
         Schema::create('fleets', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('city_id')->unsigned();
-            $table->bigInteger('target_city_id')->unsigned();
+            //$table->bigInteger('city_id')->unsigned();
+            //$table->bigInteger('target_city_id')->unsigned();
 
-            $table->bigInteger('fleet_task_id')->unsigned();
-            $table->bigInteger('status_id')->unsigned();
+            //$table->bigInteger('fleet_task_id')->unsigned();
+            //$table->bigInteger('status_id')->unsigned();
 
-            $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('target_city_id')->references('id')->on('cities')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('fleet_task_id')->references('id')->on('fleet_task_dictionary')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('status_id')->references('id')->on('fleet_status_dictionary')->onDelete('cascade')->onUpdate('cascade');
+            $table->integer('city_id');
+            $table->integer('target_city_id');
+            $table->integer('fleet_task_id');
+            $table->integer('status_id');
 
             $table->integer('speed')->default(0);
             $table->integer('gold')->default(0);

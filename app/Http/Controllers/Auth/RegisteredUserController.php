@@ -55,10 +55,7 @@ class RegisteredUserController extends Controller
         return redirect(RouteServiceProvider::HOME);
     }
 
-    private function createCity($user) {
-        $coordX = 0;
-        $coordY = 0;
-
+    private function createCity($user): void {
         do {
             $isCityExist = false;
             $coordX = rand(1, 100);
@@ -76,7 +73,7 @@ class RegisteredUserController extends Controller
             'user_id' => $user->id,
             'coord_x' => $coordX,
             'coord_y' => $coordY,
-            'title' => 'Остров игрока ' . $user->id
+            'title' => 'Player Island ' . $user->id
         ]);
     }
 }

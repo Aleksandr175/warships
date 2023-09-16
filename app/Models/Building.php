@@ -9,6 +9,8 @@ class Building extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function buildingResources() {
         return $this->hasMany(BuildingResource::class);
     }

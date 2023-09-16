@@ -18,8 +18,7 @@ class CreateFleetDetailsTable extends Migration
 
             $table->integer('fleet_id')->default(0);
 
-            $table->bigInteger('warship_id')->unsigned();
-            $table->foreign('warship_id')->references('id')->on('warship_dictionary')->onDelete('cascade')->onUpdate('cascade');
+            $table->integer('warship_id')->default(1);
 
             $table->integer('qty')->default(0);
 

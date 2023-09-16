@@ -25,5 +25,7 @@ class WarshipDictionary extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     protected $table = 'warship_dictionary';
 }

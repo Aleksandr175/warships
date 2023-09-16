@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,10 +18,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $repeating
  * @property integer $time
  * @property integer $deadline
+ *
+ * @mixin Builder
  */
 class Fleet extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
 
     /**
      * @var int
@@ -42,8 +47,6 @@ class Fleet extends Model
     public const FLEET_STATUS_ATTACK_GOING_TO_TARGET_ID = 1;
     public const FLEET_STATUS_ATTACK_GOING_BACK_ID      = 3;
     public const FLEET_STATUS_ATTACK_IN_PROGRESS        = 4;
-
-    protected $guarded = [];
 
     public function city()
     {

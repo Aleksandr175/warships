@@ -9,5 +9,7 @@ class FleetTaskDictionary extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     protected $table = 'fleet_task_dictionary';
 }

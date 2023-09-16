@@ -11,6 +11,8 @@ class CityDictionary extends Model
 
     protected $table = 'city_dictionary';
 
+    protected $guarded = [];
+
     public const PLAYERS_ISLAND = 1;
     public const PIRATE_BAY     = 2;
 }

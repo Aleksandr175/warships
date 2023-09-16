@@ -9,5 +9,7 @@ class BuildingDictionary extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     protected $table = 'building_dictionary';
 }

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $population
  *
  * @package App\Models
+ * @mixin Builder
  */
 class City extends Model
 {

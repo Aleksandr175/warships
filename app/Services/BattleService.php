@@ -2,33 +2,21 @@
 
 namespace App\Services;
 
-use App\Events\CityDataUpdatedEvent;
-use App\Events\FleetUpdatedEvent;
-use App\Events\TestEvent;
-use App\Http\Resources\FleetDetailResource;
-use App\Http\Resources\FleetResource;
-use App\Http\Resources\WarshipResource;
-use App\Jobs\BattleJob;
 use App\Models\BattleLog;
 use App\Models\BattleLogDetail;
 use App\Models\City;
 use App\Models\CityDictionary;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
-use App\Models\FleetTaskDictionary;
-use App\Models\User;
-use App\Models\Warship;
 use App\Models\WarshipDictionary;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 class BattleService
 {
     // handle battle process
-    public function handle(Fleet $fleet)
+    public function handle(Fleet $fleet): void
     {
-        $targetCity       = City::find($fleet->target_city_id);
-        $city             = City::find($fleet->city_id);
+        $targetCity       = (new City)->find($fleet->target_city_id);
+        $city             = (new City)->find($fleet->city_id);
         $userId           = $city->user_id;
         $targetCityUserId = $targetCity->user_id;
 
@@ -70,22 +58,8 @@ class BattleService
         }
 
         // set needed data, like health
-        foreach ($warshipsDictionary as $warshipDictionary) {
-            for ($i = 0, $iMax = count($attackingFleetDetails); $i < $iMax; $i++) {
-                if ($attackingFleetDetails[$i]['warship_id'] === $warshipDictionary['id']) {
-                    $attackingFleetDetails[$i]['health']   = $warshipDictionary['health'];
-                    $attackingFleetDetails[$i]['capacity'] = $warshipDictionary['capacity'];
-                    break;
-                }
-            }
-
-            for ($i = 0, $iMax = count($defendingFleetDetails); $i < $iMax; $i++) {
-                if ($defendingFleetDetails[$i]['warship_id'] === $warshipDictionary['id']) {
-                    $defendingFleetDetails[$i]['health'] = $warshipDictionary['health'];
-                    break;
-                }
-            }
-        }
+        $attackingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($attackingFleetDetails, $warshipsDictionary);
+        $defendingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($defendingFleetDetails, $warshipsDictionary);
 
         $logAttacking = [];
         $logDefending = [];
@@ -96,21 +70,8 @@ class BattleService
             $attackingForce = 0;
             $defendingForce = 0;
 
-            foreach ($warshipsDictionary as $warshipDictionary) {
-                foreach ($attackingFleetDetails as $detail) {
-                    if ($detail['warship_id'] === $warshipDictionary['id']) {
-                        $attackingForce += ceil($detail['qty']) * $warshipDictionary['attack'];
-                        break;
-                    }
-                }
-
-                foreach ($defendingFleetDetails as $detail) {
-                    if ($detail['warship_id'] === $warshipDictionary['id']) {
-                        $defendingForce += ceil($detail['qty']) * $warshipDictionary['attack'];
-                        break;
-                    }
-                }
-            }
+            $attackingForce = $this->calculateFleetAttack($attackingFleetDetails, $warshipsDictionary);
+            $defendingForce = $this->calculateFleetAttack($attackingFleetDetails, $warshipsDictionary);
 
             $attackingDamageToEachType = $attackingForce / count($defendingWarships);
             $defendingDamageToEachType = $defendingForce / count($attackingFleetDetails);
@@ -122,7 +83,7 @@ class BattleService
         } while (count($defendingFleetDetails) > 0 && count($attackingFleetDetails) > 0);
 
         // get latest battle id
-        $battleLog = BattleLog::latest()->first();
+        $battleLog = (new \App\Models\BattleLog)->latest()->first();
 
         if ($battleLog) {
             $newBattleLogId = $battleLog->battle_log_id + 1;
@@ -177,7 +138,6 @@ class BattleService
             [$takeGold, $takePopulation] = $this->moveResourcesToAttackerFleet($fleet, $attackingFleetDetails, $targetCity);
             $this->removeResourcesFromCity($targetCity, $takeGold, $takePopulation);
         }
-
 
         BattleLog::create([
             'battle_log_id'    => $newBattleLogId,
@@ -252,51 +212,83 @@ class BattleService
 
     }
 
-    // move resources from city to fleet (can't move more than capacity of fleet)
-    public function moveResourcesToAttackerFleet(Fleet $fleet, $fleetDetails, City $city)
+    public function getAvailableCapacity(Fleet $fleet, $fleetDetails): int
     {
-        $freeCapacity = 0;
+        $availableCapacity = 0;
 
         for ($i = 0, $iMax = count($fleetDetails); $i < $iMax; $i++) {
-            $freeCapacity += ceil($fleetDetails[$i]['qty']) * $fleetDetails[$i]['capacity'];
+            $availableCapacity += ceil($fleetDetails[$i]['qty']) * $fleetDetails[$i]['capacity'];
         }
 
-        if ($fleet->gold) {
-            $freeCapacity -= $fleet->gold;
+        return $availableCapacity - $fleet->gold - $fleet->population;
+    }
+
+    public function populateFleetDetailsWithCapacityAndHealth($fleetDetails, $warshipsDictionary)
+    {
+        foreach ($warshipsDictionary as $warshipDictionary) {
+            for ($i = 0, $iMax = count($fleetDetails); $i < $iMax; $i++) {
+                if ($fleetDetails[$i]['warship_id'] === $warshipDictionary['id']) {
+                    $fleetDetails[$i]['health']   = $warshipDictionary['health'];
+                    $fleetDetails[$i]['capacity'] = $warshipDictionary['capacity'];
+                    break;
+                }
+            }
         }
 
-        if ($fleet->population) {
-            $freeCapacity -= $fleet->population;
+        return $fleetDetails;
+    }
+
+    public function calculateFleetAttack($fleetDetails, $warshipsDictionary): int
+    {
+        $attackForce = 0;
+
+        foreach ($warshipsDictionary as $warshipDictionary) {
+            foreach ($fleetDetails as $detail) {
+                if ($detail['warship_id'] === $warshipDictionary['id']) {
+                    $attackForce += ceil($detail['qty']) * $warshipDictionary['attack'];
+                    break;
+                }
+            }
         }
+
+        return $attackForce;
+    }
+
+    // move resources from city to fleet (can't move more than capacity of fleet)
+    public function moveResourcesToAttackerFleet(Fleet $fleet, $fleetDetails, City $city): array
+    {
+        $availableCapacity = $this->getAvailableCapacity($fleet, $fleetDetails);
 
         // we can take only 50% or resources
         $cityGold       = floor($city->gold / 2);
         $cityPopulation = floor($city->population / 2);
 
-        dump("freeCapacity $freeCapacity, cityGold $cityGold, cityPopulation $cityPopulation");
+        dump("availableCapacity $availableCapacity, cityGold $cityGold, cityPopulation $cityPopulation");
+        $takeGold       = 0;
+        $takePopulation = 0;
 
-        if ($cityGold > $freeCapacity) {
-            $takeGold     = $freeCapacity;
-            $freeCapacity = 0;
+        if ($cityGold > $availableCapacity) {
+            $takeGold          = $availableCapacity;
+            $availableCapacity = 0;
         } else {
-            $freeCapacity -= $cityGold;
-            $takeGold     = $cityGold;
+            $availableCapacity -= $cityGold;
+            $takeGold          = $cityGold;
         }
 
-        if ($freeCapacity) {
-            if ($cityPopulation > $freeCapacity) {
-                $takePopulation = $freeCapacity;
-                $freeCapacity   = 0;
+        if ($availableCapacity) {
+            if ($cityPopulation > $availableCapacity) {
+                $takePopulation    = $availableCapacity;
+                $availableCapacity = 0;
             } else {
-                $freeCapacity   -= $cityPopulation;
-                $takePopulation = $cityPopulation;
+                $availableCapacity -= $cityPopulation;
+                $takePopulation    = $cityPopulation;
             }
         }
 
         $fleet->increment('gold', $takeGold);
         $fleet->increment('population', $takePopulation);
 
-        dump("freeCapacity left $freeCapacity, takeGold $takeGold, takePopulation $takePopulation");
+        dump("availableCapacity left $availableCapacity, takeGold $takeGold, takePopulation $takePopulation");
 
         return [$takeGold, $takePopulation];
     }
@@ -321,7 +313,7 @@ class BattleService
         //dump('SHOOT');
 
         for ($i = 0, $iMax = count($warshipGroups); $i < $iMax; $i++) {
-            $initialQty = ceil($warshipGroups[$i]['qty']);
+            $initialQty  = ceil($warshipGroups[$i]['qty']);
             $wholeHealth = $warshipGroups[$i]['qty'] * $warshipGroups[$i]['health'];
             $restDamage  += $damageToEachWarshipType;
             $logDamage   = $restDamage;

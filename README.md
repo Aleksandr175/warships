@@ -50,7 +50,7 @@ All together
 ### Test
 
 Run PHPUnit tests with command:
-> /vendor/bin/sail artisan test
+> ./vendor/bin/sail artisan test
 
 ### Docs
 

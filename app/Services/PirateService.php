@@ -16,15 +16,29 @@ class PirateService
         if (!count($city->fleets)) {
             dump('no pirate fleet -> sending new one to some player');
 
-            $timeToTarget = 10;
+            $timeToTarget = 1000;
             $gold         = 0;
             $speed        = 100;
 
-            // TODO: move warships from city to fleet
+            $warshipGroupsInCity = $city->warships;
+
+            dump('warshipGroupsInCity', $warshipGroupsInCity);
+
+            $fleetDetails = $this->getAvailableWarshipsForSending($warshipGroupsInCity);
+
+            if (!count($fleetDetails)) {
+                dump('Not enough warships for fleet');
+
+                return false;
+            }
+
+            // TODO: get random user
+            $targetCityId = 10;
+
             // create fleet and details
-            $fleetId = Fleet::create([
+            $fleetId = (new Fleet)->create([
                 'city_id'        => $city->id,
-                'target_city_id' => 10,//$this->targetCity->id,
+                'target_city_id' => $targetCityId,
                 'fleet_task_id'  => 3, //attack
                 'speed'          => $speed,
                 'time'           => $timeToTarget,
@@ -34,18 +48,9 @@ class PirateService
                 'deadline'       => Carbon::now()->addSeconds($timeToTarget)
             ])->id;
 
-            // TODO: send warships in proportions below
-            FleetDetail::create([
-                'fleet_id'   => $fleetId,
-                'warship_id' => 1,
-                'qty'        => 3
-            ]);
+            (new FleetService)->moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleetId, $fleetDetails);
 
-            FleetDetail::create([
-                'fleet_id'   => $fleetId,
-                'warship_id' => 3,
-                'qty'        => 1
-            ]);
+            dump('Pirate fleet has been sent to targetCityId: ' . $targetCityId);
         } else {
             dump('Try to build new pirate warship');
 
@@ -55,6 +60,7 @@ class PirateService
 
             if (count($city->warshipQueues) > 0) {
                 dump('Pirates has warship queue, skip...');
+
                 return;
             }
 
@@ -119,5 +125,55 @@ class PirateService
                 }
             }
         }
+    }
+
+    public function getAvailableWarshipsForSending($warshipGroupsInCity)
+    {
+        // Calculate the total number of warships in the city
+        $totalWarships = $warshipGroupsInCity->sum('qty');
+
+        // Check if there are at least 20 warships to send a fleet
+        if ($totalWarships < 20) {
+            dump('Not enough warships for fleet, $totalWarships < 20');
+
+            return [];
+        }
+
+        // Define the proportions for each warship type
+        $proportions = [
+            1 => 0.5,  // id 1: 50% proportion
+            2 => 0.25, // id 2: 25% proportion
+            3 => 0.2,  // id 3: 20% proportion
+            4 => 0.05, // id 4: 5% proportion
+        ];
+
+        // Define the maximum number of warships for each type
+        $maxLimits = [
+            1 => 10,   // id 1: Max limit is 10
+            2 => 5,    // id 2: Max limit is 5
+            3 => 4,    // id 3: Max limit is 4
+            4 => 1,    // id 4: Max limit is 1
+        ];
+
+        // Calculate the maximum number of warships to send for each type
+        $selectedWarships = [];
+        foreach ($warshipGroupsInCity as $warship) {
+            $warshipId    = $warship->warship_id;
+            $availableQty = $warship->qty;
+            $qty          = min(
+                floor($availableQty * $proportions[$warshipId]),
+                $maxLimits[$warshipId]
+            );
+
+            if ($qty > 0) {
+                $selectedWarships[] = [
+                    'warship_id' => $warshipId,
+                    'qty'        => $qty
+                ];
+            }
+        }
+
+        // Send the selected warships as the fleet
+        return $selectedWarships;
     }
 }

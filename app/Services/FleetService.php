@@ -70,21 +70,9 @@ class FleetService
             }
 
             // get warships in city
-            $warships = $userCity->warships()->where('user_id', $user->id)->get();
+            $warshipGroupsInCity = $userCity->warships()->where('user_id', $user->id)->get();
 
-            // check and correct fleet details
-            foreach ($warships as $warship) {
-                foreach ($this->fleetDetails as $fleetDetail) {
-                    if ($fleetDetail['warshipId'] === $warship->id && $fleetDetail['qty'] > 0 && $warship->qty > 0) {
-                        $detail = [
-                            'qty'       => min($warship->qty, $fleetDetail['qty']),
-                            'warshipId' => $warship->id
-                        ];
-
-                        $this->updatedFleetDetails[] = $detail;
-                    }
-                }
-            }
+            $this->updatedFleetDetails = $this->checkFleetDetails($warshipGroupsInCity, $this->fleetDetails);
 
             if (!count($this->updatedFleetDetails)) {
                 return 'no warships selected';
@@ -117,26 +105,58 @@ class FleetService
                 'deadline'       => Carbon::now()->addSeconds($timeToTarget)
             ])->id;
 
-            foreach ($this->updatedFleetDetails as $fleetDetail) {
-                FleetDetail::create([
-                    'fleet_id'   => $fleetId,
-                    'warship_id' => $fleetDetail['warshipId'],
-                    'qty'        => $fleetDetail['qty']
-                ]);
-
-                // remove warships from city
-                $warships->where('warship_id', $fleetDetail['warshipId'])->first()->increment('qty', -$fleetDetail['qty']);
-            }
+            $this->moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleetId, $this->updatedFleetDetails);
 
             $this->sendFleetUpdatedEvent($user, $userCity);
             $this->sendCityDataUpdatedEvent($user);
 
             return [
                 'success'  => true,
-                'warships' => WarshipResource::collection($warships)
+                'warships' => WarshipResource::collection($warshipGroupsInCity)
             ];
         } else {
             return 'No warships in fleet';
+        }
+    }
+
+    // check and correct fleet details
+    // we cant send more warships that we have in the city
+    public function checkFleetDetails($warshipGroupInCity, $fleetDetails): array
+    {
+        $updatedFleetDetails = [];
+
+        foreach ($warshipGroupInCity as $warshipGroup) {
+            foreach ($fleetDetails as $fleetDetail) {
+                if ($fleetDetail['warshipId'] === $warshipGroup->id && $fleetDetail['qty'] > 0 && $warshipGroup->qty > 0) {
+                    $detail = [
+                        'qty'        => min($warshipGroup->qty, $fleetDetail['qty']),
+                        'warship_id' => $warshipGroup->id
+                    ];
+
+                    $updatedFleetDetails[] = $detail;
+                }
+            }
+        }
+
+        return $updatedFleetDetails;
+    }
+
+    public function moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleetId, $fleetDetails): void
+    {
+        $newFleetDetailsData = [];
+        foreach ($fleetDetails as $fleetDetail) {
+            $newFleetDetailsData[] = [
+                'fleet_id'   => $fleetId,
+                'warship_id' => $fleetDetail['warship_id'],
+                'qty'        => $fleetDetail['qty']
+            ];
+
+            // remove warships from city
+            $warshipGroupsInCity->where('warship_id', $fleetDetail['warship_id'])->first()->increment('qty', -$fleetDetail['qty']);
+        }
+
+        if (count($newFleetDetailsData)) {
+            (new FleetDetail)->insert($newFleetDetailsData);
         }
     }
 
@@ -163,6 +183,7 @@ class FleetService
     // get maximum gold which we can carry
     // - gold should be not more than we have on island
     // - gold should be not more than fleet can carry
+    // TODO: use function availableCapacity
     public function handleGold($gold, $city, $fleetDetails): int
     {
         $actualGold = $gold;

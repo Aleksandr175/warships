@@ -100,5 +100,9 @@ class DatabaseSeeder extends Seeder
 
         $this->call(FleetDetailSeeder::class);
         $this->call(FleetSeeder::class);
+
+        $this->call(BuildingDependencySeeder::class);
+        $this->call(ResearchDependencySeeder::class);
+        $this->call(WarshipDependencySeeder::class);
     }
 }

@@ -6,17 +6,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 /**
  * @package App\Models
  * @mixin Builder
  */
-class Building extends Model
+class ResearchDependency extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
-
-    public function buildingResources() {
-        return $this->hasMany(BuildingResource::class);
-    }
 }

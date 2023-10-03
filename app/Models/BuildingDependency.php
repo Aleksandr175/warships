@@ -7,16 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * Class BuildingDependency
+ *
  * @package App\Models
  * @mixin Builder
  */
-class Building extends Model
+class BuildingDependency extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
-
-    public function buildingResources() {
-        return $this->hasMany(BuildingResource::class);
-    }
 }

@@ -10,13 +10,9 @@ use Illuminate\Database\Eloquent\Model;
  * @package App\Models
  * @mixin Builder
  */
-class Building extends Model
+class WarshipDependency extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
-
-    public function buildingResources() {
-        return $this->hasMany(BuildingResource::class);
-    }
 }

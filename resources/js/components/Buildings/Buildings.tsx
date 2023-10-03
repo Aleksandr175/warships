@@ -2,11 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { httpClient } from "../../httpClient/httpClient";
 import {
   IBuilding,
+  IBuildingDependency,
   IBuildingResource,
   IBuildingsProduction,
   ICityBuilding,
   ICityBuildingQueue,
   ICityResources,
+  IResearch,
+  IUserResearch,
 } from "../../types/types";
 import styled from "styled-components";
 import { Building } from "./Building";
@@ -24,11 +27,13 @@ import { Icon } from "../Common/Icon";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { convertSecondsToTime, getTimeLeft } from "../../utils";
+import { useSelectedBuildingRequirements } from "./hooks/useSelectedBuildingRequirements";
 dayjs.extend(utc);
 
 interface IProps {
   cityId: number;
   buildingsDictionary: IBuilding[];
+  buildingDependencyDictionary: IBuildingDependency[];
   buildingResourcesDictionary: IBuildingResource[];
   updateCityResources: (cityResources: ICityResources) => void;
   cityResources: ICityResources;
@@ -38,6 +43,8 @@ interface IProps {
   buildingsProduction?: IBuildingsProduction[];
   queue?: ICityBuildingQueue;
   setQueue: (q: ICityBuildingQueue | undefined) => void;
+  researchDictionary: IResearch[];
+  researches: IUserResearch[];
 }
 
 export const Buildings = ({
@@ -47,11 +54,14 @@ export const Buildings = ({
   cityId,
   buildingsDictionary,
   buildingResourcesDictionary,
+  buildingDependencyDictionary,
   updateCityResources,
   cityResources,
   buildingsProduction,
   queue,
   setQueue,
+  researchDictionary,
+  researches,
 }: IProps) => {
   const [selectedBuildingId, setSelectedBuildingId] = useState(0);
   const [timeLeft, setTimeLeft] = useState<number>(0);
@@ -61,7 +71,7 @@ export const Buildings = ({
     setSelectedBuildingId(buildingsDictionary[0]?.id || 0);
   }, [buildingsDictionary]);
 
-  function getLvl(buildingId: number) {
+  const getLvl = (buildingId: number) => {
     const building = buildings?.find((b) => b.buildingId === buildingId);
 
     if (building) {
@@ -69,15 +79,15 @@ export const Buildings = ({
     }
 
     return 0;
-  }
+  };
 
-  function getResourcesForBuilding(buildingId: number, lvl: number) {
+  const getResourcesForBuilding = (buildingId: number, lvl: number) => {
     return buildingResourcesDictionary.find(
       (br) => br.buildingId === buildingId && br.lvl === lvl
     );
-  }
+  };
 
-  function run(buildingId: number) {
+  const run = (buildingId: number) => {
     httpClient
       .post("/build", {
         cityId,
@@ -88,9 +98,9 @@ export const Buildings = ({
         setQueue(response.data.buildingQueue);
         updateCityResources(response.data.cityResources);
       });
-  }
+  };
 
-  function cancel(buildingId: number) {
+  const cancel = (buildingId: number) => {
     httpClient
       .post("/build/" + buildingId + "/cancel", {
         cityId,
@@ -101,45 +111,47 @@ export const Buildings = ({
 
         updateCityResources(response.data.cityResources);
       });
-  }
+  };
 
-  function isBuildingInProcess() {
+  const isBuildingInProcess = () => {
     return queue && queue.buildingId === selectedBuildingId;
-  }
+  };
 
-  function getBuilding(buildingId: number): IBuilding | undefined {
+  const getBuilding = (buildingId: number): IBuilding | undefined => {
     return buildingsDictionary.find((building) => building.id === buildingId);
-  }
+  };
 
   const selectedBuilding = getBuilding(selectedBuildingId);
   const lvl = getLvl(selectedBuildingId);
+  const nextLvl = lvl + 1;
+
   const buildingResources = getResourcesForBuilding(
     selectedBuildingId,
-    lvl + 1
+    nextLvl
   );
   const gold = buildingResources?.gold || 0;
   const population = buildingResources?.population || 0;
   const time = buildingResources?.time || 0;
 
-  function isBuildingDisabled() {
+  const isBuildingDisabled = () => {
     return (
       gold > cityResources.gold ||
       population > cityResources.population ||
       !buildingResources
     );
-  }
+  };
 
-  function getProductionResource(resource: "population" | "gold") {
+  const getProductionResource = (resource: "population" | "gold") => {
     const production = buildingsProduction?.find((bProduction) => {
       return (
         bProduction.buildingId === selectedBuildingId &&
-        bProduction.lvl === lvl + 1 &&
+        bProduction.lvl === nextLvl &&
         bProduction.resource === resource
       );
     });
 
     return production?.qty;
-  }
+  };
 
   useEffect(() => {
     if (getTimeLeft(queue?.deadline || "")) {
@@ -164,12 +176,25 @@ export const Buildings = ({
     }
   }, [timeLeft]);
 
-  function handleTimer() {
+  const handleTimer = () => {
     setTimeLeft((lastTimeLeft) => {
       // @ts-ignore
       return lastTimeLeft - 1;
     });
-  }
+  };
+
+  const {
+    hasRequirements,
+    hasAllRequirements,
+    getRequirements,
+    getRequiredItem,
+  } = useSelectedBuildingRequirements({
+    buildingDependencyDictionary,
+    buildingsDictionary,
+    researchDictionary,
+    buildings,
+    researches,
+  });
 
   return (
     <SContent>
@@ -229,12 +254,33 @@ export const Buildings = ({
                   ""
                 )}
               </SParams>
+
+              {hasRequirements(selectedBuildingId, lvl) && (
+                <>
+                  <SText>It requires:</SText>
+                  {getRequirements(selectedBuildingId, lvl).map(
+                    (requirement) => {
+                      const requiredItem = getRequiredItem(requirement);
+
+                      return (
+                        <SText>
+                          {requiredItem?.title}, {requirement.requiredEntityLvl}{" "}
+                          lvl
+                        </SText>
+                      );
+                    }
+                  )}
+                </>
+              )}
             </div>
             <SButtonsBlock>
               {!isBuildingInProcess() && (
                 <button
                   className={"btn btn-primary"}
-                  disabled={isBuildingDisabled()}
+                  disabled={
+                    isBuildingDisabled() ||
+                    !hasAllRequirements(selectedBuildingId, nextLvl)
+                  }
                   onClick={() => {
                     run(selectedBuildingId);
                   }}
@@ -262,7 +308,7 @@ export const Buildings = ({
       {buildingsProduction &&
         buildingsDictionary.map((item) => {
           const lvl = getLvl(item.id);
-          const buildingResources = getResourcesForBuilding(item.id, lvl + 1);
+          const buildingResources = getResourcesForBuilding(item.id, nextLvl);
           const gold = buildingResources?.gold || 0;
           const population = buildingResources?.population || 0;
 

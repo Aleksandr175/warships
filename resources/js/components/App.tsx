@@ -174,6 +174,9 @@ const App = () => {
                       <Buildings
                         cityId={city.id}
                         buildingsDictionary={dictionaries.buildings}
+                        buildingDependencyDictionary={
+                          dictionaries.buildingDependencies
+                        }
                         buildingResourcesDictionary={
                           dictionaries.buildingResources
                         }
@@ -188,6 +191,8 @@ const App = () => {
                         buildingsProduction={dictionaries.buildingsProduction}
                         setQueue={setQueue}
                         queue={queue}
+                        researchDictionary={dictionaries.researches}
+                        researches={dictionaries.userResearches}
                       />
                     }
                   />

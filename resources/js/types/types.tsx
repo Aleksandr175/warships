@@ -88,12 +88,15 @@ export interface IFleetStatusesDictionary {
 export interface IDictionary {
   buildings: IBuilding[];
   buildingResources: IBuildingResource[];
+  buildingDependencies: IBuildingDependency[];
   buildingsProduction: IBuildingsProduction[];
   researches: IResearch[];
   userResearches: IUserResearch[];
   researchResources: IResearchResource[];
+  researchDependencies: IResearchDependency[];
   warships: IWarship[];
   warshipsResources: IWarshipResource[];
+  warshipDependencies: IWarshipDependency[];
   fleetTasksDictionary: IFleetTasksDictionary[];
   fleetStatusesDictionary: IFleetStatusesDictionary[];
 }
@@ -102,6 +105,31 @@ export interface IBuilding {
   id: number;
   title: string;
   description: string;
+}
+
+export type TRequiredEntity = "building" | "research";
+
+export interface IBuildingDependency {
+  buildingId: number;
+  buildingLvl: number;
+  requiredEntity: TRequiredEntity;
+  requiredEntityId: number;
+  requiredEntityLvl: number;
+}
+
+export interface IResearchDependency {
+  researchId: number;
+  researchLvl: number;
+  requiredEntity: TRequiredEntity;
+  requiredEntityId: number;
+  requiredEntityLvl: number;
+}
+
+export interface IWarshipDependency {
+  warshipId: number;
+  requiredEntity: TRequiredEntity;
+  requiredEntityId: number;
+  requiredEntityLvl: number;
 }
 
 export interface IResearch extends IBuilding {}

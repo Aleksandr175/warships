@@ -15,11 +15,11 @@ class BuildingDependencyResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'buildingId'          => $this->building_id,
-            'buildingLvl'         => $this->building_lvl,
-            'required_entity'     => $this->required_entity,
-            'required_entity_id'  => $this->required_entity_id,
-            'required_entity_lvl' => $this->required_entity_lvl
+            'buildingId'        => $this->building_id,
+            'buildingLvl'       => $this->building_lvl,
+            'requiredEntity'    => $this->required_entity,
+            'requiredEntityId'  => $this->required_entity_id,
+            'requiredEntityLvl' => $this->required_entity_lvl
         ];
     }
 }

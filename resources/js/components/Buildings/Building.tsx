@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  IBuilding,
-  IBuildingsProduction,
-  ICityBuildingQueue,
-  ICityResources,
-} from "../../types/types";
-import styled, { css } from "styled-components";
+import { IBuilding } from "../../types/types";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { Card } from "../Common/Card";
@@ -15,14 +9,6 @@ dayjs.extend(utc);
 interface IProps {
   building: IBuilding;
   lvl: number;
-  gold: number;
-  population: number;
-  run: (buildingId: number) => void;
-  cancel: (buildingId: number) => void;
-  queue: ICityBuildingQueue | undefined;
-  getBuildings: () => void;
-  cityResources: ICityResources;
-  buildingsProduction: IBuildingsProduction[];
   timeLeft: number;
   selected?: boolean;
 }

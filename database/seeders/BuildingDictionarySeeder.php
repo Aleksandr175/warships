@@ -14,13 +14,13 @@ class BuildingDictionarySeeder extends Seeder
      */
     public function run()
     {
-        BuildingDictionary::create(['title' => 'Headquarters', 'description' => 'Main building on the island']);
-        BuildingDictionary::create(['title' => 'Mine', 'description' => 'It produces gold']);
-        BuildingDictionary::create(['title' => 'Houses', 'description' => 'The more houses, the more workers!']);
-        BuildingDictionary::create(['title' => 'Tavern', 'description' => 'Increases the prestige of the island and increases population']);
-        BuildingDictionary::create(['title' => 'Farm', 'description' => 'it produces food']);
-        BuildingDictionary::create(['title' => 'Shipyard', 'description' => 'It produces warships']);
-        BuildingDictionary::create(['title' => 'Dock', 'description' => 'Allows sea merchants to trade on the island']);
-        BuildingDictionary::create(['title' => 'Fort', 'description' => 'The main defensive structure']);
+        BuildingDictionary::create(['id' => config('constants.BUILDINGS.MAIN'), 'title' => 'Headquarters', 'description' => 'Main building on the island']);
+        BuildingDictionary::create(['id' => config('constants.BUILDINGS.MINE'), 'title' => 'Mine', 'description' => 'It produces gold']);
+        BuildingDictionary::create(['id' => config('constants.BUILDINGS.HOUSES'), 'title' => 'Houses', 'description' => 'The more houses, the more workers!']);
+        BuildingDictionary::create(['id' => config('constants.BUILDINGS.TAVERN'), 'title' => 'Tavern', 'description' => 'Increases the prestige of the island and increases population']);
+        BuildingDictionary::create(['id' => config('constants.BUILDINGS.FARM'), 'title' => 'Farm', 'description' => 'it produces food']);
+        BuildingDictionary::create(['id' => config('constants.BUILDINGS.SHIPYARD'), 'title' => 'Shipyard', 'description' => 'It produces warships']);
+        BuildingDictionary::create(['id' => config('constants.BUILDINGS.DOCK'), 'title' => 'Dock', 'description' => 'Allows sea merchants to trade on the island']);
+        BuildingDictionary::create(['id' => config('constants.BUILDINGS.FORTRESS'), 'title' => 'Fort', 'description' => 'The main defensive structure']);
     }
 }

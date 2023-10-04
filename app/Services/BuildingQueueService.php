@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Http\Requests\Api\BuildRequest;
-use App\Http\Resources\CityResourcesResource;
 use App\Jobs\BuildJob;
+use App\Models\BuildingDependency;
 use App\Models\BuildingResource;
 use App\Models\CityBuildingQueue;
 use Carbon\Carbon;
@@ -24,21 +24,48 @@ class BuildingQueueService
             $this->nextLvl = $cityBuilding->lvl + 1;
         }
 
+        $hasAllRequirements = $this->hasAllRequirements($city, $buildingId, $this->nextLvl);
+        $hasEnoughResources = false;
+
         // found out what resources we need for building
         $resources = BuildingResource::where('building_id', $buildingId)->where('lvl', $this->nextLvl)->first();
 
         if ($resources && $resources->id) {
             if ($city->gold >= $resources->gold && $city->population >= $resources->population) {
-                return true;
+                $hasEnoughResources = true;
             }
         }
 
-        return false;
+        return $hasEnoughResources && $hasAllRequirements;
+    }
+
+    public function hasAllRequirements($city, $buildingId, $nextLvl): bool
+    {
+        $requirements = BuildingDependency::where('building_id', $buildingId)
+            ->where('building_lvl', $nextLvl)
+            ->where('required_entity', 'building')
+            ->get();
+        $hasAllRequirements = true;
+
+        if ($requirements) {
+            $cityBuildings = $city->buildings;
+
+            foreach ($requirements as $requirement) {
+                foreach ($cityBuildings as $cityBuilding) {
+                    if ($requirement->required_entity_id === $cityBuilding->building_id) {
+                        if ($requirement->required_entity_lvl > $cityBuilding->lvl) {
+                            $hasAllRequirements = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $hasAllRequirements;
     }
 
     public function store($userId, BuildRequest $request, $city): CityBuildingQueue
     {
-        $queue      = null;
         $data       = $request->only('buildingId');
         $buildingId = $data['buildingId'];
 
@@ -50,17 +77,17 @@ class BuildingQueueService
             $queue = $this->updateQueue();
 
             BuildJob::dispatch([
-                'cityId' => $this->city->id,
+                'cityId'     => $this->city->id,
                 'buildingId' => $buildingId,
-                'userId' => $this->userId,
-                'gold' => $queue->gold,
+                'userId'     => $this->userId,
+                'gold'       => $queue->gold,
                 'population' => $queue->population,
             ])->delay(now()->addSeconds($queue->time));
-        } else {
-            return abort(403);
+
+            return $queue;
         }
 
-        return $queue;
+        return abort(403);
     }
 
     public function updateQueue(): CityBuildingQueue

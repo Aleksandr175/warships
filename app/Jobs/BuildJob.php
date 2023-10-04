@@ -56,8 +56,7 @@ class BuildJob implements ShouldQueue
                     ]);
                 }
 
-                // TODO change 3 to HOUSE (dictionary)
-                if ($buildingQueue->building_id === 3) {
+                if ($buildingQueue->building_id === config('constants.BUILDINGS.HOUSES')) {
                     $additionalPopulation = BuildingProduction::where('lvl', $buildingQueue->lvl)->where('resource', 'population')->first();
 
                     $city->increment('population', $additionalPopulation->qty);

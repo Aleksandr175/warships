@@ -29,7 +29,7 @@ interface IProps {
   buildingsProduction?: IBuildingsProduction[];
   queue?: ICityBuildingQueue;
   setQueue: (q: ICityBuildingQueue | undefined) => void;
-  researchDictionary: IResearch[];
+  researchesDictionary: IResearch[];
   researches: IUserResearch[];
 }
 
@@ -46,7 +46,7 @@ export const Buildings = ({
   buildingsProduction,
   queue,
   setQueue,
-  researchDictionary,
+  researchesDictionary,
   researches,
 }: IProps) => {
   const [selectedBuildingId, setSelectedBuildingId] = useState(0);
@@ -113,7 +113,7 @@ export const Buildings = ({
           cityId={cityId}
           updateCityResources={updateCityResources}
           setQueue={setQueue}
-          researchDictionary={researchDictionary}
+          researchesDictionary={researchesDictionary}
           researches={researches}
           timeLeft={timeLeft}
           getBuildings={getBuildings}

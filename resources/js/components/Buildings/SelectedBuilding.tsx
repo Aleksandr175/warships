@@ -16,7 +16,7 @@ import {
   IResearch,
   IUserResearch,
 } from "../../types/types";
-import { useSelectedBuildingRequirements } from "./hooks/useSelectedBuildingRequirements";
+import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
 
 interface IProps {
   selectedBuildingId: number;
@@ -32,7 +32,7 @@ interface IProps {
   buildingsProduction?: IBuildingsProduction[];
   queue?: ICityBuildingQueue;
   setQueue: (q: ICityBuildingQueue | undefined) => void;
-  researchDictionary: IResearch[];
+  researchesDictionary: IResearch[];
   researches: IUserResearch[];
   timeLeft: number;
   getLvl: (buildingId: number) => number;
@@ -50,7 +50,7 @@ export const SelectedBuilding = ({
   buildingsProduction,
   queue,
   setQueue,
-  researchDictionary,
+  researchesDictionary,
   researches,
   timeLeft,
   buildingResourcesDictionary,
@@ -101,10 +101,10 @@ export const SelectedBuilding = ({
     hasAllRequirements,
     getRequirements,
     getRequiredItem,
-  } = useSelectedBuildingRequirements({
-    buildingDependencyDictionary,
+  } = useRequirementsLogic({
+    dependencyDictionary: buildingDependencyDictionary,
     buildingsDictionary,
-    researchDictionary,
+    researchesDictionary,
     buildings,
     researches,
   });
@@ -195,10 +195,10 @@ export const SelectedBuilding = ({
             )}
           </SParams>
 
-          {hasRequirements(selectedBuildingId, nextLvl) && (
+          {hasRequirements("building", selectedBuildingId, nextLvl) && (
             <>
               <SText>It requires:</SText>
-              {getRequirements(selectedBuildingId, nextLvl).map(
+              {getRequirements("building", selectedBuildingId, nextLvl)?.map(
                 (requirement) => {
                   const requiredItem = getRequiredItem(requirement);
 
@@ -218,7 +218,7 @@ export const SelectedBuilding = ({
               className={"btn btn-primary"}
               disabled={
                 isBuildingDisabled() ||
-                !hasAllRequirements(selectedBuildingId, nextLvl)
+                !hasAllRequirements("building", selectedBuildingId, nextLvl)
               }
               onClick={() => {
                 run(selectedBuildingId);

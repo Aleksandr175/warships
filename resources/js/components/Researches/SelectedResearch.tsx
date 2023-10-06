@@ -13,6 +13,7 @@ import {
   IResearchResource,
   IUserResearch,
 } from "../../types/types";
+import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
 
 interface IProps {
   selectedResearchId: number;
@@ -77,6 +78,17 @@ export const SelectedResearch = ({
     );
   }
 
+  const {
+    hasRequirements,
+    hasAllRequirements,
+    getRequirements,
+    getRequiredItem,
+  } = useRequirementsLogic({
+    dependencyDictionary: researchDependencyDictionary,
+    researchesDictionary,
+    researches,
+  });
+
   function run(researchId: number) {
     httpClient
       .post("/researches/" + researchId + "/run", {
@@ -132,10 +144,10 @@ export const SelectedResearch = ({
             </>
           )}
 
-          {/*{hasRequirements(selectedResearch, nextLvl) && (
+          {hasRequirements("research", selectedResearchId, nextLvl) && (
             <>
               <SText>It requires:</SText>
-              {getRequirements(selectedBuildingId, nextLvl).map(
+              {getRequirements("research", selectedResearchId, nextLvl)?.map(
                 (requirement) => {
                   const requiredItem = getRequiredItem(requirement);
 
@@ -147,13 +159,16 @@ export const SelectedResearch = ({
                 }
               )}
             </>
-          )}*/}
+          )}
         </div>
         <SButtonsBlock>
           {!isResearchInProcess() && (
             <button
               className={"btn btn-primary"}
-              disabled={isResearchDisabled()}
+              disabled={
+                isResearchDisabled() ||
+                !hasAllRequirements("research", selectedResearchId, nextLvl)
+              }
               onClick={() => {
                 run(selectedResearchId);
               }}

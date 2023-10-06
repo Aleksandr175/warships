@@ -191,7 +191,7 @@ const App = () => {
                         buildingsProduction={dictionaries.buildingsProduction}
                         setQueue={setQueue}
                         queue={queue}
-                        researchDictionary={dictionaries.researches}
+                        researchesDictionary={dictionaries.researches}
                         researches={dictionaries.userResearches}
                       />
                     }

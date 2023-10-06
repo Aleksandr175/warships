@@ -215,6 +215,9 @@ const App = () => {
                         setQueue={setQueueResearch}
                         queue={queueResearch}
                         getResearches={getResearches}
+                        researchDependencyDictionary={
+                          dictionaries.researchDependencies
+                        }
                       />
                     }
                   />

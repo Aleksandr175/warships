@@ -14,13 +14,6 @@ dayjs.extend(utc);
 interface IProps {
   research: IResearch;
   lvl: number;
-  gold: number;
-  population: number;
-  run: (researchId: number) => void;
-  cancel: (researchId: number) => void;
-  queue: ICityResearchQueue | undefined;
-  getResearches: () => void;
-  cityResources: ICityResources;
   timeLeft: number;
   selected?: boolean;
 }

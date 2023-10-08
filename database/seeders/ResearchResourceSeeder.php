@@ -15,7 +15,7 @@ class ResearchResourceSeeder extends Seeder
     public function run()
     {
         ResearchResource::create([
-            'research_id' => 1,
+            'research_id' => config('constants.RESEARCHES.SHIP_SAILS'),
             'gold'        => 100,
             'population'  => 10,
             'lvl'         => 1,
@@ -23,7 +23,7 @@ class ResearchResourceSeeder extends Seeder
         ]);
 
         ResearchResource::create([
-            'research_id' => 1,
+            'research_id' => config('constants.RESEARCHES.SHIP_SAILS'),
             'gold'        => 300,
             'population'  => 40,
             'lvl'         => 2,
@@ -31,7 +31,7 @@ class ResearchResourceSeeder extends Seeder
         ]);
 
         ResearchResource::create([
-            'research_id' => 2,
+            'research_id' => config('constants.RESEARCHES.SHIP_TECHNOLOGIES'),
             'gold'        => 222,
             'population'  => 10,
             'lvl'         => 1,
@@ -39,7 +39,7 @@ class ResearchResourceSeeder extends Seeder
         ]);
 
         ResearchResource::create([
-            'research_id' => 3,
+            'research_id' => config('constants.RESEARCHES.SHIP_GUNS'),
             'gold'        => 333,
             'population'  => 10,
             'lvl'         => 1,
@@ -47,7 +47,7 @@ class ResearchResourceSeeder extends Seeder
         ]);
 
         ResearchResource::create([
-            'research_id' => 4,
+            'research_id' => config('constants.RESEARCHES.SHIP_HOLD'),
             'gold'        => 1000,
             'population'  => 500,
             'lvl'         => 1,

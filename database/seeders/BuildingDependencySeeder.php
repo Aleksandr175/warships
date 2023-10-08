@@ -14,65 +14,65 @@ class BuildingDependencySeeder extends Seeder
     public function run(): void
     {
         BuildingDependency::create([
-            'building_id'  => 1,
+            'building_id'  => config('constants.BUILDINGS.MAIN'),
             'building_lvl' => 4,
 
             'required_entity'     => 'building',
-            'required_entity_id'  => 2,
+            'required_entity_id'  => config('constants.BUILDINGS.MINE'),
             'required_entity_lvl' => 2
         ]);
 
         BuildingDependency::create([
-            'building_id'           => 2,
-            'building_lvl'          => 2,
+            'building_id'  => config('constants.BUILDINGS.MINE'),
+            'building_lvl' => 2,
 
             'required_entity'     => 'building',
-            'required_entity_id'  => 1,
+            'required_entity_id'  => config('constants.BUILDINGS.MAIN'),
             'required_entity_lvl' => 2
         ]);
 
         BuildingDependency::create([
-            'building_id'           => 3,
-            'building_lvl'          => 1,
+            'building_id'  => config('constants.BUILDINGS.HOUSES'),
+            'building_lvl' => 1,
 
             'required_entity'     => 'building',
-            'required_entity_id'  => 1,
+            'required_entity_id'  => config('constants.BUILDINGS.MAIN'),
             'required_entity_lvl' => 1
         ]);
 
         BuildingDependency::create([
-            'building_id'           => 3,
-            'building_lvl'          => 2,
+            'building_id'  => config('constants.BUILDINGS.HOUSES'),
+            'building_lvl' => 2,
 
             'required_entity'     => 'building',
-            'required_entity_id'  => 1,
+            'required_entity_id'  => config('constants.BUILDINGS.MAIN'),
             'required_entity_lvl' => 2
         ]);
 
         BuildingDependency::create([
-            'building_id'           => 8,
-            'building_lvl'          => 1,
+            'building_id'  => config('constants.BUILDINGS.FORTRESS'),
+            'building_lvl' => 1,
 
             'required_entity'     => 'building',
-            'required_entity_id'  => 1,
+            'required_entity_id'  => config('constants.BUILDINGS.MAIN'),
             'required_entity_lvl' => 5
         ]);
 
         BuildingDependency::create([
-            'building_id'           => 8,
-            'building_lvl'          => 1,
+            'building_id'  => config('constants.BUILDINGS.FORTRESS'),
+            'building_lvl' => 1,
 
             'required_entity'     => 'building',
-            'required_entity_id'  => 2,
+            'required_entity_id'  => config('constants.BUILDINGS.MINE'),
             'required_entity_lvl' => 3
         ]);
 
         BuildingDependency::create([
-            'building_id'           => 8,
-            'building_lvl'          => 1,
+            'building_id'  => config('constants.BUILDINGS.FORTRESS'),
+            'building_lvl' => 1,
 
             'required_entity'     => 'building',
-            'required_entity_id'  => 3,
+            'required_entity_id'  => config('constants.BUILDINGS.HOUSES'),
             'required_entity_lvl' => 2
         ]);
     }

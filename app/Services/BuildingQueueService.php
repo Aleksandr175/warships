@@ -7,6 +7,7 @@ use App\Jobs\BuildJob;
 use App\Models\BuildingDependency;
 use App\Models\BuildingResource;
 use App\Models\CityBuildingQueue;
+use App\Models\Research;
 use Carbon\Carbon;
 
 class BuildingQueueService
@@ -22,6 +23,8 @@ class BuildingQueueService
 
         if ($cityBuilding && $cityBuilding->id) {
             $this->nextLvl = $cityBuilding->lvl + 1;
+        } else {
+            $this->nextLvl = 1;
         }
 
         $hasAllRequirements = $this->hasAllRequirements($city, $buildingId, $this->nextLvl);
@@ -41,22 +44,38 @@ class BuildingQueueService
 
     public function hasAllRequirements($city, $buildingId, $nextLvl): bool
     {
-        $requirements = BuildingDependency::where('building_id', $buildingId)
+        $requirements       = BuildingDependency::where('building_id', $buildingId)
             ->where('building_lvl', $nextLvl)
             ->where('required_entity', 'building')
             ->get();
         $hasAllRequirements = true;
 
+        $researches = Research::where('user_id', $this->userId)->get();
+
         if ($requirements) {
             $cityBuildings = $city->buildings;
 
             foreach ($requirements as $requirement) {
-                foreach ($cityBuildings as $cityBuilding) {
-                    if ($requirement->required_entity_id === $cityBuilding->building_id) {
-                        if ($requirement->required_entity_lvl > $cityBuilding->lvl) {
-                            $hasAllRequirements = false;
+                $hasRequirement = false;
+
+                if ($requirement->required_entity === 'building') {
+                    foreach ($cityBuildings as $cityBuilding) {
+                        if (($requirement->required_entity_id === $cityBuilding->building_id) && $requirement->required_entity_lvl <= $cityBuilding->lvl) {
+                            $hasRequirement = true;
                         }
                     }
+                }
+
+                if ($requirement->required_entity === 'research') {
+                    foreach ($researches as $research) {
+                        if (($requirement->required_entity_id === $research->id) && $requirement->required_entity_lvl <= $research->lvl) {
+                            $hasRequirement = true;
+                        }
+                    }
+                }
+
+                if (!$hasRequirement) {
+                    $hasAllRequirements = false;
                 }
             }
         }

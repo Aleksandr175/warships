@@ -3,13 +3,12 @@
 namespace App\Services;
 
 use App\Http\Requests\Api\ResearchRequest;
-use App\Http\Resources\CityResourcesResource;
 use App\Models\City;
 use App\Models\Research;
+use App\Models\ResearchDependency;
 use App\Models\ResearchQueue;
 use App\Models\ResearchResource;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 class ResearchQueueService
 {
@@ -24,23 +23,68 @@ class ResearchQueueService
 
         if ($research && $research->id) {
             $this->nextLvl = $research->lvl + 1;
+        } else {
+            $this->nextLvl = 1;
         }
+
+        $hasAllRequirements = $this->hasAllRequirements($this->city, $this->researchId, $this->nextLvl);
+        $hasEnoughResources = false;
 
         // found out what resources we need for research
         $resources = ResearchResource::where('research_id', $this->researchId)->where('lvl', $this->nextLvl)->first();
 
         if ($resources && $resources->id) {
             if ($this->city->gold >= $resources->gold && $this->city->population >= $resources->population) {
-                return true;
+                $hasEnoughResources = true;
             }
         }
 
-        return false;
+        return $hasEnoughResources && $hasAllRequirements;
+    }
+
+    public function hasAllRequirements($city, $researchId, $nextLvl): bool
+    {
+        $requirements       = ResearchDependency::where('research_id', $researchId)
+            ->where('research_lvl', $nextLvl)
+            ->where('required_entity', 'research')
+            ->get();
+        $hasAllRequirements = true;
+
+        $researches = Research::where('user_id', $this->userId)->get();
+
+        if ($requirements) {
+            $cityBuildings = $city->buildings;
+
+            foreach ($requirements as $requirement) {
+                $hasRequirement = false;
+
+                if ($requirement->required_entity === 'building') {
+                    foreach ($cityBuildings as $cityBuilding) {
+                        if (($requirement->required_entity_id === $cityBuilding->building_id) && $requirement->required_entity_lvl <= $cityBuilding->lvl) {
+                            $hasRequirement = true;
+                        }
+                    }
+                }
+
+                if ($requirement->required_entity === 'research') {
+                    foreach ($researches as $research) {
+                        if (($requirement->required_entity_id === $research->id) && $requirement->required_entity_lvl <= $research->lvl) {
+                            $hasRequirement = true;
+                        }
+                    }
+                }
+
+                if (!$hasRequirement) {
+                    $hasAllRequirements = false;
+                }
+            }
+        }
+
+        return $hasAllRequirements;
     }
 
     public function store($userId, ResearchRequest $request, $city): ResearchQueue
     {
-        $queue      = null;
         $data       = $request->only('researchId');
         $researchId = $data['researchId'];
 
@@ -52,9 +96,13 @@ class ResearchQueueService
 
         if ($this->city && $this->city->id && $this->canResearch()) {
             $queue = $this->updateQueue();
+
+            // TODO: add job for researches like BuildJob::dispatch([])
+
+            return $queue;
         }
 
-        return $queue;
+        return abort(403);
     }
 
     public function updateQueue(): ResearchQueue

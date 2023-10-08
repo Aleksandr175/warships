@@ -16,13 +16,13 @@ class ResearchSeeder extends Seeder
     {
         Research::create([
             'user_id' => 5,
-            'research_id' => 1,
+            'research_id' => config('constants.RESEARCHES.SHIP_TECHNOLOGIES'),
             'lvl' => 1
         ]);
 
         Research::create([
             'user_id' => 5,
-            'research_id' => 2,
+            'research_id' => config('constants.RESEARCHES.SHIP_SAILS'),
             'lvl' => 1
         ]);
     }

@@ -4,11 +4,15 @@ import {
   ICityBuilding,
   IResearch,
   IUserResearch,
+  IWarshipDependency,
 } from "../../types/types";
 import { IResearchDependency } from "../../types/types";
 
 interface IProps {
-  dependencyDictionary: IBuildingDependency[] | IResearchDependency[];
+  dependencyDictionary:
+    | IBuildingDependency[]
+    | IResearchDependency[]
+    | IWarshipDependency[];
   buildings?: ICityBuilding[] | undefined;
   researches?: IUserResearch[];
   buildingsDictionary?: IBuilding[] | IResearch[];
@@ -27,7 +31,7 @@ export const useRequirementsLogic = ({
   const hasRequirements = (
     type: TItemType,
     itemId: number,
-    itemLvl: number
+    itemLvl?: number
   ): boolean | undefined => {
     if (type === "building") {
       return dependencyDictionary.some(
@@ -43,12 +47,19 @@ export const useRequirementsLogic = ({
           dependency.researchId === itemId && dependency.researchLvl === itemLvl
       );
     }
+    if (type === "warship") {
+      return dependencyDictionary.some(
+        (dependency) =>
+          // @ts-ignore
+          dependency.warshipId === itemId
+      );
+    }
   };
 
   const getRequirements = (
     type: TItemType,
     itemId: number,
-    itemLvl: number
+    itemLvl?: number
   ): IBuildingDependency[] | IResearchDependency[] | undefined => {
     if (type === "building") {
       return (
@@ -70,6 +81,15 @@ export const useRequirementsLogic = ({
             dependency.researchId === itemId &&
             dependency.researchLvl === itemLvl
         ) || ([] as IResearchDependency[])
+      );
+    }
+    if (type === "warship") {
+      return (
+        // TODO: fix types
+        // @ts-ignore
+        dependencyDictionary.filter(
+          (dependency: { warshipId: number }) => dependency.warshipId === itemId
+        ) || ([] as IWarshipDependency[])
       );
     }
   };
@@ -108,7 +128,11 @@ export const useRequirementsLogic = ({
     }
   };
 
-  const hasAllRequirements = (type: TItemType, itemId: number, lvl: number) => {
+  const hasAllRequirements = (
+    type: TItemType,
+    itemId: number,
+    lvl?: number
+  ) => {
     const requirements = getRequirements(type, itemId, lvl);
     let hasAllRequirements = true;
 

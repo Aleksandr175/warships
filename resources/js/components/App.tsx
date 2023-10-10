@@ -238,6 +238,11 @@ const App = () => {
                         setWarships={setWarships}
                         setQueue={setQueueWarship}
                         queue={queueWarship}
+                        warshipDependencies={dictionaries.warshipDependencies}
+                        researches={dictionaries.userResearches}
+                        researchesDictionary={dictionaries.researches}
+                        buildings={buildings!}
+                        buildingsDictionary={dictionaries.buildings}
                       />
                     }
                   />

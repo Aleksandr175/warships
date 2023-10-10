@@ -18,7 +18,7 @@ class CityBuildingQueueSeeder extends Seeder
      */
     public function run()
     {
-        $user = User::where('id', 5)->first();
+        $user = User::where('id', config('constants.DEFAULT_USER_ID'))->first();
         $building2 = Building::where('id', 2)->first();
         $city = $user->cities()->first();
 

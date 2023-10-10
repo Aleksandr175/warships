@@ -15,6 +15,7 @@ class WarshipDictionarySeeder extends Seeder
     public function run()
     {
         WarshipDictionary::create([
+            'id' => config('constants.WARSHIPS.LUGGER'),
             'title' => 'Lugger',
             'description' => 'Description for Lugger',
             'attack' => 50,
@@ -27,6 +28,7 @@ class WarshipDictionarySeeder extends Seeder
         ]);
 
         WarshipDictionary::create([
+            'id' => config('constants.WARSHIPS.CARAVEL'),
             'title' => 'Caravel',
             'description' => 'Description for Caravel',
             'attack' => 70,
@@ -39,6 +41,7 @@ class WarshipDictionarySeeder extends Seeder
         ]);
 
         WarshipDictionary::create([
+            'id' => config('constants.WARSHIPS.GALERA'),
             'title' => 'Galera',
             'description' => 'Description for Galera',
             'attack' => 150,
@@ -51,6 +54,7 @@ class WarshipDictionarySeeder extends Seeder
         ]);
 
         WarshipDictionary::create([
+            'id' => config('constants.WARSHIPS.FRIGATE'),
             'title' => 'Frigate',
             'description' => 'Description for Frigate',
             'attack' => 300,
@@ -63,6 +67,7 @@ class WarshipDictionarySeeder extends Seeder
         ]);
 
         WarshipDictionary::create([
+            'id' => config('constants.WARSHIPS.BATTLESHIP'),
             'title' => 'Battleship',
             'description' => 'Description for Battleship',
             'attack' => 700,

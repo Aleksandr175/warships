@@ -140,7 +140,7 @@ export const Fleet = ({
       <SFleetDetails>
         {fleetDetails.map((fDetails) => {
           return (
-            <SFleetDetail>
+            <SFleetDetail key={fDetails.fleetId + "-" + fDetails.warshipId}>
               <SWarshipIcon
                 style={{
                   backgroundImage: `url("../images/warships/simple/${fDetails.warshipId}.svg")`,
@@ -167,10 +167,6 @@ const SFleetRowTitle = styled.div`
 `;
 
 const SFleetTaskIcon = styled.div<{ type?: string }>``;
-
-const SFleetTimer = styled.div``;
-
-const SFleetStatus = styled.div``;
 
 const SFleetDetails = styled.div`
   display: flex;

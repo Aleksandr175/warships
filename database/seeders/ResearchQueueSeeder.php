@@ -19,7 +19,7 @@ class ResearchQueueSeeder extends Seeder
 
         ResearchQueue::create([
             'city_id' => 10,
-            'user_id' => 5,
+            'user_id' => config('constants.DEFAULT_USER_ID'),
             'research_id' => config('constants.RESEARCHES.SHIP_GUNS'),
             'gold' => 100,
             'population' => 5,

@@ -17,23 +17,23 @@ class WarshipSeeder extends Seeder
     public function run()
     {
         Warship::create([
-            'warship_id' => 1,
+            'warship_id' => config('constants.WARSHIPS.LUGGER'),
             'city_id' => 10,
-            'user_id' => 5,
+            'user_id' => config('constants.DEFAULT_USER_ID'),
             'qty' => 30
         ]);
 
         Warship::create([
-            'warship_id' => 2,
+            'warship_id' => config('constants.WARSHIPS.CARAVEL'),
             'city_id' => 10,
-            'user_id' => 5,
+            'user_id' => config('constants.DEFAULT_USER_ID'),
             'qty' => 20
         ]);
 
         Warship::create([
-            'warship_id' => 3,
+            'warship_id' => config('constants.WARSHIPS.GALERA'),
             'city_id' => 10,
-            'user_id' => 5,
+            'user_id' => config('constants.DEFAULT_USER_ID'),
             'qty' => 10
         ]);
 
@@ -42,21 +42,21 @@ class WarshipSeeder extends Seeder
 
         foreach ($pirateBays as $pirateBay) {
             Warship::create([
-                'warship_id' => 1,
+                'warship_id' => config('constants.WARSHIPS.LUGGER'),
                 'city_id' => $pirateBay->id,
                 'user_id' => null,
                 'qty' => 15
             ]);
 
             Warship::create([
-                'warship_id' => 2,
+                'warship_id' => config('constants.WARSHIPS.CARAVEL'),
                 'city_id' => $pirateBay->id,
                 'user_id' => null,
                 'qty' => 7
             ]);
 
             Warship::create([
-                'warship_id' => 3,
+                'warship_id' => config('constants.WARSHIPS.GALERA'),
                 'city_id' => $pirateBay->id,
                 'user_id' => null,
                 'qty' => 2

@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
 
         \App\Models\City::factory(1)->create([
             'id'         => 10,
-            'user_id'    => 5,
+            'user_id'    => config('constants.DEFAULT_USER_ID'),
             'title'      => 'Island Alex-a',
             'coord_x'    => 1,
             'coord_y'    => 1,
@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
 
         \App\Models\City::factory(1)->create([
             'id'         => 11,
-            'user_id'    => 5,
+            'user_id'    => config('constants.DEFAULT_USER_ID'),
             'title'      => 'Island Alex N2',
             'coord_x'    => 3,
             'coord_y'    => 5,
@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
 
         for ($i = 0; $i < 200; $i++) {
             \App\Models\City::factory(1)->create([
-                'user_id'    => rand(6, 15),
+                'user_id'    => random_int(config('constants.DEFAULT_USER_ID') + 1, config('constants.DEFAULT_USER_ID') + 10),
                 'title'      => 'Island',
                 'coord_x'    => $i + 5,
                 'coord_y'    => $i + 5,

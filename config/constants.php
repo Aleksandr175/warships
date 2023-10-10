@@ -1,5 +1,6 @@
 <?php
 return [
+    'DEFAULT_USER_ID' => 5,
     'BUILDINGS'  => [
         'MAIN'     => 1,
         'MINE'     => 2,
@@ -15,5 +16,12 @@ return [
         'SHIP_SAILS'        => 2,
         'SHIP_GUNS'         => 3,
         'SHIP_HOLD'         => 4,
+    ],
+    'WARSHIPS'   => [
+        'LUGGER'     => 1,
+        'CARAVEL'    => 2,
+        'GALERA'     => 3,
+        'FRIGATE'    => 4,
+        'BATTLESHIP' => 5,
     ]
 ];

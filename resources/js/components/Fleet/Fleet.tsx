@@ -12,7 +12,7 @@ import {
 } from "../../types/types";
 import { FleetCard } from "./FleetCard";
 import { InputNumber } from "../Common/InputNumber";
-import { SContent } from "../styles";
+import { SContent, SH1 } from "../styles";
 
 interface IProps {
   dictionary: IWarship[];
@@ -161,25 +161,23 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
 
   return (
     <SContent>
+      <SH1>Send Fleet</SH1>
+
+      {dictionary.map((item) => {
+        return (
+          <SItemWrapper key={item.id}>
+            <FleetCard
+              key={renderKey}
+              cityId={city.id}
+              item={item}
+              cityWarship={getCityWarship(item.id)}
+              onChangeQty={(qty) => onChangeQty(item.id, qty)}
+            />
+          </SItemWrapper>
+        );
+      })}
+
       <div className={"row"}>
-        {dictionary.map((item) => {
-          return (
-            <div className={"col-sm-6 col-md-2"} key={item.id}>
-              <FleetCard
-                key={renderKey}
-                cityId={city.id}
-                item={item}
-                cityWarship={getCityWarship(item.id)}
-                onChangeQty={(qty) => onChangeQty(item.id, qty)}
-              />
-            </div>
-          );
-        })}
-
-        <div className={"col-12"}>
-          <br />
-        </div>
-
         <div className={"col-12"}>
           <div>
             <strong>Target Island:</strong>
@@ -196,18 +194,20 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
               );
             })}
           </div>
-          <SCoordinatesBlock className={"row"}>
-            <div className={"col-2"}>
-              Coord X:{" "}
-              <InputNumber
+
+          <SCoordinatesBlock>
+            <div>
+              <strong>Or Coordinates:</strong>
+            </div>
+            <div>
+              X:{" "}
+              <InputNumberCoordinatesStyled
                 value={coordX}
                 onChange={(value) => setCoordX(value)}
                 maxNumber={100}
               />
-            </div>
-            <div className={"col-2"}>
-              Coord Y:{" "}
-              <InputNumber
+              Y:{" "}
+              <InputNumberCoordinatesStyled
                 value={coordY}
                 onChange={(value) => setCoordY(value)}
                 maxNumber={100}
@@ -216,8 +216,10 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
           </SCoordinatesBlock>
         </div>
         <div className={"col-4"}>
-          Gold (Capacity: {maxCapacity}):
-          <InputNumber
+          <div>
+            <strong>Gold (Capacity: {maxCapacity}):</strong>
+          </div>
+          <InputNumberGoldStyled
             value={gold}
             onChange={(value) => setGold(value)}
             maxNumber={city.gold > maxCapacity ? maxCapacity : city.gold}
@@ -225,53 +227,68 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
         </div>
 
         <div className={"col-12"}>
-          <br />
-        </div>
-
-        <div className={"col-12"}>
-          Task:
+          <div>
+            <strong>Task:</strong>
+          </div>
           {/* TODO use dictionary for Task Types */}
           <STaskType
-            selected={taskType === "attack" ? 1 : 0}
+            active={taskType === "attack"}
             onClick={() => setTaskType("attack")}
           >
             Attack{" "}
           </STaskType>
           <STaskType
-            selected={taskType === "trade" ? 1 : 0}
+            active={taskType === "trade"}
             onClick={() => setTaskType("trade")}
           >
             Trade{" "}
           </STaskType>
           <STaskType
-            selected={taskType === "transport" ? 1 : 0}
+            active={taskType === "transport"}
             onClick={() => setTaskType("transport")}
           >
             Transport{" "}
           </STaskType>
           <STaskType
-            selected={taskType === "move" ? 1 : 0}
+            active={taskType === "move"}
             onClick={() => setTaskType("move")}
           >
             Move{" "}
           </STaskType>
-          <br />
-          <br />
         </div>
 
         <div className={"col-12"}>
-          <span>Repeating: </span>
-          <input
-            type={"checkbox"}
-            value={Number(repeating)}
-            onChange={(e) => {
+          <div>
+            <strong>Repeating:</strong>
+          </div>
+          <STaskType
+            active={repeating}
+            onClick={() => {
+              setRepeating(true);
+
               const tempFleet = { ...fleet };
 
-              tempFleet.repeating = Number(e.currentTarget.checked) ? 1 : 0;
+              tempFleet.repeating = 1;
 
               setFleet(tempFleet);
             }}
-          />
+          >
+            Yes
+          </STaskType>
+          <STaskType
+            active={!repeating}
+            onClick={() => {
+              setRepeating(false);
+
+              const tempFleet = { ...fleet };
+
+              tempFleet.repeating = 0;
+
+              setFleet(tempFleet);
+            }}
+          >
+            No
+          </STaskType>
         </div>
 
         <div className={"col-12"}>
@@ -293,41 +310,55 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
   );
 };
 
-const STaskType = styled.span<{ selected?: number }>`
+const STaskType = styled.span<{ active?: boolean }>`
   cursor: pointer;
   display: inline-block;
-  margin-left: 10px;
+  padding: 3px 8px;
+  margin-right: 20px;
+  border-radius: 5px;
 
-  ${(props) => (props.selected ? "text-decoration: underline" : "")};
-`;
+  background: #39a0ff20;
 
-const SInput = styled.input`
-  display: inline-block;
-  margin-bottom: 10px;
-  width: 100%;
+  ${({ active }) =>
+    active
+      ? css`
+          color: white;
+          background-color: #6f4ca4;
+        `
+      : ""};
 `;
 
 const SCityPreset = styled.div<{ active?: boolean }>`
   cursor: pointer;
   display: inline-block;
-  padding: 5px;
-  margin-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
+  padding: 3px 8px;
+  margin-right: 20px;
+  border-radius: 5px;
+
+  background: #39a0ff20;
 
   ${({ active }) =>
     active
       ? css`
-          background-color: #0000ff33;
+          color: white;
+          background-color: #6f4ca4;
         `
       : ""};
 `;
 
 const SCoordinatesBlock = styled.div`
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: var(--bs-gutter-y);
 `;
 
-const SGoldInputWrapper = styled.div`
-  display: flex;
+const SItemWrapper = styled.div`
+  display: inline-block;
+`;
+
+const InputNumberCoordinatesStyled = styled(InputNumber)`
+  width: 50px;
+  margin-right: 20px;
+`;
+
+const InputNumberGoldStyled = styled(InputNumber)`
+  width: 100px;
 `;

@@ -17,7 +17,7 @@ class WarshipDictionarySeeder extends Seeder
         WarshipDictionary::create([
             'id' => config('constants.WARSHIPS.LUGGER'),
             'title' => 'Lugger',
-            'description' => 'Description for Lugger',
+            'description' => 'A swift, cost-effective warship with modest HP and attack capabilities, designed for agility and economy. A swift, cost-effective warship with modest HP and attack capabilities, designed for agility and economy.',
             'attack' => 50,
             'speed' => 10,
             'capacity' => 100,
@@ -30,7 +30,7 @@ class WarshipDictionarySeeder extends Seeder
         WarshipDictionary::create([
             'id' => config('constants.WARSHIPS.CARAVEL'),
             'title' => 'Caravel',
-            'description' => 'Description for Caravel',
+            'description' => 'A capacious, versatile warship, ideal for trading and resource transportation across islands in your maritime domain.',
             'attack' => 70,
             'speed' => 5,
             'capacity' => 500,
@@ -43,9 +43,9 @@ class WarshipDictionarySeeder extends Seeder
         WarshipDictionary::create([
             'id' => config('constants.WARSHIPS.GALERA'),
             'title' => 'Galera',
-            'description' => 'Description for Galera',
+            'description' => 'A swift warship tailored for rapid island assaults and lightning-fast strikes on enemy territories.',
             'attack' => 150,
-            'speed' => 8,
+            'speed' => 12,
             'capacity' => 200,
             'gold' => 300,
             'population' => 50,
@@ -56,9 +56,9 @@ class WarshipDictionarySeeder extends Seeder
         WarshipDictionary::create([
             'id' => config('constants.WARSHIPS.FRIGATE'),
             'title' => 'Frigate',
-            'description' => 'Description for Frigate',
+            'description' => 'A versatile, formidable warship boasting exceptional speed and attack capabilities, the optimal choice for any mission.',
             'attack' => 300,
-            'speed' => 15,
+            'speed' => 8,
             'capacity' => 300,
             'gold' => 1000,
             'population' => 200,
@@ -69,7 +69,7 @@ class WarshipDictionarySeeder extends Seeder
         WarshipDictionary::create([
             'id' => config('constants.WARSHIPS.BATTLESHIP'),
             'title' => 'Battleship',
-            'description' => 'Description for Battleship',
+            'description' => 'A colossal warship, renowned for its overwhelming firepower and impervious defenses, though its speed is sluggish.',
             'attack' => 700,
             'speed' => 5,
             'capacity' => 1000,

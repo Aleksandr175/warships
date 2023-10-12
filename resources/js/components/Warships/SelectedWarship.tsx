@@ -17,6 +17,7 @@ import {
   IWarshipDependency,
 } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
+import { InputNumber } from "../Common/InputNumber";
 
 interface IProps {
   selectedWarshipId: number;
@@ -51,7 +52,7 @@ export const SelectedWarship = ({
   getQty,
   setWarships,
 }: IProps) => {
-  const [selectedQty, setSelectedQty] = useState(null);
+  const [selectedQty, setSelectedQty] = useState<number | null>(null);
 
   const selectedWarship = getWarship(selectedWarshipId)!;
   const warshipResources = getResourcesForWarship(selectedWarshipId);
@@ -164,29 +165,24 @@ export const SelectedWarship = ({
           <SText>You can build: {maxShips}</SText>
         </div>
         <SButtonsBlock>
-          <SInput
-            type="number"
+          <InputNumberStyled
             value={selectedQty || ""}
-            onChange={(e) => {
-              let number: string | number = e.currentTarget.value;
-
-              if (!number) {
-                number = 0;
+            onChange={(value) => {
+              if (!value) {
+                value = 0;
               }
 
-              number = parseInt(String(number), 10);
-
-              if (number > 0) {
-                if (number > maxShips) {
-                  number = maxShips;
+              if (value > 0) {
+                if (value > maxShips) {
+                  value = maxShips;
                 }
 
-                // @ts-ignore
-                setSelectedQty(number);
+                setSelectedQty(value);
               } else {
                 setSelectedQty(null);
               }
             }}
+            disabled={!hasAllRequirements("warship", selectedWarshipId)}
           />
           <button
             className={"btn btn-primary"}
@@ -237,7 +233,7 @@ const SCardWrapper = styled.div`
   overflow: hidden;
 `;
 
-const SInput = styled.input`
+const InputNumberStyled = styled(InputNumber)`
   display: inline-block;
   width: 80px;
   border: none;

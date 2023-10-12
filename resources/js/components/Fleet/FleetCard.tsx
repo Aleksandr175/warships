@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import styled from "styled-components";
 import { ICityWarship, IWarship } from "../../types/types";
-import { Card } from "../Common/Card";
 import { InputNumber } from "../Common/InputNumber";
+import { Warship } from "../Warships/Warship";
 
 interface IProps {
   cityId: number;
@@ -22,27 +22,18 @@ export const FleetCard = ({ item, cityWarship, onChangeQty }: IProps) => {
   }, [qty]);
 
   return (
-    <>
-      <SFleet>
-        <Card
-          key={item.id}
-          imagePath={"warships"}
-          object={item}
-          qty={maxShips}
-          // TODO: fix it
-          timer={0}
-        />
-      </SFleet>
+    <SWarshipCardWrapper>
+      <Warship warship={item} currentQty={maxShips}></Warship>
 
       <SInputWrapper>
-        <InputNumber
+        <InputNumberStyled
           value={qty}
           onChange={(value) => setQty(value)}
           maxNumber={maxShips}
           disabled={!maxShips}
         />
       </SInputWrapper>
-    </>
+    </SWarshipCardWrapper>
   );
 };
 
@@ -50,12 +41,8 @@ const SInputWrapper = styled.div`
   margin-bottom: 10px;
 `;
 
-const SFleet = styled.div`
-  border-radius: var(--block-border-radius-small);
-  width: 100%;
-  height: 80px;
-  display: inline-block;
-  margin-right: calc(var(--block-gutter-x) / 2);
-  margin-bottom: calc(var(--block-gutter-y) / 2);
-  overflow: hidden;
+const SWarshipCardWrapper = styled.div``;
+
+const InputNumberStyled = styled(InputNumber)`
+  width: 132px;
 `;

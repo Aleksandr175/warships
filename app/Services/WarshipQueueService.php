@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Http\Requests\Api\WarshipCreateRequest;
 use App\Models\City;
+use App\Models\Research;
+use App\Models\WarshipDependency;
 use App\Models\WarshipDictionary;
 use App\Models\WarshipQueue;
 use Carbon\Carbon;
@@ -17,7 +19,6 @@ class WarshipQueueService
 
     public function store($userId, WarshipCreateRequest $request)
     {
-        $queue     = null;
         $data      = $request->only('cityId', 'warshipId', 'qty');
         $cityId    = $data['cityId'];
         $warshipId = $data['warshipId'];
@@ -29,11 +30,13 @@ class WarshipQueueService
 
         $this->city = City::where('id', $cityId)->where('user_id', $this->userId)->first();
 
-        if ($this->city && $this->city->id) {
+        if ($this->city && $this->city->id && $this->canBuild()) {
             $queue = $this->updateWarshipQueue();
+
+            return $queue;
         }
 
-        return $queue;
+        return abort(403);
     }
 
     public function orderWarship($userId, $data)
@@ -49,11 +52,69 @@ class WarshipQueueService
 
         $this->city = City::where('id', $cityId)->where('user_id', $this->userId)->first();
 
+        // TODO: should we check canBuild here? (especially for pirates)
         if ($this->city && $this->city->id) {
             $queue = $this->updateWarshipQueue();
         }
 
         return $queue;
+    }
+
+    public function canBuild()
+    {
+        $hasAllRequirements = $this->hasAllRequirements($this->city, $this->warshipId);
+        /*$hasEnoughResources = false;*/
+
+        // found out what resources we need for warship
+        // TODO: do we need it? We check it in $this->updateWarshipQueue();
+        /*$resources = ResearchResource::where('research_id', $this->researchId)->where('lvl', $this->nextLvl)->first();
+
+        if ($resources && $resources->id) {
+            if ($this->city->gold >= $resources->gold && $this->city->population >= $resources->population) {
+                $hasEnoughResources = true;
+            }
+        }*/
+
+        return /*$hasEnoughResources &&*/ $hasAllRequirements;
+    }
+
+    public function hasAllRequirements($city, $warshipId): bool
+    {
+        $requirements       = WarshipDependency::where('warship_id', $warshipId)
+            ->get();
+        $hasAllRequirements = true;
+
+        $researches = Research::where('user_id', $this->userId)->get();
+
+        if ($requirements) {
+            $cityBuildings = $city->buildings;
+
+            foreach ($requirements as $requirement) {
+                $hasRequirement = false;
+
+                if ($requirement->required_entity === 'building') {
+                    foreach ($cityBuildings as $cityBuilding) {
+                        if (($requirement->required_entity_id === $cityBuilding->building_id) && $requirement->required_entity_lvl <= $cityBuilding->lvl) {
+                            $hasRequirement = true;
+                        }
+                    }
+                }
+
+                if ($requirement->required_entity === 'research') {
+                    foreach ($researches as $research) {
+                        if (($requirement->required_entity_id === $research->id) && $requirement->required_entity_lvl <= $research->lvl) {
+                            $hasRequirement = true;
+                        }
+                    }
+                }
+
+                if (!$hasRequirement) {
+                    $hasAllRequirements = false;
+                }
+            }
+        }
+
+        return $hasAllRequirements;
     }
 
     public function updateWarshipQueue()

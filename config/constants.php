@@ -1,6 +1,15 @@
 <?php
 return [
+    'DEFAULT_PIRATE_ID' => 1,
+
     'DEFAULT_USER_ID' => 5,
+
+    'DEFAULT_USER_CITY_ID' => 10,
+    'DEFAULT_USER_CITY_ID_2' => 11,
+
+    'DEFAULT_USER_ID_2' => 6,
+    'DEFAULT_USER_2_CITY_ID' => 12,
+
     'BUILDINGS'  => [
         'MAIN'     => 1,
         'MINE'     => 2,

@@ -15,15 +15,15 @@ class ResearchSeeder extends Seeder
     public function run()
     {
         Research::create([
-            'user_id' => config('constants.DEFAULT_USER_ID'),
+            'user_id'     => config('constants.DEFAULT_USER_ID'),
             'research_id' => config('constants.RESEARCHES.SHIP_TECHNOLOGIES'),
-            'lvl' => 1
+            'lvl'         => 1
         ]);
 
         Research::create([
-            'user_id' => config('constants.DEFAULT_USER_ID'),
+            'user_id'     => config('constants.DEFAULT_USER_ID'),
             'research_id' => config('constants.RESEARCHES.SHIP_SAILS'),
-            'lvl' => 1
+            'lvl'         => 1
         ]);
     }
 }

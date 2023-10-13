@@ -19,42 +19,64 @@ class DatabaseSeeder extends Seeder
 
         // pirates id 1
         \App\Models\User::factory(1)->create([
+            'id'   => config('constants.DEFAULT_PIRATE_ID'),
             'name' => 'Pirates'
         ]);
 
         \App\Models\User::factory(3)->create();
 
+        // first player
         \App\Models\User::factory(1)->create([
+            'id'       => config('constants.DEFAULT_USER_ID'),
             'name'     => 'Alex',
             'password' => Hash::make('123123'),
             'email'    => 'alex@test.ru'
         ]);
 
+        // second player
+        \App\Models\User::factory(1)->create([
+            'id'       => config('constants.DEFAULT_USER_ID_2'),
+            'name'     => 'Alex2',
+            'password' => Hash::make('123123'),
+            'email'    => 'alex2@test.ru'
+        ]);
+
         \App\Models\User::factory(10)->create();
 
         \App\Models\City::factory(1)->create([
-            'id'         => 10,
+            'id'         => config('constants.DEFAULT_USER_CITY_ID'),
             'user_id'    => config('constants.DEFAULT_USER_ID'),
-            'title'      => 'Island Alex-a',
+            'title'      => 'My Island',
             'coord_x'    => 1,
             'coord_y'    => 1,
-            'gold'       => 1000,
-            'population' => 200
+            'gold'       => 2000,
+            'population' => 700
         ]);
 
         \App\Models\City::factory(1)->create([
-            'id'         => 11,
+            'id'         => config('constants.DEFAULT_USER_CITY_ID_2'),
             'user_id'    => config('constants.DEFAULT_USER_ID'),
-            'title'      => 'Island Alex N2',
+            'title'      => 'Volcano',
             'coord_x'    => 3,
             'coord_y'    => 5,
             'gold'       => 1500,
             'population' => 300
         ]);
 
+        \App\Models\City::factory(1)->create([
+            'id'         => config('constants.DEFAULT_USER_2_CITY_ID'),
+            'user_id'    => config('constants.DEFAULT_USER_ID_2'),
+            'title'      => 'Island Bla',
+            'coord_x'    => 4,
+            'coord_y'    => 4,
+            'gold'       => 1500,
+            'population' => 300
+        ]);
+
+        // TODO: Change coordinates
         for ($i = 0; $i < 200; $i++) {
             \App\Models\City::factory(1)->create([
-                'user_id'    => random_int(config('constants.DEFAULT_USER_ID') + 1, config('constants.DEFAULT_USER_ID') + 10),
+                'user_id'    => random_int(config('constants.DEFAULT_USER_ID_2') + 1, config('constants.DEFAULT_USER_ID_2') + 10),
                 'title'      => 'Island',
                 'coord_x'    => $i + 5,
                 'coord_y'    => $i + 5,
@@ -64,7 +86,7 @@ class DatabaseSeeder extends Seeder
         }
 
         \App\Models\City::factory(1)->create([
-            'user_id'            => 1,
+            'user_id'            => config('constants.DEFAULT_PIRATE_ID'),
             'city_dictionary_id' => 2,
             'title'              => 'Pirate Bay',
             'coord_x'            => 2,

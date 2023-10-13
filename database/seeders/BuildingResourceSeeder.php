@@ -25,45 +25,71 @@ class BuildingResourceSeeder extends Seeder
         $building7 = BuildingDictionary::where('id', config('constants.BUILDINGS.DOCK'))->first();
         $building8 = BuildingDictionary::where('id', config('constants.BUILDINGS.FORTRESS'))->first();
 
-        $buildingResources1[0] = BuildingResource::create([
+        BuildingResource::create([
             'building_id' => $building1->id,
             'gold' => 100,
             'population' => 20,
             'lvl' => 1,
-            'time' => 10,
+            'time' => 30,
         ]);
-
-        $buildingResources1[1] = BuildingResource::create([
+        BuildingResource::create([
             'building_id' => $building1->id,
             'gold' => 200,
             'population' => 30,
             'lvl' => 2,
-            'time' => 20,
-        ]);
-
-        $buildingResources1[2] = BuildingResource::create([
-            'building_id' => $building1->id,
-            'gold' => 500,
-            'population' => 50,
-            'lvl' => 3,
             'time' => 50,
         ]);
+        BuildingResource::create([
+            'building_id' => $building1->id,
+            'gold' => 400,
+            'population' => 50,
+            'lvl' => 3,
+            'time' => 100,
+        ]);
+        BuildingResource::create([
+            'building_id' => $building1->id,
+            'gold' => 1500,
+            'population' => 250,
+            'lvl' => 4,
+            'time' => 250,
+        ]);
+        BuildingResource::create([
+            'building_id' => $building1->id,
+            'gold' => 10000,
+            'population' => 2000,
+            'lvl' => 5,
+            'time' => 500,
+        ]);
+        BuildingResource::create([
+            'building_id' => $building1->id,
+            'gold' => 15000,
+            'population' => 5000,
+            'lvl' => 6,
+            'time' => 800,
+        ]);
+        BuildingResource::create([
+            'building_id' => $building1->id,
+            'gold' => 50000,
+            'population' => 20000,
+            'lvl' => 7,
+            'time' => 1200,
+        ]);
 
-        $buildingResources2[0] = BuildingResource::create([
+        BuildingResource::create([
             'building_id' => $building2->id,
             'gold' => 200,
             'population' => 50,
             'lvl' => 1,
             'time' => 25,
         ]);
-        $buildingResources2[1] = BuildingResource::create([
+        BuildingResource::create([
             'building_id' => $building2->id,
             'gold' => 300,
             'population' => 70,
             'lvl' => 2,
             'time' => 30,
         ]);
-        $buildingResources2[2] = BuildingResource::create([
+        BuildingResource::create([
             'building_id' => $building2->id,
             'gold' => 500,
             'population' => 100,

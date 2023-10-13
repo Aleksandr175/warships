@@ -18,7 +18,7 @@ class ResearchQueueSeeder extends Seeder
         $time = 100;
 
         ResearchQueue::create([
-            'city_id' => 10,
+            'city_id' => config('constants.DEFAULT_USER_CITY_ID'),
             'user_id' => config('constants.DEFAULT_USER_ID'),
             'research_id' => config('constants.RESEARCHES.SHIP_GUNS'),
             'gold' => 100,

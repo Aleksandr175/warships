@@ -18,23 +18,23 @@ class WarshipSeeder extends Seeder
     {
         Warship::create([
             'warship_id' => config('constants.WARSHIPS.LUGGER'),
-            'city_id' => 10,
-            'user_id' => config('constants.DEFAULT_USER_ID'),
-            'qty' => 30
+            'city_id'    => config('constants.DEFAULT_USER_CITY_ID'),
+            'user_id'    => config('constants.DEFAULT_USER_ID'),
+            'qty'        => 30
         ]);
 
         Warship::create([
             'warship_id' => config('constants.WARSHIPS.CARAVEL'),
-            'city_id' => 10,
-            'user_id' => config('constants.DEFAULT_USER_ID'),
-            'qty' => 20
+            'city_id'    => config('constants.DEFAULT_USER_CITY_ID'),
+            'user_id'    => config('constants.DEFAULT_USER_ID'),
+            'qty'        => 20
         ]);
 
         Warship::create([
             'warship_id' => config('constants.WARSHIPS.GALERA'),
-            'city_id' => 10,
-            'user_id' => config('constants.DEFAULT_USER_ID'),
-            'qty' => 10
+            'city_id'    => config('constants.DEFAULT_USER_CITY_ID'),
+            'user_id'    => config('constants.DEFAULT_USER_ID'),
+            'qty'        => 10
         ]);
 
         // set some warships for pirate bays
@@ -43,23 +43,23 @@ class WarshipSeeder extends Seeder
         foreach ($pirateBays as $pirateBay) {
             Warship::create([
                 'warship_id' => config('constants.WARSHIPS.LUGGER'),
-                'city_id' => $pirateBay->id,
-                'user_id' => null,
-                'qty' => 15
+                'city_id'    => $pirateBay->id,
+                'user_id'    => config('constants.DEFAULT_PIRATE_ID'),
+                'qty'        => 15
             ]);
 
             Warship::create([
                 'warship_id' => config('constants.WARSHIPS.CARAVEL'),
-                'city_id' => $pirateBay->id,
-                'user_id' => null,
-                'qty' => 7
+                'city_id'    => $pirateBay->id,
+                'user_id'    => config('constants.DEFAULT_PIRATE_ID'),
+                'qty'        => 7
             ]);
 
             Warship::create([
                 'warship_id' => config('constants.WARSHIPS.GALERA'),
-                'city_id' => $pirateBay->id,
-                'user_id' => null,
-                'qty' => 2
+                'city_id'    => $pirateBay->id,
+                'user_id'    => config('constants.DEFAULT_PIRATE_ID'),
+                'qty'        => 2
             ]);
         }
     }

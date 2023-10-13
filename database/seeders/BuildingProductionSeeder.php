@@ -15,50 +15,34 @@ class BuildingProductionSeeder extends Seeder
      */
     public function run()
     {
-        $buildingMiner = Building::where('id', 2)->first();
-        $buildingHouse = Building::where('id', 3)->first();
+        $buildingMine  = Building::where('id', config('constants.BUILDINGS.MINE'))->first();
+        $buildingHouse = Building::where('id', config('constants.BUILDINGS.HOUSES'))->first();
 
-        BuildingProduction::create([
-            'building_id' => $buildingMiner->id,
-            'lvl' => 1,
-            'resource' => 'gold',
-            'qty' => 100
-        ]);
+        $productionGold       = [100, 200, 300, 500, 700, 1000, 1400, 1900, 2500, 3200];
+        $productionPopulation = [30, 50, 80, 120, 160, 200, 250, 300, 360, 440];
 
-        BuildingProduction::create([
-            'building_id' => $buildingMiner->id,
-            'lvl' => 2,
-            'resource' => 'gold',
-            'qty' => 200
-        ]);
+        $lvl = 1;
+        foreach ($productionGold as $gold) {
+            BuildingProduction::create([
+                'building_id' => $buildingMine->id,
+                'lvl'         => $lvl,
+                'resource'    => 'gold',
+                'qty'         => $gold
+            ]);
 
-        BuildingProduction::create([
-            'building_id' => $buildingMiner->id,
-            'lvl' => 3,
-            'resource' => 'gold',
-            'qty' => 300
-        ]);
+            $lvl++;
+        }
 
-        BuildingProduction::create([
-            'building_id' => $buildingHouse->id,
-            'lvl' => 1,
-            'resource' => 'population',
-            'qty' => 100
-        ]);
+        $lvl = 1;
+        foreach ($productionPopulation as $population) {
+            BuildingProduction::create([
+                'building_id' => $buildingHouse->id,
+                'lvl'         => $lvl,
+                'resource'    => 'population',
+                'qty'         => $population
+            ]);
 
-        BuildingProduction::create([
-            'building_id' => $buildingHouse->id,
-            'lvl' => 2,
-            'resource' => 'population',
-            'qty' => 120
-        ]);
-
-        BuildingProduction::create([
-            'building_id' => $buildingHouse->id,
-            'lvl' => 3,
-            'resource' => 'population',
-            'qty' => 250
-        ]);
-
+            $lvl++;
+        }
     }
 }

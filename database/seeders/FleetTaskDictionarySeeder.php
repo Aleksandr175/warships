@@ -17,7 +17,7 @@ class FleetTaskDictionarySeeder extends Seeder
         FleetTaskDictionary::create([
             'title' => 'Trade',
             'slug' => 'trade',
-            'description' => 'Send warships to trade with other cities'
+            'description' => 'Send warships to trade with other islands'
         ]);
 
         FleetTaskDictionary::create([
@@ -36,6 +36,12 @@ class FleetTaskDictionarySeeder extends Seeder
             'title' => 'Transport',
             'slug' => 'transport',
             'description' => 'Transport resources to island and come back'
+        ]);
+
+        FleetTaskDictionary::create([
+            'title' => 'Expedition',
+            'slug' => 'expedition',
+            'description' => 'Expedition'
         ]);
     }
 }

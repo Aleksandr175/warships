@@ -92,6 +92,23 @@ class FleetService
             // update gold for island
             $userCity->increment('gold', -$gold);
 
+            $defaultFleetStatusId = 0;
+            if ($this->taskTypeId === config('constants.FLEET_TASKS.TRADE')) {
+                $defaultFleetStatusId = config('constants.FLEET_STATUSES.TRADE_GOING_TO_TARGET');
+            }
+            if ($this->taskTypeId === config('constants.FLEET_TASKS.MOVE')) {
+                $defaultFleetStatusId = config('constants.FLEET_STATUSES.MOVING_GOING_TO_TARGET');
+            }
+            if ($this->taskTypeId === config('constants.FLEET_TASKS.ATTACK')) {
+                $defaultFleetStatusId = config('constants.FLEET_STATUSES.ATTACK_GOING_TO_TARGET');
+            }
+            if ($this->taskTypeId === config('constants.FLEET_TASKS.TRANSPORT')) {
+                $defaultFleetStatusId = config('constants.FLEET_STATUSES.TRANSPORT_GOING_TO_TARGET');
+            }
+            if ($this->taskTypeId === config('constants.FLEET_TASKS.EXPEDITION')) {
+                $defaultFleetStatusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_TO_TARGET');
+            }
+
             // create fleet and details
             $fleetId = Fleet::create([
                 'city_id'        => $userCity->id,
@@ -101,7 +118,7 @@ class FleetService
                 'time'           => $timeToTarget,
                 'gold'           => $gold,
                 'repeating'      => $this->repeating,
-                'status_id'      => 1, // TODO: set default value for fleet status id
+                'status_id'      => $defaultFleetStatusId,
                 'deadline'       => Carbon::now()->addSeconds($timeToTarget)
             ])->id;
 
@@ -160,6 +177,7 @@ class FleetService
         }
     }
 
+    // send event via websockets
     public function sendFleetUpdatedEvent($user, $city)
     {
         $fleets        = $city->fleets;
@@ -250,7 +268,7 @@ class FleetService
             if ($fleet->isTradeTask()) {
                 if ($fleet->isTradeGoingToTarget()) {
                     dump('trade: fleet starts to trade');
-                    $statusId = Fleet::FLEET_STATUS_TRADING_ID;
+                    $statusId = config('constants.FLEET_STATUSES.TRADING');
                     // how long?
                     $deadline = Carbon::create($fleet->deadline)->addSecond(10);
 
@@ -260,7 +278,7 @@ class FleetService
 
                     if ($city->user_id === $targetCity->user_id) {
                         // send fleet back because we cant trade with ourselves
-                        $statusId  = Fleet::FLEET_STATUS_TRADE_GOING_BACK_ID;
+                        $statusId  = config('constants.FLEET_STATUSES.TRADE_GOING_BACK');
                         $deadline  = Carbon::create($fleet->deadline)->addSecond(10);
                         $repeating = 0;
                     }
@@ -268,10 +286,10 @@ class FleetService
 
                 if ($fleet->isTrading()) {
                     dump('trade: fleet completed trading');
-                    $statusId = Fleet::FLEET_STATUS_TRADE_GOING_BACK_ID;;
+                    $statusId = config('constants.FLEET_STATUSES.TRADE_GOING_BACK');
                     // how long?
                     $deadline = Carbon::create($fleet->deadline)->addSecond(5);
-                    // add gold to fleet? Formula?
+                    // TODO: add gold to fleet? Formula?
                     $gold = 100;
                 }
 
@@ -286,7 +304,7 @@ class FleetService
                         dump('trade: fleet repeats trade task, going to target');
                         // just repeat task
                         $gold     = 0;
-                        $statusId = Fleet::FLEET_STATUS_TRADE_GOING_TO_TARGET_ID;
+                        $statusId = config('constants.FLEET_STATUSES.TRADE_GOING_TO_TARGET');
                         // TODO: how long? // distance?
                         $deadline = Carbon::create($fleet->deadline)->addSecond(10);
                     } else {
@@ -315,7 +333,7 @@ class FleetService
                     } else {
                         dump('move: fleet is returning to original island');
                         // return fleet back
-                        $statusId = Fleet::FLEET_STATUS_MOVING_GOING_BACK_ID;
+                        $statusId = config('constants.FLEET_STATUSES.MOVING_GOING_BACK');
                         // TODO: calculate distance and secs
                         $deadline  = Carbon::create($fleet->deadline)->addSecond(10);
                         $repeating = 0;
@@ -339,7 +357,7 @@ class FleetService
             if ($fleet->isTrasnsportTask()) {
                 if ($fleet->isTransportFleetGoingToTarget()) {
                     dump('transport: fleet delivered resource, fleet is going back');
-                    $statusId = Fleet::FLEET_STATUS_TRANSPORT_GOING_BACK_ID;
+                    $statusId = config('constants.FLEET_STATUSES.TRANSPORT_GOING_BACK');
                     // TODO: how long? // distance?
                     $deadline = Carbon::create($fleet->deadline)->addSecond(10);
 
@@ -361,11 +379,43 @@ class FleetService
                 }
             }
 
+            // task: expedition to unknown
+            if ($fleet->isExpeditionTask()) {
+                if ($fleet->isExpeditionFleetGoingToTarget()) {
+                    dump('expedition: fleet reached unknown islands, start researching...');
+                    $statusId = config('constants.FLEET_STATUSES.EXPEDITION_IN_PROGRESS');
+
+                    $deadline = Carbon::create($fleet->deadline)->addSecond(15);
+                }
+
+                if ($fleet->isExpeditionInProgress()) {
+                    dump('expedition: fleet completed expedition, we got something');
+                    $statusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_BACK');
+
+                    // TODO: get some resources
+                    $gold = 10;
+
+                    $deadline = Carbon::create($fleet->deadline)->addSecond(15);
+                }
+
+                if ($fleet->isExpeditionGoingBack()) {
+                    dump('expedition: fleet returned');
+
+                    $city         = City::find($fleet->city_id);
+                    $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
+                    $city->increment('gold', $fleet->gold);
+
+                    $this->convertFleetDetailsToWarships($fleetDetails, $city);
+
+                    $shouldDeleteFleet = true;
+                }
+            }
+
             // task: attack island and go back
             if ($fleet->isAttackTask()) {
                 if ($fleet->isAttackFleetGoingToTarget()) {
                     dump('attack fleet: fleet achieved target island');
-                    $statusId = Fleet::FLEET_STATUS_ATTACK_IN_PROGRESS;
+                    $statusId = config('constants.FLEET_STATUSES.ATTACK_IN_PROGRESS');
 
                     // TODO: how long? // distance?
                     $deadline = Carbon::create($fleet->deadline);
@@ -376,7 +426,7 @@ class FleetService
                 // TODO: i think we should have status isAttackCompleted
                 if ($fleet->isAttackFleetAttackInProgress()) {
                     dump('fleets\'s attack is completed: fleet is going back');
-                    $statusId = Fleet::FLEET_STATUS_ATTACK_GOING_BACK_ID;
+                    $statusId = config('constants.FLEET_STATUSES.ATTACK_GOING_BACK');
 
                     // TODO: how long? // distance?
                     $deadline = Carbon::create($fleet->deadline);

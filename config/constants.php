@@ -4,10 +4,10 @@ return [
 
     'DEFAULT_USER_ID' => 5,
 
-    'DEFAULT_USER_CITY_ID' => 10,
+    'DEFAULT_USER_CITY_ID'   => 10,
     'DEFAULT_USER_CITY_ID_2' => 11,
 
-    'DEFAULT_USER_ID_2' => 6,
+    'DEFAULT_USER_ID_2'      => 6,
     'DEFAULT_USER_2_CITY_ID' => 12,
 
     'BUILDINGS'  => [
@@ -32,5 +32,33 @@ return [
         'GALERA'     => 3,
         'FRIGATE'    => 4,
         'BATTLESHIP' => 5,
+    ],
+
+    'FLEET_TASKS' => [
+        'TRADE'      => 1,
+        'MOVE'       => 2,
+        'ATTACK'     => 3,
+        'TRANSPORT'  => 4,
+        'EXPEDITION' => 5,
+    ],
+
+    'FLEET_STATUSES' => [
+        'TRADE_GOING_TO_TARGET' => 1,
+        'TRADING'               => 2,
+        'TRADE_GOING_BACK'      => 3,
+
+        'MOVING_GOING_TO_TARGET' => 1,
+        'MOVING_GOING_BACK'      => 3,
+
+        'TRANSPORT_GOING_TO_TARGET' => 1,
+        'TRANSPORT_GOING_BACK'      => 3,
+
+        'ATTACK_GOING_TO_TARGET' => 1,
+        'ATTACK_GOING_BACK'      => 3,
+        'ATTACK_IN_PROGRESS'     => 4,
+
+        'EXPEDITION_GOING_TO_TARGET' => 40,
+        'EXPEDITION_IN_PROGRESS'     => 42,
+        'EXPEDITION_GOING_BACK'      => 41,
     ]
 ];

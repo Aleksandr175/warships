@@ -27,27 +27,6 @@ class Fleet extends Model
 
     protected $guarded = [];
 
-    /**
-     * @var int
-     */
-    public const FLEET_TASK_TRADE_ID     = 1;
-    public const FLEET_TASK_MOVE_ID      = 2;
-    public const FLEET_TASK_ATTACK_ID    = 3;
-    public const FLEET_TASK_TRANSPORT_ID = 4;
-
-    public const FLEET_STATUS_TRADE_GOING_TO_TARGET_ID  = 1;
-    public const FLEET_STATUS_TRADING_ID                = 2;
-    public const FLEET_STATUS_TRADE_GOING_BACK_ID       = 3;
-    public const FLEET_STATUS_MOVING_GOING_TO_TARGET_ID = 1;
-    public const FLEET_STATUS_MOVING_GOING_BACK_ID      = 3;
-
-    public const FLEET_STATUS_TRANSPORT_GOING_TO_TARGET_ID = 1;
-    public const FLEET_STATUS_TRANSPORT_GOING_BACK_ID      = 3;
-
-    public const FLEET_STATUS_ATTACK_GOING_TO_TARGET_ID = 1;
-    public const FLEET_STATUS_ATTACK_GOING_BACK_ID      = 3;
-    public const FLEET_STATUS_ATTACK_IN_PROGRESS        = 4;
-
     public function city()
     {
         return $this->belongsTo(City::class);
@@ -60,71 +39,91 @@ class Fleet extends Model
 
     public function isTradeTask()
     {
-        return $this->fleet_task_id === self::FLEET_TASK_TRADE_ID;
+        return $this->fleet_task_id === config('constants.FLEET_TASKS.TRADE');
     }
 
     public function isMovingTask()
     {
-        return $this->fleet_task_id === self::FLEET_TASK_MOVE_ID;
+        return $this->fleet_task_id === config('constants.FLEET_TASKS.MOVE');
     }
 
     public function isTrasnsportTask()
     {
-        return $this->fleet_task_id === self::FLEET_TASK_TRANSPORT_ID;
+        return $this->fleet_task_id === config('constants.FLEET_TASKS.ATTACK');
     }
 
     public function isAttackTask()
     {
-        return $this->fleet_task_id === self::FLEET_TASK_ATTACK_ID;
+        return $this->fleet_task_id === config('constants.FLEET_TASKS.TRANSPORT');
+    }
+
+    public function isExpeditionTask()
+    {
+        return $this->fleet_task_id === config('constants.FLEET_TASKS.EXPEDITION');
     }
 
     public function isTradeGoingToTarget()
     {
-        return $this->isTradeTask() && $this->status_id === self::FLEET_STATUS_TRADE_GOING_TO_TARGET_ID;
+        return $this->isTradeTask() && $this->status_id === config('constants.FLEET_STATUSES.TRADE_GOING_TO_TARGET');
     }
 
     public function isTrading()
     {
-        return $this->isTradeTask() && $this->status_id === self::FLEET_STATUS_TRADING_ID;
+        return $this->isTradeTask() && $this->status_id === config('constants.FLEET_STATUSES.TRADING');
     }
 
     public function isTradeGoingBack()
     {
-        return $this->isTradeTask() && $this->status_id === self::FLEET_STATUS_TRADE_GOING_BACK_ID;
+        return $this->isTradeTask() && $this->status_id === config('constants.FLEET_STATUSES.TRADE_GOING_BACK');
     }
 
     public function isMovingFleetGoingToTarget()
     {
-        return $this->isMovingTask() && $this->status_id === self::FLEET_STATUS_MOVING_GOING_TO_TARGET_ID;
+        return $this->isMovingTask() && $this->status_id === config('constants.FLEET_STATUSES.MOVING_GOING_TO_TARGET');
     }
 
     public function isMovingFleetGoingBack()
     {
-        return $this->isMovingTask() && $this->status_id === self::FLEET_STATUS_MOVING_GOING_BACK_ID;
+        return $this->isMovingTask() && $this->status_id === config('constants.FLEET_STATUSES.MOVING_GOING_BACK');
     }
 
     public function isTransportFleetGoingToTarget()
     {
-        return $this->isMovingTask() && $this->status_id === self::FLEET_STATUS_TRANSPORT_GOING_TO_TARGET_ID;
+        return $this->isMovingTask() && $this->status_id === config('constants.FLEET_STATUSES.TRANSPORT_GOING_TO_TARGET');
     }
 
     public function isTransportFleetGoingBack()
     {
-        return $this->isTrasnsportTask() && $this->status_id === self::FLEET_STATUS_TRANSPORT_GOING_BACK_ID;
+        return $this->isTrasnsportTask() && $this->status_id === config('constants.FLEET_STATUSES.TRANSPORT_GOING_BACK');
     }
 
     public function isAttackFleetGoingToTarget()
     {
-        return $this->isAttackTask() && $this->status_id === self::FLEET_STATUS_ATTACK_GOING_TO_TARGET_ID;
+        return $this->isAttackTask() && $this->status_id === config('constants.FLEET_STATUSES.ATTACK_GOING_TO_TARGET');
     }
 
     public function isAttackFleetGoingBack()
     {
-        return $this->isAttackTask() && $this->status_id === self::FLEET_STATUS_ATTACK_GOING_BACK_ID;
+        return $this->isAttackTask() && $this->status_id === config('constants.FLEET_STATUSES.ATTACK_GOING_BACK');
     }
 
     public function isAttackFleetAttackInProgress()
     {
-        return $this->isAttackTask() && $this->status_id === self::FLEET_STATUS_ATTACK_IN_PROGRESS;
+        return $this->isAttackTask() && $this->status_id === config('constants.FLEET_STATUSES.ATTACK_IN_PROGRESS');
+    }
+
+    public function isExpeditionFleetGoingToTarget()
+    {
+        return $this->isExpeditionTask() && $this->status_id === config('constants.FLEET_STATUSES.EXPEDITION_GOING_TO_TARGET');
+    }
+
+    public function isExpeditionInProgress()
+    {
+        return $this->isExpeditionTask() && $this->status_id === config('constants.FLEET_STATUSES.EXPEDITION_IN_PROGRESS');
+    }
+
+    public function isExpeditionGoingBack()
+    {
+        return $this->isExpeditionTask() && $this->status_id === config('constants.FLEET_STATUSES.EXPEDITION_GOING_BACK');
     }
 }

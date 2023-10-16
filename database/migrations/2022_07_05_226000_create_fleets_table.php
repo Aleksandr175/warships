@@ -22,7 +22,7 @@ class CreateFleetsTable extends Migration
             //$table->bigInteger('status_id')->unsigned();
 
             $table->integer('city_id');
-            $table->integer('target_city_id');
+            $table->integer('target_city_id')->nullable();
             $table->integer('fleet_task_id');
             $table->integer('status_id');
 

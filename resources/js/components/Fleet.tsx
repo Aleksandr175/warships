@@ -77,6 +77,9 @@ export const Fleet = ({
       if (fleetTask.slug === "transport") {
         return "refresh";
       }
+      if (fleetTask.slug === "expedition") {
+        return "i-expedition";
+      }
     }
 
     return "";
@@ -97,7 +100,7 @@ export const Fleet = ({
   const getCityCoords = (cityId: number): string => {
     const city = fleetCities.find((city) => city.id === cityId);
 
-    return city ? city.coordY + ":" + city.coordX : "";
+    return city ? city.coordY + ":" + city.coordX : "unknown";
   };
 
   return (

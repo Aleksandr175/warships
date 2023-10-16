@@ -18,17 +18,19 @@ class FleetSeeder extends Seeder
      */
     public function run()
     {
-        $myCity        = City::find(10);
-        $taskTrade     = FleetTaskDictionary::find(1);
-        $taskMove      = FleetTaskDictionary::find(2);
-        $taskAttack    = FleetTaskDictionary::find(3);
-        $taskTransport = FleetTaskDictionary::find(4);
+        $myCity         = City::find(config('constants.DEFAULT_USER_CITY_ID'));
+        $taskTrade      = FleetTaskDictionary::find(config('constants.FLEET_TASKS.TRADE'));
+        $taskMove       = FleetTaskDictionary::find(config('constants.FLEET_TASKS.MOVE'));
+        $taskAttack     = FleetTaskDictionary::find(config('constants.FLEET_TASKS.ATTACK'));
+        $taskTransport  = FleetTaskDictionary::find(config('constants.FLEET_TASKS.TRANSPORT'));
+        $taskExpedition = FleetTaskDictionary::find(config('constants.FLEET_TASKS.EXPEDITION'));
 
-        $statusTrade1     = FleetStatusDictionary::find(1);
-        $statusMove1      = FleetStatusDictionary::find(1);
-        $statusTransport1 = FleetStatusDictionary::find(1);
-        $statusAttack1    = FleetStatusDictionary::find(1);
-        $time             = 10;
+        $statusTrade1                  = FleetStatusDictionary::find(1);
+        $statusMove1                   = FleetStatusDictionary::find(1);
+        $statusTransport1              = FleetStatusDictionary::find(1);
+        $statusAttack1                 = FleetStatusDictionary::find(1);
+        $statusExpeditionGoingToTarget = FleetStatusDictionary::find(config('constants.FLEET_STATUSES.EXPEDITION_GOING_TO_TARGET'));
+        $time                          = 10;
 
         Fleet::create([
             'city_id'        => $myCity->id,
@@ -79,6 +81,20 @@ class FleetSeeder extends Seeder
             'repeating'      => 0,
             'fleet_task_id'  => $taskAttack->id,
             'status_id'      => $statusAttack1->id,
+            'time'           => $time,
+            'deadline'       => Carbon::now()->addSeconds($time)
+        ]);
+
+        // expedition
+        Fleet::create([
+            'city_id'        => $myCity->id,
+            'target_city_id' => null,
+            'speed'          => 70,
+            'gold'           => 0,
+            'population'     => 0,
+            'repeating'      => 1,
+            'fleet_task_id'  => $taskExpedition->id,
+            'status_id'      => $statusExpeditionGoingToTarget->id,
             'time'           => $time,
             'deadline'       => Carbon::now()->addSeconds($time)
         ]);

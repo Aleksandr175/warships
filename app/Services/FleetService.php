@@ -285,12 +285,21 @@ class FleetService
                 }
 
                 if ($fleet->isTrading()) {
-                    dump('trade: fleet completed trading');
                     $statusId = config('constants.FLEET_STATUSES.TRADE_GOING_BACK');
                     // how long?
                     $deadline = Carbon::create($fleet->deadline)->addSecond(5);
-                    // TODO: add gold to fleet? Formula?
-                    $gold = 100;
+
+                    $warshipsDictionary = WarshipDictionary::get();
+
+                    $fleetDetails = FleetDetail::getFleetDetails([$fleet->id])->toArray();
+                    $fleetDetails = (new BattleService)->populateFleetDetailsWithCapacityAndHealth($fleetDetails, $warshipsDictionary);
+                    $availableCapacity = (new BattleService)->getAvailableCapacity($fleet, $fleetDetails);
+
+                    $gold = floor($availableCapacity * 0.1);
+                    dump('trade: fleet completed trading, got ' . $gold . ' gold');
+
+                    $targetCity = City::find($fleet->target_city_id);
+                    $targetCity->increment('gold', floor($gold / 2));
                 }
 
                 if ($fleet->isTradeGoingBack()) {

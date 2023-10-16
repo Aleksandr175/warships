@@ -10,9 +10,14 @@ Fleet with that task can repeat its task if we set so while sending that fleet.
 
 ### Getting gold
 
-Fleet gets by formula.
+Fleet gets gold by formula:
 
-$gold = $availableCapacity / 10. 
+$gold = floor($availableCapacity * 0.1).
+
+Island gets gold too by formula:
+
+$gold = $availableCapacity * 0.05.
+
 
 ### Future Updates
 

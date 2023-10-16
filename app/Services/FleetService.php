@@ -405,9 +405,19 @@ class FleetService
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
                     $city->increment('gold', $fleet->gold);
 
-                    $this->convertFleetDetailsToWarships($fleetDetails, $city);
+                    if ($fleet->repeating) {
+                        dump('expedition: fleet repeats expedition task, going to target');
+                        // just repeat task
+                        $gold     = 0;
+                        $statusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_TO_TARGET');
+                        // TODO: how long? // distance?
+                        $deadline = Carbon::create($fleet->deadline)->addSecond(10);
+                    } else {
+                        // transfer fleet to warships in the island
+                        $this->convertFleetDetailsToWarships($fleetDetails, $city);
 
-                    $shouldDeleteFleet = true;
+                        $shouldDeleteFleet = true;
+                    }
                 }
             }
 

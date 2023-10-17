@@ -3,23 +3,20 @@
 namespace App\Jobs;
 
 use App\Models\Fleet;
-use App\Services\BattleService;
+use App\Services\ExpeditionService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class BattleJob implements ShouldQueue
+class ExpeditionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -28,19 +25,16 @@ class BattleJob implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle(BattleService $battleService)
+    public function handle(ExpeditionService $expeditionService): void
     {
-        // TODO add limit?
         $fleetQueue = Fleet::where('deadline', '<', Carbon::now())
-            ->where('fleet_task_id', config('constants.FLEET_TASKS.ATTACK'))
-            ->where('status_id', config('constants.FLEET_STATUSES.ATTACK_IN_PROGRESS'))
+            ->where('fleet_task_id', config('constants.FLEET_TASKS.EXPEDITION'))
+            ->where('status_id', config('constants.FLEET_STATUSES.EXPEDITION_IN_PROGRESS'))
             ->get();
 
         foreach ($fleetQueue as $fleet) {
-            $battleService->handle($fleet);
+            $expeditionService->handle($fleet);
         }
     }
 }

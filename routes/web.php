@@ -35,15 +35,24 @@ Route::get('/server-start', function () {
     \App\Jobs\FleetJob::dispatch()->onQueue('fleet');
     \App\Jobs\PirateJob::dispatch()->onQueue('pirateLogic');
     \App\Jobs\BattleJob::dispatch()->onQueue('battle');
+    \App\Jobs\ExpeditionJob::dispatch()->onQueue('expedition');
 
     return "Server started!";
 });
 
 Route::get('/test-battle', function (\App\Services\BattleService $battleService) {
-    $fleetQueue = Fleet::where('fleet_task_id', 3)->get();
+    $fleetQueue = Fleet::where('fleet_task_id', config('constants.FLEET_TASKS.ATTACK'))->get();
 
     foreach ($fleetQueue as $fleet) {
         $battleService->handle($fleet);
+    }
+});
+
+Route::get('/test-expedition', function (\App\Services\ExpeditionService $expeditionService) {
+    $fleetQueue = Fleet::where('fleet_task_id', config('constants.FLEET_TASKS.EXPEDITION'))->get();
+
+    foreach ($fleetQueue as $fleet) {
+        $expeditionService->handle($fleet);
     }
 });
 

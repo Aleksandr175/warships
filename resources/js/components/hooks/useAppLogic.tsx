@@ -71,6 +71,9 @@ export const useAppLogic = () => {
       .listen("CityDataUpdatedEvent", (event: { cities: ICity[] }) => {
         console.log("new city data", event);
         setCities(event.cities);
+      })
+      .listen("TestEvent", (event: { cities: ICity[] }) => {
+        console.log("test event", event);
       });
   };
 

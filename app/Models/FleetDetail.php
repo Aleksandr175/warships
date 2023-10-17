@@ -25,7 +25,7 @@ class FleetDetail extends Model
 
     protected $guarded = [];
 
-    public static function getFleetDetails($fleetIds)
+    public static function getFleetDetails($fleetIds): \Illuminate\Database\Eloquent\Collection|array
     {
         return self::whereIn('fleet_id', $fleetIds)->get();
     }

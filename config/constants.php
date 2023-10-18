@@ -1,6 +1,7 @@
 <?php
 return [
     'DEFAULT_PIRATE_ID' => 1,
+    'DEFAULT_PIRATE_CITY_ID'   => 212,
 
     'DEFAULT_USER_ID' => 5,
 
@@ -9,6 +10,12 @@ return [
 
     'DEFAULT_USER_ID_2'      => 6,
     'DEFAULT_USER_2_CITY_ID' => 12,
+
+    'CITY_TYPE_ID' => [
+        'ISLAND' => 1,
+        'PIRATE_BAY' => 2,
+        'COLONY' => 3,
+    ],
 
     'BUILDINGS'  => [
         'MAIN'     => 1,

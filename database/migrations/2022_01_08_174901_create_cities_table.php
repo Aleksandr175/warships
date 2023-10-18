@@ -19,8 +19,12 @@ class CreateCitiesTable extends Migration
 
             $table->integer('user_id')->nullable();
             $table->string('title', 50);
+
+            $table->integer('archipelago_id');
             $table->integer('coord_x');
             $table->integer('coord_y');
+
+            $table->integer('appearance_id')->default(1);
 
             $table->float('gold');
             $table->integer('population');

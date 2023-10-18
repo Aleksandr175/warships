@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { httpClient } from "../../httpClient/httpClient";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { IMapCity } from "../../types/types";
 import { SContent } from "../styles";
 
@@ -11,9 +11,9 @@ interface IProps {
 
 export const Map = ({ cityId }: IProps) => {
   const [cities, setCities] = useState<IMapCity[]>([]);
-  const [cells, setCells] = useState([]);
+  const [cells, setCells] = useState<{ id: number }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const size = 10 * 10;
+  const size = 5 * 5;
 
   useEffect(() => {
     httpClient.get("/map").then((response) => {
@@ -24,7 +24,9 @@ export const Map = ({ cityId }: IProps) => {
       let tCells = [];
 
       for (let i = 0; i < size; i++) {
-        tCells[i] = {};
+        tCells[i] = {
+          id: i,
+        };
       }
 
       // @ts-ignore
@@ -40,6 +42,10 @@ export const Map = ({ cityId }: IProps) => {
     );
   };
 
+  const getCity = (y: number, x: number) => {
+    return cities?.find((city) => city.coordX === x && city.coordY === y);
+  };
+
   if (isLoading) {
     return <>Loading...</>;
   }
@@ -48,9 +54,16 @@ export const Map = ({ cityId }: IProps) => {
     <SContent>
       <SCells>
         {cells.map((cell, index) => {
-          const y = Math.floor(index / 10) + 1;
-          const x = (index % 10) + 1;
-          return <SCell isHabited={isCityHere(y, x)} />;
+          const y = Math.floor(index / 5) + 1;
+          const x = (index % 5) + 1;
+          return (
+            <SCell isHabited={isCityHere(y, x)} key={cell.id}>
+              <SIsland type={getCity(y, x)?.cityAppearanceId} />
+              {isCityHere(y, x) && (
+                <SIsland type={getCity(y, x)?.cityAppearanceId} />
+              )}
+            </SCell>
+          );
         })}
       </SCells>
     </SContent>
@@ -58,16 +71,32 @@ export const Map = ({ cityId }: IProps) => {
 };
 
 const SCell = styled.div<{ isHabited?: boolean }>`
-  display: block;
+  position: relative;
   float: left;
-  width: 40px;
-  height: 40px;
-  border: 1px solid black;
+  width: 100px;
+  height: 100px;
 
-  background-color: ${({ isHabited }) => (isHabited ? "#009900" : "none")};
+  background: url("../../../images/islands/ocean.svg") no-repeat;
+  background-size: contain;
 `;
 
 const SCells = styled.div`
-  width: 400px;
-  height: 400px;
+  width: 500px;
+  height: 500px;
+`;
+
+const SIsland = styled.div<{ type?: number }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  ${({ type }) =>
+    type
+      ? css`
+          background: url("../../../images/islands/${type}.svg") no-repeat;
+          background-size: contain;
+        `
+      : ""};
 `;

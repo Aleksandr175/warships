@@ -1,15 +1,21 @@
 export interface ICity {
   id: number;
   title: string;
-  coordX: number;
-  coordY: number;
   gold: number;
   population: number;
+  cityTypeId: number;
+  cityAppearanceId: number;
+  archipelagoId: number;
+  coordX: number;
+  coordY: number;
 }
 
 export interface IMapCity {
   id: number;
   title: string;
+  cityTypeId: number;
+  cityAppearanceId: number;
+  archipelagoId: number;
   coordX: number;
   coordY: number;
 }

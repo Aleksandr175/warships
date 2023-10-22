@@ -1,4 +1,4 @@
-# Browser based online game Warships
+# Browser-based online game Warships
 
 ### Requirements
 - Docker Desktop
@@ -11,8 +11,14 @@ start React
 > npm run watch
 
 
-#### WebSockets
+#### WebSockets in docker container
 start websockets on 127.0.0.1:6001 (for synchronize fleets and etc.) / Admin form: http://localhost/laravel-websockets
+
+Enter container:
+> docker-compose exec -ti laravel.test bash
+
+Run:
+
 > php artisan websockets:serve
 
 #### Database

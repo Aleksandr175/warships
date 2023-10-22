@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('archipelagos', function (Blueprint $table) {
             $table->id();
-            $table->string('type'); // usual, unknown
+            $table->string('type')->default('usual'); // usual, unknown
             $table->timestamps();
         });
     }

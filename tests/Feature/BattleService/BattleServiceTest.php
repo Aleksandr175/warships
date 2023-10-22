@@ -14,7 +14,6 @@ use Tests\TestCase;
 
 class BattleServiceTest extends TestCase
 {
-
     public function prepareData()
     {
         CityDictionary::create([
@@ -55,6 +54,13 @@ class BattleServiceTest extends TestCase
         $warshipsDictionarySeeder->run();
     }
 
+    /*public function deleteData() {
+        CityDictionary::get()->delete();
+        Fleet::get()->delete();
+        FleetDetail::get()->delete();
+        WarshipDictionary::get()->delete();
+    }*/
+
     public function testPopulateFleetDetailsWithCapacityAndHealth()
     {
         $this->prepareData();
@@ -94,13 +100,14 @@ class BattleServiceTest extends TestCase
         $this->prepareData();
 
         City::factory(1)->create([
-            'id'         => 212,
-            'user_id'    => 1,
-            'title'      => '',
-            'coord_x'    => 1,
-            'coord_y'    => 1,
-            'gold'       => 3000,
-            'population' => 2000
+            'id'             => 212,
+            'archipelago_id' => 1,
+            'user_id'        => 1,
+            'title'          => '',
+            'coord_x'        => 1,
+            'coord_y'        => 1,
+            'gold'           => 3000,
+            'population'     => 2000
         ]);
 
         $city  = City::where('id', 212)->first();
@@ -131,7 +138,7 @@ class BattleServiceTest extends TestCase
         ]);
 
         $fleet->update([
-            'gold' => 50,
+            'gold'       => 50,
             'population' => 30
         ]);
 
@@ -153,7 +160,7 @@ class BattleServiceTest extends TestCase
         ]);
 
         $fleet->update([
-            'gold' => 50,
+            'gold'       => 50,
             'population' => 30
         ]);
 
@@ -175,7 +182,7 @@ class BattleServiceTest extends TestCase
         ]);
 
         $fleet->update([
-            'gold' => 50,
+            'gold'       => 50,
             'population' => 30
         ]);
 
@@ -189,5 +196,112 @@ class BattleServiceTest extends TestCase
         $this->assertEquals(3220 - 250, $takePopulation);
         $this->assertEquals(250 + 50, $fleet->gold);
         $this->assertEquals(3220 - 250 + 30, $fleet->population);
+    }
+
+    public function testShoot()
+    {
+        $battleService = new BattleService(); // Create a Warship instance
+
+        $damageToEachWarshipType = 100;
+        $warshipGroups           = [
+            ['warship_id' => 1, 'qty' => 10, 'health' => 100],
+            ['warship_id' => 2, 'qty' => 5, 'health' => 80],
+            ['warship_id' => 3, 'qty' => 3, 'health' => 500],
+        ];
+
+        $expectedResult = [
+            [
+                "warship_id" => 1,
+                "qty"        => 9,
+                "health"     => 100,
+            ],
+            [
+                "warship_id" => 2,
+                "qty"        => 3.75,
+                "health"     => 80
+            ],
+            [
+                "warship_id" => 3,
+                "qty"        => 2.8,
+                "health"     => 500,
+            ]
+        ];
+
+        $expectedLog = [
+            [
+                "qty"        => 10.0,
+                "destroyed"  => 1.0,
+                "warship_id" => 1,
+                "damage"     => 100
+            ],
+            [
+                "qty"        => 5.0,
+                "destroyed"  => 1.0,
+                "warship_id" => 2,
+                "damage"     => 100
+            ],
+            [
+                "qty"        => 3.0,
+                "destroyed"  => 0.0,
+                "warship_id" => 3,
+                "damage"     => 100
+            ]
+        ];
+
+        [$fleetDetails, $log] = $battleService->shoot($damageToEachWarshipType, $warshipGroups);
+
+        $this->assertEquals($expectedResult, $fleetDetails);
+        $this->assertEquals($expectedLog, $log);
+
+        /*$damageToEachWarshipType = 1000;
+        $warshipGroups           = [
+            ['warship_id' => 1, 'qty' => 10, 'health' => 100],
+            ['warship_id' => 2, 'qty' => 5, 'health' => 80],
+            ['warship_id' => 3, 'qty' => 3, 'health' => 500],
+        ];
+
+        $expectedResult = [
+            [
+                "warship_id" => 1,
+                "qty"        => 0.0,
+                "health"     => 100,
+            ],
+            [
+                "warship_id" => 2,
+                "qty"        => 0.0,
+                "health"     => 80
+            ],
+            [
+                "warship_id" => 3,
+                "qty"        => 1.0,
+                "health"     => 500,
+            ]
+        ];
+
+        $expectedLog = [
+            [
+                "qty"        => 10,
+                "destroyed"  => 10.0,
+                "warship_id" => 1,
+                "damage"     => 100
+            ],
+            [
+                "qty"        => 5,
+                "destroyed"  => 5.0,
+                "warship_id" => 2,
+                "damage"     => 100
+            ],
+            [
+                "qty"        => 1,
+                "destroyed"  => 2.0,
+                "warship_id" => 3,
+                "damage"     => 100
+            ]
+        ];
+
+        [$fleetDetails, $log] = $battleService->shoot($damageToEachWarshipType, $warshipGroups);
+
+        $this->assertEquals($expectedResult, $fleetDetails);
+        $this->assertEquals($expectedLog, $log);*/
     }
 }

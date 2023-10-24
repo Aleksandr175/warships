@@ -40,6 +40,9 @@ export const useAppLogic = () => {
     // @ts-ignore
     window.Echo = new Echo({
       broadcaster: "pusher",
+      forceTLS: false,
+      //encrypted: false,
+      //authEndpoint: "/api/broadcasting/auth",
       key: "ASDF",
       wsHost: "127.0.0.1",
       wsPort: 6001,
@@ -47,8 +50,7 @@ export const useAppLogic = () => {
       transports: ["websocket"],
       //enabledTransports: ["ws", "wss"],
       enabledTransports: ["ws"],
-      forceTLS: false,
-      disableStats: true,
+      //disableStats: true,
     });
 
     // @ts-ignore

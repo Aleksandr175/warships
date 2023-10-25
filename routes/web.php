@@ -89,6 +89,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/battle-logs/{battleLogId}', [\App\Http\Controllers\BattleLogController::class, 'getBattleDetails']);
     Route::get('/api/battle-logs', [\App\Http\Controllers\BattleLogController::class, 'get']);
 
+    Route::get('/api/messages/{message}', [\App\Http\Controllers\MessageController::class, 'getMessage']);
+    Route::get('/api/messages', [\App\Http\Controllers\MessageController::class, 'index']);
+
     Route::get('/api/logout', [\App\Http\Controllers\Controller::class, 'logout']);
 });
 

@@ -187,5 +187,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BuildingDependencySeeder::class);
         $this->call(ResearchDependencySeeder::class);
         $this->call(WarshipDependencySeeder::class);
+
+        $this->call(MessageSeeder::class);
     }
 }

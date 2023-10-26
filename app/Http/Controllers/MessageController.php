@@ -17,6 +17,7 @@ class MessageController extends Controller
 
         return [
             'messages'       => MessageResource::collection($messages),
+            'messagesNumber' => $messages->total(),
             'messagesUnread' => $messagesUnread
         ];
     }

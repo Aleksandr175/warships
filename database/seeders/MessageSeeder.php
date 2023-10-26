@@ -36,5 +36,13 @@ class MessageSeeder extends Seeder
             'coord_x' => 3,
             'coord_y' => 3,
         ]);
+
+        for ($i = 0; $i < 10; $i++) {
+            Message::create([
+                'user_id' => config('constants.DEFAULT_USER_ID'),
+                'content' => 'Test message',
+                'template_id' => 1,
+            ]);
+        }
     }
 }

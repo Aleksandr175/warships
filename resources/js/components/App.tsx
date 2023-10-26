@@ -19,6 +19,8 @@ import { Logs } from "./Logs/Logs";
 import { Log } from "./Logs/Log";
 import { Icon } from "./Common/Icon";
 import { SAppContainer, SColumn } from "./styles";
+import { Messages } from "./Messages/Messages";
+import { Message } from "./Messages/Message";
 
 const App = () => {
   const {
@@ -160,14 +162,16 @@ const App = () => {
                 <div className={"col-2 text-center"}>
                   <SColumn>
                     <SMessagesWrapper>
-                      <Icon title={"messages"} />
-                      {unreadMessagesNumber && (
-                        <SMessagesNumber>
-                          {unreadMessagesNumber > 9
-                            ? `9+`
-                            : unreadMessagesNumber}
-                        </SMessagesNumber>
-                      )}
+                      <NavLink to={"/messages"}>
+                        <Icon title={"messages"} />
+                        {unreadMessagesNumber && (
+                          <SMessagesNumber>
+                            {unreadMessagesNumber > 9
+                              ? `9+`
+                              : unreadMessagesNumber}
+                          </SMessagesNumber>
+                        )}
+                      </NavLink>
                     </SMessagesWrapper>
                   </SColumn>
                 </div>
@@ -286,6 +290,8 @@ const App = () => {
                       />
                     }
                   />
+                  <Route path={"messages"} element={<Messages />} />
+                  <Route path={"messages/:id"} element={<Message />} />
                 </Routes>
               )}
             </div>
@@ -326,6 +332,7 @@ const SSeparator = styled.div`
 
 const SMessagesWrapper = styled.div`
   position: relative;
+  cursor: pointer;
 `;
 
 const SMessagesNumber = styled.div`

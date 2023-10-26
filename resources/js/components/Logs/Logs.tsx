@@ -69,7 +69,7 @@ export const Logs = ({ dictionary, userId }: IProps) => {
 
       {logs.map((log) => {
         return (
-          <>
+          <div key={log.battleLogId}>
             <div className={"row"}>
               <div className={"col-3"}>
                 {dayjs(log.date).format("DD MMM, YYYY HH:mm:ss")}
@@ -86,7 +86,7 @@ export const Logs = ({ dictionary, userId }: IProps) => {
             <NavLink to={"/logs/" + log.battleLogId}>Show</NavLink>
 
             <hr />
-          </>
+          </div>
         );
       })}
 

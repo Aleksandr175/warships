@@ -57,6 +57,8 @@ class UserController extends Controller
         $fleetTasksDictionary    = FleetTaskDictionary::get();
         $fleetStatusesDictionary = FleetStatusDictionary::get();
 
+        $unreadMessagesNumber = $user->unreadMessagesNumber();
+
         return [
             'buildings'               => BuildingDictionaryResource::collection($buildings),
             'buildingResources'       => BuildingResourceResource::collection($buildingResources),
@@ -70,6 +72,7 @@ class UserController extends Controller
             'buildingDependencies'    => BuildingDependencyResource::collection($buildingDependencies),
             'researchDependencies'    => ResearchDependencyResource::collection($researchDependencies),
             'warshipDependencies'     => WarshipDependencyResource::collection($warshipDependencies),
+            'unreadMessagesNumber'    => $unreadMessagesNumber
         ];
     }
 }

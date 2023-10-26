@@ -35,6 +35,7 @@ export const useAppLogic = () => {
   const [queueWarship, setQueueWarship] = useState<ICityWarshipQueue[]>();
   const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
   const [userId, setUserId] = useState<number>();
+  const [unreadMessagesNumber, setUnreadMessagesNumber] = useState<number>(0);
 
   const setWebsockets = (userId: number): void => {
     // @ts-ignore
@@ -86,6 +87,7 @@ export const useAppLogic = () => {
         setCities(response.data.data.cities);
         setDictionaries(respDictionary.data);
         setUserId(response.data.data.userId);
+        setUnreadMessagesNumber(respDictionary.data.unreadMessagesNumber);
 
         setWebsockets(response.data.data.userId);
         setIsLoading(false);
@@ -238,5 +240,6 @@ export const useAppLogic = () => {
     userId,
     getResearches,
     logout,
+    unreadMessagesNumber,
   };
 };

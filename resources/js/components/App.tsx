@@ -49,6 +49,7 @@ const App = () => {
     dictionaries,
     userId,
     logout,
+    unreadMessagesNumber,
   } = useAppLogic();
 
   if (isLoading) {
@@ -158,7 +159,16 @@ const App = () => {
                 </div>
                 <div className={"col-2 text-center"}>
                   <SColumn>
-                    <Icon title={"messages"} />
+                    <SMessagesWrapper>
+                      <Icon title={"messages"} />
+                      {unreadMessagesNumber && (
+                        <SMessagesNumber>
+                          {unreadMessagesNumber > 9
+                            ? `9+`
+                            : unreadMessagesNumber}
+                        </SMessagesNumber>
+                      )}
+                    </SMessagesWrapper>
                   </SColumn>
                 </div>
               </div>
@@ -312,4 +322,23 @@ const SSeparator = styled.div`
   background: black;
   opacity: 0.2;
   margin: 10px 10px;
+`;
+
+const SMessagesWrapper = styled.div`
+  position: relative;
+`;
+
+const SMessagesNumber = styled.div`
+  border-radius: 50%;
+  background-color: #6f4ca4;
+  font-size: 12px;
+  width: 24px;
+  height: 24px;
+  color: white;
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

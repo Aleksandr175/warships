@@ -282,12 +282,8 @@ class FleetService
                         'content' => 'Merchant fleet starts trading.',
                         'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_START_TRADING'),
                         'event_type' => 'Fleet',
-                        'archipelago_id' => $city->archipelago_id,
-                        'coord_x' => $city->coord_x,
-                        'coord_y' => $city->coord_y,
-                        'destination_archipelago_id' => $targetCity->archipelago_id,
-                        'destination_coord_x' => $targetCity->coord_x,
-                        'destination_coord_y' => $targetCity->coord_y,
+                        'city_id' => $city->id,
+                        'target_city_id' => $targetCity->id,
                     ]);
 
                     if ($city->user_id === $targetCity->user_id) {
@@ -330,12 +326,8 @@ class FleetService
                         'gold' => $fleet->gold,
                         'population' => $fleet->population,
                         'event_type' => 'Fleet',
-                        'archipelago_id' => $targetCity->archipelago_id,
-                        'coord_x' => $targetCity->coord_x,
-                        'coord_y' => $targetCity->coord_y,
-                        'destination_archipelago_id' => $city->archipelago_id,
-                        'destination_coord_x' => $city->coord_x,
-                        'destination_coord_y' => $city->coord_y,
+                        'city_id' => $targetCity->id,
+                        'target_city_id' => $city->id,
                     ]);
 
                     if ($fleet->repeating) {
@@ -376,12 +368,8 @@ class FleetService
                             'gold' => $fleet->gold,
                             'population' => $fleet->population,
                             'event_type' => 'Fleet',
-                            'archipelago_id' => $city->archipelago_id,
-                            'coord_x' => $city->coord_x,
-                            'coord_y' => $city->coord_y,
-                            'destination_archipelago_id' => $targetCity->archipelago_id,
-                            'destination_coord_x' => $targetCity->coord_x,
-                            'destination_coord_y' => $targetCity->coord_y,
+                            'city_id' => $city->id,
+                            'target_city_id' => $targetCity->id,
                         ]);
                     } else {
                         dump('move: fleet is returning to original island');
@@ -398,12 +386,8 @@ class FleetService
                             'gold' => $fleet->gold,
                             'population' => $fleet->population,
                             'event_type' => 'Fleet',
-                            'archipelago_id' => $city->archipelago_id,
-                            'coord_x' => $city->coord_x,
-                            'coord_y' => $city->coord_y,
-                            'destination_archipelago_id' => $targetCity->archipelago_id,
-                            'destination_coord_x' => $targetCity->coord_x,
-                            'destination_coord_y' => $targetCity->coord_y,
+                            'city_id' => $city->id,
+                            'target_city_id' => $targetCity->id,
                         ]);
                     }
 
@@ -426,12 +410,8 @@ class FleetService
                         'gold' => $fleet->gold,
                         'population' => $fleet->population,
                         'event_type' => 'Fleet',
-                        'archipelago_id' => $targetCity->archipelago_id,
-                        'coord_x' => $targetCity->coord_x,
-                        'coord_y' => $targetCity->coord_y,
-                        'destination_archipelago_id' => $city->archipelago_id,
-                        'destination_coord_x' => $city->coord_x,
-                        'destination_coord_y' => $city->coord_y,
+                        'city_id' => $targetCity->id,
+                        'target_city_id' => $city->id,
                     ]);
                 }
             }

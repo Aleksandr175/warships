@@ -21,7 +21,7 @@ class MessageSeeder extends Seeder
 
         Message::create([
             'user_id' => config('constants.DEFAULT_USER_ID'),
-            'content' => 'Pirates attacked your island at archipelago_id: 1, coord_x: 3, coord_y: 3.',
+            'content' => 'Pirates attacked your island.',
             'event_type' => 'Pirate Attack',
             'archipelago_id' => 1,
             'coord_x' => 3,

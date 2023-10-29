@@ -23,9 +23,8 @@ return new class extends Migration
             $table->integer('coord_x')->nullable();
             $table->integer('coord_y')->nullable();
 
-            $table->unsignedBigInteger('destination_archipelago_id')->nullable();
-            $table->integer('destination_coord_x')->nullable();
-            $table->integer('destination_coord_y')->nullable();
+            $table->integer('city_id')->nullable();
+            $table->integer('target_city_id')->nullable();
 
             $table->integer('gold')->nullable();
             $table->integer('population')->nullable();

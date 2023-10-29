@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Jobs\BattleJob;
+use App\Jobs\ExpeditionJob;
 use App\Jobs\FleetJob;
 use App\Jobs\PirateJob;
 use App\Jobs\ResourceJob;
@@ -48,6 +50,16 @@ class AppServiceProvider extends ServiceProvider
             if ($event->job->getQueue() === 'pirateLogic') {
                 sleep(1);
                 PirateJob::dispatch()->onQueue('pirateLogic');
+            }
+
+            if ($event->job->getQueue() === 'battle') {
+                sleep(1);
+                BattleJob::dispatch()->onQueue('battle');
+            }
+
+            if ($event->job->getQueue() === 'expedition') {
+                sleep(1);
+                ExpeditionJob::dispatch()->onQueue('expedition');
             }
         });
     }

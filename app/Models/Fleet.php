@@ -49,12 +49,12 @@ class Fleet extends Model
 
     public function isTrasnsportTask()
     {
-        return $this->fleet_task_id === config('constants.FLEET_TASKS.ATTACK');
+        return $this->fleet_task_id === config('constants.FLEET_TASKS.TRANSPORT');
     }
 
     public function isAttackTask()
     {
-        return $this->fleet_task_id === config('constants.FLEET_TASKS.TRANSPORT');
+        return $this->fleet_task_id === config('constants.FLEET_TASKS.ATTACK');
     }
 
     public function isExpeditionTask()

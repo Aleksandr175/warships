@@ -12,7 +12,7 @@ class MessageController extends Controller
     {
         $user = Auth::user();
 
-        $messages       = Message::where('user_id', $user->id)->paginate(10);
+        $messages       = Message::where('user_id', $user->id)->orderBy('id', 'desc')->paginate(10);
         $messagesUnread = Message::where('user_id', $user->id)->where('is_read', 0)->count();
 
         return [

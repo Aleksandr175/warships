@@ -54,15 +54,15 @@ return [
         'TRADING'               => 2,
         'TRADE_GOING_BACK'      => 3,
 
-        'MOVING_GOING_TO_TARGET' => 1,
-        'MOVING_GOING_BACK'      => 3,
+        'MOVING_GOING_TO_TARGET' => 10,
+        'MOVING_GOING_BACK'      => 11,
 
-        'TRANSPORT_GOING_TO_TARGET' => 1,
-        'TRANSPORT_GOING_BACK'      => 3,
+        'TRANSPORT_GOING_TO_TARGET' => 21,
+        'TRANSPORT_GOING_BACK'      => 22,
 
-        'ATTACK_GOING_TO_TARGET' => 1,
-        'ATTACK_GOING_BACK'      => 3,
-        'ATTACK_IN_PROGRESS'     => 4,
+        'ATTACK_GOING_TO_TARGET' => 30,
+        'ATTACK_GOING_BACK'      => 31,
+        'ATTACK_IN_PROGRESS'     => 32,
 
         'EXPEDITION_GOING_TO_TARGET' => 40,
         'EXPEDITION_IN_PROGRESS'     => 42,
@@ -82,5 +82,8 @@ return [
         'FLEET_EXPEDITION_STORM'     => 7,
         'FLEET_EXPEDITION_LOST'      => 8,
         'FLEET_EXPEDITION_NOTHING'   => 9,
+
+        'BATTLE_ATTACK_HAPPENED' => 100,
+        'BATTLE_DEFEND_HAPPENED' => 101,
     ]
 ];

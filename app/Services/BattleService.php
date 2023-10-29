@@ -8,6 +8,7 @@ use App\Models\City;
 use App\Models\CityDictionary;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
+use App\Models\Message;
 use App\Models\WarshipDictionary;
 
 class BattleService
@@ -67,10 +68,8 @@ class BattleService
 
         // calculate rounds while we have warships on each side
         do {
-            $attackingForce = 0;
-            $defendingForce = 0;
-
             $attackingForce = $this->calculateFleetAttack($attackingFleetDetails, $warshipsDictionary);
+            // TODO: add Fortress attack value
             $defendingForce = $this->calculateFleetAttack($attackingFleetDetails, $warshipsDictionary);
 
             $attackingDamageToEachType = $attackingForce / count($defendingWarships);
@@ -194,12 +193,41 @@ class BattleService
             }
         }
 
+        // for attacker
+        Message::create([
+            'user_id' => $userId,
+            'content' => 'Battle happened.',
+            'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_ATTACK_HAPPENED'),
+            'event_type' => 'Battle',
+            'archipelago_id' => $city->archipelago_id,
+            'coord_x' => $city->coord_x,
+            'coord_y' => $city->coord_y,
+            'destination_archipelago_id' => $targetCity->archipelago_id,
+            'destination_coord_x' => $targetCity->coord_x,
+            'destination_coord_y' => $targetCity->coord_y,
+            'battle_log_id' => $newBattleLogId
+        ]);
 
-        // TODO: notify user about result somehow
+        // for defender
+        Message::create([
+            'user_id' => $targetCityUserId,
+            'content' => 'Battle happened.',
+            'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_DEFEND_HAPPENED'),
+            'event_type' => 'Battle',
+            'archipelago_id' => $targetCity->archipelago_id,
+            'coord_x' => $targetCity->coord_x,
+            'coord_y' => $targetCity->coord_y,
+            'destination_archipelago_id' => $city->archipelago_id,
+            'destination_coord_x' => $city->coord_x,
+            'destination_coord_y' => $city->coord_y,
+        ]);
+
+
+        // TODO: notify user about result somehow (websockets)?
         // ...
-        // ...
 
 
+        // do i need it? i dont think so
         if ($targetCity->city_dictionary_id === CityDictionary::PLAYERS_ISLAND) {
             // TODO if we attack player's island
             // get warships in target island

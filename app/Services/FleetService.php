@@ -13,6 +13,7 @@ use App\Models\City;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
 use App\Models\FleetTaskDictionary;
+use App\Models\Message;
 use App\Models\User;
 use App\Models\Warship;
 use App\Models\WarshipDictionary;
@@ -276,6 +277,19 @@ class FleetService
                     $city       = City::find($fleet->city_id);
                     $targetCity = City::find($fleet->target_city_id);
 
+                    Message::create([
+                        'user_id' => $city->user_id,
+                        'content' => 'Merchant fleet starts trading.',
+                        'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_START_TRADING'),
+                        'event_type' => 'Fleet',
+                        'archipelago_id' => $city->archipelago_id,
+                        'coord_x' => $city->coord_x,
+                        'coord_y' => $city->coord_y,
+                        'destination_archipelago_id' => $targetCity->archipelago_id,
+                        'destination_coord_x' => $targetCity->coord_x,
+                        'destination_coord_y' => $targetCity->coord_y,
+                    ]);
+
                     if ($city->user_id === $targetCity->user_id) {
                         // send fleet back because we cant trade with ourselves
                         $statusId  = config('constants.FLEET_STATUSES.TRADE_GOING_BACK');
@@ -309,6 +323,21 @@ class FleetService
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
                     $city->increment('gold', $fleet->gold);
 
+                    Message::create([
+                        'user_id' => $city->user_id,
+                        'content' => 'Merchant fleet is back, it brought.',
+                        'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_IS_BACK'),
+                        'gold' => $fleet->gold,
+                        'population' => $fleet->population,
+                        'event_type' => 'Fleet',
+                        'archipelago_id' => $targetCity->archipelago_id,
+                        'coord_x' => $targetCity->coord_x,
+                        'coord_y' => $targetCity->coord_y,
+                        'destination_archipelago_id' => $city->archipelago_id,
+                        'destination_coord_x' => $city->coord_x,
+                        'destination_coord_y' => $city->coord_y,
+                    ]);
+
                     if ($fleet->repeating) {
                         dump('trade: fleet repeats trade task, going to target');
                         // just repeat task
@@ -339,6 +368,21 @@ class FleetService
                         $this->convertFleetDetailsToWarships($fleetDetails, $targetCity);
 
                         $shouldDeleteFleet = true;
+
+                        Message::create([
+                            'user_id' => $city->user_id,
+                            'content' => 'Fleet moved to island.',
+                            'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_DONE'),
+                            'gold' => $fleet->gold,
+                            'population' => $fleet->population,
+                            'event_type' => 'Fleet',
+                            'archipelago_id' => $city->archipelago_id,
+                            'coord_x' => $city->coord_x,
+                            'coord_y' => $city->coord_y,
+                            'destination_archipelago_id' => $targetCity->archipelago_id,
+                            'destination_coord_x' => $targetCity->coord_x,
+                            'destination_coord_y' => $targetCity->coord_y,
+                        ]);
                     } else {
                         dump('move: fleet is returning to original island');
                         // return fleet back
@@ -346,6 +390,21 @@ class FleetService
                         // TODO: calculate distance and secs
                         $deadline  = Carbon::create($fleet->deadline)->addSecond(10);
                         $repeating = 0;
+
+                        Message::create([
+                            'user_id' => $city->user_id,
+                            'content' => 'Fleet can not be moved to island.',
+                            'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_CANT'),
+                            'gold' => $fleet->gold,
+                            'population' => $fleet->population,
+                            'event_type' => 'Fleet',
+                            'archipelago_id' => $city->archipelago_id,
+                            'coord_x' => $city->coord_x,
+                            'coord_y' => $city->coord_y,
+                            'destination_archipelago_id' => $targetCity->archipelago_id,
+                            'destination_coord_x' => $targetCity->coord_x,
+                            'destination_coord_y' => $targetCity->coord_y,
+                        ]);
                     }
 
                 }
@@ -359,6 +418,21 @@ class FleetService
                     $this->convertFleetDetailsToWarships($fleetDetails, $city);
 
                     $shouldDeleteFleet = true;
+
+                    Message::create([
+                        'user_id' => $city->user_id,
+                        'content' => 'Fleet returned to island.',
+                        'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_WENT_BACK'),
+                        'gold' => $fleet->gold,
+                        'population' => $fleet->population,
+                        'event_type' => 'Fleet',
+                        'archipelago_id' => $targetCity->archipelago_id,
+                        'coord_x' => $targetCity->coord_x,
+                        'coord_y' => $targetCity->coord_y,
+                        'destination_archipelago_id' => $city->archipelago_id,
+                        'destination_coord_x' => $city->coord_x,
+                        'destination_coord_y' => $city->coord_y,
+                    ]);
                 }
             }
 
@@ -397,7 +471,7 @@ class FleetService
                     $deadline = Carbon::create($fleet->deadline)->addSecond(15);
                 }
 
-                if ($fleet->isExpeditionInProgress()) {
+                if ($fleet->isExpeditionDone()) {
                     dump('expedition: fleet completed expedition, we got something');
                     $statusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_BACK');
 

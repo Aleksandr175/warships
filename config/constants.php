@@ -1,7 +1,7 @@
 <?php
 return [
-    'DEFAULT_PIRATE_ID' => 1,
-    'DEFAULT_PIRATE_CITY_ID'   => 212,
+    'DEFAULT_PIRATE_ID'      => 1,
+    'DEFAULT_PIRATE_CITY_ID' => 212,
 
     'DEFAULT_USER_ID' => 5,
 
@@ -12,9 +12,9 @@ return [
     'DEFAULT_USER_2_CITY_ID' => 12,
 
     'CITY_TYPE_ID' => [
-        'ISLAND' => 1,
+        'ISLAND'     => 1,
         'PIRATE_BAY' => 2,
-        'COLONY' => 3,
+        'COLONY'     => 3,
     ],
 
     'BUILDINGS'  => [
@@ -66,6 +66,21 @@ return [
 
         'EXPEDITION_GOING_TO_TARGET' => 40,
         'EXPEDITION_IN_PROGRESS'     => 42,
+        'EXPEDITION_DONE'            => 43,
         'EXPEDITION_GOING_BACK'      => 41,
+    ],
+
+    'MESSAGE_TEMPLATE_IDS' => [
+        'FLEET_TRADE_START_TRADING' => 1,
+        'FLEET_TRADE_IS_BACK'       => 2,
+
+        'FLEET_MOVE_DONE'      => 3,
+        'FLEET_MOVE_CANT'      => 4,
+        'FLEET_MOVE_WENT_BACK' => 5,
+
+        'FLEET_EXPEDITION_RESOURCES' => 6,
+        'FLEET_EXPEDITION_STORM'     => 7,
+        'FLEET_EXPEDITION_LOST'      => 8,
+        'FLEET_EXPEDITION_NOTHING'   => 9,
     ]
 ];

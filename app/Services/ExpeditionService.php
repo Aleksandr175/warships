@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\City;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
+use App\Models\Message;
+use App\Models\User;
 use App\Models\WarshipDictionary;
 
 class ExpeditionService
@@ -16,22 +19,43 @@ class ExpeditionService
 
         $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
 
+        $isDestroyed = false;
+
         if ($randomNumber <= 75) {
             // 75% chance: Gain resources
             $this->gainResources($fleet, $fleetDetails);
         } elseif ($randomNumber <= 76) {
             // 1% chance: Lose the entire fleet
             $this->loseEntireFleet($fleet, $fleetDetails);
+            $isDestroyed = true;
         } elseif ($randomNumber <= 80) {
             // 4% chance: A storm damages 20% of the fleet
             $this->handleStormDamage($fleet, $fleetDetails);
         } else {
             // 20% chance: Nothing happens
             // Continue with the expedition without any changes
-            // TODO: add message about nothing
+
+            $city = City::find($fleet->city_id);
+            $user = User::find($city->user_id);
+
+            Message::create([
+                'user_id' => $user->id,
+                'content' => 'Expedition Fleet found nothing.',
+                'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_NOTHING'),
+                'event_type' => 'Expedition',
+                'archipelago_id' => $city->archipelago_id,
+                'coord_x' => $city->coord_x,
+                'coord_y' => $city->coord_y,
+            ]);
         }
 
-        // TODO: change fleet status if fleet exist
+        if (!$isDestroyed) {
+            $statusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_BACK');
+
+            $fleet->update([
+                'status_id' => $statusId,
+            ]);
+        }
     }
 
     public function gainResources(Fleet $fleet, $fleetDetails): void {
@@ -47,6 +71,20 @@ class ExpeditionService
             $fleet->increment('gold', $goldAmount);
 
             dump('gain resources', $goldAmount);
+
+            $city = City::find($fleet->city_id);
+            $user = User::find($city->user_id);
+
+            Message::create([
+                'user_id' => $user->id,
+                'content' => 'Expedition Fleet found resources.',
+                'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_RESOURCES'),
+                'gold' => $goldAmount,
+                'event_type' => 'Expedition',
+                'archipelago_id' => $city->archipelago_id,
+                'coord_x' => $city->coord_x,
+                'coord_y' => $city->coord_y,
+            ]);
         }
     }
 
@@ -56,6 +94,20 @@ class ExpeditionService
         foreach ($fleetDetails as $fleetDetail) {
             $fleetDetail->delete();
         }
+
+        $city = City::find($fleet->city_id);
+        $user = User::find($city->user_id);
+
+        Message::create([
+            'user_id' => $user->id,
+            'content' => 'Expedition Fleet was lost.',
+            'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_LOST'),
+            'event_type' => 'Expedition',
+            'archipelago_id' => $city->archipelago_id,
+            'coord_x' => $city->coord_x,
+            'coord_y' => $city->coord_y,
+        ]);
+
 
         dump('delete fleet');
     }
@@ -69,9 +121,32 @@ class ExpeditionService
             }
         }
 
+        $city = City::find($fleet->city_id);
+        $user = User::find($city->user_id);
+
         if (!count($fleetDetails)) {
-            // TODO: add message that fleet has been destroyed completely
             $fleet->delete();
+
+            Message::create([
+                'user_id' => $user->id,
+                'content' => 'Expedition Fleet was lost.',
+                'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_LOST'),
+                'event_type' => 'Expedition',
+                'archipelago_id' => $city->archipelago_id,
+                'coord_x' => $city->coord_x,
+                'coord_y' => $city->coord_y,
+            ]);
+        } else {
+            // TODO: add info about damaged warships
+            Message::create([
+                'user_id' => $user->id,
+                'content' => 'Expedition Fleet was caught in a storm. Some warships have been destroyed',
+                'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_STORM'),
+                'event_type' => 'Expedition',
+                'archipelago_id' => $city->archipelago_id,
+                'coord_x' => $city->coord_x,
+                'coord_y' => $city->coord_y,
+            ]);
         }
 
         dump('handle storm damage');

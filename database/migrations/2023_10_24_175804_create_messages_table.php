@@ -22,6 +22,14 @@ return new class extends Migration
             $table->unsignedBigInteger('archipelago_id')->nullable();
             $table->integer('coord_x')->nullable();
             $table->integer('coord_y')->nullable();
+
+            $table->unsignedBigInteger('destination_archipelago_id')->nullable();
+            $table->integer('destination_coord_x')->nullable();
+            $table->integer('destination_coord_y')->nullable();
+
+            $table->integer('gold')->nullable();
+            $table->integer('population')->nullable();
+
             $table->unsignedBigInteger('battle_log_id')->nullable();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

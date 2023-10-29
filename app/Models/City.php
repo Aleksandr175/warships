@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $user_id
  * @property integer $city_dictionary_id
  * @property string  $title
+ * @property integer $archipelago_id
  * @property integer $coord_x
  * @property integer $coord_y
  * @property integer $gold

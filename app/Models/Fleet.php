@@ -122,6 +122,12 @@ class Fleet extends Model
         return $this->isExpeditionTask() && $this->status_id === config('constants.FLEET_STATUSES.EXPEDITION_IN_PROGRESS');
     }
 
+    public function isExpeditionDone()
+    {
+        return $this->isExpeditionTask() && $this->status_id === config('constants.FLEET_STATUSES.EXPEDITION_DONE');
+    }
+
+
     public function isExpeditionGoingBack()
     {
         return $this->isExpeditionTask() && $this->status_id === config('constants.FLEET_STATUSES.EXPEDITION_GOING_BACK');

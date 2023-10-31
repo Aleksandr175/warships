@@ -2,11 +2,10 @@
 
 namespace App\Jobs;
 
-use App\Models\BuildingProduction;
-use App\Models\City;
+use App\Models\CityBuildingQueue;
+use App\Services\BuildingQueueService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -16,16 +15,14 @@ class BuildJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $data;
-
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($data)
+    public function __construct()
     {
-        $this->data = $data;
+        //
     }
 
     /**
@@ -35,35 +32,12 @@ class BuildJob implements ShouldQueue
      */
     public function handle()
     {
-        $cityId = $this->data['cityId'];
-        $buildingId = $this->data['buildingId'];
+        // TODO add limit?
+        $cityBuildingQueue = CityBuildingQueue::where('deadline', '<', Carbon::now())->get();
+        $buildingService   = new BuildingQueueService();
 
-        $city = City::find($cityId);
-
-        $buildingQueue = $city->buildingQueue()->first();
-
-        if ($buildingQueue && $buildingQueue->id) {
-            if ($buildingQueue->deadline <= Carbon::now()) {
-                // add lvl
-                if ($city->building($buildingQueue->building_id)) {
-                    $city->building($buildingQueue->building_id)->increment('lvl');
-                } else {
-                    // create new building
-                    $city->buildings()->create([
-                        'building_id' => $buildingId,
-                        'city_id' => $cityId,
-                        'lvl' => 1,
-                    ]);
-                }
-
-                if ($buildingQueue->building_id === config('constants.BUILDINGS.HOUSES')) {
-                    $additionalPopulation = BuildingProduction::where('lvl', $buildingQueue->lvl)->where('resource', 'population')->first();
-
-                    $city->increment('population', $additionalPopulation->qty);
-                }
-
-                $city->buildingQueue()->delete();
-            }
+        foreach ($cityBuildingQueue as $buildingQueue) {
+            $buildingService->handle($buildingQueue);
         }
     }
 }

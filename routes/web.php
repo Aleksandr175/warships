@@ -32,6 +32,7 @@ Route::get('/test-event', [\App\Http\Controllers\TestController::class, 'index']
 Route::get('/server-start', function () {
     \App\Jobs\ResourceJob::dispatch()->onQueue('resource');
     \App\Jobs\WarshipQueueJob::dispatch()->onQueue('warshipQueue');
+    \App\Jobs\BuildJob::dispatch()->onQueue('buildingQueue');
     \App\Jobs\FleetJob::dispatch()->onQueue('fleet');
     \App\Jobs\PirateJob::dispatch()->onQueue('pirateLogic');
     \App\Jobs\BattleJob::dispatch()->onQueue('battle');

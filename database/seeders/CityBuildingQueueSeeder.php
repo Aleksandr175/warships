@@ -3,10 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Building;
-use App\Models\BuildingResource;
-use App\Models\CityBuildingQueue;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class CityBuildingQueueSeeder extends Seeder
@@ -24,7 +21,7 @@ class CityBuildingQueueSeeder extends Seeder
 
         $nextLvl = 1;
 
-        $cityBuilding = $city->buildings()->where('id', $buildingMine->id)->first();
+        /*$cityBuilding = $city->buildings()->where('id', $buildingMine->id)->first();
 
         if ($cityBuilding && $cityBuilding->id) {
             $nextLvl = $cityBuilding->lvl + 1;
@@ -44,6 +41,6 @@ class CityBuildingQueueSeeder extends Seeder
                 'time'        => $time,
                 'deadline'    => Carbon::now()->addSeconds($time)
             ]);
-        }
+        }*/
     }
 }

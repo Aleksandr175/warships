@@ -321,7 +321,7 @@ class FleetService
 
                     Message::create([
                         'user_id' => $city->user_id,
-                        'content' => 'Merchant fleet is back, it brought.',
+                        'content' => 'Merchant fleet is back.',
                         'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_IS_BACK'),
                         'gold' => $fleet->gold,
                         'population' => $fleet->population,

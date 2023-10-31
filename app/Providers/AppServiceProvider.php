@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Jobs\BattleJob;
+use App\Jobs\BuildJob;
 use App\Jobs\ExpeditionJob;
 use App\Jobs\FleetJob;
 use App\Jobs\PirateJob;
@@ -40,6 +41,11 @@ class AppServiceProvider extends ServiceProvider
             if ($event->job->getQueue() === 'warshipQueue') {
                 sleep(1);
                 WarshipQueueJob::dispatch()->onQueue('warshipQueue');
+            }
+
+            if ($event->job->getQueue() === 'buildingQueue') {
+                sleep(1);
+                BuildJob::dispatch()->onQueue('buildingQueue');
             }
 
             if ($event->job->getQueue() === 'fleet') {

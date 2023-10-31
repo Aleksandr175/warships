@@ -3,9 +3,10 @@
 namespace App\Services;
 
 use App\Http\Requests\Api\BuildRequest;
-use App\Jobs\BuildJob;
 use App\Models\BuildingDependency;
+use App\Models\BuildingProduction;
 use App\Models\BuildingResource;
+use App\Models\City;
 use App\Models\CityBuildingQueue;
 use App\Models\Research;
 use Carbon\Carbon;
@@ -16,6 +17,34 @@ class BuildingQueueService
     protected $buildingId;
     protected $city;
     protected $nextLvl = 1;
+
+    public function handle(CityBuildingQueue $buildingQueue): void
+    {
+        $cityId     = $buildingQueue['city_id'];
+        $buildingId = $buildingQueue['building_id'];
+
+        $city = City::find($cityId);
+
+        // add lvl
+        if ($city->building($buildingId)) {
+            $city->building($buildingId)->increment('lvl');
+        } else {
+            // create new building
+            $city->buildings()->create([
+                'building_id' => $buildingId,
+                'city_id'     => $cityId,
+                'lvl'         => 1,
+            ]);
+        }
+
+        if ($buildingId === config('constants.BUILDINGS.HOUSES')) {
+            $additionalPopulation = BuildingProduction::where('lvl', $buildingQueue->lvl)->where('resource', 'population')->first();
+
+            $city->increment('population', $additionalPopulation->qty);
+        }
+
+        $city->buildingQueue()->delete();
+    }
 
     public function canBuild($city, $buildingId): bool
     {
@@ -93,17 +122,7 @@ class BuildingQueueService
         $this->city       = $city;
 
         if ($this->city && $this->city->id && $this->canBuild($this->city, $buildingId)) {
-            $queue = $this->updateQueue();
-
-            BuildJob::dispatch([
-                'cityId'     => $this->city->id,
-                'buildingId' => $buildingId,
-                'userId'     => $this->userId,
-                'gold'       => $queue->gold,
-                'population' => $queue->population,
-            ])->delay(now()->addSeconds($queue->time));
-
-            return $queue;
+            return $this->updateQueue();
         }
 
         return abort(403);

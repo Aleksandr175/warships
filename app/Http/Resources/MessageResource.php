@@ -25,7 +25,7 @@ class MessageResource extends JsonResource
             "coordX"        => $this->coord_x,
             "coordY"        => $this->coord_y,
             "battleLogId"   => $this->battle_log_id,
-            "createaAt"     => $this->created_at
+            "createdAt"     => $this->created_at
         ];
     }
 }

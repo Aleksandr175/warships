@@ -6,8 +6,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 /**
- * @package App\Models
+ * @property integer $id
+ * @property integer $template_id
+ * @property string $content
+ * @property string $createdAt
+ *
  * @mixin Builder
  */
 class Message extends Model

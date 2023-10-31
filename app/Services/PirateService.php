@@ -69,7 +69,6 @@ class PirateService
                 // Find the most expensive warship based on both gold and population costs
                 $mostExpensiveWarship = WarshipDictionary::find(4); // frigate
 
-                dump($city->gold, $city->population, $mostExpensiveWarship->gold, $mostExpensiveWarship->population);
                 // Check if you have more resources (both gold and population) than required for the most expensive warship
                 if (
                     $city->gold >= $mostExpensiveWarship->gold &&

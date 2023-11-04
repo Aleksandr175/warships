@@ -12,8 +12,7 @@ services:
         ports:
             - '${APP_PORT:-80}:80'
             #- '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
-            - '${LARAVEL_WEBSOCKETS_PORT:-6001}:6001'
-            #- '6001:6001'
+            - '${LARAVEL_WEBSOCKETS_PORT:-6001}:${LARAVEL_WEBSOCKETS_PORT:-6001}'
         environment:
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1
@@ -26,10 +25,27 @@ services:
             - sail
         depends_on:
             - mysql
-            - redis
-            - meilisearch
+            #- redis
+            #- meilisearch
             - mailpit
             - selenium
+    #websocket:
+    #    build:
+    #        context: ./docker/8.2
+    #        target: laravel.test
+    #        args:
+    #            WWWGROUP: '${WWWGROUP}'
+    #    environment:
+    #        WWWUSER: '${WWWUSER}'
+    #        CONTAINER_ROLE: websocket
+    #    working_dir: '/var/www/html'
+    #    volumes:
+    #        - '.:/var/www/html'
+    #    ports:
+    #        - '6001:6001'
+    #    depends_on:
+    #        - mysql
+    #        - redis
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -54,38 +70,38 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
-    redis:
-        image: 'redis:alpine'
-        ports:
-            - '${FORWARD_REDIS_PORT:-6379}:6379'
-        volumes:
-            - 'sail-redis:/data'
-        networks:
-            - sail
-        healthcheck:
-            test:
-                - CMD
-                - redis-cli
-                - ping
-            retries: 3
-            timeout: 5s
-    meilisearch:
-        image: 'getmeili/meilisearch:latest'
-        ports:
-            - '${FORWARD_MEILISEARCH_PORT:-7700}:7700'
-        volumes:
-            - 'sail-meilisearch:/meili_data'
-        networks:
-            - sail
-        healthcheck:
-            test:
-                - CMD
-                - wget
-                - '--no-verbose'
-                - '--spider'
-                - 'http://localhost:7700/health'
-            retries: 3
-            timeout: 5s
+    #redis:
+    #    image: 'redis:alpine'
+    #    ports:
+    #        - '${FORWARD_REDIS_PORT:-6379}:6379'
+    #    volumes:
+    #        - 'sail-redis:/data'
+    #    networks:
+    #        - sail
+    #    healthcheck:
+    #        test:
+    #            - CMD
+    #            - redis-cli
+    #            - ping
+    #        retries: 3
+    #        timeout: 5s
+    #meilisearch:
+    #    image: 'getmeili/meilisearch:latest'
+    #    ports:
+    #        - '${FORWARD_MEILISEARCH_PORT:-7700}:7700'
+    #    volumes:
+    #        - 'sail-meilisearch:/meili_data'
+    #    networks:
+    #        - sail
+    #    healthcheck:
+    #        test:
+    #            - CMD
+    #            - wget
+    #            - '--no-verbose'
+    #            - '--spider'
+    #            - 'http://localhost:7700/health'
+    #        retries: 3
+    #        timeout: 5s
     mailpit:
         image: 'axllent/mailpit:latest'
         ports:
@@ -110,6 +126,25 @@ services:
         volumes:
             - '.:/var/www/html'
         command: php artisan queue:listen --queue=resource
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            IGNITION_LOCAL_SITES_PATH: '${PWD}'
+            DB_HOST: mysql
+            # Add other environment variables as needed
+        networks:
+            - sail
+    job-listener-city-building-queue:
+        build:
+            context: ./docker/8.2
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        volumes:
+            - '.:/var/www/html'
+        command: php artisan queue:listen --queue=buildingQueue
         environment:
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1
@@ -240,7 +275,7 @@ networks:
 volumes:
     sail-mysql:
         driver: local
-    sail-redis:
-        driver: local
-    sail-meilisearch:
-        driver: local
+    #sail-redis:
+    #    driver: local
+    #sail-meilisearch:
+    #    driver: local

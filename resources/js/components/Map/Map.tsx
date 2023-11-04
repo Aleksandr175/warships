@@ -73,16 +73,16 @@ export const Map = ({ cityId }: IProps) => {
 const SCell = styled.div<{ isHabited?: boolean }>`
   position: relative;
   float: left;
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  height: 140px;
 
   background: url("../../../images/islands/ocean.svg") no-repeat;
   background-size: contain;
 `;
 
 const SCells = styled.div`
-  width: 500px;
-  height: 500px;
+  width: 700px;
+  height: 700px;
 `;
 
 const SIsland = styled.div<{ type?: number }>`

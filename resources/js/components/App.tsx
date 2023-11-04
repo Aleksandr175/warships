@@ -164,7 +164,7 @@ const App = () => {
                     <SMessagesWrapper>
                       <NavLink to={"/messages"}>
                         <Icon title={"messages"} />
-                        {unreadMessagesNumber && (
+                        {unreadMessagesNumber > 0 && (
                           <SMessagesNumber>
                             {unreadMessagesNumber > 9
                               ? `9+`
@@ -225,13 +225,13 @@ const App = () => {
                           population: city.population,
                         }}
                         researches={dictionaries.userResearches}
-                        /*setBuildings={setBuildings}*/
                         setQueue={setQueueResearch}
                         queue={queueResearch}
                         getResearches={getResearches}
                         researchDependencyDictionary={
                           dictionaries.researchDependencies
                         }
+                        buildingsDictionary={dictionaries.buildings}
                       />
                     }
                   />

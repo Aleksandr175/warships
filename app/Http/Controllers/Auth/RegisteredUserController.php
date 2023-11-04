@@ -59,26 +59,23 @@ class RegisteredUserController extends Controller
 
     private function createCity($user): void
     {
-        do {
-            $isCityExist = false;
-            $coordX      = rand(1, 5);
-            $coordY      = rand(1, 5);
-
-            $city = City::where('coord_x', $coordX)->where('coord_y', $coordY)->first();
-
-            if ($city && $city->id) {
-                $isCityExist = true;
-            }
-        } while ($isCityExist);
-
         $archipelago = Archipelago::create();
 
         City::factory(1)->create([
             'user_id'        => $user->id,
             'archipelago_id' => $archipelago->id,
-            'coord_x'        => $coordX,
-            'coord_y'        => $coordY,
+            'coord_x'        => 3,
+            'coord_y'        => 3,
             'title'          => 'Player Island ' . $user->id
+        ]);
+
+        City::factory(1)->create([
+            'city_dictionary_id' => config('constants.CITY_TYPE_ID.PIRATE_BAY'),
+            'user_id'            => null,
+            'archipelago_id'     => $archipelago->id,
+            'coord_x'            => 5,
+            'coord_y'            => 4,
+            'title'              => 'Pirate Bay'
         ]);
     }
 }

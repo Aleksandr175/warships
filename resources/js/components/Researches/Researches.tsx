@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  IBuilding,
   ICityResearchQueue,
   ICityResources,
   IResearch,
@@ -24,6 +25,7 @@ interface IProps {
   setQueue: (q: ICityResearchQueue | undefined) => void;
   getResearches: () => void;
   researchDependencyDictionary: IResearchDependency[];
+  buildingsDictionary: IBuilding[];
 }
 
 export const Researches = ({
@@ -37,6 +39,7 @@ export const Researches = ({
   setQueue,
   getResearches,
   researchDependencyDictionary,
+  buildingsDictionary,
 }: IProps) => {
   const [selectedResearchId, setSelectedResearchId] = useState(0);
   const [timeLeft, setTimeLeft] = useState<number>(0);
@@ -103,6 +106,7 @@ export const Researches = ({
           setQueue={setQueue}
           timeLeft={timeLeft}
           getLvl={getLvl}
+          buildingsDictionary={buildingsDictionary}
         />
       )}
 

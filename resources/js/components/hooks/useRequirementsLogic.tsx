@@ -15,7 +15,7 @@ interface IProps {
     | IWarshipDependency[];
   buildings?: ICityBuilding[] | undefined;
   researches?: IUserResearch[];
-  buildingsDictionary?: IBuilding[] | IResearch[];
+  buildingsDictionary?: IBuilding[];
   researchesDictionary?: IResearch[];
 }
 
@@ -97,6 +97,7 @@ export const useRequirementsLogic = ({
   const getRequiredItem = (
     dependency: IBuildingDependency | IResearchDependency
   ): IBuilding | IResearch | undefined => {
+    console.log(dependency, buildingsDictionary);
     if (dependency.requiredEntity === "building") {
       return buildingsDictionary?.find(
         (item) => item.id === dependency.requiredEntityId

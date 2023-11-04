@@ -4,10 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BuildingResource;
 use App\Http\Resources\CityBuildingQueueResource;
-use App\Http\Resources\BuildingProductionsResource;
-use App\Models\BuildingProduction;
 use App\Models\City;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

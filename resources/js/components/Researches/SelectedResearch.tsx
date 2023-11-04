@@ -6,6 +6,7 @@ import React from "react";
 import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
 import {
+  IBuilding,
   ICityResearchQueue,
   ICityResources,
   IResearch,
@@ -28,6 +29,7 @@ interface IProps {
   researches: IUserResearch[];
   timeLeft: number;
   getLvl: (buildingId: number) => number;
+  buildingsDictionary: IBuilding[];
 }
 
 export const SelectedResearch = ({
@@ -43,6 +45,7 @@ export const SelectedResearch = ({
   researchesDictionary,
   timeLeft,
   getLvl,
+  buildingsDictionary,
 }: IProps) => {
   const selectedResearch = getResearch(selectedResearchId)!;
   const lvl = getLvl(selectedResearchId);
@@ -85,6 +88,7 @@ export const SelectedResearch = ({
     getRequiredItem,
   } = useRequirementsLogic({
     dependencyDictionary: researchDependencyDictionary,
+    buildingsDictionary,
     researchesDictionary,
     researches,
   });

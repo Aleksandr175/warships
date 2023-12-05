@@ -12,13 +12,10 @@ export const convertSecondsToTime = (seconds: number): string => {
   return `${paddedMinutes}:${paddedSeconds}`;
 };
 
-export const getTimeLeft = (strDeadline: string): number => {
-  const dateUTCNow = dayjs.utc(new Date());
-  const deadline = dayjs(new Date(strDeadline || ""));
+// return time difference between two dates in seconds
+export const getTimeLeft = (strDeadline: string) => {
+  const dateUTCNow = dayjs().utc(false);
+  let deadline = dayjs(new Date(strDeadline || "")).utc(true);
 
-  const deadlineString = deadline.format().toString().replace("T", " ");
-  const dateArray = deadlineString.split("+");
-  const deadlineDate = dateArray[0];
-
-  return dayjs.utc(deadlineDate).unix() - dateUTCNow.unix();
+  return deadline.unix() - dateUTCNow.unix();
 };

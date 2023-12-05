@@ -6,10 +6,9 @@ import {
   IFleetIncoming,
   IMapCity,
 } from "../types/types";
-import dayjs from "dayjs";
 import styled, { css } from "styled-components";
 import { Icon } from "./Common/Icon";
-import { convertSecondsToTime } from "../utils";
+import { convertSecondsToTime, getTimeLeft } from "../utils";
 
 export const Fleet = ({
   fleet,
@@ -26,7 +25,7 @@ export const Fleet = ({
   const timer = useRef();
 
   useEffect(() => {
-    setTimeLeft(getTimeLeft());
+    setTimeLeft(getTimeLeft(fleet?.deadline || ""));
 
     // @ts-ignore
     timer.current = setInterval(handleTimer, 1000);
@@ -47,17 +46,6 @@ export const Fleet = ({
       setTimeLeft(0);
     }
   }, [timeLeft]);
-
-  function getTimeLeft() {
-    const dateUTCNow = dayjs.utc(new Date());
-    let deadline = dayjs(new Date(fleet?.deadline || ""));
-
-    let deadlineString = deadline.format().toString().replace("T", " ");
-    let dateArray = deadlineString.split("+");
-    const deadlineDate = dateArray[0];
-
-    return dayjs.utc(deadlineDate).unix() - dateUTCNow.unix();
-  }
 
   const getFleetTaskIconName = (fleetTaskId: number): string => {
     const fleetTask = dictionaries.fleetTasksDictionary.find(

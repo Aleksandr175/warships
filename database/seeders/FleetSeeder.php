@@ -33,6 +33,8 @@ class FleetSeeder extends Seeder
         $statusExpeditionGoingToTarget = FleetStatusDictionary::find(config('constants.FLEET_STATUSES.EXPEDITION_GOING_TO_TARGET'));
         $time                          = 10;
 
+        $carbon = new Carbon();
+
         Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => config('constants.DEFAULT_USER_2_CITY_ID'),
@@ -43,7 +45,7 @@ class FleetSeeder extends Seeder
             'fleet_task_id'  => $taskTrade->id,
             'status_id'      => $statusTrade1->id,
             'time'           => $time,
-            'deadline'       => Carbon::now()->addSeconds($time)
+            'deadline'       => $carbon::now()->addSeconds($time)
         ]);
 
         Fleet::create([
@@ -56,7 +58,7 @@ class FleetSeeder extends Seeder
             'fleet_task_id'  => $taskMove->id,
             'status_id'      => $statusMove1->id,
             'time'           => $time,
-            'deadline'       => Carbon::now()->addSeconds($time)
+            'deadline'       => $carbon::now()->addSeconds($time)
         ]);
 
         Fleet::create([
@@ -69,7 +71,7 @@ class FleetSeeder extends Seeder
             'fleet_task_id'  => $taskTransport->id,
             'status_id'      => $statusTransport1->id,
             'time'           => $time,
-            'deadline'       => Carbon::now()->addSeconds($time)
+            'deadline'       => $carbon::now()->addSeconds($time)
         ]);
 
         // attack
@@ -83,7 +85,7 @@ class FleetSeeder extends Seeder
             'fleet_task_id'  => $taskAttack->id,
             'status_id'      => $statusAttack1->id,
             'time'           => $time,
-            'deadline'       => Carbon::now()->addSeconds($time)
+            'deadline'       => $carbon::now()->addSeconds($time)
         ]);
 
         // expedition
@@ -97,7 +99,7 @@ class FleetSeeder extends Seeder
             'fleet_task_id'  => $taskExpedition->id,
             'status_id'      => $statusExpeditionGoingToTarget->id,
             'time'           => $time,
-            'deadline'       => Carbon::now()->addSeconds($time)
+            'deadline'       => $carbon::now()->addSeconds($time)
         ]);
     }
 }

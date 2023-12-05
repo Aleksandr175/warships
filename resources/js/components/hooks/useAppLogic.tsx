@@ -95,6 +95,22 @@ export const useAppLogic = () => {
     });
   }, []);
 
+  // Temporary solution for getting updates while Websockets isn't working
+  useEffect(() => {
+    const fleetTimer = setInterval(() => {
+      httpClient.get("/fleets").then((response) => {
+        setFleets(response.data.data.fleets);
+        setFleetsIncoming(response.data.data.fleetsIncoming);
+        setFleetDetails(response.data.data.fleetsDetails);
+        setFleetCitiesDictionary(response.data.data.cities);
+      });
+    }, 3000);
+
+    return () => {
+      clearTimeout(fleetTimer);
+    };
+  }, []);
+
   useEffect(() => {
     getCityResources();
   }, [city]);
@@ -156,11 +172,7 @@ export const useAppLogic = () => {
   };
 
   const getFleets = () => {
-    if (!city?.id) {
-      return;
-    }
-
-    httpClient.get("/fleets?cityId=" + city?.id).then((response) => {
+    httpClient.get("/fleets").then((response) => {
       setFleets(response.data.fleets);
       setFleetsIncoming(response.data.incomingFleets);
       setFleetDetails(response.data.fleetDetails);

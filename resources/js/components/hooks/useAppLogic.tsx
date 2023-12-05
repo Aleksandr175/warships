@@ -99,10 +99,10 @@ export const useAppLogic = () => {
   useEffect(() => {
     const fleetTimer = setInterval(() => {
       httpClient.get("/fleets").then((response) => {
-        setFleets(response.data.data.fleets);
-        setFleetsIncoming(response.data.data.fleetsIncoming);
-        setFleetDetails(response.data.data.fleetsDetails);
-        setFleetCitiesDictionary(response.data.data.cities);
+        setFleets(response.data.fleets);
+        setFleetsIncoming(response.data.fleetsIncoming);
+        setFleetDetails(response.data.fleetDetails);
+        setFleetCitiesDictionary(response.data.cities);
       });
     }, 3000);
 

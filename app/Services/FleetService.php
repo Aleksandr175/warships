@@ -326,7 +326,7 @@ class FleetService
                         'gold' => $fleet->gold,
                         'population' => $fleet->population,
                         'event_type' => 'Fleet',
-                        'city_id' => $targetCity->id,
+                        'city_id' => $fleet->target_city_id,
                         'target_city_id' => $city->id,
                     ]);
 

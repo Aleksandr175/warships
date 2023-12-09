@@ -82,6 +82,7 @@ return [
         'FLEET_EXPEDITION_STORM'     => 7,
         'FLEET_EXPEDITION_LOST'      => 8,
         'FLEET_EXPEDITION_NOTHING'   => 9,
+        'FLEET_EXPEDITION_IS_BACK'   => 10,
 
         'BATTLE_ATTACK_HAPPENED' => 100,
         'BATTLE_DEFEND_HAPPENED' => 101,

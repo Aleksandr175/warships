@@ -485,6 +485,17 @@ class FleetService
 
                         $shouldDeleteFleet = true;
                     }
+
+                    Message::create([
+                        'user_id' => $city->user_id,
+                        'content' => 'Expedition Fleet is back.',
+                        'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_IS_BACK'),
+                        'gold' => $fleet->gold,
+                        'event_type' => 'Expedition',
+                        'archipelago_id' => $city->archipelago_id,
+                        'coord_x' => $city->coord_x,
+                        'coord_y' => $city->coord_y,
+                    ]);
                 }
             }
 

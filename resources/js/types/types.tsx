@@ -163,7 +163,7 @@ export interface IBuildingsProduction {
   resource: string;
 }
 
-export type TTask = "attack" | "move" | "trade" | "transport";
+export type TTask = "attack" | "move" | "trade" | "transport" | "expedition";
 
 export interface IFleetDetail {
   fleetId?: number;

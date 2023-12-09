@@ -3,9 +3,10 @@
 ### Expedition process
 
 We send fleet with expedition task.
+We don't need to select coordinates
 Fleet goes to unknown islands.
 
-After fleet arrives in the city it should wait for 10 minutes. 
+After fleet arrives to unknown place and fleet should wait for 10 minutes. 
 After that fleet gets 1 of 4 options and returns back to the original city.
 
 Fleet with that task can repeat its task if we set so while sending that fleet.

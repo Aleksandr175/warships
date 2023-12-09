@@ -25,10 +25,12 @@ class FleetService
     private $cityId              = null;
     private $coordX              = null;
     private $coordY              = null;
+    private $gold                = null;
     private $fleetDetails        = [];
     private $updatedFleetDetails = [];
     private $repeating           = false;
     private $taskType            = null;
+    private $taskTypeSlug        = null;
     private $targetCity          = null;
     private $taskTypeId          = null;
 
@@ -41,25 +43,30 @@ class FleetService
         $this->gold                = $params->gold;
         $this->fleetDetails        = $params->fleetDetails;
         $this->repeating           = $params->repeating ? 1 : 0;
-        $this->taskType            = $params->taskType;
+        $this->taskTypeSlug        = $params->taskType;
         $this->updatedFleetDetails = [];
 
         // check target coords - that it exists
         $this->targetCity = $this->getCityByCoords($this->coordX, $this->coordY);
 
-        if (!$this->isCity($this->targetCity)) {
+        // we need target city, except for expedition
+        if ($this->taskTypeSlug !== 'expedition' && !$this->isCity($this->targetCity)) {
             return 'there is no city';
         }
 
-        if (!$this->hasTaskType($this->taskType)) {
+        $this->taskType = $this->getTaskType($this->taskTypeSlug);
+
+        $taskTypeId = $this->taskType && $this->taskType->id;
+
+        if (!$taskTypeId) {
             return 'no such task type';
         }
 
-        if ($this->taskType === 'attack' && $this->targetCity->city_dictionary_id !== 2) {
+        if ($this->taskTypeSlug === 'attack' && $this->targetCity->city_dictionary_id !== config('constants.CITY_TYPE_ID.PIRATE_BAY')) {
             return 'We can attack pirate bay only';
         }
 
-        $this->taskTypeId = FleetTaskDictionary::where('slug', $this->taskType)->first()->id;
+        $this->taskTypeId = $this->taskType->id;
 
         // check details
         if ($this->fleetDetails && count($this->fleetDetails)) {
@@ -80,9 +87,10 @@ class FleetService
             }
 
             // calculate time to target
-            $distance = abs($userCity->coord_x - $this->coordX) + abs($userCity->coord_y - $this->coordY);
+            // $distance = abs($userCity->coord_x - $this->coordX) + abs($userCity->coord_y - $this->coordY);
+            // for expedition? what time?
             // TODO: add speed param for time
-            $timeToTarget = $distance * 5; // in seconds
+            $timeToTarget = 10; // in seconds
 
             if (($this->gold && !is_numeric($this->gold))) {
                 return 'Wrong gold number';
@@ -113,7 +121,7 @@ class FleetService
             // create fleet and details
             $fleetId = Fleet::create([
                 'city_id'        => $userCity->id,
-                'target_city_id' => $this->targetCity->id,
+                'target_city_id' => $this->targetCity?->id,
                 'fleet_task_id'  => $this->taskTypeId,
                 'speed'          => 100,
                 'time'           => $timeToTarget,
@@ -137,7 +145,7 @@ class FleetService
         }
     }
 
-    // check and correct fleet details
+    // check and correct fleet details, convert fleet details to backend format
     // we cant send more warships that we have in the city
     public function checkFleetDetails($warshipGroupInCity, $fleetDetails): array
     {
@@ -217,7 +225,7 @@ class FleetService
 
         foreach ($warshipsDictionary as $warshipDictionary) {
             foreach ($fleetDetails as $fleetDetail) {
-                if ($fleetDetail['warshipId'] === $warshipDictionary['id']) {
+                if ($fleetDetail['warship_id'] === $warshipDictionary['id']) {
                     $capacity += $fleetDetail['qty'] * $warshipDictionary['capacity'];
                     break;
                 }
@@ -236,11 +244,11 @@ class FleetService
         return $city && isset($city->id);
     }
 
-    public function hasTaskType($taskType): bool
+    public function getTaskType($taskTypeSlug)
     {
-        $t = FleetTaskDictionary::where('slug', $taskType)->first();
+        $t = FleetTaskDictionary::where('slug', $taskTypeSlug)->first();
 
-        return $t && isset($t->id);
+        return $t ?: null;
     }
 
     public function getCityByCoords($coordX, $coordY)
@@ -278,11 +286,11 @@ class FleetService
                     $targetCity = City::find($fleet->target_city_id);
 
                     Message::create([
-                        'user_id' => $city->user_id,
-                        'content' => 'Merchant fleet starts trading.',
-                        'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_START_TRADING'),
-                        'event_type' => 'Fleet',
-                        'city_id' => $city->id,
+                        'user_id'        => $city->user_id,
+                        'content'        => 'Merchant fleet starts trading.',
+                        'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_START_TRADING'),
+                        'event_type'     => 'Fleet',
+                        'city_id'        => $city->id,
                         'target_city_id' => $targetCity->id,
                     ]);
 
@@ -301,8 +309,8 @@ class FleetService
 
                     $warshipsDictionary = WarshipDictionary::get();
 
-                    $fleetDetails = FleetDetail::getFleetDetails([$fleet->id])->toArray();
-                    $fleetDetails = (new BattleService)->populateFleetDetailsWithCapacityAndHealth($fleetDetails, $warshipsDictionary);
+                    $fleetDetails      = FleetDetail::getFleetDetails([$fleet->id])->toArray();
+                    $fleetDetails      = (new BattleService)->populateFleetDetailsWithCapacityAndHealth($fleetDetails, $warshipsDictionary);
                     $availableCapacity = (new BattleService)->getAvailableCapacity($fleet, $fleetDetails);
 
                     $gold = floor($availableCapacity * 0.1);
@@ -320,13 +328,13 @@ class FleetService
                     $city->increment('gold', $fleet->gold);
 
                     Message::create([
-                        'user_id' => $city->user_id,
-                        'content' => 'Merchant fleet is back.',
-                        'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_IS_BACK'),
-                        'gold' => $fleet->gold,
-                        'population' => $fleet->population,
-                        'event_type' => 'Fleet',
-                        'city_id' => $fleet->target_city_id,
+                        'user_id'        => $city->user_id,
+                        'content'        => 'Merchant fleet is back.',
+                        'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_IS_BACK'),
+                        'gold'           => $fleet->gold,
+                        'population'     => $fleet->population,
+                        'event_type'     => 'Fleet',
+                        'city_id'        => $fleet->target_city_id,
                         'target_city_id' => $city->id,
                     ]);
 
@@ -362,13 +370,13 @@ class FleetService
                         $shouldDeleteFleet = true;
 
                         Message::create([
-                            'user_id' => $city->user_id,
-                            'content' => 'Fleet moved to island.',
-                            'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_DONE'),
-                            'gold' => $fleet->gold,
-                            'population' => $fleet->population,
-                            'event_type' => 'Fleet',
-                            'city_id' => $city->id,
+                            'user_id'        => $city->user_id,
+                            'content'        => 'Fleet moved to island.',
+                            'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_DONE'),
+                            'gold'           => $fleet->gold,
+                            'population'     => $fleet->population,
+                            'event_type'     => 'Fleet',
+                            'city_id'        => $city->id,
                             'target_city_id' => $targetCity->id,
                         ]);
                     } else {
@@ -380,13 +388,13 @@ class FleetService
                         $repeating = 0;
 
                         Message::create([
-                            'user_id' => $city->user_id,
-                            'content' => 'Fleet can not be moved to island.',
-                            'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_CANT'),
-                            'gold' => $fleet->gold,
-                            'population' => $fleet->population,
-                            'event_type' => 'Fleet',
-                            'city_id' => $city->id,
+                            'user_id'        => $city->user_id,
+                            'content'        => 'Fleet can not be moved to island.',
+                            'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_CANT'),
+                            'gold'           => $fleet->gold,
+                            'population'     => $fleet->population,
+                            'event_type'     => 'Fleet',
+                            'city_id'        => $city->id,
                             'target_city_id' => $targetCity->id,
                         ]);
                     }
@@ -404,13 +412,13 @@ class FleetService
                     $shouldDeleteFleet = true;
 
                     Message::create([
-                        'user_id' => $city->user_id,
-                        'content' => 'Fleet returned to island.',
-                        'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_WENT_BACK'),
-                        'gold' => $fleet->gold,
-                        'population' => $fleet->population,
-                        'event_type' => 'Fleet',
-                        'city_id' => $targetCity->id,
+                        'user_id'        => $city->user_id,
+                        'content'        => 'Fleet returned to island.',
+                        'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_WENT_BACK'),
+                        'gold'           => $fleet->gold,
+                        'population'     => $fleet->population,
+                        'event_type'     => 'Fleet',
+                        'city_id'        => $targetCity->id,
                         'target_city_id' => $city->id,
                     ]);
                 }
@@ -487,14 +495,14 @@ class FleetService
                     }
 
                     Message::create([
-                        'user_id' => $city->user_id,
-                        'content' => 'Expedition Fleet is back.',
-                        'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_IS_BACK'),
-                        'gold' => $fleet->gold,
-                        'event_type' => 'Expedition',
+                        'user_id'        => $city->user_id,
+                        'content'        => 'Expedition Fleet is back.',
+                        'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_IS_BACK'),
+                        'gold'           => $fleet->gold,
+                        'event_type'     => 'Expedition',
                         'archipelago_id' => $city->archipelago_id,
-                        'coord_x' => $city->coord_x,
-                        'coord_y' => $city->coord_y,
+                        'coord_x'        => $city->coord_x,
+                        'coord_y'        => $city->coord_y,
                     ]);
                 }
             }

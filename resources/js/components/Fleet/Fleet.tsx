@@ -27,10 +27,15 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
   const [coordY, setCoordY] = useState<number>(0);
   const [actualCityWarships, setActualCityWarships] = useState(warships);
   const [gold, setGold] = useState(0);
-
   const [renderKey, setRenderKey] = useState(0);
 
-  const [fleet, setFleet] = useState<IFleet>({} as IFleet);
+  const [fleet, setFleet] = useState<IFleet>(() => {
+    return {
+      repeating: 0,
+      taskType: "trade",
+      cityId: city.id,
+    } as IFleet;
+  });
   const [fleetDetails, setFleetDetails] = useState<IFleetDetail[]>(
     [] as IFleetDetail[]
   );
@@ -52,14 +57,6 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
     });
 
     setFleetDetails(details);
-
-    setFleet({
-      coordX: 0,
-      coordY: 0,
-      repeating: 0,
-      taskType: "trade",
-      cityId: city.id,
-    });
   }, [warships]);
 
   useEffect(() => {
@@ -93,8 +90,6 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
       (warship) => warship.warshipId === warshipId
     );
   }
-
-  console.log("fleetDetails", fleetDetails);
 
   const onChangeQty = (warshipId: number, qty: number) => {
     setFleetDetails((oldFleetDetails) => {
@@ -180,41 +175,80 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
       <div className={"row"}>
         <div className={"col-12"}>
           <div>
-            <strong>Target Island:</strong>
+            <strong>Task:</strong>
           </div>
-          <div>
-            {cities.map((city) => {
-              return (
-                <SCityPreset
-                  active={city.coordX === coordX && city.coordY === coordY}
-                  onClick={() => chooseCity(city)}
-                >
-                  {city.title}
-                </SCityPreset>
-              );
-            })}
-          </div>
-
-          <SCoordinatesBlock>
-            <div>
-              <strong>Or Coordinates:</strong>
-            </div>
-            <div>
-              X:{" "}
-              <InputNumberCoordinatesStyled
-                value={coordX}
-                onChange={(value) => setCoordX(value)}
-                maxNumber={100}
-              />
-              Y:{" "}
-              <InputNumberCoordinatesStyled
-                value={coordY}
-                onChange={(value) => setCoordY(value)}
-                maxNumber={100}
-              />
-            </div>
-          </SCoordinatesBlock>
+          {/* TODO use dictionary for Task Types */}
+          <STaskType
+            active={taskType === "attack"}
+            onClick={() => setTaskType("attack")}
+          >
+            Attack
+          </STaskType>
+          <STaskType
+            active={taskType === "trade"}
+            onClick={() => setTaskType("trade")}
+          >
+            Trade
+          </STaskType>
+          <STaskType
+            active={taskType === "transport"}
+            onClick={() => setTaskType("transport")}
+          >
+            Transport
+          </STaskType>
+          <STaskType
+            active={taskType === "move"}
+            onClick={() => setTaskType("move")}
+          >
+            Move
+          </STaskType>
+          <STaskType
+            active={taskType === "expedition"}
+            onClick={() => setTaskType("expedition")}
+          >
+            Expedition
+          </STaskType>
         </div>
+
+        {taskType !== "expedition" && (
+          <div className={"col-12"}>
+            <div>
+              <strong>Target Island:</strong>
+            </div>
+            <div>
+              {cities.map((city) => {
+                return (
+                  <SCityPreset
+                    active={city.coordX === coordX && city.coordY === coordY}
+                    onClick={() => chooseCity(city)}
+                  >
+                    {city.title}
+                  </SCityPreset>
+                );
+              })}
+            </div>
+
+            <SCoordinatesBlock>
+              <div>
+                <strong>Or Coordinates:</strong>
+              </div>
+              <div>
+                X:{" "}
+                <InputNumberCoordinatesStyled
+                  value={coordX}
+                  onChange={(value) => setCoordX(value)}
+                  maxNumber={100}
+                />
+                Y:{" "}
+                <InputNumberCoordinatesStyled
+                  value={coordY}
+                  onChange={(value) => setCoordY(value)}
+                  maxNumber={100}
+                />
+              </div>
+            </SCoordinatesBlock>
+          </div>
+        )}
         <div className={"col-4"}>
           <div>
             <strong>Gold (Capacity: {maxCapacity}):</strong>
@@ -224,37 +258,6 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
             onChange={(value) => setGold(value)}
             maxNumber={city.gold > maxCapacity ? maxCapacity : city.gold}
           />
-        </div>
-
-        <div className={"col-12"}>
-          <div>
-            <strong>Task:</strong>
-          </div>
-          {/* TODO use dictionary for Task Types */}
-          <STaskType
-            active={taskType === "attack"}
-            onClick={() => setTaskType("attack")}
-          >
-            Attack{" "}
-          </STaskType>
-          <STaskType
-            active={taskType === "trade"}
-            onClick={() => setTaskType("trade")}
-          >
-            Trade{" "}
-          </STaskType>
-          <STaskType
-            active={taskType === "transport"}
-            onClick={() => setTaskType("transport")}
-          >
-            Transport{" "}
-          </STaskType>
-          <STaskType
-            active={taskType === "move"}
-            onClick={() => setTaskType("move")}
-          >
-            Move{" "}
-          </STaskType>
         </div>
 
         <div className={"col-12"}>
@@ -295,10 +298,10 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
           <br />
           <button
             className={"btn btn-primary"}
-            disabled={!taskType || !coordY || !coordX}
+            disabled={
+              !taskType || (taskType !== "expedition" && (!coordY || !coordX))
+            }
             onClick={() => {
-              console.log(fleet);
-              console.log("send ships");
               sendFleet();
             }}
           >

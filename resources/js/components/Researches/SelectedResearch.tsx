@@ -55,9 +55,9 @@ export const SelectedResearch = ({
     return researchesDictionary.find((research) => research.id === researchId);
   }
 
-  function isResearchInProcess() {
-    return queue && queue.researchId === selectedResearchId;
-  }
+  const isCurrentResearchInProcess =
+    queue && queue.researchId === selectedResearchId;
+  const isSomeResearchInProcess = queue && queue.researchId > 0;
 
   const researchResources = getResourcesForResearch(
     selectedResearchId,
@@ -166,12 +166,13 @@ export const SelectedResearch = ({
           )}
         </div>
         <SButtonsBlock>
-          {!isResearchInProcess() && (
+          {!isCurrentResearchInProcess && (
             <button
               className={"btn btn-primary"}
               disabled={
                 isResearchDisabled() ||
-                !hasAllRequirements("research", selectedResearchId, nextLvl)
+                !hasAllRequirements("research", selectedResearchId, nextLvl) ||
+                (isSomeResearchInProcess && !isCurrentResearchInProcess)
               }
               onClick={() => {
                 run(selectedResearchId);
@@ -181,7 +182,7 @@ export const SelectedResearch = ({
             </button>
           )}
 
-          {isResearchInProcess() && (
+          {isCurrentResearchInProcess && (
             <button
               className={"btn btn-warning"}
               onClick={() => {

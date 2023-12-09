@@ -92,9 +92,9 @@ export const SelectedBuilding = ({
       });
   };
 
-  const isBuildingInProcess = () => {
-    return queue && queue.buildingId === selectedBuildingId;
-  };
+  const isCurrentBuildingInProcess =
+    queue && queue.buildingId === selectedBuildingId;
+  const isSomeBuildingInProcess = queue && queue.buildingId > 0;
 
   const {
     hasRequirements,
@@ -213,12 +213,13 @@ export const SelectedBuilding = ({
           )}
         </div>
         <SButtonsBlock>
-          {!isBuildingInProcess() && (
+          {!isCurrentBuildingInProcess && (
             <button
               className={"btn btn-primary"}
               disabled={
                 isBuildingDisabled() ||
-                !hasAllRequirements("building", selectedBuildingId, nextLvl)
+                !hasAllRequirements("building", selectedBuildingId, nextLvl) ||
+                (isSomeBuildingInProcess && !isCurrentBuildingInProcess)
               }
               onClick={() => {
                 run(selectedBuildingId);
@@ -228,7 +229,7 @@ export const SelectedBuilding = ({
             </button>
           )}
 
-          {isBuildingInProcess() && (
+          {isCurrentBuildingInProcess && (
             <button
               className={"btn btn-warning"}
               onClick={() => {

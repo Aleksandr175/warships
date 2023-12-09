@@ -5,6 +5,7 @@ import utc from "dayjs/plugin/utc";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { SH2 } from "../styles";
 import styled from "styled-components";
+import { convertSecondsToTime, getTimeLeft } from "../../utils";
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
@@ -47,17 +48,6 @@ export const WarshipsQueue = ({ dictionary, queue, sync }: IProps) => {
     setTempQueue(newQ);
   }
 
-  function getTimeLeft(deadlineStr: string): number {
-    const dateUTCNow = dayjs.utc(new Date());
-    let deadline = dayjs(new Date(deadlineStr));
-
-    let deadlineString = deadline.format().toString().replace("T", " ");
-    let dateArray = deadlineString.split("+");
-    const deadlineDate = dateArray[0];
-
-    return dayjs.utc(deadlineDate).unix() - dateUTCNow.unix();
-  }
-
   function getWarshipName(warshipId: number): string | undefined {
     return dictionary.find((warship) => warship.id === warshipId)?.title;
   }
@@ -87,7 +77,7 @@ export const WarshipsQueue = ({ dictionary, queue, sync }: IProps) => {
                 {getWarshipName(item.warshipId)}
               </SCell>
               <SCell>{item.qty}</SCell>
-              <SCell>{time > 0 ? time : 0}</SCell>
+              <SCell>{convertSecondsToTime(time > 0 ? time : 0)}</SCell>
               <SCell>
                 {dayjs(item.deadline).format("DD MMM, YYYY HH:mm:ss")}
               </SCell>

@@ -95,26 +95,6 @@ export const useAppLogic = () => {
     });
   }, []);
 
-  // Temporary solution for getting updates while Websockets isn't working
-  useEffect(() => {
-    const fleetTimer = setInterval(() => {
-      httpClient.get("/fleets").then((response) => {
-        setFleets(response.data.fleets);
-        setFleetsIncoming(response.data.fleetsIncoming);
-        setFleetDetails(response.data.fleetDetails);
-        setFleetCitiesDictionary(response.data.cities);
-      });
-    }, 3000);
-
-    return () => {
-      clearTimeout(fleetTimer);
-    };
-  }, []);
-
-  useEffect(() => {
-    getCityResources();
-  }, [city]);
-
   useEffect(() => {
     const cityInfo = cities?.find((c) => c.id === city?.id);
 
@@ -122,10 +102,26 @@ export const useAppLogic = () => {
   }, [cities]);
 
   useEffect(() => {
+    getCityResources();
     getBuildings();
     getResearches();
     getWarships();
     getFleets();
+  }, [city]);
+
+  // TODO: refactor it. Temporary solution for getting updates while Websockets isn't working
+  useEffect(() => {
+    const updateTimer = setInterval(() => {
+      getCityResources();
+      getBuildings();
+      getResearches();
+      getWarships();
+      getFleets();
+    }, 3000);
+
+    return () => {
+      clearTimeout(updateTimer);
+    };
   }, [city]);
 
   const getCityResources = () => {
@@ -154,8 +150,6 @@ export const useAppLogic = () => {
       setBuildings(response.data.buildings);
       setQueue(response.data.buildingQueue);
     });
-
-    getCityResources();
   };
 
   const getWarships = () => {
@@ -174,7 +168,7 @@ export const useAppLogic = () => {
   const getFleets = () => {
     httpClient.get("/fleets").then((response) => {
       setFleets(response.data.fleets);
-      setFleetsIncoming(response.data.incomingFleets);
+      setFleetsIncoming(response.data.fleetsIncoming);
       setFleetDetails(response.data.fleetDetails);
       setFleetCitiesDictionary(response.data.cities);
     });

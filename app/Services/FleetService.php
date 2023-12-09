@@ -451,14 +451,18 @@ class FleetService
                     $deadline = Carbon::create($fleet->deadline)->addSecond(15);
                 }
 
+                if ($fleet->isExpeditionInProgress()) {
+                    dump('expedition: calculation expedition result...');
+                    $expeditionService = new ExpeditionService();
+
+                    $expeditionService->handle($fleet);
+                }
+
                 if ($fleet->isExpeditionDone()) {
-                    dump('expedition: fleet completed expedition, we got something');
+                    dump('expedition: fleet completed expedition, we got something, going back...');
                     $statusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_BACK');
 
-                    // TODO: get some resources
-                    $gold = 10;
-
-                    $deadline = Carbon::create($fleet->deadline)->addSecond(15);
+                    $deadline = Carbon::create($fleet->deadline)->addSecond(5);
                 }
 
                 if ($fleet->isExpeditionGoingBack()) {

@@ -30,7 +30,7 @@ class BuildingResourceSeeder extends Seeder
             'gold' => 100,
             'population' => 20,
             'lvl' => 1,
-            'time' => 30,
+            'time' => 5,
         ]);
         BuildingResource::create([
             'building_id' => $building1->id,

@@ -50,7 +50,7 @@ class ExpeditionService
         }
 
         if (!$isDestroyed) {
-            $statusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_BACK');
+            $statusId = config('constants.FLEET_STATUSES.EXPEDITION_DONE');
 
             $fleet->update([
                 'status_id' => $statusId,

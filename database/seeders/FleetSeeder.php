@@ -101,5 +101,19 @@ class FleetSeeder extends Seeder
             'time'           => $time,
             'deadline'       => $carbon::now()->addSeconds($time)
         ]);
+
+        // expedition
+        Fleet::create([
+            'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
+            'target_city_id' => null,
+            'speed'          => 70,
+            'gold'           => 0,
+            'population'     => 0,
+            'repeating'      => 0,
+            'fleet_task_id'  => $taskExpedition->id,
+            'status_id'      => $statusExpeditionGoingToTarget->id,
+            'time'           => $time,
+            'deadline'       => $carbon::now()->addSeconds($time)
+        ]);
     }
 }

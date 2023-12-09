@@ -97,7 +97,6 @@ export const useRequirementsLogic = ({
   const getRequiredItem = (
     dependency: IBuildingDependency | IResearchDependency
   ): IBuilding | IResearch | undefined => {
-    console.log(dependency, buildingsDictionary);
     if (dependency.requiredEntity === "building") {
       return buildingsDictionary?.find(
         (item) => item.id === dependency.requiredEntityId

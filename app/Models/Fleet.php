@@ -89,7 +89,7 @@ class Fleet extends Model
 
     public function isTransportFleetGoingToTarget()
     {
-        return $this->isMovingTask() && $this->status_id === config('constants.FLEET_STATUSES.TRANSPORT_GOING_TO_TARGET');
+        return $this->isTrasnsportTask() && $this->status_id === config('constants.FLEET_STATUSES.TRANSPORT_GOING_TO_TARGET');
     }
 
     public function isTransportFleetGoingBack()
@@ -126,7 +126,6 @@ class Fleet extends Model
     {
         return $this->isExpeditionTask() && $this->status_id === config('constants.FLEET_STATUSES.EXPEDITION_DONE');
     }
-
 
     public function isExpeditionGoingBack()
     {

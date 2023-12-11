@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { IWarship } from "../../types/types";
+import { IMapCity, IWarship } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import ReactPaginate from "react-paginate";
 import { NavLink } from "react-router-dom";
@@ -30,6 +30,7 @@ interface IBattleLogDetail {
 
 export const Logs = ({ dictionary, userId }: IProps) => {
   const [logs, setLogs] = useState<IBattleLog[]>([]);
+  const [cities, setCities] = useState<IMapCity[]>([]);
   const [logsDetails, setLogsDetails] = useState<IBattleLogDetail[]>([]);
   const [logsCount, setLogsCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,11 +44,16 @@ export const Logs = ({ dictionary, userId }: IProps) => {
 
     httpClient.get("/battle-logs?page=" + page).then((resp) => {
       console.log(resp.data);
+      setCities(resp.data.cities);
       setLogs(resp.data.battleLogs);
       setLogsDetails(resp.data.battleLogsDetails);
       setLogsCount(resp.data.battleLogsCount);
       setIsLoading(false);
     });
+  };
+
+  const getCityName = (cityId: number): string => {
+    return cities.find((city) => city.id === cityId)?.title || "";
   };
 
   return (
@@ -74,7 +80,7 @@ export const Logs = ({ dictionary, userId }: IProps) => {
               <div className={"col-3"}>
                 {dayjs(log.date).format("DD MMM, YYYY HH:mm:ss")}
               </div>
-              <div className={"col-3"}>{log.cityId}</div>
+              <div className={"col-3"}>{getCityName(log.cityId)}</div>
               <div className={"col-3"}>
                 {log.attackerUserId === userId ? "Attack" : "Defend"}
               </div>

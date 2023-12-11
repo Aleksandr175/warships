@@ -225,7 +225,7 @@ export const SelectedBuilding = ({
                 run(selectedBuildingId);
               }}
             >
-              Build
+              {!buildingResources ? "Max Level" : "Build"}
             </button>
           )}
 

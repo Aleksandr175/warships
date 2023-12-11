@@ -71,7 +71,7 @@ export const WarshipsQueue = ({ dictionary, queue, sync }: IProps) => {
               <SCell>
                 <SWarshipIcon
                   style={{
-                    backgroundImage: `url("../images/warships/simple/${item.warshipId}.svg")`,
+                    backgroundImage: `url("../images/warships/simple/dark/${item.warshipId}.svg")`,
                   }}
                 />
                 {getWarshipName(item.warshipId)}

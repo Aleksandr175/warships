@@ -27,7 +27,7 @@ export const Fleets = ({
   };
 
   return (
-    <SColumnFleets className={"col-12"}>
+    <SColumnFleets>
       {fleets &&
         fleets.map((fleet) => {
           return (

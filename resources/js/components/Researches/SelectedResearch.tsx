@@ -178,7 +178,7 @@ export const SelectedResearch = ({
                 run(selectedResearchId);
               }}
             >
-              Research
+              {!researchResources ? "Max Level" : "Research"}
             </button>
           )}
 

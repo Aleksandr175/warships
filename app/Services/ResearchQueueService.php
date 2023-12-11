@@ -110,7 +110,7 @@ class ResearchQueueService
         // found out what resources we need for research
         $resources = ResearchResource::where('research_id', $this->researchId)->where('lvl', $this->nextLvl)->first();
 
-        $time = ($resources->gold + $resources->population) / 10;
+        $time = $resources->time;
 
         // take resources from city
         $this->city->update([

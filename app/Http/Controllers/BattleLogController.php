@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Api\BattleLogRequest;
 use App\Http\Resources\BattleLogDetailResource;
 use App\Http\Resources\BattleLogResource;
+use App\Http\Resources\CityShortInfoResource;
 use App\Models\BattleLog;
 use App\Models\BattleLogDetail;
-use Illuminate\Http\Request;
+use App\Models\City;
 use Illuminate\Support\Facades\Auth;
 
 class BattleLogController extends Controller
@@ -19,9 +20,14 @@ class BattleLogController extends Controller
         $battleLogs      = BattleLog::where('attacker_user_id', $userId)->orWhere('defender_user_id', $userId)->paginate(10);
         $battleLogsCount = BattleLog::where('attacker_user_id', $userId)->orWhere('defender_user_id', $userId)->count();
 
+        $cityIds = $battleLogs->pluck('city_id')->toArray();
+
+        $cities = City::whereIn('id', array_merge($cityIds))->get();
+
         return [
             'battleLogs'      => BattleLogResource::collection($battleLogs),
-            'battleLogsCount' => $battleLogsCount
+            'battleLogsCount' => $battleLogsCount,
+            'cities'          => CityShortInfoResource::collection($cities),
         ];
     }
 
@@ -35,7 +41,7 @@ class BattleLogController extends Controller
             $battleLogDetails = BattleLogDetail::where('battle_log_id', $battleLogId)->get();
 
             return [
-                'battleLog' => new BattleLogResource($battleLog),
+                'battleLog'        => new BattleLogResource($battleLog),
                 'battleLogDetails' => BattleLogDetailResource::collection($battleLogDetails),
             ];
         }

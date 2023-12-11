@@ -134,7 +134,7 @@ export const Fleet = ({
             <SFleetDetail key={fDetails.fleetId + "-" + fDetails.warshipId}>
               <SWarshipIcon
                 style={{
-                  backgroundImage: `url("../images/warships/simple/${fDetails.warshipId}.svg")`,
+                  backgroundImage: `url("../images/warships/simple/dark/${fDetails.warshipId}.svg")`,
                 }}
               />
               <span>{fDetails.qty}</span>

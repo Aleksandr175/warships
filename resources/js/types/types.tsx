@@ -10,6 +10,14 @@ export interface ICity {
   coordY: number;
 }
 
+export interface ICityShort {
+  id: number;
+  title: string;
+  archipelagoId: number;
+  coordX: number;
+  coordY: number;
+}
+
 export interface IMapCity {
   id: number;
   title: string;

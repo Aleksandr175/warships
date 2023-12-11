@@ -13,6 +13,7 @@ import {
 import { FleetCard } from "./FleetCard";
 import { InputNumber } from "../Common/InputNumber";
 import { SContent, SH1 } from "../styles";
+import { useSearchParams } from "react-router-dom";
 
 interface IProps {
   dictionary: IWarship[];
@@ -39,6 +40,22 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
   const [fleetDetails, setFleetDetails] = useState<IFleetDetail[]>(
     [] as IFleetDetail[]
   );
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("coordX")) {
+      setCoordX(Number(searchParams.get("coordX")));
+    }
+
+    if (searchParams.get("coordY")) {
+      setCoordY(Number(searchParams.get("coordY")));
+    }
+
+    if (searchParams.get("taskType")) {
+      setTaskType(searchParams.get("taskType") as TTask);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     setActualCityWarships(warships);

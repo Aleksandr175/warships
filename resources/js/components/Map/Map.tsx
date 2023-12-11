@@ -4,6 +4,7 @@ import { httpClient } from "../../httpClient/httpClient";
 import styled, { css } from "styled-components";
 import { IMapCity } from "../../types/types";
 import { SContent } from "../styles";
+import { useNavigate } from "react-router-dom";
 
 interface IProps {
   cityId: number;
@@ -33,7 +34,6 @@ export const Map = ({ cityId }: IProps) => {
       setCells(tCells);
       setIsLoading(false);
     });
-    console.log("mounted");
   }, []);
 
   const isCityHere = (y: number, x: number): boolean => {
@@ -46,6 +46,8 @@ export const Map = ({ cityId }: IProps) => {
     return cities?.find((city) => city.coordX === x && city.coordY === y);
   };
 
+  const navigate = useNavigate();
+
   if (isLoading) {
     return <>Loading...</>;
   }
@@ -56,11 +58,27 @@ export const Map = ({ cityId }: IProps) => {
         {cells.map((cell, index) => {
           const y = Math.floor(index / 5) + 1;
           const x = (index % 5) + 1;
+          const city = getCity(y, x);
+          const isCity = isCityHere(y, x);
+          const isPirates = city?.cityTypeId === 2;
+
           return (
-            <SCell isHabited={isCityHere(y, x)} key={cell.id}>
-              <SIsland type={getCity(y, x)?.cityAppearanceId} />
-              {isCityHere(y, x) && (
-                <SIsland type={getCity(y, x)?.cityAppearanceId} />
+            <SCell isHabited={isCity} key={cell.id}>
+              <SIsland type={city?.cityAppearanceId} />
+              {isCity && (
+                <SIsland
+                  islandType={isPirates ? "pirates" : ""}
+                  type={city?.cityAppearanceId}
+                  onClick={() =>
+                    navigate(
+                      "/fleets?coordX=" +
+                        x +
+                        "&coordY=" +
+                        y +
+                        "&taskType=attack"
+                    )
+                  }
+                />
               )}
             </SCell>
           );
@@ -85,17 +103,20 @@ const SCells = styled.div`
   height: 700px;
 `;
 
-const SIsland = styled.div<{ type?: number }>`
+const SIsland = styled.div<{ type?: number; islandType?: string }>`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
 
-  ${({ type }) =>
+  ${({ type, islandType }) =>
     type
       ? css`
-          background: url("../../../images/islands/${type}.svg") no-repeat;
+          background: url("../../../images/islands/${islandType
+              ? "/" + islandType + "/"
+              : ""}${type}.svg")
+            no-repeat;
           background-size: contain;
         `
       : ""};

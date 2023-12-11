@@ -1,7 +1,7 @@
 import React from "react";
 import styled, { css } from "styled-components";
 
-type TSize = "small" | "big" | "normal";
+type TSize = "small" | "big" | "normal" | "extra-big";
 
 export const Icon = ({
   title,
@@ -52,6 +52,14 @@ const SIcon = styled.i<{ size?: TSize }>`
       ? css`
           width: 16px;
           height: 16px;
+        `
+      : ""};
+
+  ${({ size }) =>
+    size === "extra-big"
+      ? css`
+          width: 48px;
+          height: 48px;
         `
       : ""};
 `;

@@ -15,7 +15,6 @@ interface IProps {
 }
 
 export const Round = ({
-  dictionary,
   roundData,
   firstUserId,
   secondUserId,
@@ -89,13 +88,18 @@ export const Round = ({
               </div>
             </div>
           </div>
-          {/* TODO: temporary */}
-          <div
-            className={"text-center"}
-            style={{ paddingTop: "15px", paddingBottom: "15px" }}
-          >
-            <Icon title={"attack"} />
-          </div>
+          {/* TODO: improve logic for icons positions */}
+          <SFireIcons>
+            <SIconWrapper>
+              <Icon size={"extra-big"} title={"bullets"} />
+            </SIconWrapper>
+            <SIconWrapper>
+              <Icon size={"extra-big"} title={"bullets"} />
+            </SIconWrapper>
+            <SIconWrapper>
+              <Icon size={"extra-big"} title={"bullets"} />
+            </SIconWrapper>
+          </SFireIcons>
           <div className={"row"}>
             <div className={"offset-1 col-10 text-center"}>
               <div className={"row"}>
@@ -175,4 +179,17 @@ const SRoundBg = styled.div`
 
 const SFirstRow = styled.div`
   margin-top: 30px;
+`;
+
+const SIconWrapper = styled.div`
+  display: inline-block;
+`;
+
+const SFireIcons = styled.div`
+  height: 60px;
+  margin: 0 auto;
+  width: 300px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
 `;

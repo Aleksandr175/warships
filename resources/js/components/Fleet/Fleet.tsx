@@ -22,6 +22,7 @@ interface IProps {
   city: ICity;
 }
 
+// TODO: add react hook form
 export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
   const [taskType, setTaskType] = useState<TTask>("trade");
   const [coordX, setCoordX] = useState<number>(0);
@@ -61,11 +62,10 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
     setActualCityWarships(warships);
   }, [warships]);
 
-  // TODO: add init func for fleet details, we have some problem here
   // set default values
-  // update details with dependencies in diff func
   useEffect(() => {
     const details = [] as IFleetDetail[];
+
     dictionary?.forEach((warship) => {
       details.push({
         warshipId: warship.id,
@@ -74,31 +74,7 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
     });
 
     setFleetDetails(details);
-  }, [warships]);
-
-  useEffect(() => {
-    let tempFleet = { ...fleet };
-
-    tempFleet.taskType = taskType;
-
-    setFleet(tempFleet);
-  }, [taskType]);
-
-  useEffect(() => {
-    let tempFleet = { ...fleet };
-
-    tempFleet.coordX = Number(coordX);
-
-    setFleet(tempFleet);
-  }, [coordX]);
-
-  useEffect(() => {
-    let tempFleet = { ...fleet };
-
-    tempFleet.coordY = Number(coordY);
-
-    setFleet(tempFleet);
-  }, [coordY]);
+  }, []);
 
   const [repeating, setRepeating] = useState(false);
 
@@ -127,7 +103,15 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
 
   const sendFleet = (): void => {
     httpClient
-      .post("/fleets/send", { ...fleet, fleetDetails, gold })
+      .post("/fleets/send", {
+        ...fleet,
+        fleetDetails,
+        gold,
+        coordX,
+        coordY,
+        taskType,
+        repeating,
+      })
       .then((response) => {
         console.log(response);
 
@@ -138,13 +122,6 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
   };
 
   const chooseCity = (city: ICity): void => {
-    setFleet((prevFleet) => {
-      return {
-        ...prevFleet,
-        coordX: city.coordX,
-        coordY: city.coordY,
-      };
-    });
     setCoordX(city.coordX);
     setCoordY(city.coordY);
   };
@@ -285,12 +262,6 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
             active={repeating}
             onClick={() => {
               setRepeating(true);
-
-              const tempFleet = { ...fleet };
-
-              tempFleet.repeating = 1;
-
-              setFleet(tempFleet);
             }}
           >
             Yes
@@ -299,12 +270,6 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
             active={!repeating}
             onClick={() => {
               setRepeating(false);
-
-              const tempFleet = { ...fleet };
-
-              tempFleet.repeating = 0;
-
-              setFleet(tempFleet);
             }}
           >
             No
@@ -318,9 +283,7 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
             disabled={
               !taskType || (taskType !== "expedition" && (!coordY || !coordX))
             }
-            onClick={() => {
-              sendFleet();
-            }}
+            onClick={sendFleet}
           >
             Send Fleet
           </button>

@@ -67,7 +67,7 @@ export const WarshipsQueue = ({ dictionary, queue, sync }: IProps) => {
           const time = getTimeLeft(item.deadline);
 
           return (
-            <div>
+            <div key={item.warshipId + "-" + time}>
               <SCell>
                 <SWarshipIcon
                   style={{

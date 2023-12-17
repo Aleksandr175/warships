@@ -2,7 +2,7 @@ import { Card } from "../Common/Card";
 import { SButtonsBlock, SH2, SParam, SParams, SText } from "../styles";
 import { Icon } from "../Common/Icon";
 import { convertSecondsToTime } from "../../utils";
-import React, { useRef, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
 import {
@@ -18,6 +18,8 @@ import {
 } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
 import { InputNumber } from "../Common/InputNumber";
+import { Controller, useForm } from "react-hook-form";
+import { FieldErrors } from "react-hook-form/dist/types/errors";
 
 interface IProps {
   selectedWarshipId: number;
@@ -37,6 +39,17 @@ interface IProps {
   buildings: ICityBuilding[];
 }
 
+interface IFormValues {
+  selectedQty: string | number | null;
+  cityResources: ICityResources;
+  gold: number;
+  population: number;
+}
+
+const DEFAULT_VALUES = {
+  selectedQty: null,
+};
+
 export const SelectedWarship = ({
   selectedWarshipId,
   warshipsDictionary,
@@ -52,8 +65,6 @@ export const SelectedWarship = ({
   getQty,
   setWarships,
 }: IProps) => {
-  const [selectedQty, setSelectedQty] = useState<number | null>(null);
-
   const selectedWarship = getWarship(selectedWarshipId)!;
   const warshipResources = getResourcesForWarship(selectedWarshipId);
   const gold = warshipResources?.gold || 0;
@@ -63,6 +74,51 @@ export const SelectedWarship = ({
   const speed = warshipResources?.speed || 0;
   const health = warshipResources?.health || 0;
   const capacity = warshipResources?.capacity || 0;
+
+  const form = useForm({
+    defaultValues: {
+      ...DEFAULT_VALUES,
+      gold,
+      population,
+      cityResources,
+    },
+    resolver: (data) => {
+      const errors: FieldErrors = {};
+
+      if (isWarshipDisabled(data)) {
+        // @ts-ignore
+        errors.warshipIsDisabled = "Warship is disabled";
+      }
+
+      if (!data.selectedQty || data.selectedQty < 0) {
+        // @ts-ignore
+        errors.selectedQty = "required";
+      }
+
+      if (!hasAllRequirements("warship", selectedWarshipId)) {
+        // @ts-ignore
+        errors.hasAllRequirements = "Don't have requirements";
+      }
+
+      return {
+        values: data,
+        errors,
+      };
+    },
+  });
+
+  const { formState, handleSubmit, getValues, control, reset } = form;
+
+  useEffect(() => {
+    reset({
+      selectedQty: getValues("selectedQty"),
+      gold,
+      population,
+      cityResources,
+    });
+  }, [population, gold, cityResources]);
+
+  const { isValid } = formState;
 
   function getResourcesForWarship(warshipId: number) {
     return warshipsDictionary.find((w) => w.id === warshipId);
@@ -81,9 +137,10 @@ export const SelectedWarship = ({
 
   maxShips = Math.min(maxShipsByGold, maxShipsByPopulation);
 
-  function isWarshipDisabled() {
+  const isWarshipDisabled = (data: IFormValues) => {
+    const { gold, population, cityResources } = data;
     return gold > cityResources.gold || population > cityResources.population;
-  }
+  };
 
   function run(warshipId: number, qty: number) {
     httpClient
@@ -113,8 +170,13 @@ export const SelectedWarship = ({
     researches,
   });
 
+  const onSubmit = (data: IFormValues) => {
+    run(selectedWarshipId, Number(data.selectedQty ? data.selectedQty : 0));
+    reset(DEFAULT_VALUES);
+  };
+
   return (
-    <SSelectedItem className={"row"}>
+    <SSelectedItem {...form} className={"row"}>
       <div className={"col-4"}>
         <SCardWrapper>
           <Card
@@ -165,36 +227,38 @@ export const SelectedWarship = ({
           <SText>You can build: {maxShips}</SText>
         </div>
         <SButtonsBlock>
-          <InputNumberStyled
-            value={selectedQty || ""}
-            onChange={(value) => {
-              if (!value) {
-                value = 0;
-              }
+          <Controller
+            name="selectedQty"
+            control={control}
+            render={({ field }) => {
+              return (
+                <InputNumberStyled
+                  {...field}
+                  onChange={(value) => {
+                    if (!value) {
+                      value = 0;
+                    }
 
-              if (value > 0) {
-                if (value > maxShips) {
-                  value = maxShips;
-                }
+                    if (value > 0) {
+                      if (value > maxShips) {
+                        value = maxShips;
+                      }
 
-                setSelectedQty(value);
-              } else {
-                setSelectedQty(null);
-              }
+                      field.onChange(value);
+                    } else {
+                      field.onChange(null);
+                    }
+                  }}
+                  disabled={!hasAllRequirements("warship", selectedWarshipId)}
+                />
+              );
             }}
-            disabled={!hasAllRequirements("warship", selectedWarshipId)}
           />
+
           <button
             className={"btn btn-primary"}
-            disabled={
-              isWarshipDisabled() ||
-              !selectedQty ||
-              !hasAllRequirements("warship", selectedWarshipId)
-            }
-            onClick={() => {
-              run(selectedWarshipId, selectedQty ? selectedQty : 0);
-              setSelectedQty(null);
-            }}
+            disabled={!isValid}
+            onClick={handleSubmit(onSubmit)}
           >
             Create
           </button>
@@ -210,7 +274,7 @@ export const SelectedWarship = ({
                 const requiredItem = getRequiredItem(requirement);
 
                 return (
-                  <SText>
+                  <SText key={requiredItem?.title}>
                     {requiredItem?.title}, {requirement.requiredEntityLvl} lvl
                   </SText>
                 );

@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 interface IProps {
   onChange: (value: number) => void;
-  value: number | string;
+  value: number | string | null;
   maxNumber?: number;
   disabled?: boolean;
 }

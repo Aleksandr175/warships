@@ -1,7 +1,17 @@
 # Browser-based online game Warships
 
 ### Requirements
+- php v8.2^
+- get composer
 - Docker Desktop
+
+### Installation
+Install vendor and everything for laravel
+> composer install
+
+Install frontend packages
+> npm install
+
 
 ### Commands
 start laravel server on http://localhost (http://0.0.0.0:80)

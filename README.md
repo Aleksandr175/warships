@@ -5,13 +5,33 @@
 - get composer
 - Docker Desktop
 
-### Installation
+### First Installation
 Install vendor and everything for laravel
 > composer install
 
 Install frontend packages
 > npm install
 
+Set actual config data for DB and app key in .env:
+> DB_CONNECTION=mysql \
+DB_HOST=mysql \
+DB_PORT=3306 \
+DB_DATABASE=warships \
+DB_USERNAME=sail \
+DB_PASSWORD=password
+
+Add database and user to docker container "mysql"
+> Open mysql container with terminal in Docker Desktop
+
+> CREATE DATABASE warships;
+
+> CREATE USER 'sail'@'%' IDENTIFIED BY 'password';
+
+> GRANT ALL PRIVILEGES ON warships.* TO 'sail'@'%';
+
+> FLUSH PRIVILEGES;
+
+> SHOW GRANTS FOR 'sail'@'%';
 
 ### Commands
 start laravel server on http://localhost (http://0.0.0.0:80)
@@ -24,7 +44,7 @@ start React
 #### WebSockets in docker container
 start websockets on 127.0.0.1:6001 (for synchronize fleets and etc.) / Admin form: http://localhost/laravel-websockets
 
-Enter container:
+Enter container: for what???
 > docker-compose exec -ti laravel.test bash
 
 Run:

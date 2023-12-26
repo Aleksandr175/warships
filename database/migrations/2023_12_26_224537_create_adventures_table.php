@@ -11,9 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('archipelagos', function (Blueprint $table) {
+        Schema::create('adventures', function (Blueprint $table) {
             $table->id();
-            $table->string('type')->default('usual'); // usual, unknown, adventure
+
+            $table->unsignedBigInteger('user_id');
+            $table->integer('adventure_level');
+            $table->unsignedBigInteger('archipelago_id')->nullable(); // generated archipelago for adventure
+            $table->integer('status')->nullable(); // generated archipelago for adventure
+
             $table->timestamps();
         });
     }
@@ -23,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('archipelagos');
+        Schema::dropIfExists('adventures');
     }
 };

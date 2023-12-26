@@ -58,13 +58,15 @@ Route::get('/test-expedition', function (\App\Services\ExpeditionService $expedi
 });
 
 Route::get('/test-pirate-logic', function (\App\Services\BattleService $battleService) {
-    $cities = City::get()->where('city_dictionary_id', 2);
+    $cities        = City::get()->where('city_dictionary_id', 2);
     $pirateService = new PirateService();
 
     foreach ($cities as $city) {
         $pirateService->handle($city);
     }
 });
+
+Route::get('/test-adventure-map', [\App\Http\Controllers\AdventureController::class, 'showMap']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/api/user', [\App\Http\Controllers\UserController::class, 'get']);

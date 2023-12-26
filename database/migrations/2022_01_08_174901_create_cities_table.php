@@ -16,6 +16,7 @@ class CreateCitiesTable extends Migration
         Schema::create('cities', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('city_dictionary_id')->unsigned()->default(1);
+            $table->unsignedInteger('adventure_id')->nullable();
 
             $table->integer('user_id')->nullable();
             $table->string('title', 50);
@@ -26,7 +27,7 @@ class CreateCitiesTable extends Migration
 
             $table->integer('appearance_id')->default(1);
 
-            $table->float('gold');
+            $table->float('gold'); // TODO: it should be string? or not?
             $table->integer('population');
 
             $table->foreign('city_dictionary_id')->references('id')->on('city_dictionary')->onDelete('cascade')->onUpdate('cascade');

@@ -15,6 +15,12 @@ return [
         'ISLAND'     => 1,
         'PIRATE_BAY' => 2,
         'COLONY'     => 3,
+
+        'ADVENTURE_EMPTY'      => 10,
+        'ADVENTURE_VILLAGE'    => 11,
+        'ADVENTURE_RICH_CITY'  => 12,
+        'ADVENTURE_PIRATE_BAY' => 13,
+        'ADVENTURE_TREASURE'   => 14,
     ],
 
     'BUILDINGS'  => [
@@ -86,5 +92,10 @@ return [
 
         'BATTLE_ATTACK_HAPPENED' => 100,
         'BATTLE_DEFEND_HAPPENED' => 101,
-    ]
+    ],
+
+    'ARCHIPELAGO_TYPES' => [
+        'USUAL'     => 1,
+        'ADVENTURE' => 2,
+    ],
 ];

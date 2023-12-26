@@ -28,7 +28,6 @@ interface IProps {
   cityResources: ICityResources;
   buildings: ICityBuilding[] | undefined;
   setBuildings: (buildings: ICityBuilding[]) => void;
-  getBuildings: () => void;
   buildingsProduction?: IBuildingsProduction[];
   queue?: ICityBuildingQueue;
   setQueue: (q: ICityBuildingQueue | undefined) => void;

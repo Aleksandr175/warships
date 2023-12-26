@@ -57,7 +57,7 @@ export const Buildings = ({
     setSelectedBuildingId(buildingsDictionary[0]?.id || 0);
   }, [buildingsDictionary]);
 
-  const getLvl = (buildingId: number) => {
+  const getLvl = (buildingId: number): number => {
     const building = buildings?.find((b) => b.buildingId === buildingId);
 
     if (building) {
@@ -116,7 +116,6 @@ export const Buildings = ({
           researchesDictionary={researchesDictionary}
           researches={researches}
           timeLeft={timeLeft}
-          getBuildings={getBuildings}
           buildingsDictionary={buildingsDictionary}
           queue={queue}
         />

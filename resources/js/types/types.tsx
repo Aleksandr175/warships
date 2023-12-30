@@ -172,6 +172,8 @@ export interface IBuildingsProduction {
 }
 
 export type TTask = "attack" | "move" | "trade" | "transport" | "expedition";
+// TODO: refactor naming
+export type TType = "map" | "adventure";
 
 export interface IFleetDetail {
   fleetId?: number;

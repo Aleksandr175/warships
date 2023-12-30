@@ -15,14 +15,14 @@ class AdventureController extends Controller
         $this->cityService = $cityService;
     }
 
-    public function showMap()
+    public function getMap()
     {
         $userId = Auth::user()->id;
 
         $adventure = Adventure::where('user_id', $userId)->first();
 
         if (!$adventure) {
-            $$adventure = $this->generateAdventure($userId, 1);
+            $adventure = $this->generateAdventure($userId, 1);
         }
 
         $cities = City::where('adventure_id', $adventure->id)->get();
@@ -30,7 +30,6 @@ class AdventureController extends Controller
         return [
             'cities' => MapCityResource::collection($cities)
         ];
-        // return map for adventure
     }
 
     public function generateAdventure(int $userId, int $lvl)

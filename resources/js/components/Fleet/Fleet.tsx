@@ -9,6 +9,7 @@ import {
   IFleetDetail,
   IWarship,
   TTask,
+  TType,
 } from "../../types/types";
 import { FleetCard } from "./FleetCard";
 import { InputNumber } from "../Common/InputNumber";
@@ -24,6 +25,7 @@ interface IProps {
 
 // TODO: add react hook form
 export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
+  const [type, setType] = useState<TType>("map");
   const [taskType, setTaskType] = useState<TTask>("trade");
   const [coordX, setCoordX] = useState<number>(0);
   const [coordY, setCoordY] = useState<number>(0);
@@ -55,6 +57,10 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
 
     if (searchParams.get("taskType")) {
       setTaskType(searchParams.get("taskType") as TTask);
+    }
+
+    if (searchParams.get("type")) {
+      setType(searchParams.get("type") as TType);
     }
   }, [searchParams]);
 
@@ -111,6 +117,7 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
         coordY,
         taskType,
         repeating,
+        type,
       })
       .then((response) => {
         console.log(response);
@@ -150,7 +157,7 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
 
   return (
     <SContent>
-      <SH1>Send Fleet</SH1>
+      <SH1>Send Fleet {type === "adventure" ? "to Adventure" : ""}</SH1>
 
       {dictionary.map((item) => {
         return (
@@ -178,30 +185,35 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
           >
             Attack
           </STaskType>
-          <STaskType
-            active={taskType === "trade"}
-            onClick={() => setTaskType("trade")}
-          >
-            Trade
-          </STaskType>
-          <STaskType
-            active={taskType === "transport"}
-            onClick={() => setTaskType("transport")}
-          >
-            Transport
-          </STaskType>
-          <STaskType
-            active={taskType === "move"}
-            onClick={() => setTaskType("move")}
-          >
-            Move
-          </STaskType>
-          <STaskType
-            active={taskType === "expedition"}
-            onClick={() => setTaskType("expedition")}
-          >
-            Expedition
-          </STaskType>
+
+          {type !== "adventure" && (
+            <>
+              <STaskType
+                active={taskType === "trade"}
+                onClick={() => setTaskType("trade")}
+              >
+                Trade
+              </STaskType>
+              <STaskType
+                active={taskType === "transport"}
+                onClick={() => setTaskType("transport")}
+              >
+                Transport
+              </STaskType>
+              <STaskType
+                active={taskType === "move"}
+                onClick={() => setTaskType("move")}
+              >
+                Move
+              </STaskType>
+              <STaskType
+                active={taskType === "expedition"}
+                onClick={() => setTaskType("expedition")}
+              >
+                Expedition
+              </STaskType>
+            </>
+          )}
         </div>
 
         {taskType !== "expedition" && (
@@ -209,18 +221,20 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
             <div>
               <strong>Target Island:</strong>
             </div>
-            <div>
-              {cities.map((city) => {
-                return (
-                  <SCityPreset
-                    active={city.coordX === coordX && city.coordY === coordY}
-                    onClick={() => chooseCity(city)}
-                  >
-                    {city.title}
-                  </SCityPreset>
-                );
-              })}
-            </div>
+            {type === "map" && (
+              <div>
+                {cities.map((city) => {
+                  return (
+                    <SCityPreset
+                      active={city.coordX === coordX && city.coordY === coordY}
+                      onClick={() => chooseCity(city)}
+                    >
+                      {city.title}
+                    </SCityPreset>
+                  );
+                })}
+              </div>
+            )}
 
             <SCoordinatesBlock>
               <div>
@@ -243,38 +257,43 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
             </SCoordinatesBlock>
           </div>
         )}
-        <div className={"col-4"}>
-          <div>
-            <strong>Gold (Capacity: {maxCapacity}):</strong>
-          </div>
-          <InputNumberGoldStyled
-            value={gold}
-            onChange={(value) => setGold(value)}
-            maxNumber={city.gold > maxCapacity ? maxCapacity : city.gold}
-          />
-        </div>
 
-        <div className={"col-12"}>
-          <div>
-            <strong>Repeating:</strong>
-          </div>
-          <STaskType
-            active={repeating}
-            onClick={() => {
-              setRepeating(true);
-            }}
-          >
-            Yes
-          </STaskType>
-          <STaskType
-            active={!repeating}
-            onClick={() => {
-              setRepeating(false);
-            }}
-          >
-            No
-          </STaskType>
-        </div>
+        {type === "map" && (
+          <>
+            <div className={"col-4"}>
+              <div>
+                <strong>Gold (Capacity: {maxCapacity}):</strong>
+              </div>
+              <InputNumberGoldStyled
+                value={gold}
+                onChange={(value) => setGold(value)}
+                maxNumber={city.gold > maxCapacity ? maxCapacity : city.gold}
+              />
+            </div>
+
+            <div className={"col-12"}>
+              <div>
+                <strong>Repeating:</strong>
+              </div>
+              <STaskType
+                active={repeating}
+                onClick={() => {
+                  setRepeating(true);
+                }}
+              >
+                Yes
+              </STaskType>
+              <STaskType
+                active={!repeating}
+                onClick={() => {
+                  setRepeating(false);
+                }}
+              >
+                No
+              </STaskType>
+            </div>
+          </>
+        )}
 
         <div className={"col-12"}>
           <br />

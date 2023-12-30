@@ -2,36 +2,31 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { httpClient } from "../../httpClient/httpClient";
 import styled, { css } from "styled-components";
-import { IMapCity } from "../../types/types";
-import { SContent } from "../styles";
+import { IMapCity, TType } from "../../types/types";
+import { SContent, SH1 } from "../styles";
 import { useNavigate } from "react-router-dom";
 
-interface IProps {
-  cityId: number;
-}
-
-export const Map = ({ cityId }: IProps) => {
-  const [cities, setCities] = useState<IMapCity[]>([]);
-  const [cells, setCells] = useState<{ id: number }[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export const Map = () => {
   const size = 5 * 5;
+  const [cities, setCities] = useState<IMapCity[]>([]);
+  const [type, setType] = useState<TType>("map");
+  const [cells, setCells] = useState<{ id: number }[]>(() => {
+    let tCells = [];
+
+    for (let i = 0; i < size; i++) {
+      tCells[i] = {
+        id: i,
+      };
+    }
+
+    return tCells;
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     httpClient.get("/map").then((response) => {
-      console.log(response);
-
       setCities(response.data.cities);
 
-      let tCells = [];
-
-      for (let i = 0; i < size; i++) {
-        tCells[i] = {
-          id: i,
-        };
-      }
-
-      // @ts-ignore
-      setCells(tCells);
       setIsLoading(false);
     });
   }, []);
@@ -48,14 +43,29 @@ export const Map = ({ cityId }: IProps) => {
 
   const navigate = useNavigate();
 
+  const getAdventure = () => {
+    setIsLoading(true);
+    setType("adventure");
+    httpClient.get("/map/adventure").then((response) => {
+      setCities(response.data.cities);
+
+      setIsLoading(false);
+    });
+  };
+
   if (isLoading) {
     return <>Loading...</>;
   }
 
   return (
     <SContent>
+      <button className={"btn btn-primary"} onClick={getAdventure}>
+        Adventure
+      </button>
+
+      <SH1>{type === "map" ? "Map" : "Adventure"}</SH1>
       <SCells>
-        {cells.map((cell, index) => {
+        {cells?.map((cell, index) => {
           const y = Math.floor(index / 5) + 1;
           const x = (index % 5) + 1;
           const city = getCity(y, x);
@@ -71,11 +81,7 @@ export const Map = ({ cityId }: IProps) => {
                   type={city?.cityAppearanceId}
                   onClick={() =>
                     navigate(
-                      "/fleets?coordX=" +
-                        x +
-                        "&coordY=" +
-                        y +
-                        "&taskType=attack"
+                      `/fleets?coordX=${x}&coordY=${y}&taskType=attack&type=${type}`
                     )
                   }
                 />

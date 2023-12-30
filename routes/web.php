@@ -85,6 +85,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/warships/create', [\App\Http\Controllers\WarshipQueueController::class, 'run']);
 
     Route::get('/api/map', [\App\Http\Controllers\MapController::class, 'get']);
+    Route::get('/api/map/adventure', [\App\Http\Controllers\AdventureController::class, 'getMap']);
 
     Route::get('/api/fleets', [\App\Http\Controllers\FleetController::class, 'get']);
     Route::post('/api/fleets/send', [\App\Http\Controllers\FleetController::class, 'send']);

@@ -271,7 +271,7 @@ const App = () => {
                       />
                     }
                   />
-                  <Route path={"map"} element={<Map cityId={city.id} />} />
+                  <Route path={"map"} element={<Map />} />
                   <Route
                     path="logs/:id"
                     element={

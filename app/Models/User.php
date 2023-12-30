@@ -49,6 +49,10 @@ class User extends Authenticatable
         return $this->cities()->where('id', $cityId)->first();
     }
 
+    public function archipelagoId() {
+        return $this->cities()->first()->archipelago_id;
+    }
+
     public function researches() {
         return $this->hasMany(Research::class);
     }
@@ -63,5 +67,9 @@ class User extends Authenticatable
 
     public function unreadMessagesNumber() {
         return $this->hasMany(Message::class)->where('is_read', 0)->count();
+    }
+
+    public function adventure() {
+        return $this->hasOne(Adventure::class)->orderBy('adventure_level', 'DESC');
     }
 }

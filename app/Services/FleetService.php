@@ -45,9 +45,25 @@ class FleetService
         $this->repeating           = $params->repeating ? 1 : 0;
         $this->taskTypeSlug        = $params->taskType;
         $this->updatedFleetDetails = [];
+        $this->type                = $params->type; // map | adventure
 
-        // check target coords - that it exists
-        $this->targetCity = $this->getCityByCoords($this->coordX, $this->coordY);
+        if (!$this->coordX || !$this->coordY) {
+            return 'no coordinates';
+        }
+
+        // get archipelago id depending on type
+        if ($this->type === 'adventure') {
+            // send fleet to external archipelago / adventure
+            $adventure = $user->adventure;
+
+            $archipelagoId = $adventure->archipelago_id;
+        } else {
+            // send fleet in our archipelago
+            $archipelagoId = $user->archipelagoId();
+        }
+
+        // get target city by coordinates and archipelago id
+        $this->targetCity = $this->getCityByCoords($archipelagoId, (int)$this->coordX, (int)$this->coordY);
 
         // we need target city, except for expedition
         if ($this->taskTypeSlug !== 'expedition' && !$this->isCity($this->targetCity)) {
@@ -62,87 +78,89 @@ class FleetService
             return 'no such task type';
         }
 
-        if ($this->taskTypeSlug === 'attack' && $this->targetCity->city_dictionary_id !== config('constants.CITY_TYPE_ID.PIRATE_BAY')) {
+        if (
+            $this->type !== 'adventure' &&
+            $this->taskTypeSlug === 'attack' && $this->targetCity->city_dictionary_id !== config('constants.CITY_TYPE_ID.PIRATE_BAY')) {
             return 'We can attack pirate bay only';
         }
 
         $this->taskTypeId = $this->taskType->id;
 
-        // check details
-        if ($this->fleetDetails && count($this->fleetDetails)) {
-            // get player's city
-            $userCity = $user->city($this->cityId);
+        // get player's city
+        $userCity = $user->city($this->cityId);
 
-            if (!($userCity && $userCity->id)) {
-                return 'it is not city of user';
-            }
+        if (!($userCity && $userCity->id)) {
+            return 'it is not city of current user';
+        }
 
-            // get warships in city
-            $warshipGroupsInCity = $userCity->warships()->where('user_id', $user->id)->get();
-
-            $this->updatedFleetDetails = $this->checkFleetDetails($warshipGroupsInCity, $this->fleetDetails);
-
-            if (!count($this->updatedFleetDetails)) {
-                return 'no warships selected';
-            }
-
-            // calculate time to target
-            // $distance = abs($userCity->coord_x - $this->coordX) + abs($userCity->coord_y - $this->coordY);
-            // for expedition? what time?
-            // TODO: add speed param for time
-            $timeToTarget = 10; // in seconds
-
-            if (($this->gold && !is_numeric($this->gold))) {
-                return 'Wrong gold number';
-            }
-
-            $gold = $this->handleGold($this->gold, $userCity, $this->updatedFleetDetails);
-
-            // update gold for island
-            $userCity->increment('gold', -$gold);
-
-            $defaultFleetStatusId = 0;
-            if ($this->taskTypeId === config('constants.FLEET_TASKS.TRADE')) {
-                $defaultFleetStatusId = config('constants.FLEET_STATUSES.TRADE_GOING_TO_TARGET');
-            }
-            if ($this->taskTypeId === config('constants.FLEET_TASKS.MOVE')) {
-                $defaultFleetStatusId = config('constants.FLEET_STATUSES.MOVING_GOING_TO_TARGET');
-            }
-            if ($this->taskTypeId === config('constants.FLEET_TASKS.ATTACK')) {
-                $defaultFleetStatusId = config('constants.FLEET_STATUSES.ATTACK_GOING_TO_TARGET');
-            }
-            if ($this->taskTypeId === config('constants.FLEET_TASKS.TRANSPORT')) {
-                $defaultFleetStatusId = config('constants.FLEET_STATUSES.TRANSPORT_GOING_TO_TARGET');
-            }
-            if ($this->taskTypeId === config('constants.FLEET_TASKS.EXPEDITION')) {
-                $defaultFleetStatusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_TO_TARGET');
-            }
-
-            // create fleet and details
-            $fleetId = Fleet::create([
-                'city_id'        => $userCity->id,
-                'target_city_id' => $this->targetCity?->id,
-                'fleet_task_id'  => $this->taskTypeId,
-                'speed'          => 100,
-                'time'           => $timeToTarget,
-                'gold'           => $gold,
-                'repeating'      => $this->repeating,
-                'status_id'      => $defaultFleetStatusId,
-                'deadline'       => Carbon::now()->addSeconds($timeToTarget)
-            ])->id;
-
-            $this->moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleetId, $this->updatedFleetDetails);
-
-            $this->sendFleetUpdatedEvent($user, $userCity);
-            $this->sendCityDataUpdatedEvent($user);
-
-            return [
-                'success'  => true,
-                'warships' => WarshipResource::collection($warshipGroupsInCity)
-            ];
-        } else {
+        if (!$this->fleetDetails || !count($this->fleetDetails)) {
             return 'No warships in fleet';
         }
+
+        // get warships in city
+        $warshipGroupsInCity = $userCity->warships()->where('user_id', $user->id)->get();
+
+        // check details
+        $this->updatedFleetDetails = $this->checkFleetDetails($warshipGroupsInCity, $this->fleetDetails);
+
+        if (!count($this->updatedFleetDetails)) {
+            return 'no warships selected';
+        }
+
+        // calculate time to target
+        // $distance = abs($userCity->coord_x - $this->coordX) + abs($userCity->coord_y - $this->coordY);
+        // for expedition? what time?
+        // TODO: add speed param for time
+        $timeToTarget = 10; // in seconds
+
+        if (($this->gold && !is_numeric($this->gold))) {
+            return 'Wrong gold number';
+        }
+
+        $gold = $this->handleGold($this->gold, $userCity, $this->updatedFleetDetails);
+
+        // update gold for island
+        $userCity->increment('gold', -$gold);
+
+        $defaultFleetStatusId = 0;
+        if ($this->taskTypeId === config('constants.FLEET_TASKS.TRADE')) {
+            $defaultFleetStatusId = config('constants.FLEET_STATUSES.TRADE_GOING_TO_TARGET');
+        }
+        if ($this->taskTypeId === config('constants.FLEET_TASKS.MOVE')) {
+            $defaultFleetStatusId = config('constants.FLEET_STATUSES.MOVING_GOING_TO_TARGET');
+        }
+        if ($this->taskTypeId === config('constants.FLEET_TASKS.ATTACK')) {
+            $defaultFleetStatusId = config('constants.FLEET_STATUSES.ATTACK_GOING_TO_TARGET');
+        }
+        if ($this->taskTypeId === config('constants.FLEET_TASKS.TRANSPORT')) {
+            $defaultFleetStatusId = config('constants.FLEET_STATUSES.TRANSPORT_GOING_TO_TARGET');
+        }
+        if ($this->taskTypeId === config('constants.FLEET_TASKS.EXPEDITION')) {
+            $defaultFleetStatusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_TO_TARGET');
+        }
+
+        // create fleet and details
+        $fleetId = Fleet::create([
+            'city_id'        => $userCity->id,
+            'target_city_id' => $this->targetCity?->id,
+            'fleet_task_id'  => $this->taskTypeId,
+            'speed'          => 100,
+            'time'           => $timeToTarget,
+            'gold'           => $gold,
+            'repeating'      => $this->repeating,
+            'status_id'      => $defaultFleetStatusId,
+            'deadline'       => Carbon::now()->addSeconds($timeToTarget)
+        ])->id;
+
+        $this->moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleetId, $this->updatedFleetDetails);
+
+        $this->sendFleetUpdatedEvent($user, $userCity);
+        $this->sendCityDataUpdatedEvent($user);
+
+        return [
+            'success'  => true,
+            'warships' => WarshipResource::collection($warshipGroupsInCity)
+        ];
     }
 
     // check and correct fleet details, convert fleet details to backend format
@@ -251,7 +269,7 @@ class FleetService
         return $t ?: null;
     }
 
-    public function getCityByCoords($coordX, $coordY)
+    public function getCityByCoords(int $archipelagoId, int $coordX, int $coordY): City
     {
         return City::where('coord_x', $coordX)->where('coord_y', $coordY)->first();
     }

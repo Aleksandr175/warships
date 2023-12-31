@@ -31,7 +31,6 @@ return new class extends Migration
 
             $table->unsignedBigInteger('battle_log_id')->nullable();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('battle_log_id')->references('id')->on('battle_logs')->onDelete('set null');
 
             $table->timestamps();

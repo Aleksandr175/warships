@@ -69,6 +69,7 @@ return [
         'ATTACK_GOING_TO_TARGET' => 30,
         'ATTACK_GOING_BACK'      => 31,
         'ATTACK_IN_PROGRESS'     => 32,
+        'ATTACK_COMPLETED'       => 33,
 
         'EXPEDITION_GOING_TO_TARGET' => 40,
         'EXPEDITION_IN_PROGRESS'     => 42,

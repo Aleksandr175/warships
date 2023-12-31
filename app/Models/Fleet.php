@@ -112,6 +112,11 @@ class Fleet extends Model
         return $this->isAttackTask() && $this->status_id === config('constants.FLEET_STATUSES.ATTACK_IN_PROGRESS');
     }
 
+    public function isAttackFleetAttackCompleted()
+    {
+        return $this->isAttackTask() && $this->status_id === config('constants.FLEET_STATUSES.ATTACK_COMPLETED');
+    }
+
     public function isExpeditionFleetGoingToTarget()
     {
         return $this->isExpeditionTask() && $this->status_id === config('constants.FLEET_STATUSES.EXPEDITION_GOING_TO_TARGET');

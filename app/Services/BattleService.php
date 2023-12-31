@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Adventure;
 use App\Models\BattleLog;
 use App\Models\BattleLogDetail;
 use App\Models\City;
@@ -16,10 +17,19 @@ class BattleService
     // handle battle process
     public function handle(Fleet $fleet): void
     {
-        $targetCity       = (new City)->find($fleet->target_city_id);
-        $city             = (new City)->find($fleet->city_id);
-        $userId           = $city->user_id;
-        $targetCityUserId = $targetCity->user_id;
+        $targetCity          = (new City)->find($fleet->target_city_id);
+        $city                = (new City)->find($fleet->city_id);
+        $userId              = $city->user_id;
+        $targetCityUserId    = $targetCity->user_id;
+        $targetArchipelagoId = City::where('id', $targetCity->id)->first()->archipelago_id;
+
+        $adventure = Adventure::where('archipelago_id', $targetArchipelagoId)->first();
+
+        $isUserAttackingAdventureIsland = false;
+
+        if (isset($adventure->id)) {
+            $isUserAttackingAdventureIsland = true;
+        }
 
         $attackingFleetDetails = FleetDetail::getFleetDetails([$fleet->id])->toArray();
 
@@ -29,18 +39,10 @@ class BattleService
 
         dump('AttackingFleetDetails', $attackingFleetDetails);
 
-        // TODO: do i need it?
-        if ($targetCity->city_dictionary_id === CityDictionary::PIRATE_BAY) {
-            $attackingUserId = $userId;
-            $defendingUserId = $targetCityUserId;
-        } else {
-            $attackingUserId = $targetCityUserId;
-            $defendingUserId = $userId;
-        }
+        $attackingUserId = $userId;
+        $defendingUserId = $targetCityUserId;
 
         dump("Attacker is $attackingUserId, Defender is: $defendingUserId");
-
-        $defendingFleetDetails = [];
 
         // TODO if we attack player's island
         // get warships in target island
@@ -50,36 +52,43 @@ class BattleService
         //  get warships for player's bay
         // TODO: do it later
 
-        $defendingWarships = $targetCity->warships;
-        foreach ($defendingWarships as $warship) {
-            $defendingFleetDetails[] = [
-                'warship_id' => $warship['warship_id'],
-                'qty'        => $warship['qty']
-            ];
-        }
-
-        // set needed data, like health
-        $attackingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($attackingFleetDetails, $warshipsDictionary);
-        $defendingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($defendingFleetDetails, $warshipsDictionary);
-
+        $round        = 0;
         $logAttacking = [];
         $logDefending = [];
-        $round        = 0;
 
-        // calculate rounds while we have warships on each side
-        do {
-            $attackingForce = $this->calculateFleetAttack($attackingFleetDetails, $warshipsDictionary);
-            // TODO: add Fortress attack value
-            $defendingForce = $this->calculateFleetAttack($attackingFleetDetails, $warshipsDictionary);
+        // set needed data for attacker, like health and capacity
+        $attackingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($attackingFleetDetails, $warshipsDictionary);
 
-            $attackingDamageToEachType = $attackingForce / count($defendingWarships);
-            $defendingDamageToEachType = $defendingForce / count($attackingFleetDetails);
+        $defendingFleetDetails = [];
+        $defendingWarships     = $targetCity->warships;
 
-            [$defendingFleetDetails, $logAttacking[$round]] = $this->shoot($attackingDamageToEachType, $defendingFleetDetails);
-            [$attackingFleetDetails, $logDefending[$round]] = $this->shoot($defendingDamageToEachType, $attackingFleetDetails);
+        // if defender has no warships - skip this logic
+        if ($defendingWarships && count($defendingWarships) > 0) {
+            foreach ($defendingWarships as $warship) {
+                $defendingFleetDetails[] = [
+                    'warship_id' => $warship['warship_id'],
+                    'qty'        => $warship['qty']
+                ];
+            }
 
-            $round++;
-        } while (count($defendingFleetDetails) > 0 && count($attackingFleetDetails) > 0);
+            // set needed data for defender, like health and capacity
+            $defendingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($defendingFleetDetails, $warshipsDictionary);
+
+            // calculate rounds while we have warships on each side
+            do {
+                $attackingForce = $this->calculateFleetAttack($attackingFleetDetails, $warshipsDictionary);
+                // TODO: add Fortress attack value
+                $defendingForce = $this->calculateFleetAttack($attackingFleetDetails, $warshipsDictionary);
+
+                $attackingDamageToEachType = $attackingForce / count($defendingWarships);
+                $defendingDamageToEachType = $defendingForce / count($attackingFleetDetails);
+
+                [$defendingFleetDetails, $logAttacking[$round]] = $this->shoot($attackingDamageToEachType, $defendingFleetDetails);
+                [$attackingFleetDetails, $logDefending[$round]] = $this->shoot($defendingDamageToEachType, $attackingFleetDetails);
+
+                $round++;
+            } while (count($defendingFleetDetails) > 0 && count($attackingFleetDetails) > 0);
+        }
 
         // get latest battle id
         $battleLog = (new \App\Models\BattleLog)->latest()->first();
@@ -136,6 +145,17 @@ class BattleService
         if ($winner === 'attacker') {
             [$takeGold, $takePopulation] = $this->moveResourcesToAttackerFleet($fleet, $attackingFleetDetails, $targetCity);
             $this->removeResourcesFromCity($targetCity, $takeGold, $takePopulation);
+
+            $fleet->update([
+                'status_id' => config('constants.FLEET_STATUSES.ATTACK_COMPLETED'),
+            ]);
+
+            if ($isUserAttackingAdventureIsland) {
+                // mark island as raided
+                $targetCity->update([
+                    'raided' => 1
+                ]);
+            }
         }
 
         BattleLog::create([
@@ -195,25 +215,27 @@ class BattleService
 
         // for attacker
         Message::create([
-            'user_id' => $userId,
-            'content' => 'Battle happened.',
-            'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_ATTACK_HAPPENED'),
-            'event_type' => 'Battle',
-            'city_id' => $city->id,
+            'user_id'        => $userId,
+            'content'        => 'Battle happened.',
+            'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_ATTACK_HAPPENED'),
+            'event_type'     => 'Battle',
+            'city_id'        => $city->id,
             'target_city_id' => $targetCity->id,
-            'battle_log_id' => $newBattleLogId
+            'battle_log_id'  => $newBattleLogId
         ]);
 
         // for defender
-        Message::create([
-            'user_id' => $targetCityUserId,
-            'content' => 'Battle happened.',
-            'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_DEFEND_HAPPENED'),
-            'event_type' => 'Battle',
-            'city_id' => $targetCity->id,
-            'target_city_id' => $city->id,
-        ]);
+        if ($targetCityUserId) {
+            Message::create([
+                'user_id'        => $targetCityUserId,
+                'content'        => 'Battle happened.',
+                'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_DEFEND_HAPPENED'),
+                'event_type'     => 'Battle',
+                'city_id'        => $targetCity->id,
+                'target_city_id' => $city->id,
+            ]);
 
+        }
 
         // TODO: notify user about result somehow (websockets)?
         // ...

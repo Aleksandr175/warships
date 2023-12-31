@@ -33,6 +33,7 @@ class FleetService
     private $taskTypeSlug        = null;
     private $targetCity          = null;
     private $taskTypeId          = null;
+    private $type                = null;
 
     // send fleet to target
     public function send($params, $user)
@@ -57,6 +58,8 @@ class FleetService
             $adventure = $user->adventure;
 
             $archipelagoId = $adventure->archipelago_id;
+
+            $this->repeating = false;
         } else {
             // send fleet in our archipelago
             $archipelagoId = $user->archipelagoId();
@@ -537,8 +540,7 @@ class FleetService
                     BattleJob::dispatch()->onQueue('battle');
                 }
 
-                // TODO: i think we should have status isAttackCompleted
-                if ($fleet->isAttackFleetAttackInProgress()) {
+                if ($fleet->isAttackFleetAttackCompleted()) {
                     dump('fleets\'s attack is completed: fleet is going back');
                     $statusId = config('constants.FLEET_STATUSES.ATTACK_GOING_BACK');
 

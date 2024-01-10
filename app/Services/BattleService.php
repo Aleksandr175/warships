@@ -143,7 +143,7 @@ class BattleService
 
         // calculate resources if attacker wins
         if ($winner === 'attacker') {
-            [$takeGold, $takePopulation] = $this->moveResourcesToAttackerFleet($fleet, $attackingFleetDetails, $targetCity);
+            [$takeGold, $takePopulation] = $this->moveResourcesToAttackerFleet($fleet, $attackingFleetDetails, $targetCity, $isUserAttackingAdventureIsland);
             $this->removeResourcesFromCity($targetCity, $takeGold, $takePopulation);
 
             $fleet->update([
@@ -151,10 +151,12 @@ class BattleService
             ]);
 
             if ($isUserAttackingAdventureIsland) {
-                // mark island as raided
-                $targetCity->update([
-                    'raided' => 1
-                ]);
+                // mark island as raided if it doesn't have any resources
+                if ((int)$targetCity->gold === 0 && (int)$targetCity->population === 0) {
+                    $targetCity->update([
+                        'raided' => 1
+                    ]);
+                }
             }
         }
 
@@ -297,15 +299,17 @@ class BattleService
     }
 
     // move resources from city to fleet (can't move more than capacity of fleet)
-    public function moveResourcesToAttackerFleet(Fleet $fleet, $fleetDetails, City $city): array
+    public function moveResourcesToAttackerFleet(Fleet $fleet, $fleetDetails, City $city, bool $isAdventure): array
     {
         $availableCapacity = $this->getAvailableCapacity($fleet, $fleetDetails);
 
-        // we can take only 50% or resources
-        $cityGold       = floor($city->gold / 2);
-        $cityPopulation = floor($city->population / 2);
+        $coefficient = $isAdventure ? 1 : 2;
 
-        dump("availableCapacity $availableCapacity, cityGold $cityGold, cityPopulation $cityPopulation");
+        // we can take only 50% of resources for common islands and 100% for adventure islands
+        $cityGold       = floor($city->gold / $coefficient);
+        $cityPopulation = floor($city->population / $coefficient);
+
+        dump("availableCapacity $availableCapacity, cityGold $cityGold, cityPopulation $cityPopulation, isAdventure $isAdventure");
         $takeGold       = 0;
         $takePopulation = 0;
 

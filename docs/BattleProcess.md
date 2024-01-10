@@ -42,7 +42,7 @@ We create log for every shoot and log for result of battle. We need to know who 
 ### Notifications
 - in progress
 
-### Getting resources logic
+### Getting resources logic if battle between users
 We calculate full capacity of A warships.
 
 Formula:
@@ -55,6 +55,22 @@ We get 50% of gold and 50% of population from city.
 
 If sum of all resources is bigger than capacity -> first we get all gold and if we have space we get the rest of the "population".
 
+### Getting resources logic if battle between user and adventure island
+
+We calculate full capacity of A warships.
+
+Formula:
+
+$wholeCapacity = warshipsQty * warshipsCapacity for each warship type in fleet;
+
+"A" can get maximum 100% of resources in city.
+
+We get 100% of gold and 100% of population from city.
+
+If sum of all resources is bigger than capacity -> first we get all gold and if we have space we get the rest of the "population".
+
+If defender island doesn't have any resources after battle - it will mark as "raided" and can't be attacked again.
+
 ## Future updates
 
 - set max round of battle (6-7?)
@@ -62,4 +78,4 @@ If sum of all resources is bigger than capacity -> first we get all gold and if 
 - add fortress, increase damage & defence ability
 - add ability to attack alien trade fleet in the city (while it is process of trading)
 - add notifications about battle result in real time
-- when getting resources -> check capacity depends on what fleet had. Cas it could be sent with some resource to attack city. +
+- (DONE) when getting resources -> check capacity depends on what fleet had. Cas it could be sent with some resource to attack city.

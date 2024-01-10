@@ -12,7 +12,7 @@ Each next level of adventure has even more resources and warships.
 
 There is no limit of level of adventure.
 
-If player attacks island and battle is won - we mark island as Raided. Player can't raid this island again.
+If player attacks island and battle is won, and we grabbed all resources - we mark island as Raided. Player can't raid this island again.
 
 If all islands are raided - it means that we can change adventure to next level.
 

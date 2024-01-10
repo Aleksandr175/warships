@@ -48,7 +48,7 @@ class FleetService
         $this->updatedFleetDetails = [];
         $this->type                = $params->type; // map | adventure
 
-        if (!$this->coordX || !$this->coordY) {
+        if ($this->taskTypeSlug !== 'expedition' && (!$this->coordX || !$this->coordY)) {
             return 'no coordinates';
         }
 
@@ -65,12 +65,14 @@ class FleetService
             $archipelagoId = $user->archipelagoId();
         }
 
-        // get target city by coordinates and archipelago id
-        $this->targetCity = $this->getCityByCoords($archipelagoId, (int)$this->coordX, (int)$this->coordY);
+        if ($this->taskTypeSlug !== 'expedition') {
+            // get target city by coordinates and archipelago id
+            $this->targetCity = $this->getCityByCoords($archipelagoId, (int)$this->coordX, (int)$this->coordY);
 
-        // we need target city, except for expedition
-        if ($this->taskTypeSlug !== 'expedition' && !$this->isCity($this->targetCity)) {
-            return 'there is no city';
+            // we need target city, except for expedition
+            if (!$this->isCity($this->targetCity)) {
+                return 'there is no city';
+            }
         }
 
         $this->taskType = $this->getTaskType($this->taskTypeSlug);

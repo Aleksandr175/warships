@@ -198,11 +198,11 @@ export const SelectedBuilding = ({
             <>
               <SText>It requires:</SText>
               {getRequirements("building", selectedBuildingId, nextLvl)?.map(
-                (requirement) => {
+                (requirement, index) => {
                   const requiredItem = getRequiredItem(requirement);
 
                   return (
-                    <SText>
+                    <SText key={index}>
                       {requiredItem?.title}, {requirement.requiredEntityLvl} lvl
                     </SText>
                   );

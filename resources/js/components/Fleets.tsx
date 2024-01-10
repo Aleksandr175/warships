@@ -26,8 +26,19 @@ export const Fleets = ({
     return fleetDetails?.filter((detail) => detail.fleetId === fleetId)!;
   };
 
+  const tradeFleetTaskId = dictionaries?.fleetTasksDictionary?.find(
+    (task) => task.slug === "trade"
+  )?.id;
+
+  const fleetsTrading = [...(fleets || []), ...(fleetsIncoming || [])].filter(
+    (fleet) => fleet.fleetTaskId === tradeFleetTaskId
+  );
+
   return (
     <SColumnFleets>
+      <p>Active Fleets</p>
+      {!fleets?.length && !fleetsIncoming?.length && <p>No Active Fleets</p>}
+
       {fleets &&
         fleets.map((fleet) => {
           return (
@@ -46,6 +57,24 @@ export const Fleets = ({
         <>
           <p>Incoming Fleets</p>
           {fleetsIncoming.map((fleet) => {
+            return (
+              <Fleet
+                key={fleet.id}
+                fleet={fleet}
+                fleetDetails={getFleetDetails(fleet.id)}
+                dictionaries={dictionaries}
+                // TODO: sent city and target city, not whole dictionary of cities
+                fleetCities={fleetCitiesDictionary}
+              />
+            );
+          })}
+        </>
+      )}
+
+      {fleetsTrading && fleetsTrading.length > 0 && (
+        <>
+          <p>Trading Fleets</p>
+          {fleetsTrading.map((fleet) => {
             return (
               <Fleet
                 key={fleet.id}

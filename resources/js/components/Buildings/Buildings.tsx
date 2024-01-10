@@ -127,6 +127,7 @@ export const Buildings = ({
 
           return (
             <SItemWrapper
+              key={item.id}
               onClick={() => {
                 setSelectedBuildingId(item.id);
               }}

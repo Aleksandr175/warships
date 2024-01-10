@@ -82,4 +82,5 @@ Has warships points: 0
 
 ### Future updates
 
+- generate warships depends on warship points
 - add ability to take materials from islands

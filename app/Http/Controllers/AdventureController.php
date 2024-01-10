@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\MapCityResource;
+use App\Http\Resources\MapAdventureCityResource;
+use App\Http\Resources\WarshipResource;
 use App\Models\Adventure;
 use App\Models\City;
+use App\Models\Warship;
 use App\Services\CityService;
+use App\Services\WarshipService;
 use Illuminate\Support\Facades\Auth;
 
 class AdventureController extends Controller
 {
-    public function __construct(CityService $cityService)
+    public function __construct(CityService $cityService, WarshipService $warshipService)
     {
         $this->cityService = $cityService;
+        $this->warshipService = $warshipService;
     }
 
     public function getMap()
@@ -27,15 +31,18 @@ class AdventureController extends Controller
 
         $cities = City::where('adventure_id', $adventure->id)->get();
 
+        $warships = Warship::whereIn('city_id', $cities->pluck('id'))->get();
+
         return [
-            'cities' => MapCityResource::collection($cities)
+            'cities'   => MapAdventureCityResource::collection($cities),
+            'warships' => WarshipResource::collection($warships)
         ];
     }
 
     public function generateAdventure(int $userId, int $lvl)
     {
         $archipelagoController = new ArchipelagoController();
-        $newArchipelago      = $archipelagoController->createArchipelagoForAdventure();
+        $newArchipelago        = $archipelagoController->createArchipelagoForAdventure();
 
         $adventure = Adventure::create([
             'user_id'         => $userId,
@@ -46,6 +53,7 @@ class AdventureController extends Controller
 
         // generate new cities for adventure
         $this->cityService->generateCitiesForAdventure($adventure, $newArchipelago);
+        $this->warshipService->generateWarshipsForAdventureCities($adventure, $newArchipelago);
 
         return $adventure;
     }

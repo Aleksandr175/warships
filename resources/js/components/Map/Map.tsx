@@ -5,6 +5,7 @@ import styled, { css } from "styled-components";
 import { IMapCity, TType } from "../../types/types";
 import { SContent, SH1 } from "../styles";
 import { useNavigate } from "react-router-dom";
+import { Icon } from "../Common/Icon";
 
 export const Map = () => {
   const size = 5 * 5;
@@ -53,6 +54,14 @@ export const Map = () => {
     });
   };
 
+  const isFleetMovingToIsland = (cityId: number): boolean => {
+    return false;
+  };
+
+  const isIslandRaided = (cityId: number) => {
+    return !!cities.find((city) => city.id === cityId)?.raided;
+  };
+
   if (isLoading) {
     return <>Loading...</>;
   }
@@ -74,17 +83,28 @@ export const Map = () => {
 
           return (
             <SCell isHabited={isCity} key={cell.id}>
-              <SIsland type={city?.cityAppearanceId} />
-              {isCity && (
-                <SIsland
-                  islandType={isPirates ? "pirates" : ""}
-                  type={city?.cityAppearanceId}
-                  onClick={() =>
-                    navigate(
-                      `/fleets?coordX=${x}&coordY=${y}&taskType=attack&type=${type}`
-                    )
-                  }
-                />
+              {city && isCity && (
+                <>
+                  <SIsland
+                    islandType={isPirates ? "pirates" : ""}
+                    type={city?.cityAppearanceId}
+                    onClick={() =>
+                      navigate(
+                        `/fleets?coordX=${x}&coordY=${y}&taskType=attack&type=${type}`
+                      )
+                    }
+                  />
+                  {isFleetMovingToIsland(city?.id) && (
+                    <SCityMarkFleet>
+                      <Icon title={"moving"} />
+                    </SCityMarkFleet>
+                  )}
+                  {isIslandRaided(city?.id) && (
+                    <SCityMarkStatus>
+                      <Icon title={"check"} />
+                    </SCityMarkStatus>
+                  )}
+                </>
               )}
             </SCell>
           );
@@ -126,4 +146,19 @@ const SIsland = styled.div<{ type?: number; islandType?: string }>`
           background-size: contain;
         `
       : ""};
+`;
+
+const SCityMarkFleet = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+`;
+const SCityMarkStatus = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
 `;

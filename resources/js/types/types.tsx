@@ -26,6 +26,7 @@ export interface IMapCity {
   archipelagoId: number;
   coordX: number;
   coordY: number;
+  raided?: boolean;
 }
 
 export interface ICityResources {

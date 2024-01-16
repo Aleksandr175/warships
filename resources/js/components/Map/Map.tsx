@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { httpClient } from "../../httpClient/httpClient";
 import styled, { css } from "styled-components";
-import { IMapCity, TType } from "../../types/types";
+import { ICityFleet, IMapCity, TType } from "../../types/types";
 import { SContent, SH1 } from "../styles";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "../Common/Icon";
 
-export const Map = () => {
+export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
   const size = 5 * 5;
   const [cities, setCities] = useState<IMapCity[]>([]);
   const [type, setType] = useState<TType>("map");
@@ -55,11 +55,13 @@ export const Map = () => {
   };
 
   const isFleetMovingToIsland = (cityId: number): boolean => {
-    return false;
+    return (
+      (fleets || []).findIndex((fleet) => fleet.targetCityId === cityId) > -1
+    );
   };
 
   const isIslandRaided = (cityId: number) => {
-    return !!cities.find((city) => city.id === cityId)?.raided;
+    return !!cities?.find((city) => city.id === cityId)?.raided;
   };
 
   if (isLoading) {

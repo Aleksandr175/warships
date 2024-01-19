@@ -73,6 +73,19 @@ class FleetService
             if (!$this->isCity($this->targetCity)) {
                 return 'there is no city';
             }
+
+            if ($this->type === 'adventure') {
+                if ($this->targetCity->raided) {
+                    return 'Adventure island is already raided';
+                }
+
+                // we can't send more than 1 fleet to the adventure island at one time
+                $isSomeFleetGoingToIsland = Fleet::where('target_city_id', $this->targetCity->id)->first();
+
+                if ($isSomeFleetGoingToIsland) {
+                    return 'Some fleet is already going to the adventure island';
+                }
+            }
         }
 
         $this->taskType = $this->getTaskType($this->taskTypeSlug);
@@ -276,7 +289,7 @@ class FleetService
 
     public function getCityByCoords(int $archipelagoId, int $coordX, int $coordY): City
     {
-        return City::where('coord_x', $coordX)->where('coord_y', $coordY)->first();
+        return City::where('archipelago_id', $archipelagoId)->where('coord_x', $coordX)->where('coord_y', $coordY)->first();
     }
 
     /**

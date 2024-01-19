@@ -23,14 +23,22 @@ class AdventureController extends Controller
     {
         $userId = Auth::user()->id;
 
-        $adventure = Adventure::where('user_id', $userId)->first();
+        $adventure = Adventure::where('user_id', $userId)->orderBy('adventure_level', 'DESC')->first();
 
         if (!$adventure) {
             $adventure = $this->generateAdventure($userId, 1);
         }
 
-        $cities = City::where('adventure_id', $adventure->id)->get();
+        // generate new adventure if all islands have been raided
+        if ($this->isAdventureCompleted($adventure)) {
+            $adventure->update([
+                'status' => config('constants.ADVENTURE_STATUSES.COMPLETED')
+            ]);
 
+            $adventure = $this->generateAdventure($userId, $adventure->adventure_level + 1);
+        }
+
+        $cities = City::where('adventure_id', $adventure->id)->get();
         $warships = Warship::whereIn('city_id', $cities->pluck('id'))->get();
 
         return [
@@ -48,7 +56,7 @@ class AdventureController extends Controller
             'user_id'         => $userId,
             'adventure_level' => $lvl,
             'archipelago_id'  => $newArchipelago->id,
-            'status'          => 1
+            'status'          => config('constants.ADVENTURE_STATUSES.NEW')
         ]);
 
         // generate new cities for adventure
@@ -58,8 +66,20 @@ class AdventureController extends Controller
         return $adventure;
     }
 
-    public function isAdventureCompleted()
+    public function isAdventureCompleted(Adventure $adventure)
     {
-        // generate new adventure
+        $cities = City::where('adventure_id', $adventure->id)->get();
+
+        // check if all islands are raided -> generate new adventure
+        $areAllIslandsRaided = true;
+        foreach ($cities as $city) {
+            if ($city->raided === 0) {
+                $areAllIslandsRaided = false;
+
+                break;
+            }
+        }
+
+        return $areAllIslandsRaided;
     }
 }

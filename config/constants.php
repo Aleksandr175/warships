@@ -99,4 +99,9 @@ return [
         'USUAL'     => 1,
         'ADVENTURE' => 2,
     ],
+
+    'ADVENTURE_STATUSES' => [
+        'NEW'       => 1,
+        'COMPLETED' => 2,
+    ]
 ];

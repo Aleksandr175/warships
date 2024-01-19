@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $coord_y
  * @property integer $gold
  * @property integer $population
+ * @property integer $raided
  *
  * @package App\Models
  * @mixin Builder

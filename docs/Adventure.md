@@ -6,13 +6,17 @@ Server generates first level adventure for user if user tries to get adventure m
 
 When map is generated user can see the map with islands.
 
-User needs to raid all islands in the generated archipelago. If user raids all islands he can move to next level adventure.
+User needs to raid all islands in the generated archipelago. If user raided all islands he can move to next level adventure.
 
 Each next level of adventure has even more resources and warships.
 
 There is no limit of level of adventure.
 
-If player attacks island and battle is won, and we grabbed all resources - we mark island as Raided. Player can't raid this island again.
+If player attacks island and battle is won, and we grabbed all its resources - we mark island as Raided. Player can't raid this island again.
+
+Each island can be raided until it is empty.
+
+Player can't send more than 1 fleet to the adventure island at one time. 
 
 If all islands are raided - it means that we can change adventure to next level.
 

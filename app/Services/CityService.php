@@ -12,7 +12,8 @@ class CityService
     {
         // TODO: add improved logic for calculation power of islands for adventure
         // change resources
-        // TODO: add warships to islands
+        $adventureLvl = $adventure->adventure_level;
+        $baseAmount = (1.12 ** $adventureLvl * 500);
 
         City::create([
             'title'              => 'Empty Island',
@@ -21,7 +22,7 @@ class CityService
             'archipelago_id'     => $archipelago->id,
             'coord_x'            => 2,
             'coord_y'            => 2,
-            'gold'               => 100,
+            'gold'               => random_int($baseAmount / 100, $baseAmount / 10),
             'population'         => 0
         ]);
 
@@ -32,8 +33,8 @@ class CityService
             'archipelago_id'     => $archipelago->id,
             'coord_x'            => 3,
             'coord_y'            => 4,
-            'gold'               => 300,
-            'population'         => 100
+            'gold'               => random_int($baseAmount / 3, $baseAmount),
+            'population'         => random_int($baseAmount / 10, $baseAmount / 3)
         ]);
 
         City::create([
@@ -43,8 +44,8 @@ class CityService
             'archipelago_id'     => $archipelago->id,
             'coord_x'            => 5,
             'coord_y'            => 4,
-            'gold'               => 1500,
-            'population'         => 500
+            'gold'               => random_int($baseAmount, $baseAmount * 2),
+            'population'         => random_int($baseAmount / 3, $baseAmount / 2)
         ]);
 
         City::create([
@@ -54,8 +55,8 @@ class CityService
             'archipelago_id'     => $archipelago->id,
             'coord_x'            => 2,
             'coord_y'            => 4,
-            'gold'               => 1000,
-            'population'         => 400
+            'gold'               => random_int($baseAmount / 2, $baseAmount),
+            'population'         => random_int($baseAmount / 5, $baseAmount / 3)
         ]);
 
         City::create([
@@ -65,7 +66,7 @@ class CityService
             'archipelago_id'     => $archipelago->id,
             'coord_x'            => 1,
             'coord_y'            => 3,
-            'gold'               => 3000,
+            'gold'               => random_int($baseAmount * 2, $baseAmount * 3),
             'population'         => 0
         ]);
     }

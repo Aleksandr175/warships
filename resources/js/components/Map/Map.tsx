@@ -10,6 +10,7 @@ import { Icon } from "../Common/Icon";
 export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
   const size = 5 * 5;
   const [cities, setCities] = useState<IMapCity[]>([]);
+  const [adventureLvl, setAdventureLvl] = useState<number>(1);
   const [type, setType] = useState<TType>("map");
   const [cells, setCells] = useState<{ id: number }[]>(() => {
     let tCells = [];
@@ -49,6 +50,7 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
     setType("adventure");
     httpClient.get("/map/adventure").then((response) => {
       setCities(response.data.cities);
+      setAdventureLvl(response.data.adventureLevel);
 
       setIsLoading(false);
     });
@@ -74,7 +76,9 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
         Adventure
       </button>
 
-      <SH1>{type === "map" ? "Map" : "Adventure"}</SH1>
+      <SH1>
+        {type === "map" ? "Map" : "Adventure, " + adventureLvl + " lvl."}
+      </SH1>
       <SCells>
         {cells?.map((cell, index) => {
           const y = Math.floor(index / 5) + 1;

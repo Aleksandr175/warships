@@ -15,7 +15,7 @@ class AdventureController extends Controller
 {
     public function __construct(CityService $cityService, WarshipService $warshipService)
     {
-        $this->cityService = $cityService;
+        $this->cityService    = $cityService;
         $this->warshipService = $warshipService;
     }
 
@@ -38,12 +38,13 @@ class AdventureController extends Controller
             $adventure = $this->generateAdventure($userId, $adventure->adventure_level + 1);
         }
 
-        $cities = City::where('adventure_id', $adventure->id)->get();
+        $cities   = City::where('adventure_id', $adventure->id)->get();
         $warships = Warship::whereIn('city_id', $cities->pluck('id'))->get();
 
         return [
-            'cities'   => MapAdventureCityResource::collection($cities),
-            'warships' => WarshipResource::collection($warships)
+            'cities'         => MapAdventureCityResource::collection($cities),
+            'warships'       => WarshipResource::collection($warships),
+            'adventureLevel' => $adventure->adventure_level
         ];
     }
 

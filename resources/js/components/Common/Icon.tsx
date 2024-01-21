@@ -56,6 +56,14 @@ const SIcon = styled.i<{ size?: TSize }>`
       : ""};
 
   ${({ size }) =>
+    size === "normal"
+      ? css`
+          width: 24px;
+          height: 24px;
+        `
+      : ""};
+
+  ${({ size }) =>
     size === "extra-big"
       ? css`
           width: 48px;

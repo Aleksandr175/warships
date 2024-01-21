@@ -27,6 +27,8 @@ export interface IMapCity {
   coordX: number;
   coordY: number;
   raided?: boolean;
+  gold?: number;
+  population?: number;
 }
 
 export interface ICityResources {
@@ -176,8 +178,14 @@ export type TTask = "attack" | "move" | "trade" | "transport" | "expedition";
 // TODO: refactor naming
 export type TType = "map" | "adventure";
 
-export interface IFleetDetail {
+export interface IFleetWarshipsData {
   fleetId?: number;
+  warshipId: number;
+  qty: number;
+}
+
+export interface IMapFleetWarshipsData {
+  cityId: number;
   warshipId: number;
   qty: number;
 }
@@ -194,7 +202,7 @@ export interface ICityFleet {
   id: number;
   cityId: number;
   targetCityId: number;
-  fleetDetails: IFleetDetail[];
+  fleetDetails: IFleetWarshipsData[];
   repeating?: 1 | 0;
   /*taskType: TTask;*/
   fleetTaskId: number;

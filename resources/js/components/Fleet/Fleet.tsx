@@ -6,7 +6,7 @@ import {
   ICity,
   ICityWarship,
   IFleet,
-  IFleetDetail,
+  IFleetWarshipsData,
   IWarship,
   TTask,
   TType,
@@ -40,8 +40,8 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
       cityId: city.id,
     } as IFleet;
   });
-  const [fleetDetails, setFleetDetails] = useState<IFleetDetail[]>(
-    [] as IFleetDetail[]
+  const [fleetDetails, setFleetDetails] = useState<IFleetWarshipsData[]>(
+    [] as IFleetWarshipsData[]
   );
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -70,7 +70,7 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
 
   // set default values
   useEffect(() => {
-    const details = [] as IFleetDetail[];
+    const details = [] as IFleetWarshipsData[];
 
     dictionary?.forEach((warship) => {
       details.push({

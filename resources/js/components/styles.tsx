@@ -98,3 +98,28 @@ export const SCardWrapper = styled.div<{ selected?: boolean }>`
         `
       : ""};
 `;
+
+export const SPopoverWrapper = styled.div`
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  position: relative;
+  min-width: 150px;
+`;
+
+export const SCloseButton = styled.div`
+  position: absolute;
+  right: 0;
+  top: 0;
+`;
+
+export const SPopoverHeader = styled.div`
+  font-weight: 700;
+  padding-right: 20px;
+  padding-bottom: 10px;
+`;
+
+export const SPopoverButtons = styled.div`
+  display: flex;
+  gap: 10px;
+`;

@@ -9,7 +9,7 @@ import {
   ICityWarship,
   ICityWarshipQueue,
   IDictionary,
-  IFleetDetail,
+  IFleetWarshipsData,
   IFleetIncoming,
   IMapCity,
   IUserResearch,
@@ -28,7 +28,7 @@ export const useAppLogic = () => {
   const [warships, setWarships] = useState<ICityWarship[] | undefined>();
   const [fleets, setFleets] = useState<ICityFleet[]>();
   const [fleetsIncoming, setFleetsIncoming] = useState<IFleetIncoming[]>();
-  const [fleetDetails, setFleetDetails] = useState<IFleetDetail[]>();
+  const [fleetDetails, setFleetDetails] = useState<IFleetWarshipsData[]>();
   const [fleetCitiesDictionary, setFleetCitiesDictionary] =
     useState<IMapCity[]>();
   const [queue, setQueue] = useState<ICityBuildingQueue>();
@@ -61,7 +61,7 @@ export const useAppLogic = () => {
         (event: {
           fleets: ICityFleet[];
           fleetsIncoming: IFleetIncoming[];
-          fleetsDetails: IFleetDetail[];
+          fleetsDetails: IFleetWarshipsData[];
           cities: ICity[];
         }) => {
           console.log("new fleet data", event);

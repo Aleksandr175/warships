@@ -61,7 +61,7 @@ class FleetService
 
             $this->repeating = false;
         } else {
-            // send fleet in our archipelago
+            // send fleet inside our archipelago
             $archipelagoId = $user->archipelagoId();
         }
 

@@ -2,13 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   ICityFleet,
   IDictionary,
-  IFleetDetail,
+  IFleetWarshipsData,
   IFleetIncoming,
   IMapCity,
 } from "../types/types";
 import styled, { css } from "styled-components";
 import { Icon } from "./Common/Icon";
 import { convertSecondsToTime, getTimeLeft } from "../utils";
+import { FleetWarships } from "./Common/FleetWarships";
 
 export const Fleet = ({
   fleet,
@@ -19,7 +20,7 @@ export const Fleet = ({
   fleet: ICityFleet | IFleetIncoming;
   dictionaries: IDictionary;
   fleetCities: IMapCity[];
-  fleetDetails: IFleetDetail[];
+  fleetDetails: IFleetWarshipsData[];
 }) => {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const timer = useRef();
@@ -128,20 +129,8 @@ export const Fleet = ({
           </div>
         </SFleetInfoSecond>
       </SFleetRowTitle>
-      <SFleetDetails>
-        {fleetDetails.map((fDetails) => {
-          return (
-            <SFleetDetail key={fDetails.fleetId + "-" + fDetails.warshipId}>
-              <SWarshipIcon
-                style={{
-                  backgroundImage: `url("../images/warships/simple/dark/${fDetails.warshipId}.svg")`,
-                }}
-              />
-              <span>{fDetails.qty}</span>
-            </SFleetDetail>
-          );
-        })}
-      </SFleetDetails>
+
+      <FleetWarships warships={fleetDetails} />
     </SFleetRow>
   );
 };
@@ -159,29 +148,6 @@ const SFleetRowTitle = styled.div`
 
 const SFleetTaskIcon = styled.div<{ type?: string }>``;
 
-const SFleetDetails = styled.div`
-  display: flex;
-  font-size: 12px;
-`;
-
-const SWarshipIcon = styled.div`
-  display: inline-block;
-  background-size: contain;
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  margin-right: 10px;
-
-  width: 20px;
-  height: 15px;
-`;
-
-const SFleetDetail = styled.div`
-  display: flex;
-  align-items: center;
-  margin-right: 10px;
-  font-weight: bold;
-`;
-
 const SCityName = styled.div`
   width: 150px;
   text-overflow: ellipsis;
@@ -189,11 +155,6 @@ const SCityName = styled.div`
 
 const SCityNameMine = styled.div`
   opacity: 0.4;
-`;
-
-const SArrow = styled.div`
-  font-weight: 700;
-  margin-right: 20px;
 `;
 
 const SFleetInfo = styled.div`

@@ -4,7 +4,7 @@ import { Fleet } from "./Fleet";
 import {
   ICityFleet,
   IDictionary,
-  IFleetDetail,
+  IFleetWarshipsData,
   IFleetIncoming,
   IMapCity,
 } from "../types/types";
@@ -20,9 +20,9 @@ export const Fleets = ({
   fleetsIncoming: IFleetIncoming[] | undefined;
   dictionaries: IDictionary;
   fleetCitiesDictionary: IMapCity[];
-  fleetDetails: IFleetDetail[] | undefined;
+  fleetDetails: IFleetWarshipsData[] | undefined;
 }) => {
-  const getFleetDetails = (fleetId: number): IFleetDetail[] => {
+  const getFleetDetails = (fleetId: number): IFleetWarshipsData[] => {
     return fleetDetails?.filter((detail) => detail.fleetId === fleetId)!;
   };
 

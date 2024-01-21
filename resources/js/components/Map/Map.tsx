@@ -56,6 +56,10 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
     });
   };
 
+  const sendFleetToExpedition = () => {
+    navigate(`/fleets?taskType=expedition`);
+  };
+
   const isFleetMovingToIsland = (cityId: number): boolean => {
     return (
       (fleets || []).findIndex((fleet) => fleet.targetCityId === cityId) > -1
@@ -72,12 +76,54 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
 
   return (
     <SContent>
-      <button className={"btn btn-primary"} onClick={getAdventure}>
-        Adventure
-      </button>
+      <SRow>
+        <SColumn>
+          <SMapAction>
+            <SMapActionLogo
+              style={{
+                backgroundImage: 'url("../../../images/islands/1.svg")',
+              }}
+            ></SMapActionLogo>
+            <SMapActionDescription>
+              <strong>Expedition</strong>
+
+              <p>
+                Send fleet to unknown islands and find gold or rare resources
+              </p>
+
+              <button
+                className={"btn btn-primary"}
+                onClick={sendFleetToExpedition}
+              >
+                Send
+              </button>
+            </SMapActionDescription>
+          </SMapAction>
+        </SColumn>
+        <SColumn>
+          <SMapAction>
+            <SMapActionLogo
+              style={{
+                backgroundImage: 'url("../../../images/islands/pirates/1.svg")',
+              }}
+            ></SMapActionLogo>
+            <SMapActionDescription>
+              <strong>Adventure</strong>
+
+              <p>Conquer unknown islands and get unique treasure!</p>
+
+              <button className={"btn btn-primary"} onClick={getAdventure}>
+                Adventure
+              </button>
+            </SMapActionDescription>
+          </SMapAction>
+        </SColumn>
+      </SRow>
 
       <SH1>
-        {type === "map" ? "Map" : "Adventure, " + adventureLvl + " lvl."}
+        {type === "map"
+          ? "Your Archipelago"
+          : "Adventure, " + adventureLvl + " lvl."}
       </SH1>
       <SCells>
         {cells?.map((cell, index) => {
@@ -167,4 +213,33 @@ const SCityMarkStatus = styled.div`
   right: 0;
   width: 32px;
   height: 32px;
+`;
+
+const SRow = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+`;
+
+const SColumn = styled.div`
+  width: 50%;
+`;
+
+const SMapAction = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const SMapActionLogo = styled.div`
+  width: 100px;
+  height: 100px;
+  min-width: 100px;
+  background-size: contain;
+  background-repeat: no-repeat;
+`;
+
+const SMapActionDescription = styled.div`
+  p {
+    color: #949494;
+  }
 `;

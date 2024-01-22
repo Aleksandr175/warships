@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CityResourcesResource;
+use App\Http\Resources\CityResourceV2Resource;
 use Illuminate\Support\Facades\Auth;
 
 class CityController extends Controller
@@ -10,8 +10,8 @@ class CityController extends Controller
     public function getCityResources($cityId) {
         $user = Auth::user();
 
-        $city = $user->cities()->where('id', $cityId)->first();
+        $cityResources = $user->cities()->where('id', $cityId)->first()->resources;
 
-        return new CityResourcesResource($city);
+        return CityResourceV2Resource::collection($cityResources);
     }
 }

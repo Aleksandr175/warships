@@ -103,5 +103,12 @@ return [
     'ADVENTURE_STATUSES' => [
         'NEW'       => 1,
         'COMPLETED' => 2,
+    ],
+
+    'RESOURCE_IDS' => [
+        'GOLD'       => 1,
+        'POPULATION' => 2,
+        'LOGS'       => 3,
+        'ORE'        => 4
     ]
 ];

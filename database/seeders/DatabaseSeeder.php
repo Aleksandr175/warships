@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\FleetTaskDictionary;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,6 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call(CityDictionarySeeder::class);
+        $this->call(ResourceSeeder::class);
 
         // pirates id 1
         \App\Models\User::factory(1)->create([
@@ -71,6 +71,29 @@ class DatabaseSeeder extends Seeder
             'city_dictionary_id' => config('constants.CITY_TYPE_ID.COLONY')
         ]);
 
+        \App\Models\CityResource::create([
+            'city_id'     => config('constants.DEFAULT_USER_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'         => 2500
+        ]);
+
+        \App\Models\CityResource::create([
+            'city_id'     => config('constants.DEFAULT_USER_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'         => 800
+        ]);
+
+        \App\Models\CityResource::create([
+            'city_id'     => config('constants.DEFAULT_USER_CITY_ID_2'),
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'         => 1500
+        ]);
+
+        \App\Models\CityResource::create([
+            'city_id'     => config('constants.DEFAULT_USER_CITY_ID_2'),
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'         => 300
+        ]);
 
         \App\Models\Archipelago::create([
             'id'   => 2,
@@ -86,6 +109,18 @@ class DatabaseSeeder extends Seeder
             'coord_y'        => 4,
             'gold'           => 1500,
             'population'     => 300
+        ]);
+
+        \App\Models\CityResource::create([
+            'city_id'     => config('constants.DEFAULT_USER_2_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'         => 1200
+        ]);
+
+        \App\Models\CityResource::create([
+            'city_id'     => config('constants.DEFAULT_USER_2_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'         => 400
         ]);
 
         // TODO: Change coordinates

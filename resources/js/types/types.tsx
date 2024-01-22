@@ -31,11 +31,26 @@ export interface IMapCity {
   population?: number;
 }
 
+export interface IResourceDictionary {
+  id: number;
+  title: string;
+  description: string;
+  slug: string;
+}
+
 export interface ICityResources {
   id?: number;
   gold: number;
   population: number;
   productionGold?: number;
+  cityResources?: ICityResource[];
+  resourcesDictionary?: IResourceDictionary[];
+}
+
+export interface ICityResource {
+  cityId: number;
+  resourceId: number;
+  qty: number;
 }
 
 export interface ICityBuilding {

@@ -11,6 +11,7 @@ use App\Http\Resources\FleetTaskDictionaryResource;
 use App\Http\Resources\ResearchDependencyResource;
 use App\Http\Resources\ResearchDictionaryResource;
 use App\Http\Resources\ResearchResourceResource;
+use App\Http\Resources\ResourceDictionaryResource;
 use App\Http\Resources\UserResearchResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\WarshipDependencyResource;
@@ -24,6 +25,7 @@ use App\Models\FleetTaskDictionary;
 use App\Models\ResearchDependency;
 use App\Models\ResearchDictionary;
 use App\Models\ResearchResource;
+use App\Models\Resource;
 use App\Models\WarshipDependency;
 use App\Models\WarshipDictionary;
 use Illuminate\Support\Facades\Auth;
@@ -57,6 +59,8 @@ class UserController extends Controller
         $fleetTasksDictionary    = FleetTaskDictionary::get();
         $fleetStatusesDictionary = FleetStatusDictionary::get();
 
+        $resourcesDictionary = Resource::get();
+
         $unreadMessagesNumber = $user->unreadMessagesNumber();
 
         return [
@@ -72,7 +76,8 @@ class UserController extends Controller
             'buildingDependencies'    => BuildingDependencyResource::collection($buildingDependencies),
             'researchDependencies'    => ResearchDependencyResource::collection($researchDependencies),
             'warshipDependencies'     => WarshipDependencyResource::collection($warshipDependencies),
-            'unreadMessagesNumber'    => $unreadMessagesNumber
+            'unreadMessagesNumber'    => $unreadMessagesNumber,
+            'resourcesDictionary'     => ResourceDictionaryResource::collection($resourcesDictionary)
         ];
     }
 }

@@ -52,6 +52,7 @@ const App = () => {
     userId,
     logout,
     unreadMessagesNumber,
+    resourcesDictionary,
   } = useAppLogic();
 
   if (isLoading) {
@@ -131,11 +132,17 @@ const App = () => {
               <div className={"row"}>
                 <div className={"col-5"}>
                   <SColumn>
-                    <CityResources
-                      gold={cityResources?.gold || 0}
-                      population={cityResources?.population || 0}
-                      productionGold={getProductionGold()}
-                    />
+                    {resourcesDictionary && (
+                      <CityResources
+                        cityResources={cityResources!}
+                        resourcesDictionary={resourcesDictionary}
+                        gold={0}
+                        population={0}
+                        /*gold={cityResources?.gold || 0}
+                      population={cityResources?.population || 0}*/
+                        productionGold={getProductionGold()}
+                      />
+                    )}
                   </SColumn>
                 </div>
                 <div className={"col-5"}>

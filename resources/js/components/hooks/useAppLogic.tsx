@@ -13,6 +13,8 @@ import {
   IFleetIncoming,
   IMapCity,
   IUserResearch,
+  ICityResource,
+  IResourceDictionary,
 } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import Echo from "laravel-echo";
@@ -20,7 +22,7 @@ import Echo from "laravel-echo";
 export const useAppLogic = () => {
   const [city, setCity] = useState<ICity>();
   const [cities, setCities] = useState<ICity[]>();
-  const [cityResources, setCityResources] = useState<ICityResources>();
+  const [cityResources, setCityResources] = useState<ICityResource[]>();
   const [isLoading, setIsLoading] = useState(true);
   const [dictionaries, setDictionaries] = useState<IDictionary>();
   const [buildings, setBuildings] = useState<ICityBuilding[] | undefined>();
@@ -31,6 +33,9 @@ export const useAppLogic = () => {
   const [fleetDetails, setFleetDetails] = useState<IFleetWarshipsData[]>();
   const [fleetCitiesDictionary, setFleetCitiesDictionary] =
     useState<IMapCity[]>();
+  const [resourcesDictionary, setResourcesDictionary] =
+    useState<IResourceDictionary[]>();
+
   const [queue, setQueue] = useState<ICityBuildingQueue>();
   const [queueWarship, setQueueWarship] = useState<ICityWarshipQueue[]>();
   const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
@@ -88,6 +93,7 @@ export const useAppLogic = () => {
         setDictionaries(respDictionary.data);
         setUserId(response.data.data.userId);
         setUnreadMessagesNumber(respDictionary.data.unreadMessagesNumber);
+        setResourcesDictionary(respDictionary.data.resourcesDictionary);
 
         setWebsockets(response.data.data.userId);
         setIsLoading(false);
@@ -247,5 +253,6 @@ export const useAppLogic = () => {
     getResearches,
     logout,
     unreadMessagesNumber,
+    resourcesDictionary,
   };
 };

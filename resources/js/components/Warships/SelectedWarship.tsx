@@ -130,16 +130,18 @@ export const SelectedWarship = ({
 
   let maxShips = 0;
 
-  const maxShipsByGold = Math.floor(cityResources.gold / gold);
+  // TODO: remove "!", it is temporary
+  const maxShipsByGold = Math.floor(cityResources.gold! / gold);
   const maxShipsByPopulation = Math.floor(
-    cityResources.population / population
+    cityResources.population! / population
   );
 
   maxShips = Math.min(maxShipsByGold, maxShipsByPopulation);
 
+  // TODO: remove "!", it is temporary
   const isWarshipDisabled = (data: IFormValues) => {
     const { gold, population, cityResources } = data;
-    return gold > cityResources.gold || population > cityResources.population;
+    return gold > cityResources.gold! || population > cityResources.population!;
   };
 
   function run(warshipId: number, qty: number) {

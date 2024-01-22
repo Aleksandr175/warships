@@ -4,14 +4,14 @@ import { Icon } from "./Common/Icon";
 import styled from "styled-components";
 
 export const CityResources = ({
-  gold,
-  population,
   productionGold,
+  cityResources,
+  resourcesDictionary,
 }: ICityResources) => {
   const timer = useRef<NodeJS.Timeout | null>(null);
-  const [goldValue, setGoldValue] = useState<number>(gold || 0);
+  //const [goldValue, setGoldValue] = useState<number>(gold || 0);
 
-  const updateGoldValue = useCallback(() => {
+  /*const updateGoldValue = useCallback(() => {
     setGoldValue((oldGoldValue) => {
       const production = (productionGold ?? 0) / 3600;
       return oldGoldValue + production;
@@ -28,11 +28,29 @@ export const CityResources = ({
 
   useEffect(() => {
     setGoldValue(gold || 0);
-  }, [gold]);
+  }, [gold]);*/
+
+  const getResourceSlug = (resourceId: number): string => {
+    return (
+      resourcesDictionary?.find((resource) => resource.id === resourceId)
+        ?.slug || ""
+    );
+  };
 
   return (
     <SResources>
-      <SResource>
+      {cityResources?.map((cityResource) => {
+        return (
+          <SResource>
+            <Icon title={getResourceSlug(cityResource.resourceId)} />
+            {Math.floor(cityResource.qty)}{" "}
+            {/*<SProduction>
+              {productionGold ? `+${productionGold}` : ""}
+            </SProduction>*/}
+          </SResource>
+        );
+      })}
+      {/*<SResource>
         <Icon title="gold" />
         {Math.floor(goldValue)}{" "}
         <SProduction>{productionGold ? `+${productionGold}` : ""}</SProduction>
@@ -40,7 +58,7 @@ export const CityResources = ({
       <SResource>
         <Icon title="worker" />
         {population}
-      </SResource>
+      </SResource>*/}
     </SResources>
   );
 };

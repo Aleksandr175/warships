@@ -53,7 +53,7 @@ class UserController extends Controller
         $researchDependencies = ResearchDependency::get();
         $userResearches       = $user->researches;
 
-        $warships            = WarshipDictionary::get();
+        $warshipsDictionary  = WarshipDictionary::get();
         $warshipDependencies = WarshipDependency::get();
 
         $fleetTasksDictionary    = FleetTaskDictionary::get();
@@ -69,7 +69,7 @@ class UserController extends Controller
             'researches'              => ResearchDictionaryResource::collection($researches),
             'researchResources'       => ResearchResourceResource::collection($researchResources),
             'userResearches'          => UserResearchResource::collection($userResearches),
-            'warships'                => WarshipDictionaryResource::collection($warships),
+            'warshipsDictionary'      => WarshipDictionaryResource::collection($warshipsDictionary->load('requiredResources')),
             'buildingsProduction'     => BuildingProductionsResource::collection($buildingProductions),
             'fleetTasksDictionary'    => FleetTaskDictionaryResource::collection($fleetTasksDictionary),
             'fleetStatusesDictionary' => FleetStatusDictionaryResource::collection($fleetStatusesDictionary),

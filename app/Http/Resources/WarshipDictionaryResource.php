@@ -24,7 +24,8 @@ class WarshipDictionaryResource extends JsonResource
             'health' => $this->health,
             'gold' => $this->gold,
             'population' => $this->population,
-            'time' => $this->time
+            'time' => $this->time,
+            'requiredResources' => WarshipResourceResource::collection($this->requiredResources)
         ];
     }
 }

@@ -7,6 +7,7 @@ import {
   ICityWarship,
   ICityWarshipQueue,
   IResearch,
+  IResourceDictionary,
   IUserResearch,
   IWarship,
   IWarshipDependency,
@@ -25,7 +26,7 @@ dayjs.extend(customParseFormat);
 interface IProps {
   cityId: number;
   dictionary: IWarship[];
-  resourcesDictionary: IBuildingResource[];
+  resourcesDictionary: IResourceDictionary[];
   updateCityResources: (cityResources: ICityResources) => void;
   cityResources: ICityResources;
   warships: ICityWarship[] | undefined;
@@ -55,6 +56,7 @@ export const Warships = ({
   researchesDictionary,
   buildings,
   buildingsDictionary,
+  resourcesDictionary,
 }: IProps) => {
   const [selectedWarshipId, setSelectedWarshipId] = useState(0);
 
@@ -88,6 +90,7 @@ export const Warships = ({
             getQty={getQty}
             setWarships={setWarships}
             updateCityResources={updateCityResources}
+            resourcesDictionary={resourcesDictionary}
           />
         )}
 

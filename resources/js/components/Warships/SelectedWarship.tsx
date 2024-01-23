@@ -1,7 +1,7 @@
 import { Card } from "../Common/Card";
 import { SButtonsBlock, SH2, SParam, SParams, SText } from "../styles";
 import { Icon } from "../Common/Icon";
-import { convertSecondsToTime } from "../../utils";
+import { convertSecondsToTime, getResourceSlug } from "../../utils";
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
@@ -12,6 +12,7 @@ import {
   ICityWarship,
   ICityWarshipQueue,
   IResearch,
+  IResourceDictionary,
   IUserResearch,
   IWarship,
   IWarshipDependency,
@@ -37,6 +38,7 @@ interface IProps {
   researches: IUserResearch[];
   buildingsDictionary: IBuilding[];
   buildings: ICityBuilding[];
+  resourcesDictionary: IResourceDictionary[];
 }
 
 interface IFormValues {
@@ -64,18 +66,20 @@ export const SelectedWarship = ({
   researches,
   getQty,
   setWarships,
+  resourcesDictionary,
 }: IProps) => {
   const selectedWarship = getWarship(selectedWarshipId)!;
-  const warshipResources = getResourcesForWarship(selectedWarshipId);
-  const gold = warshipResources?.gold || 0;
-  const population = warshipResources?.population || 0;
-  const time = warshipResources?.time || 0;
-  const attack = warshipResources?.attack || 0;
-  const speed = warshipResources?.speed || 0;
-  const health = warshipResources?.health || 0;
-  const capacity = warshipResources?.capacity || 0;
+  const requiredResources = selectedWarship.requiredResources;
+  const gold = selectedWarship?.gold || 0;
+  const population = selectedWarship?.population || 0;
+  const time = selectedWarship?.time || 0;
+  const attack = selectedWarship?.attack || 0;
+  const speed = selectedWarship?.speed || 0;
+  const health = selectedWarship?.health || 0;
+  const capacity = selectedWarship?.capacity || 0;
 
   const form = useForm({
+    // TODO: refactor it
     defaultValues: {
       ...DEFAULT_VALUES,
       gold,
@@ -110,6 +114,7 @@ export const SelectedWarship = ({
   const { formState, handleSubmit, getValues, control, reset } = form;
 
   useEffect(() => {
+    // TODO: refactor it
     reset({
       selectedQty: getValues("selectedQty"),
       gold,
@@ -120,18 +125,16 @@ export const SelectedWarship = ({
 
   const { isValid } = formState;
 
-  function getResourcesForWarship(warshipId: number) {
-    return warshipsDictionary.find((w) => w.id === warshipId);
-  }
-
-  function getWarship(warshipId: number): IBuilding | undefined {
+  function getWarship(warshipId: number): IWarship | undefined {
     return warshipsDictionary.find((w) => w.id === warshipId);
   }
 
   let maxShips = 0;
 
   // TODO: remove "!", it is temporary
+  // TODO: refactor it
   const maxShipsByGold = Math.floor(cityResources.gold! / gold);
+  // TODO: refactor it
   const maxShipsByPopulation = Math.floor(
     cityResources.population! / population
   );
@@ -184,10 +187,7 @@ export const SelectedWarship = ({
           <Card
             object={selectedWarship}
             qty={getQty(selectedWarshipId)}
-            timer={
-              0
-              /*queue?.buildingId === selectedWarshipId ? timeLeft : 0 */
-            }
+            timer={0}
             imagePath={"warships"}
           />
         </SCardWrapper>
@@ -197,12 +197,19 @@ export const SelectedWarship = ({
         <div>
           <SText>Required resources:</SText>
           <SParams>
-            <SParam>
-              <Icon title={"gold"} /> {gold}
-            </SParam>
-            <SParam>
-              <Icon title={"worker"} /> {population}
-            </SParam>
+            {requiredResources?.map((resource) => {
+              return (
+                <SParam key={resource.resourceId}>
+                  <Icon
+                    title={getResourceSlug(
+                      resourcesDictionary,
+                      resource.resourceId
+                    )}
+                  />
+                  {resource.qty}
+                </SParam>
+              );
+            })}
             <SParam>
               <Icon title={"time"} /> {convertSecondsToTime(time)}
             </SParam>

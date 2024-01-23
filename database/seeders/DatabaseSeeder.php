@@ -212,6 +212,7 @@ class DatabaseSeeder extends Seeder
         $this->call(WarshipDictionarySeeder::class);
 
         $this->call(WarshipSeeder::class);
+        $this->call(WarshipResourceSeeder::class);
 
         $this->call(FleetTaskDictionarySeeder::class);
         $this->call(FleetStatusDictionarySeeder::class);

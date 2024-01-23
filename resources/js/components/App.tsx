@@ -247,8 +247,7 @@ const App = () => {
                     element={
                       <Warships
                         cityId={city.id}
-                        dictionary={dictionaries.warships}
-                        resourcesDictionary={dictionaries.warshipsResources}
+                        dictionary={dictionaries.warshipsDictionary}
                         updateCityResources={updateCityResources}
                         cityResources={{
                           gold: city.gold,
@@ -264,6 +263,7 @@ const App = () => {
                         researchesDictionary={dictionaries.researches}
                         buildings={buildings!}
                         buildingsDictionary={dictionaries.buildings}
+                        resourcesDictionary={resourcesDictionary!}
                       />
                     }
                   />
@@ -272,7 +272,7 @@ const App = () => {
                     element={
                       <Fleet
                         warships={warships}
-                        dictionary={dictionaries.warships}
+                        dictionary={dictionaries.warshipsDictionary}
                         cities={cities}
                         city={city}
                       />
@@ -283,7 +283,7 @@ const App = () => {
                     path="logs/:id"
                     element={
                       <Log
-                        dictionary={dictionaries.warships}
+                        dictionary={dictionaries.warshipsDictionary}
                         userId={userId || 0}
                       />
                     }
@@ -292,7 +292,7 @@ const App = () => {
                     path={"logs"}
                     element={
                       <Logs
-                        dictionary={dictionaries.warships}
+                        dictionary={dictionaries.warshipsDictionary}
                         userId={userId || 0}
                       />
                     }

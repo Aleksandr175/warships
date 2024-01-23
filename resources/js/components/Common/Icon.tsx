@@ -25,9 +25,11 @@ export const Icon = ({
 const SIconWrapper = styled.i<{ size?: TSize }>`
   width: 30px;
   height: 30px;
-  display: inline-block;
+  display: inline-flex;
   position: relative;
   vertical-align: middle;
+  align-items: center;
+  justify-content: center;
 
   ${({ size }) =>
     size === "small"
@@ -39,10 +41,8 @@ const SIconWrapper = styled.i<{ size?: TSize }>`
 `;
 
 const SIcon = styled.i<{ size?: TSize }>`
-  position: absolute;
   width: 30px;
   height: 30px;
-  left: 0;
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center center;

@@ -126,7 +126,7 @@ export interface IDictionary {
   userResearches: IUserResearch[];
   researchResources: IResearchResource[];
   researchDependencies: IResearchDependency[];
-  warships: IWarship[];
+  warshipsDictionary: IWarship[];
   warshipsResources: IWarshipResource[];
   warshipDependencies: IWarshipDependency[];
   fleetTasksDictionary: IFleetTasksDictionary[];
@@ -166,6 +166,12 @@ export interface IWarshipDependency {
 
 export interface IResearch extends IBuilding {}
 
+export interface IWarshipRequiredResource {
+  warshipId: number;
+  resourceId: number;
+  qty: number;
+}
+
 export interface IWarship extends IBuilding {
   attack: number;
   speed: number;
@@ -174,6 +180,7 @@ export interface IWarship extends IBuilding {
   time: number;
   gold: number;
   population: number;
+  requiredResources: IWarshipRequiredResource[];
 }
 
 export interface IUserResearch {

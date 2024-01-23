@@ -19,3 +19,13 @@ export const getTimeLeft = (strDeadline: string) => {
 
   return deadline.unix() - dateUTCNow.unix();
 };
+
+export const getResourceSlug = <T extends { id: N; slug?: string }, N>(
+  resourcesDictionary: T[],
+  resourceId: N
+): string => {
+  return (
+    resourcesDictionary?.find((resource) => resource.id === resourceId)?.slug ||
+    ""
+  );
+};

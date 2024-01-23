@@ -28,4 +28,9 @@ class WarshipDictionary extends Model
     protected $guarded = [];
 
     protected $table = 'warship_dictionary';
+
+    public function requiredResources()
+    {
+        return $this->hasMany(WarshipResource::class, 'warship_id');
+    }
 }

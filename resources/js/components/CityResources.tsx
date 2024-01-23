@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { ICityResources } from "../types/types";
 import { Icon } from "./Common/Icon";
 import styled from "styled-components";
+import { getResourceSlug } from "../utils";
 
 export const CityResources = ({
   productionGold,
@@ -9,56 +10,68 @@ export const CityResources = ({
   resourcesDictionary,
 }: ICityResources) => {
   const timer = useRef<NodeJS.Timeout | null>(null);
-  //const [goldValue, setGoldValue] = useState<number>(gold || 0);
+
+  // temp
+  /*const getGold = (): number => {
+    const goldResourceId =
+      resourcesDictionary?.find((resource) => resource.slug === "gold")?.id ||
+      0;
+
+    return (
+      cityResources?.find((resource) => resource.resourceId === goldResourceId)
+        ?.qty || 0
+    );
+  };
+
+  const [goldValue, setGoldValue] = useState<number>(getGold() || 0);*/
 
   /*const updateGoldValue = useCallback(() => {
     setGoldValue((oldGoldValue) => {
       const production = (productionGold ?? 0) / 3600;
       return oldGoldValue + production;
     });
-  }, [productionGold]);
+  }, [productionGold]);*/
 
-  useEffect(() => {
+  /*useEffect(() => {
     timer.current = setInterval(updateGoldValue, 1000);
 
     return () => {
       if (timer.current) clearInterval(timer.current);
     };
-  }, [updateGoldValue]);
+  }, [updateGoldValue]);*/
 
-  useEffect(() => {
-    setGoldValue(gold || 0);
-  }, [gold]);*/
+  /*useEffect(() => {
+    setGoldValue(getGold());
+  }, [cityResources]);*/
 
-  const getResourceSlug = (resourceId: number): string => {
+  /*const getResourceSlug = (resourcesDictionary, resourceId: number): string => {
     return (
       resourcesDictionary?.find((resource) => resource.id === resourceId)
         ?.slug || ""
     );
-  };
+  };*/
 
   return (
     <SResources>
       {cityResources?.map((cityResource) => {
         return (
           <SResource>
-            <Icon title={getResourceSlug(cityResource.resourceId)} />
+            <Icon
+              title={getResourceSlug(
+                resourcesDictionary!,
+                cityResource.resourceId
+              )}
+            />
             {Math.floor(cityResource.qty)}{" "}
-            {/*<SProduction>
-              {productionGold ? `+${productionGold}` : ""}
-            </SProduction>*/}
+            {getResourceSlug(resourcesDictionary!, cityResource.resourceId) ===
+              "gold" && (
+              <SProduction>
+                {productionGold ? `+${productionGold}` : ""}
+              </SProduction>
+            )}
           </SResource>
         );
       })}
-      {/*<SResource>
-        <Icon title="gold" />
-        {Math.floor(goldValue)}{" "}
-        <SProduction>{productionGold ? `+${productionGold}` : ""}</SProduction>
-      </SResource>
-      <SResource>
-        <Icon title="worker" />
-        {population}
-      </SResource>*/}
     </SResources>
   );
 };

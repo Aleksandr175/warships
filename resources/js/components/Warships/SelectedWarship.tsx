@@ -8,7 +8,7 @@ import { httpClient } from "../../httpClient/httpClient";
 import {
   IBuilding,
   ICityBuilding,
-  ICityResources,
+  ICityResource,
   ICityWarship,
   ICityWarshipQueue,
   IResearch,
@@ -16,6 +16,7 @@ import {
   IUserResearch,
   IWarship,
   IWarshipDependency,
+  IWarshipRequiredResource,
 } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
 import { InputNumber } from "../Common/InputNumber";
@@ -27,8 +28,8 @@ interface IProps {
   cityId: number;
   warshipsDictionary: IWarship[];
   warshipDependencies: IWarshipDependency[];
-  updateCityResources: (cityResources: ICityResources) => void;
-  cityResources: ICityResources;
+  updateCityResources: (cityResources: ICityResource[]) => void;
+  cityResources: ICityResource[];
   setWarships: (warships: ICityWarship[]) => void;
   getWarships: () => void;
   queue?: ICityWarshipQueue[];
@@ -43,14 +44,14 @@ interface IProps {
 
 interface IFormValues {
   selectedQty: string | number | null;
-  cityResources: ICityResources;
-  gold: number;
-  population: number;
+  cityResources: ICityResource[];
 }
 
 const DEFAULT_VALUES = {
   selectedQty: null,
 };
+
+type IGroupedCityResources = Record<number, ICityResource[]>;
 
 export const SelectedWarship = ({
   selectedWarshipId,
@@ -70,8 +71,6 @@ export const SelectedWarship = ({
 }: IProps) => {
   const selectedWarship = getWarship(selectedWarshipId)!;
   const requiredResources = selectedWarship.requiredResources;
-  const gold = selectedWarship?.gold || 0;
-  const population = selectedWarship?.population || 0;
   const time = selectedWarship?.time || 0;
   const attack = selectedWarship?.attack || 0;
   const speed = selectedWarship?.speed || 0;
@@ -82,14 +81,13 @@ export const SelectedWarship = ({
     // TODO: refactor it
     defaultValues: {
       ...DEFAULT_VALUES,
-      gold,
-      population,
       cityResources,
     },
     resolver: (data) => {
       const errors: FieldErrors = {};
 
-      if (isWarshipDisabled(data)) {
+      // TODO: do i need it?
+      if (isWarshipDisabled()) {
         // @ts-ignore
         errors.warshipIsDisabled = "Warship is disabled";
       }
@@ -117,11 +115,9 @@ export const SelectedWarship = ({
     // TODO: refactor it
     reset({
       selectedQty: getValues("selectedQty"),
-      gold,
-      population,
       cityResources,
     });
-  }, [population, gold, cityResources]);
+  }, [cityResources]);
 
   const { isValid } = formState;
 
@@ -129,22 +125,40 @@ export const SelectedWarship = ({
     return warshipsDictionary.find((w) => w.id === warshipId);
   }
 
-  let maxShips = 0;
+  const calculateAvailableWarships = (
+    cityResources: ICityResource[],
+    requiredResources: IWarshipRequiredResource[]
+  ): number => {
+    // Step 1: Group city resources by resourceId
+    const groupedCityResources: IGroupedCityResources = cityResources.reduce(
+      (acc, resource) => {
+        acc[resource.resourceId] = acc[resource.resourceId] || [];
+        acc[resource.resourceId].push(resource);
+        return acc;
+      },
+      {} as IGroupedCityResources
+    );
 
-  // TODO: remove "!", it is temporary
-  // TODO: refactor it
-  const maxShipsByGold = Math.floor(cityResources.gold! / gold);
-  // TODO: refactor it
-  const maxShipsByPopulation = Math.floor(
-    cityResources.population! / population
+    // Step 2-4: Calculate available warships
+    return requiredResources.reduce((minAvailable, requiredResource) => {
+      const availableQty =
+        groupedCityResources[requiredResource.resourceId]?.reduce(
+          (total, resource) => total + resource.qty,
+          0
+        ) || 0;
+
+      const maxAvailable = Math.floor(availableQty / requiredResource.qty);
+      return maxAvailable < minAvailable ? maxAvailable : minAvailable;
+    }, Infinity);
+  };
+
+  const availableWarships = calculateAvailableWarships(
+    cityResources,
+    requiredResources
   );
 
-  maxShips = Math.min(maxShipsByGold, maxShipsByPopulation);
-
-  // TODO: remove "!", it is temporary
-  const isWarshipDisabled = (data: IFormValues) => {
-    const { gold, population, cityResources } = data;
-    return gold > cityResources.gold! || population > cityResources.population!;
+  const isWarshipDisabled = () => {
+    return !availableWarships;
   };
 
   function run(warshipId: number, qty: number) {
@@ -233,7 +247,7 @@ export const SelectedWarship = ({
           </SParams>
         </div>
         <div>
-          <SText>You can build: {maxShips}</SText>
+          <SText>You can build: {availableWarships}</SText>
         </div>
         <SButtonsBlock>
           <Controller
@@ -249,8 +263,8 @@ export const SelectedWarship = ({
                     }
 
                     if (value > 0) {
-                      if (value > maxShips) {
-                        value = maxShips;
+                      if (value > availableWarships) {
+                        value = availableWarships;
                       }
 
                       field.onChange(value);
@@ -258,7 +272,10 @@ export const SelectedWarship = ({
                       field.onChange(null);
                     }
                   }}
-                  disabled={!hasAllRequirements("warship", selectedWarshipId)}
+                  disabled={
+                    !hasAllRequirements("warship", selectedWarshipId) ||
+                    !availableWarships
+                  }
                 />
               );
             }}

@@ -138,11 +138,10 @@ export const useAppLogic = () => {
     });
   };
 
-  const updateCityResources = (cityResources: ICityResources) => {
+  const updateCityResources = (cityResources: ICityResource[]) => {
     const tempCity = Object.assign({}, city);
 
-    tempCity.gold = cityResources.gold || 0;
-    tempCity.population = cityResources.population || 0;
+    tempCity.resources = cityResources;
 
     setCity(tempCity);
   };

@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   IBuilding,
-  IBuildingResource,
   ICityBuilding,
-  ICityResources,
+  ICityResource,
   ICityWarship,
   ICityWarshipQueue,
   IResearch,
@@ -27,8 +26,8 @@ interface IProps {
   cityId: number;
   dictionary: IWarship[];
   resourcesDictionary: IResourceDictionary[];
-  updateCityResources: (cityResources: ICityResources) => void;
-  cityResources: ICityResources;
+  updateCityResources: (cityResources: ICityResource[]) => void;
+  cityResources: ICityResource[];
   warships: ICityWarship[] | undefined;
   setWarships: (warships: ICityWarship[]) => void;
   getWarships: () => void;

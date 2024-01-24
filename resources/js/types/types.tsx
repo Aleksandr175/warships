@@ -8,6 +8,7 @@ export interface ICity {
   archipelagoId: number;
   coordX: number;
   coordY: number;
+  resources: ICityResource[];
 }
 
 export interface ICityShort {

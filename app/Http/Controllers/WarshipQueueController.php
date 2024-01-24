@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Api\WarshipCreateRequest;
-use App\Http\Resources\CityResourcesResource;
+use App\Http\Resources\CityResourceV2Resource;
 use App\Http\Resources\WarshipQueueResource;
 use App\Models\City;
 use App\Services\WarshipQueueService;
@@ -21,10 +21,12 @@ class WarshipQueueController extends Controller
 
         $city = City::where('id', $cityId)->where('user_id', $user->id)->first();
 
+        $cityResources = $city->resources;
+
         return [
             'warships'      => [],//BuildingResource::collection($city->buildings),
             'queue'         => WarshipQueueResource::collection($queue),
-            'cityResources' => new CityResourcesResource($city)
+            'cityResources' => CityResourceV2Resource::collection($cityResources)
         ];
     }
 }

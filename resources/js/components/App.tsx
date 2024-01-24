@@ -249,10 +249,7 @@ const App = () => {
                         cityId={city.id}
                         dictionary={dictionaries.warshipsDictionary}
                         updateCityResources={updateCityResources}
-                        cityResources={{
-                          gold: city.gold,
-                          population: city.population,
-                        }}
+                        cityResources={city.resources}
                         getWarships={getWarships}
                         warships={warships}
                         setWarships={setWarships}

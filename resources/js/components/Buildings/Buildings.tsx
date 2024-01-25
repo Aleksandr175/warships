@@ -6,8 +6,9 @@ import {
   IBuildingsProduction,
   ICityBuilding,
   ICityBuildingQueue,
-  ICityResources,
+  ICityResource,
   IResearch,
+  IResourceDictionary,
   IUserResearch,
 } from "../../types/types";
 import styled from "styled-components";
@@ -21,8 +22,8 @@ interface IProps {
   buildingsDictionary: IBuilding[];
   buildingDependencyDictionary: IBuildingDependency[];
   buildingResourcesDictionary: IBuildingResource[];
-  updateCityResources: (cityResources: ICityResources) => void;
-  cityResources: ICityResources;
+  updateCityResources: (cityResources: ICityResource[]) => void;
+  cityResources: ICityResource[];
   buildings: ICityBuilding[] | undefined;
   setBuildings: (buildings: ICityBuilding[]) => void;
   getBuildings: () => void;
@@ -31,6 +32,7 @@ interface IProps {
   setQueue: (q: ICityBuildingQueue | undefined) => void;
   researchesDictionary: IResearch[];
   researches: IUserResearch[];
+  resourcesDictionary: IResourceDictionary[];
 }
 
 export const Buildings = ({
@@ -48,6 +50,7 @@ export const Buildings = ({
   setQueue,
   researchesDictionary,
   researches,
+  resourcesDictionary,
 }: IProps) => {
   const [selectedBuildingId, setSelectedBuildingId] = useState(0);
   const [timeLeft, setTimeLeft] = useState<number>(0);
@@ -118,6 +121,7 @@ export const Buildings = ({
           timeLeft={timeLeft}
           buildingsDictionary={buildingsDictionary}
           queue={queue}
+          resourcesDictionary={resourcesDictionary}
         />
       )}
 

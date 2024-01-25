@@ -1,7 +1,7 @@
 import { Card } from "../Common/Card";
 import { SButtonsBlock, SH2, SParam, SParams, SText } from "../styles";
 import { Icon } from "../Common/Icon";
-import { convertSecondsToTime } from "../../utils";
+import { convertSecondsToTime, getResourceSlug } from "../../utils";
 import React from "react";
 import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
@@ -12,8 +12,9 @@ import {
   IBuildingsProduction,
   ICityBuilding,
   ICityBuildingQueue,
-  ICityResources,
+  ICityResource,
   IResearch,
+  IResourceDictionary,
   IUserResearch,
 } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
@@ -24,8 +25,8 @@ interface IProps {
   buildingsDictionary: IBuilding[];
   buildingDependencyDictionary: IBuildingDependency[];
   buildingResourcesDictionary: IBuildingResource[];
-  updateCityResources: (cityResources: ICityResources) => void;
-  cityResources: ICityResources;
+  updateCityResources: (cityResources: ICityResource[]) => void;
+  cityResources: ICityResource[];
   buildings: ICityBuilding[] | undefined;
   setBuildings: (buildings: ICityBuilding[]) => void;
   buildingsProduction?: IBuildingsProduction[];
@@ -35,6 +36,7 @@ interface IProps {
   researches: IUserResearch[];
   timeLeft: number;
   getLvl: (buildingId: number) => number;
+  resourcesDictionary: IResourceDictionary[];
 }
 
 export const SelectedBuilding = ({
@@ -54,10 +56,13 @@ export const SelectedBuilding = ({
   timeLeft,
   buildingResourcesDictionary,
   getLvl,
+  resourcesDictionary,
 }: IProps) => {
   const getResourcesForBuilding = (buildingId: number, lvl: number) => {
-    return buildingResourcesDictionary.find(
-      (br) => br.buildingId === buildingId && br.lvl === lvl
+    return (
+      buildingResourcesDictionary.filter(
+        (br) => br.buildingId === buildingId && br.lvl === lvl
+      ) || []
     );
   };
 
@@ -112,22 +117,27 @@ export const SelectedBuilding = ({
   const lvl = getLvl(selectedBuildingId);
   const nextLvl = lvl + 1;
 
-  const buildingResources = getResourcesForBuilding(
+  const requiredResources = getResourcesForBuilding(
     selectedBuildingId,
     nextLvl
   );
-  const gold = buildingResources?.gold || 0;
-  const population = buildingResources?.population || 0;
-  const time = buildingResources?.time || 0;
+  const timeRequired = requiredResources[0]?.timeRequired || 0;
 
-  const isBuildingDisabled = () => {
-    return (
-      gold > cityResources.gold ||
-      population > cityResources.population ||
-      !buildingResources
-    );
+  const isBuildingDisabled = (): boolean => {
+    for (const resource of requiredResources) {
+      const cityResource = cityResources.find(
+        (cr) => cr.resourceId === resource.resourceId
+      );
+
+      if (!cityResource || cityResource.qty < resource.qty) {
+        return true;
+      }
+    }
+
+    return false;
   };
 
+  // TODO: refactor it?
   const getProductionResource = (resource: "population" | "gold") => {
     const production = buildingsProduction?.find((bProduction) => {
       return (
@@ -155,18 +165,25 @@ export const SelectedBuilding = ({
       <div className={"col-8"}>
         <SH2>{selectedBuilding?.title}</SH2>
         <div>
-          {Boolean(gold || population) && (
+          {requiredResources?.length > 0 && (
             <>
               <SText>Required resources:</SText>
               <SParams>
+                {requiredResources.map((resource) => {
+                  return (
+                    <SParam key={resource.resourceId}>
+                      <Icon
+                        title={getResourceSlug(
+                          resourcesDictionary,
+                          resource.resourceId
+                        )}
+                      />
+                      {resource.qty}
+                    </SParam>
+                  );
+                })}
                 <SParam>
-                  <Icon title={"gold"} /> {gold}
-                </SParam>
-                <SParam>
-                  <Icon title={"worker"} /> {population}
-                </SParam>
-                <SParam>
-                  <Icon title={"time"} /> {convertSecondsToTime(time)}
+                  <Icon title={"time"} /> {convertSecondsToTime(timeRequired)}
                 </SParam>
               </SParams>
             </>
@@ -224,7 +241,7 @@ export const SelectedBuilding = ({
                 run(selectedBuildingId);
               }}
             >
-              {!buildingResources ? "Max Level" : "Build"}
+              {!requiredResources?.length ? "Max Level" : "Build"}
             </button>
           )}
 

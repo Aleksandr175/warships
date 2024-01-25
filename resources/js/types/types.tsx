@@ -90,10 +90,10 @@ export interface ICityWarshipQueue {
 
 export interface IBuildingResource {
   buildingId: number;
-  gold: number;
-  population: number;
+  resourceId: number;
+  qty: number;
   lvl: number;
-  time: number;
+  timeRequired: number;
 }
 
 export interface IResearchResource extends IBuildingResource {

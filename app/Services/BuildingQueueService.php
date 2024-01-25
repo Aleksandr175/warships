@@ -57,18 +57,35 @@ class BuildingQueueService
         }
 
         $hasAllRequirements = $this->hasAllRequirements($city, $buildingId, $this->nextLvl);
-        $hasEnoughResources = false;
+
+        if (!$hasAllRequirements) {
+            return false;
+        }
 
         // found out what resources we need for building
-        $resources = BuildingResource::where('building_id', $buildingId)->where('lvl', $this->nextLvl)->first();
+        $requiredResources = BuildingResource::where('building_id', $buildingId)->where('lvl', $this->nextLvl)->get();
+        $cityResources     = $city->resources;
 
-        if ($resources && $resources->id) {
-            if ($city->gold >= $resources->gold && $city->population >= $resources->population) {
-                $hasEnoughResources = true;
+        $canBuild = true;
+        foreach ($requiredResources as $requiredResource) {
+            $hasEnoughRequiredResourceQty = false;
+            // Find the corresponding resource in the city resources
+            foreach ($cityResources as $cityResource) {
+                if ($cityResource->resource_id === $requiredResource->resource_id
+                    && $cityResource->qty >= $requiredResource->qty) {
+                    $hasEnoughRequiredResourceQty = true;
+                    break;
+                }
+            }
+
+            if (!$hasEnoughRequiredResourceQty) {
+                $canBuild = false;
+
+                break;
             }
         }
 
-        return $hasEnoughResources && $hasAllRequirements;
+        return $canBuild;
     }
 
     public function hasAllRequirements($city, $buildingId, $nextLvl): bool
@@ -112,43 +129,54 @@ class BuildingQueueService
         return $hasAllRequirements;
     }
 
-    public function store($userId, BuildRequest $request, $city): CityBuildingQueue
+    public function store($userId, BuildRequest $request): CityBuildingQueue
     {
-        $data       = $request->only('buildingId');
+        $data       = $request->only('buildingId', 'cityId');
+        $cityId     = $data['cityId'];
         $buildingId = $data['buildingId'];
 
         $this->userId     = $userId;
         $this->buildingId = $buildingId;
-        $this->city       = $city;
+
+        $this->city = City::where('id', $cityId)->where('user_id', $this->userId)->first();
 
         if ($this->city && $this->city->id && $this->canBuild($this->city, $buildingId)) {
-            return $this->updateQueue();
+            return $this->updateQueue($this->city);
         }
 
         return abort(403);
     }
 
-    public function updateQueue(): CityBuildingQueue
+    public function updateQueue($city): CityBuildingQueue
     {
+        $cityResources = $city->resources;
+
         // found out what resources we need for building
-        $buildingResources = BuildingResource::where('building_id', $this->buildingId)->where('lvl', $this->nextLvl)->first();
+        $requiredResources = BuildingResource::where('building_id', $this->buildingId)->where('lvl', $this->nextLvl)->get();
 
-        $time = $buildingResources->time;
+        // each resource row has time_required for upgrading building
+        $timeRequired = $requiredResources[0]->time_required;
 
-        // take resources from city
-        $this->city->update([
-            'gold'       => $this->city->gold - $buildingResources->gold,
-            'population' => $this->city->population - $buildingResources->population
-        ]);
+        // Subtract the required amount of each resource from the city
+        foreach ($requiredResources as $requiredResource) {
+            // Find the corresponding resource in the city resources
+            $cityResource = $cityResources->where('resource_id', $requiredResource->resource_id)->first();
 
+            // Subtract the required quantity from the city's resource
+            $cityResource->qty -= $requiredResource->qty;
+
+            $cityResource->save();
+        }
+
+        // TODO: fix this, add resources rows for cancel
         return CityBuildingQueue::create([
-            'building_id' => $this->buildingId,
-            'city_id'     => $this->city->id,
-            'gold'        => $buildingResources->gold,
-            'population'  => $buildingResources->population,
-            'lvl'         => $this->nextLvl,
-            'time'        => $time,
-            'deadline'    => Carbon::now()->addSeconds($time)
+            'building_id'   => $this->buildingId,
+            'city_id'       => $city->id,
+            //'gold'        => $buildingResources->gold,
+            //'population'  => $buildingResources->population,
+            'lvl'           => $this->nextLvl,
+            'time_required' => $timeRequired,
+            'deadline'      => Carbon::now()->addSeconds($timeRequired)
         ]);
     }
 

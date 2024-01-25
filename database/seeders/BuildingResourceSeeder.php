@@ -160,6 +160,13 @@ class BuildingResourceSeeder extends Seeder
             'lvl'           => 2,
             'time_required' => 50,
         ]);
+        BuildingResource::create([
+            'building_id'   => $building2->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.LOGS'),
+            'qty'           => 5,
+            'lvl'           => 2,
+            'time_required' => 100,
+        ]);
 
         BuildingResource::create([
             'building_id'   => $building2->id,
@@ -172,6 +179,13 @@ class BuildingResourceSeeder extends Seeder
             'building_id'   => $building2->id,
             'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
             'qty'           => 50,
+            'lvl'           => 3,
+            'time_required' => 100,
+        ]);
+        BuildingResource::create([
+            'building_id'   => $building2->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.LOGS'),
+            'qty'           => 10,
             'lvl'           => 3,
             'time_required' => 100,
         ]);

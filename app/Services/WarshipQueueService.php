@@ -31,9 +31,7 @@ class WarshipQueueService
         $this->city = City::where('id', $cityId)->where('user_id', $this->userId)->first();
 
         if ($this->city && $this->city->id && $this->canBuild()) {
-            $queue = $this->updateWarshipQueue();
-
-            return $queue;
+            return $this->updateWarshipQueue();
         }
 
         return abort(403);
@@ -130,7 +128,7 @@ class WarshipQueueService
 
             // Find the corresponding resource in the city resources
             foreach ($cityResources as $cityResource) {
-                if ($cityResource->id === $requiredResource->id) {
+                if ($cityResource->resource_id === $requiredResource->resource_id) {
                     // Calculate the maximum buildable quantity based on this resource
                     $maxQtyForResource = floor($cityResource->qty / $requiredResource->qty);
                 }

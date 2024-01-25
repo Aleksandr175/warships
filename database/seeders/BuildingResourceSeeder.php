@@ -26,145 +26,243 @@ class BuildingResourceSeeder extends Seeder
         $building8 = BuildingDictionary::where('id', config('constants.BUILDINGS.FORTRESS'))->first();
 
         BuildingResource::create([
-            'building_id' => $building1->id,
-            'gold' => 100,
-            'population' => 20,
-            'lvl' => 1,
-            'time' => 5,
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 100,
+            'lvl'           => 1,
+            'time_required' => 5,
         ]);
         BuildingResource::create([
-            'building_id' => $building1->id,
-            'gold' => 200,
-            'population' => 30,
-            'lvl' => 2,
-            'time' => 50,
-        ]);
-        BuildingResource::create([
-            'building_id' => $building1->id,
-            'gold' => 400,
-            'population' => 50,
-            'lvl' => 3,
-            'time' => 100,
-        ]);
-        BuildingResource::create([
-            'building_id' => $building1->id,
-            'gold' => 1500,
-            'population' => 250,
-            'lvl' => 4,
-            'time' => 250,
-        ]);
-        BuildingResource::create([
-            'building_id' => $building1->id,
-            'gold' => 10000,
-            'population' => 2000,
-            'lvl' => 5,
-            'time' => 500,
-        ]);
-        BuildingResource::create([
-            'building_id' => $building1->id,
-            'gold' => 15000,
-            'population' => 5000,
-            'lvl' => 6,
-            'time' => 800,
-        ]);
-        BuildingResource::create([
-            'building_id' => $building1->id,
-            'gold' => 50000,
-            'population' => 20000,
-            'lvl' => 7,
-            'time' => 1200,
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 20,
+            'lvl'           => 1,
+            'time_required' => 5,
         ]);
 
         BuildingResource::create([
-            'building_id' => $building2->id,
-            'gold' => 200,
-            'population' => 50,
-            'lvl' => 1,
-            'time' => 25,
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 200,
+            'lvl'           => 2,
+            'time_required' => 50,
         ]);
         BuildingResource::create([
-            'building_id' => $building2->id,
-            'gold' => 300,
-            'population' => 70,
-            'lvl' => 2,
-            'time' => 30,
-        ]);
-        BuildingResource::create([
-            'building_id' => $building2->id,
-            'gold' => 500,
-            'population' => 100,
-            'lvl' => 3,
-            'time' => 50,
-        ]);
-
-        $buildingResources3[0] = BuildingResource::create([
-            'building_id' => $building3->id,
-            'gold' => 100,
-            'population' => 0,
-            'lvl' => 1,
-            'time' => 10,
-        ]);
-        $buildingResources3[1] = BuildingResource::create([
-            'building_id' => $building3->id,
-            'gold' => 200,
-            'population' => 0,
-            'lvl' => 2,
-            'time' => 20,
-        ]);
-        $buildingResources3[2] = BuildingResource::create([
-            'building_id' => $building3->id,
-            'gold' => 400,
-            'population' => 0,
-            'lvl' => 3,
-            'time' => 40
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 30,
+            'lvl'           => 2,
+            'time_required' => 50,
         ]);
 
         BuildingResource::create([
-            'building_id' => $building4->id,
-            'gold' => 100,
-            'population' => 0,
-            'lvl' => 1,
-            'time' => 10
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 400,
+            'lvl'           => 3,
+            'time_required' => 100,
+        ]);
+        BuildingResource::create([
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 50,
+            'lvl'           => 3,
+            'time_required' => 100,
         ]);
 
         BuildingResource::create([
-            'building_id' => $building5->id,
-            'gold' => 100,
-            'population' => 0,
-            'lvl' => 1,
-            'time' => 10
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 1500,
+            'lvl'           => 4,
+            'time_required' => 250,
+        ]);
+        BuildingResource::create([
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 250,
+            'lvl'           => 4,
+            'time_required' => 250,
         ]);
 
         BuildingResource::create([
-            'building_id' => $building6->id,
-            'gold' => 100,
-            'population' => 0,
-            'lvl' => 1,
-            'time' => 10
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 10000,
+            'lvl'           => 5,
+            'time_required' => 500,
+        ]);
+        BuildingResource::create([
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 2000,
+            'lvl'           => 5,
+            'time_required' => 500,
         ]);
 
         BuildingResource::create([
-            'building_id' => $building7->id,
-            'gold' => 100,
-            'population' => 0,
-            'lvl' => 1,
-            'time' => 10
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 15000,
+            'lvl'           => 6,
+            'time_required' => 800,
+        ]);
+        BuildingResource::create([
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 5000,
+            'lvl'           => 6,
+            'time_required' => 800,
         ]);
 
         BuildingResource::create([
-            'building_id' => $building8->id,
-            'gold' => 1000,
-            'population' => 100,
-            'lvl' => 1,
-            'time' => 400
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 50000,
+            'lvl'           => 7,
+            'time_required' => 1200,
+        ]);
+        BuildingResource::create([
+            'building_id'   => $building1->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 20000,
+            'lvl'           => 7,
+            'time_required' => 1200,
+        ]);
+
+
+        BuildingResource::create([
+            'building_id'   => $building2->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 100,
+            'lvl'           => 1,
+            'time_required' => 5,
+        ]);
+        BuildingResource::create([
+            'building_id'   => $building2->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 20,
+            'lvl'           => 1,
+            'time_required' => 5,
         ]);
 
         BuildingResource::create([
-            'building_id' => $building8->id,
-            'gold' => 1500,
-            'population' => 150,
-            'lvl' => 2,
-            'time' => 600
+            'building_id'   => $building2->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 200,
+            'lvl'           => 2,
+            'time_required' => 50,
         ]);
+        BuildingResource::create([
+            'building_id'   => $building2->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 30,
+            'lvl'           => 2,
+            'time_required' => 50,
+        ]);
+
+        BuildingResource::create([
+            'building_id'   => $building2->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 400,
+            'lvl'           => 3,
+            'time_required' => 100,
+        ]);
+        BuildingResource::create([
+            'building_id'   => $building2->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 50,
+            'lvl'           => 3,
+            'time_required' => 100,
+        ]);
+
+
+        BuildingResource::create([
+            'building_id'   => $building3->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 100,
+            'lvl'           => 1,
+            'time_required' => 5,
+        ]);
+        BuildingResource::create([
+            'building_id'   => $building3->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 20,
+            'lvl'           => 1,
+            'time_required' => 5,
+        ]);
+
+        BuildingResource::create([
+            'building_id'   => $building3->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 200,
+            'lvl'           => 2,
+            'time_required' => 50,
+        ]);
+        BuildingResource::create([
+            'building_id'   => $building3->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 30,
+            'lvl'           => 2,
+            'time_required' => 50,
+        ]);
+
+        BuildingResource::create([
+            'building_id'   => $building3->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 400,
+            'lvl'           => 3,
+            'time_required' => 100,
+        ]);
+        BuildingResource::create([
+            'building_id'   => $building3->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 50,
+            'lvl'           => 3,
+            'time_required' => 100,
+        ]);
+
+
+        BuildingResource::create([
+            'building_id'   => $building4->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 100,
+            'lvl'           => 1,
+            'time_required' => 10,
+        ]);
+
+
+        BuildingResource::create([
+            'building_id'   => $building5->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 100,
+            'lvl'           => 1,
+            'time_required' => 10,
+        ]);
+
+        BuildingResource::create([
+            'building_id'   => $building6->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 1000,
+            'lvl'           => 1,
+            'time_required' => 100,
+        ]);
+
+        BuildingResource::create([
+            'building_id'   => $building7->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 2000,
+            'lvl'           => 1,
+            'time_required' => 200,
+        ]);
+
+        BuildingResource::create([
+            'building_id'   => $building8->id,
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 3000,
+            'lvl'           => 1,
+            'time_required' => 300,
+        ]);
+
     }
 }

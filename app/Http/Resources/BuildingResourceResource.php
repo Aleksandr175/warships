@@ -16,11 +16,11 @@ class BuildingResourceResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'buildingId' => $this->building_id,
-            'gold'       => $this->gold,
-            'population' => $this->population,
-            'lvl'        => $this->lvl,
-            'time'       => $this->time
+            'buildingId'   => $this->building_id,
+            'resource_id'  => $this->resource_id,
+            'qty'          => $this->qty,
+            'lvl'          => $this->lvl,
+            'timeRequired' => $this->time_required
         ];
     }
 }

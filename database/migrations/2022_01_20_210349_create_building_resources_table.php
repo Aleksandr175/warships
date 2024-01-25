@@ -16,15 +16,12 @@ class CreateBuildingResourcesTable extends Migration
         Schema::create('building_resources', function (Blueprint $table) {
             $table->id();
 
-            $table->bigInteger('building_id')->unsigned();
-            $table->foreign('building_id')->references('id')->on('building_dictionary');
-
-            $table->integer('gold');
-            $table->integer('population');
-
-            $table->integer('time');
-
+            $table->integer('building_id');
             $table->integer('lvl');
+            $table->integer('resource_id');
+
+            $table->integer('qty')->default(0);
+            $table->integer('time_required')->default(0);
 
             $table->timestamps();
         });

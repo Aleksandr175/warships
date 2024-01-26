@@ -244,7 +244,7 @@ class BattleService
 
 
         // do i need it? i dont think so
-        if ($targetCity->city_dictionary_id === CityDictionary::PLAYERS_ISLAND) {
+        if ($targetCity->city_dictionary_id === config('constants.CITY_TYPE_ID.ISLAND')) {
             // TODO if we attack player's island
             // get warships in target island
             // summarize all fleets in city, all trade warships if exist (from other player)

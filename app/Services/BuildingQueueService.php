@@ -8,6 +8,7 @@ use App\Models\BuildingProduction;
 use App\Models\BuildingResource;
 use App\Models\City;
 use App\Models\CityBuildingQueue;
+use App\Models\CityBuildingQueueResource;
 use App\Models\Research;
 use Carbon\Carbon;
 
@@ -168,16 +169,24 @@ class BuildingQueueService
             $cityResource->save();
         }
 
-        // TODO: fix this, add resources rows for cancel
-        return CityBuildingQueue::create([
+        $cityBuildingQueue = CityBuildingQueue::create([
             'building_id'   => $this->buildingId,
             'city_id'       => $city->id,
-            //'gold'        => $buildingResources->gold,
-            //'population'  => $buildingResources->population,
             'lvl'           => $this->nextLvl,
             'time_required' => $timeRequired,
             'deadline'      => Carbon::now()->addSeconds($timeRequired)
         ]);
+
+        // Add required amount of each resource to table in case we want to cancel building queue
+        foreach ($requiredResources as $requiredResource) {
+            CityBuildingQueueResource::create([
+                'city_building_queue_id' => $cityBuildingQueue->id,
+                'resource_id'            => $requiredResource->resource_id,
+                'qty'                    => $requiredResource->qty
+            ]);
+        }
+
+        return $cityBuildingQueue;
     }
 
     public function cancel($city): void
@@ -186,11 +195,14 @@ class BuildingQueueService
             $buildingQueue = $city->buildingQueue;
 
             if ($buildingQueue && $buildingQueue->id) {
-                // update resource
-                $city->update([
-                    'gold'       => $city->gold + $buildingQueue->gold,
-                    'population' => $city->population + $buildingQueue->population,
-                ]);
+                $resources = CityBuildingQueueResource::where('city_building_queue_id', $buildingQueue->id)->get();
+
+                foreach ($resources as $resource) {
+                    $cityResource = $city->resources->where('resource_id', $resource->resource_id)->first();
+                    $cityResource->increment('qty', $resource->qty);
+
+                    $resource->delete();
+                }
 
                 $city->buildingQueue()->delete();
             }

@@ -22,8 +22,6 @@ class CreateCityBuildingQueuesTable extends Migration
             $table->bigInteger('building_id')->unsigned();
             $table->foreign('building_id')->references('id')->on('buildings');
 
-            $table->integer('gold')->default(0);
-            $table->integer('population')->default(0);
             $table->integer('lvl')->default(0);
 
             $table->integer('time_required');

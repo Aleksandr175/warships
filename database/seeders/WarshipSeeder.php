@@ -38,7 +38,7 @@ class WarshipSeeder extends Seeder
         ]);
 
         // set some warships for pirate bays
-        $pirateBays = City::where('city_dictionary_id', CityDictionary::PIRATE_BAY)->get();
+        $pirateBays = City::where('city_dictionary_id', config('constants.CITY_TYPE_ID.PIRATE_BAY'))->get();
 
         foreach ($pirateBays as $pirateBay) {
             Warship::create([

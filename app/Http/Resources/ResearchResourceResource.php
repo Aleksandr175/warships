@@ -16,11 +16,11 @@ class ResearchResourceResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'researchId' => $this->research_id,
-            'gold'       => $this->gold,
-            'population' => $this->population,
-            'lvl'        => $this->lvl,
-            'time'       => $this->time
+            'researchId'   => $this->research_id,
+            'resourceId'   => $this->resource_id,
+            'qty'          => $this->qty,
+            'lvl'          => $this->lvl,
+            'timeRequired' => $this->time_required
         ];
     }
 }

@@ -315,6 +315,7 @@ export const SelectedWarship = ({
 
 const SSelectedItem = styled.div`
   margin-bottom: calc(var(--block-gutter-y) * 2);
+  min-height: 300px;
 `;
 
 const SCardWrapper = styled.div`

@@ -134,6 +134,10 @@ export const SelectedBuilding = ({
       }
     }
 
+    if (!requiredResources?.length) {
+      return true;
+    }
+
     return false;
   };
 
@@ -264,6 +268,7 @@ export const SelectedBuilding = ({
 
 const SSelectedItem = styled.div`
   margin-bottom: calc(var(--block-gutter-y) * 2);
+  min-height: 300px;
 `;
 
 const SCardWrapper = styled.div`

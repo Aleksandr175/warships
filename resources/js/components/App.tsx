@@ -225,10 +225,7 @@ const App = () => {
                           dictionaries.researchResources
                         }
                         updateCityResources={updateCityResources}
-                        cityResources={{
-                          gold: city.gold,
-                          population: city.population,
-                        }}
+                        cityResources={city.resources}
                         researches={dictionaries.userResearches}
                         setQueue={setQueueResearch}
                         queue={queueResearch}
@@ -237,6 +234,7 @@ const App = () => {
                           dictionaries.researchDependencies
                         }
                         buildingsDictionary={dictionaries.buildings}
+                        resourcesDictionary={resourcesDictionary!}
                       />
                     }
                   />

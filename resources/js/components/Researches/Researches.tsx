@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   IBuilding,
   ICityResearchQueue,
-  ICityResources,
+  ICityResource,
   IResearch,
   IResearchDependency,
   IResearchResource,
+  IResourceDictionary,
   IUserResearch,
 } from "../../types/types";
 import { Research } from "./Research";
@@ -18,14 +19,15 @@ interface IProps {
   cityId: number;
   dictionary: IResearch[];
   researchResourcesDictionary: IResearchResource[];
-  updateCityResources: (cityResources: ICityResources) => void;
-  cityResources: ICityResources;
+  updateCityResources: (cityResources: ICityResource[]) => void;
+  cityResources: ICityResource[];
   researches: IUserResearch[];
   queue?: ICityResearchQueue;
   setQueue: (q: ICityResearchQueue | undefined) => void;
   getResearches: () => void;
   researchDependencyDictionary: IResearchDependency[];
   buildingsDictionary: IBuilding[];
+  resourcesDictionary: IResourceDictionary[];
 }
 
 export const Researches = ({
@@ -40,6 +42,7 @@ export const Researches = ({
   getResearches,
   researchDependencyDictionary,
   buildingsDictionary,
+  resourcesDictionary,
 }: IProps) => {
   const [selectedResearchId, setSelectedResearchId] = useState(0);
   const [timeLeft, setTimeLeft] = useState<number>(0);
@@ -107,6 +110,7 @@ export const Researches = ({
           timeLeft={timeLeft}
           getLvl={getLvl}
           buildingsDictionary={buildingsDictionary}
+          resourcesDictionary={resourcesDictionary}
         />
       )}
 

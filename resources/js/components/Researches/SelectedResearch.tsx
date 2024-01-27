@@ -1,17 +1,18 @@
 import { Card } from "../Common/Card";
 import { SButtonsBlock, SH2, SParam, SParams, SText } from "../styles";
 import { Icon } from "../Common/Icon";
-import { convertSecondsToTime } from "../../utils";
+import { convertSecondsToTime, getResourceSlug } from "../../utils";
 import React from "react";
 import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
 import {
   IBuilding,
   ICityResearchQueue,
-  ICityResources,
+  ICityResource,
   IResearch,
   IResearchDependency,
   IResearchResource,
+  IResourceDictionary,
   IUserResearch,
 } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
@@ -22,14 +23,15 @@ interface IProps {
   researchesDictionary: IResearch[];
   researchResourcesDictionary: IResearchResource[];
   researchDependencyDictionary: IResearchDependency[];
-  updateCityResources: (cityResources: ICityResources) => void;
-  cityResources: ICityResources;
+  updateCityResources: (cityResources: ICityResource[]) => void;
+  cityResources: ICityResource[];
   queue?: ICityResearchQueue;
   setQueue: (q: ICityResearchQueue | undefined) => void;
   researches: IUserResearch[];
   timeLeft: number;
   getLvl: (buildingId: number) => number;
   buildingsDictionary: IBuilding[];
+  resourcesDictionary: IResourceDictionary[];
 }
 
 export const SelectedResearch = ({
@@ -46,6 +48,7 @@ export const SelectedResearch = ({
   timeLeft,
   getLvl,
   buildingsDictionary,
+  resourcesDictionary,
 }: IProps) => {
   const selectedResearch = getResearch(selectedResearchId)!;
   const lvl = getLvl(selectedResearchId);
@@ -59,26 +62,40 @@ export const SelectedResearch = ({
     queue && queue.researchId === selectedResearchId;
   const isSomeResearchInProcess = queue && queue.researchId > 0;
 
-  const researchResources = getResourcesForResearch(
+  const requiredResources = getResourcesForResearch(
     selectedResearchId,
     lvl + 1
   );
-  const gold = researchResources?.gold || 0;
-  const population = researchResources?.population || 0;
-  const time = researchResources?.time || 0;
+  const timeRequired = requiredResources[0]?.timeRequired || 0;
 
-  function getResourcesForResearch(resourceId: number, lvl: number) {
-    return researchResourcesDictionary.find(
-      (rr) => rr.researchId === resourceId && rr.lvl === lvl
+  function getResourcesForResearch(
+    researchId: number,
+    lvl: number
+  ): IResearchResource[] {
+    console.log(researchId, lvl);
+    return (
+      researchResourcesDictionary.filter(
+        (rr) => rr.researchId === researchId && rr.lvl === lvl
+      ) || []
     );
   }
 
   function isResearchDisabled() {
-    return (
-      gold > cityResources.gold ||
-      population > cityResources.population ||
-      !researchResources
-    );
+    for (const resource of requiredResources) {
+      const cityResource = cityResources.find(
+        (cr) => cr.resourceId === resource.resourceId
+      );
+
+      if (!cityResource || cityResource.qty < resource.qty) {
+        return true;
+      }
+    }
+
+    if (!requiredResources?.length) {
+      return true;
+    }
+
+    return false;
   }
 
   const {
@@ -131,18 +148,25 @@ export const SelectedResearch = ({
       <div className={"col-8"}>
         <SH2>{selectedResearch?.title}</SH2>
         <div>
-          {Boolean(gold || population) && (
+          {requiredResources?.length > 0 && (
             <>
               <SText>Required resources:</SText>
               <SParams>
+                {requiredResources.map((resource) => {
+                  return (
+                    <SParam key={resource.resourceId}>
+                      <Icon
+                        title={getResourceSlug(
+                          resourcesDictionary,
+                          resource.resourceId
+                        )}
+                      />
+                      {resource.qty}
+                    </SParam>
+                  );
+                })}
                 <SParam>
-                  <Icon title={"gold"} /> {gold}
-                </SParam>
-                <SParam>
-                  <Icon title={"worker"} /> {population}
-                </SParam>
-                <SParam>
-                  <Icon title={"time"} /> {convertSecondsToTime(time)}
+                  <Icon title={"time"} /> {convertSecondsToTime(timeRequired)}
                 </SParam>
               </SParams>
             </>
@@ -178,7 +202,7 @@ export const SelectedResearch = ({
                 run(selectedResearchId);
               }}
             >
-              {!researchResources ? "Max Level" : "Research"}
+              {!requiredResources?.length ? "Max Level" : "Research"}
             </button>
           )}
 
@@ -201,6 +225,7 @@ export const SelectedResearch = ({
 
 const SSelectedItem = styled.div`
   margin-bottom: calc(var(--block-gutter-y) * 2);
+  min-height: 300px;
 `;
 
 const SCardWrapper = styled.div`

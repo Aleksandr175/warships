@@ -16,15 +16,12 @@ class CreateResearchResourcesTable extends Migration
         Schema::create('research_resources', function (Blueprint $table) {
             $table->id();
 
-            $table->bigInteger('research_id')->unsigned();
-            $table->foreign('research_id')->references('id')->on('research_dictionary');
-
-            $table->integer('gold');
-            $table->integer('population');
-
-            $table->integer('time');
-
+            $table->integer('research_id');
             $table->integer('lvl');
+            $table->integer('resource_id');
+
+            $table->integer('qty')->default(0);
+            $table->integer('time_required')->default(0);
 
             $table->timestamps();
         });

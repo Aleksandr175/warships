@@ -1,14 +1,18 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useRef } from "react";
 import { ICityResources } from "../types/types";
 import { Icon } from "./Common/Icon";
 import styled from "styled-components";
 import { getResourceSlug } from "../utils";
+import { useFetchDictionaries } from "../hooks/useFetchDictionaries";
 
 export const CityResources = ({
   productions,
   cityResources,
-  resourcesDictionary,
 }: ICityResources) => {
+  const queryDictionaries = useFetchDictionaries();
+
+  const dictionaries = queryDictionaries.data;
+
   const timer = useRef<NodeJS.Timeout | null>(null);
 
   // temp
@@ -51,11 +55,15 @@ export const CityResources = ({
     );
   };*/
 
+  if (!dictionaries) {
+    return null;
+  }
+
   return (
     <SResources>
       {cityResources?.map((cityResource) => {
         const resourceSlug = getResourceSlug(
-          resourcesDictionary!,
+          dictionaries.resourcesDictionary,
           cityResource.resourceId
         );
 

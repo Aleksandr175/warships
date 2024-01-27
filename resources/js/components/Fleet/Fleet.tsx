@@ -15,16 +15,20 @@ import { FleetCard } from "./FleetCard";
 import { InputNumber } from "../Common/InputNumber";
 import { SContent, SH1 } from "../styles";
 import { useSearchParams } from "react-router-dom";
+import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 
 interface IProps {
-  dictionary: IWarship[];
   warships: ICityWarship[] | undefined;
   cities: ICity[];
   city: ICity;
 }
 
 // TODO: add react hook form
-export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
+export const Fleet = ({ warships, cities, city }: IProps) => {
+  const queryDictionaries = useFetchDictionaries();
+
+  const dictionaries = queryDictionaries.data;
+
   const [type, setType] = useState<TType>("map");
   const [taskType, setTaskType] = useState<TTask>("trade");
   const [coordX, setCoordX] = useState<number>(0);
@@ -72,7 +76,7 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
   useEffect(() => {
     const details = [] as IFleetWarshipsData[];
 
-    dictionary?.forEach((warship) => {
+    dictionaries?.warshipsDictionary.forEach((warship) => {
       details.push({
         warshipId: warship.id,
         qty: 0,
@@ -137,7 +141,7 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
     let maxCapacity = 0;
 
     fleetDetails?.forEach((fDetail) => {
-      const dictWarship = dictionary.find(
+      const dictWarship = dictionaries?.warshipsDictionary.find(
         (warship) => warship.id === fDetail.warshipId
       );
 
@@ -155,11 +159,15 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
     setGold(maxCapacity);
   }
 
+  if (!dictionaries) {
+    return null;
+  }
+
   return (
     <SContent>
       <SH1>Send Fleet {type === "adventure" ? "to Adventure" : ""}</SH1>
 
-      {dictionary.map((item) => {
+      {dictionaries.warshipsDictionary.map((item) => {
         return (
           <SItemWrapper key={item.id}>
             <FleetCard
@@ -226,6 +234,7 @@ export const Fleet = ({ dictionary, warships, cities, city }: IProps) => {
                 {cities.map((city) => {
                   return (
                     <SCityPreset
+                      key={city.id}
                       active={city.coordX === coordX && city.coordY === coordY}
                       onClick={() => chooseCity(city)}
                     >

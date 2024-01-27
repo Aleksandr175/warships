@@ -1,21 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ICityWarshipQueue, IWarship } from "../../types/types";
+import { ICityWarshipQueue } from "../../types/types";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { SH2 } from "../styles";
 import styled from "styled-components";
 import { convertSecondsToTime, getTimeLeft } from "../../utils";
+import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
 interface IProps {
-  dictionary: IWarship[];
   queue?: ICityWarshipQueue[];
   sync: () => void;
 }
 
-export const WarshipsQueue = ({ dictionary, queue, sync }: IProps) => {
+export const WarshipsQueue = ({ queue, sync }: IProps) => {
+  const queryDictionaries = useFetchDictionaries();
+
+  const dictionaries = queryDictionaries.data;
+
   const timer = useRef();
   const [tempQueue, setTempQueue] = useState(queue || []);
 
@@ -49,7 +53,9 @@ export const WarshipsQueue = ({ dictionary, queue, sync }: IProps) => {
   }
 
   function getWarshipName(warshipId: number): string | undefined {
-    return dictionary.find((warship) => warship.id === warshipId)?.title;
+    return dictionaries?.warshipsDictionary.find(
+      (warship) => warship.id === warshipId
+    )?.title;
   }
 
   return (

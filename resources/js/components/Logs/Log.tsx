@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { IWarship } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import { NavLink, useParams } from "react-router-dom";
 import { Round } from "./Round";
 import { SContent } from "../styles";
 
 interface IProps {
-  dictionary: IWarship[];
   userId: number;
 }
 
@@ -27,7 +25,7 @@ export interface IBattleLogDetail {
   userId: number | null;
 }
 
-export const Log = ({ dictionary, userId }: IProps) => {
+export const Log = ({ userId }: IProps) => {
   const [log, setLog] = useState<IBattleLog>();
   const [logDetails, setLogDetails] = useState<IBattleLogDetail[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -75,12 +73,9 @@ export const Log = ({ dictionary, userId }: IProps) => {
       return (
         <Round
           roundData={getRoundDetails(round + 1)}
-          dictionary={dictionary}
           firstUserId={userId}
           secondUserId={secondUserId() || null}
           round={round + 1}
-          // @ts-ignore
-          log={log}
         />
       );
     });

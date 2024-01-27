@@ -131,13 +131,10 @@ const App = () => {
               <div className={"row"}>
                 <div className={"col-5"}>
                   <SColumn>
-                    {resourcesDictionary && (
-                      <CityResources
-                        cityResources={cityResources!}
-                        resourcesDictionary={resourcesDictionary}
-                        productions={getProductions()}
-                      />
-                    )}
+                    <CityResources
+                      cityResources={cityResources!}
+                      productions={getProductions()}
+                    />
                   </SColumn>
                 </div>
                 <div className={"col-5"}>
@@ -221,7 +218,6 @@ const App = () => {
                     element={
                       <Warships
                         cityId={city.id}
-                        dictionary={dictionaries.warshipsDictionary}
                         updateCityResources={updateCityResources}
                         cityResources={city.resources}
                         getWarships={getWarships}
@@ -229,45 +225,26 @@ const App = () => {
                         setWarships={setWarships}
                         setQueue={setQueueWarship}
                         queue={queueWarship}
-                        warshipDependencies={dictionaries.warshipDependencies}
                         // TODO: userResearches should not be in dictionaries
                         researches={dictionaries.userResearches}
-                        researchesDictionary={dictionaries.researches}
                         buildings={buildings!}
-                        buildingsDictionary={dictionaries.buildings}
-                        resourcesDictionary={resourcesDictionary!}
                       />
                     }
                   />
                   <Route
                     path={"fleets"}
                     element={
-                      <Fleet
-                        warships={warships}
-                        dictionary={dictionaries.warshipsDictionary}
-                        cities={cities}
-                        city={city}
-                      />
+                      <Fleet warships={warships} cities={cities} city={city} />
                     }
                   />
                   <Route path={"map"} element={<Map fleets={fleets} />} />
                   <Route
                     path="logs/:id"
-                    element={
-                      <Log
-                        dictionary={dictionaries.warshipsDictionary}
-                        userId={userId || 0}
-                      />
-                    }
+                    element={<Log userId={userId || 0} />}
                   />
                   <Route
                     path={"logs"}
-                    element={
-                      <Logs
-                        dictionary={dictionaries.warshipsDictionary}
-                        userId={userId || 0}
-                      />
-                    }
+                    element={<Logs userId={userId || 0} />}
                   />
                   <Route path={"messages"} element={<Messages />} />
                   <Route path={"messages/:id"} element={<Message />} />

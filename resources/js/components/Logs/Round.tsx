@@ -1,17 +1,14 @@
 import React from "react";
-import { IWarship } from "../../types/types";
-import { IBattleLog, IBattleLogDetail } from "./Log";
+import { IBattleLogDetail } from "./Log";
 import { LogWarship } from "./LogWarship";
 import styled from "styled-components";
 import { Icon } from "../Common/Icon";
 
 interface IProps {
-  dictionary: IWarship[];
   roundData: IBattleLogDetail[];
   firstUserId: number | null;
   secondUserId: number | null;
   round: number;
-  log: IBattleLog;
 }
 
 export const Round = ({
@@ -19,7 +16,6 @@ export const Round = ({
   firstUserId,
   secondUserId,
   round,
-  log,
 }: IProps) => {
   const getWarshipLog = (userId: number | null, warshipId: number) => {
     return roundData.find(

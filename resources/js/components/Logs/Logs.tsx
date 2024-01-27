@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { IMapCity, IWarship } from "../../types/types";
+import { IMapCity } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import ReactPaginate from "react-paginate";
 import { NavLink } from "react-router-dom";
@@ -7,7 +7,6 @@ import { SContent } from "../styles";
 import dayjs from "dayjs";
 
 interface IProps {
-  dictionary: IWarship[];
   userId: number;
 }
 
@@ -28,7 +27,7 @@ interface IBattleLogDetail {
   destroyed: number;
 }
 
-export const Logs = ({ dictionary, userId }: IProps) => {
+export const Logs = ({ userId }: IProps) => {
   const [logs, setLogs] = useState<IBattleLog[]>([]);
   const [cities, setCities] = useState<IMapCity[]>([]);
   const [logsDetails, setLogsDetails] = useState<IBattleLogDetail[]>([]);

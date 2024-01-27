@@ -6,28 +6,23 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
 import {
-  IBuilding,
   ICityBuilding,
   ICityResource,
   ICityWarship,
   ICityWarshipQueue,
-  IResearch,
-  IResourceDictionary,
   IUserResearch,
   IWarship,
-  IWarshipDependency,
   IWarshipRequiredResource,
 } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
 import { InputNumber } from "../Common/InputNumber";
 import { Controller, useForm } from "react-hook-form";
 import { FieldErrors } from "react-hook-form/dist/types/errors";
+import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 
 interface IProps {
   selectedWarshipId: number;
   cityId: number;
-  warshipsDictionary: IWarship[];
-  warshipDependencies: IWarshipDependency[];
   updateCityResources: (cityResources: ICityResource[]) => void;
   cityResources: ICityResource[];
   setWarships: (warships: ICityWarship[]) => void;
@@ -35,11 +30,8 @@ interface IProps {
   queue?: ICityWarshipQueue[];
   setQueue: (q: ICityWarshipQueue[] | undefined) => void;
   getQty: (warshipId: number) => number;
-  researchesDictionary: IResearch[];
   researches: IUserResearch[];
-  buildingsDictionary: IBuilding[];
   buildings: ICityBuilding[];
-  resourcesDictionary: IResourceDictionary[];
 }
 
 interface IFormValues {
@@ -55,20 +47,19 @@ type IGroupedCityResources = Record<number, ICityResource[]>;
 
 export const SelectedWarship = ({
   selectedWarshipId,
-  warshipsDictionary,
-  warshipDependencies,
   cityId,
   buildings,
-  buildingsDictionary,
   updateCityResources,
   cityResources,
   setQueue,
-  researchesDictionary,
   researches,
   getQty,
   setWarships,
-  resourcesDictionary,
 }: IProps) => {
+  const queryDictionaries = useFetchDictionaries();
+
+  const dictionaries = queryDictionaries.data;
+
   const selectedWarship = getWarship(selectedWarshipId)!;
   const requiredResources = selectedWarship.requiredResources;
   const time = selectedWarship?.time || 0;
@@ -122,7 +113,7 @@ export const SelectedWarship = ({
   const { isValid } = formState;
 
   function getWarship(warshipId: number): IWarship | undefined {
-    return warshipsDictionary.find((w) => w.id === warshipId);
+    return dictionaries?.warshipsDictionary.find((w) => w.id === warshipId);
   }
 
   const calculateAvailableWarships = (
@@ -191,6 +182,10 @@ export const SelectedWarship = ({
     reset(DEFAULT_VALUES);
   };
 
+  if (!dictionaries) {
+    return null;
+  }
+
   return (
     <SSelectedItem {...form} className={"row"}>
       <div className={"col-4"}>
@@ -213,7 +208,7 @@ export const SelectedWarship = ({
                 <SParam key={resource.resourceId}>
                   <Icon
                     title={getResourceSlug(
-                      resourcesDictionary,
+                      dictionaries.resourcesDictionary,
                       resource.resourceId
                     )}
                   />

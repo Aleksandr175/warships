@@ -19,13 +19,12 @@ import { WarshipsQueue } from "./WarshipsQueue";
 import { SContent, SH1 } from "../styles";
 import styled from "styled-components";
 import { SelectedWarship } from "./SelectedWarship";
+import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
 interface IProps {
   cityId: number;
-  dictionary: IWarship[];
-  resourcesDictionary: IResourceDictionary[];
   updateCityResources: (cityResources: ICityResource[]) => void;
   cityResources: ICityResource[];
   warships: ICityWarship[] | undefined;
@@ -33,11 +32,8 @@ interface IProps {
   getWarships: () => void;
   queue?: ICityWarshipQueue[];
   setQueue: (q: ICityWarshipQueue[] | undefined) => void;
-  warshipDependencies: IWarshipDependency[];
   researches: IUserResearch[];
-  researchesDictionary: IResearch[];
   buildings: ICityBuilding[];
-  buildingsDictionary: IBuilding[];
 }
 
 export const Warships = ({
@@ -45,28 +41,33 @@ export const Warships = ({
   setWarships,
   getWarships,
   cityId,
-  dictionary,
-  warshipDependencies,
   updateCityResources,
   cityResources,
   queue,
   setQueue,
   researches,
-  researchesDictionary,
   buildings,
-  buildingsDictionary,
-  resourcesDictionary,
 }: IProps) => {
+  const queryDictionaries = useFetchDictionaries();
+
+  const dictionaries = queryDictionaries.data;
+
   const [selectedWarshipId, setSelectedWarshipId] = useState(0);
 
   useEffect(() => {
-    setSelectedWarshipId(dictionary[0]?.id || 0);
-  }, [dictionary]);
+    if (dictionaries) {
+      setSelectedWarshipId(dictionaries.warshipsDictionary[0]?.id || 0);
+    }
+  }, [dictionaries]);
 
   function getQty(warshipId: number): number {
     return (
       warships?.find((warship) => warship.warshipId === warshipId)?.qty || 0
     );
+  }
+
+  if (!dictionaries) {
+    return null;
   }
 
   return (
@@ -77,23 +78,18 @@ export const Warships = ({
           <SelectedWarship
             selectedWarshipId={selectedWarshipId}
             cityId={cityId}
-            warshipsDictionary={dictionary}
-            warshipDependencies={warshipDependencies}
             cityResources={cityResources}
             getWarships={getWarships}
             setQueue={setQueue}
-            researchesDictionary={researchesDictionary}
             buildings={buildings}
-            buildingsDictionary={buildingsDictionary}
             researches={researches}
             getQty={getQty}
             setWarships={setWarships}
             updateCityResources={updateCityResources}
-            resourcesDictionary={resourcesDictionary}
           />
         )}
 
-        {dictionary.map((item) => {
+        {dictionaries.warshipsDictionary.map((item) => {
           const qty = getQty(item.id);
 
           return (
@@ -116,11 +112,7 @@ export const Warships = ({
 
       {queue && queue.length > 0 && (
         <SContent>
-          <WarshipsQueue
-            queue={queue}
-            dictionary={dictionary}
-            sync={getWarships}
-          />
+          <WarshipsQueue queue={queue} sync={getWarships} />
         </SContent>
       )}
     </>

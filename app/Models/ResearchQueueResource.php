@@ -11,9 +11,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin Builder
  */
-class ResearchDictionary extends Model
+class ResearchQueueResource extends Model
 {
     use HasFactory;
 
-    protected $table = 'research_dictionary';
+    protected $guarded = [];
 }

@@ -32,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // TODO: add job for researches
+
         Queue::after(function (JobProcessed $event) {
             if ($event->job->getQueue() === 'resource') {
                 sleep(1);

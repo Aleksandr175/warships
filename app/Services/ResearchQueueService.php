@@ -7,6 +7,7 @@ use App\Models\City;
 use App\Models\Research;
 use App\Models\ResearchDependency;
 use App\Models\ResearchQueue;
+use App\Models\ResearchQueueResource;
 use App\Models\ResearchResource;
 use Carbon\Carbon;
 
@@ -17,9 +18,9 @@ class ResearchQueueService
     protected $city;
     protected $nextLvl = 1;
 
-    public function canResearch(): bool
+    public function canResearch($city, $researchId): bool
     {
-        $research = Research::where('user_id', $this->userId)->where('research_id', $this->researchId)->first();
+        $research = Research::where('user_id', $this->userId)->where('research_id', $researchId)->first();
 
         if ($research && $research->id) {
             $this->nextLvl = $research->lvl + 1;
@@ -28,18 +29,35 @@ class ResearchQueueService
         }
 
         $hasAllRequirements = $this->hasAllRequirements($this->city, $this->researchId, $this->nextLvl);
-        $hasEnoughResources = false;
+
+        if (!$hasAllRequirements) {
+            return false;
+        }
 
         // found out what resources we need for research
-        $resources = ResearchResource::where('research_id', $this->researchId)->where('lvl', $this->nextLvl)->first();
+        $requiredResources = ResearchResource::where('research_id', $this->researchId)->where('lvl', $this->nextLvl)->get();
+        $cityResources     = $city->resources;
 
-        if ($resources && $resources->id) {
-            if ($this->city->gold >= $resources->gold && $this->city->population >= $resources->population) {
-                $hasEnoughResources = true;
+        $canOrder = true;
+        foreach ($requiredResources as $requiredResource) {
+            $hasEnoughRequiredResourceQty = false;
+            // Find the corresponding resource in the city resources
+            foreach ($cityResources as $cityResource) {
+                if ($cityResource->resource_id === $requiredResource->resource_id
+                    && $cityResource->qty >= $requiredResource->qty) {
+                    $hasEnoughRequiredResourceQty = true;
+                    break;
+                }
+            }
+
+            if (!$hasEnoughRequiredResourceQty) {
+                $canOrder = false;
+
+                break;
             }
         }
 
-        return $hasEnoughResources && $hasAllRequirements;
+        return $canOrder;
     }
 
     public function hasAllRequirements($city, $researchId, $nextLvl): bool
@@ -83,51 +101,64 @@ class ResearchQueueService
         return $hasAllRequirements;
     }
 
-    public function store($userId, ResearchRequest $request, $city): ResearchQueue
+    public function store($userId, ResearchRequest $request): ResearchQueue
     {
-        $data       = $request->only('researchId');
+        $data       = $request->only('researchId', 'cityId');
+        $cityId     = $data['cityId'];
         $researchId = $data['researchId'];
 
         $this->researchId = $researchId;
-        $this->city       = $city;
         $this->userId     = $userId;
 
-        $this->city = City::where('id', $this->city->id)->where('user_id', $this->userId)->first();
+        $this->city = City::where('id', $cityId)->where('user_id', $this->userId)->first();
 
-        if ($this->city && $this->city->id && $this->canResearch()) {
-            $queue = $this->updateQueue();
-
-            // TODO: add job for researches like BuildJob::dispatch([])
-
-            return $queue;
+        if ($this->city && $this->city->id && $this->canResearch($this->city, $researchId)) {
+            return $this->updateQueue($this->city);
         }
 
         return abort(403);
     }
 
-    public function updateQueue(): ResearchQueue
+    public function updateQueue($city): ResearchQueue
     {
+        $cityResources = $city->resources;
+
         // found out what resources we need for research
-        $resources = ResearchResource::where('research_id', $this->researchId)->where('lvl', $this->nextLvl)->first();
+        $requiredResources = ResearchResource::where('research_id', $this->researchId)->where('lvl', $this->nextLvl)->get();
 
-        $time = $resources->time;
+        // each resource row has time_required for upgrading research
+        $timeRequired = $requiredResources[0]->time_required;
 
-        // take resources from city
-        $this->city->update([
-            'gold'       => $this->city->gold - $resources->gold,
-            'population' => $this->city->population - $resources->population
+        // Subtract the required amount of each resource from the city
+        foreach ($requiredResources as $requiredResource) {
+            // Find the corresponding resource in the city resources
+            $cityResource = $cityResources->where('resource_id', $requiredResource->resource_id)->first();
+
+            // Subtract the required quantity from the city's resource
+            $cityResource->qty -= $requiredResource->qty;
+
+            $cityResource->save();
+        }
+
+        $researchQueue = ResearchQueue::create([
+            'research_id'   => $this->researchId,
+            'city_id'       => $city->id,
+            'user_id'       => $this->userId,
+            'lvl'           => $this->nextLvl,
+            'time_required' => $timeRequired,
+            'deadline'      => Carbon::now()->addSeconds($timeRequired)
         ]);
 
-        return ResearchQueue::create([
-            'research_id' => $this->researchId,
-            'city_id'     => $this->city->id,
-            'user_id'     => $this->userId,
-            'gold'        => $resources->gold,
-            'population'  => $resources->population,
-            'lvl'         => $this->nextLvl,
-            'time'        => $time,
-            'deadline'    => Carbon::now()->addSeconds($time)
-        ]);
+        // Add required amount of each resource to table in case we want to cancel building queue
+        foreach ($requiredResources as $requiredResource) {
+            ResearchQueueResource::create([
+                'research_queue_id' => $researchQueue->id,
+                'resource_id'       => $requiredResource->resource_id,
+                'qty'               => $requiredResource->qty
+            ]);
+        }
+
+        return $researchQueue;
     }
 
     public function cancel($userId): City

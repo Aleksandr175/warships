@@ -5,10 +5,8 @@ import {
   ICityBuildingQueue,
   ICityFleet,
   ICityResearchQueue,
-  ICityResources,
   ICityWarship,
   ICityWarshipQueue,
-  IDictionary,
   IFleetWarshipsData,
   IFleetIncoming,
   IMapCity,
@@ -19,13 +17,14 @@ import {
 } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import Echo from "laravel-echo";
+import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
+import { REFETCH_INTERVAL_MS } from "../../hooks/useCustomQuery";
 
 export const useAppLogic = () => {
   const [city, setCity] = useState<ICity>();
   const [cities, setCities] = useState<ICity[]>();
   const [cityResources, setCityResources] = useState<ICityResource[]>();
   const [isLoading, setIsLoading] = useState(true);
-  const [dictionaries, setDictionaries] = useState<IDictionary>();
   const [buildings, setBuildings] = useState<ICityBuilding[] | undefined>();
   const [researches, setResearches] = useState<IUserResearch[] | undefined>();
   const [warships, setWarships] = useState<ICityWarship[] | undefined>();
@@ -86,13 +85,19 @@ export const useAppLogic = () => {
       });
   };
 
+  const queryDictionaries = useFetchDictionaries({
+    refetchInterval: REFETCH_INTERVAL_MS,
+  });
+
+  const dictionaries = queryDictionaries.data;
+
   useEffect(() => {
     httpClient.get("/user").then((response) => {
       httpClient.get("/dictionaries").then((respDictionary) => {
         setCity(response.data.data.cities[0]);
         setCities(response.data.data.cities);
-        setDictionaries(respDictionary.data);
         setUserId(response.data.data.userId);
+
         setUnreadMessagesNumber(respDictionary.data.unreadMessagesNumber);
         setResourcesDictionary(respDictionary.data.resourcesDictionary);
 

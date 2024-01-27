@@ -15,7 +15,7 @@ mix.copy("resources/images", "public/images");
 mix.ts("resources/js/app.tsx", "public/js").react();
 
 mix.postCss("resources/css/app.css", "public/css", [
-    require("postcss-import"),
-    require("tailwindcss"),
-    require("autoprefixer"),
+  require("postcss-import"),
+  require("tailwindcss"),
+  require("autoprefixer"),
 ]);

@@ -7,36 +7,27 @@ import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
 import {
   IBuilding,
-  IBuildingDependency,
   IBuildingResource,
-  IBuildingsProduction,
   ICityBuilding,
   ICityBuildingQueue,
   ICityResource,
-  IResearch,
-  IResourceDictionary,
   IUserResearch,
 } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
+import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 
 interface IProps {
   selectedBuildingId: number;
   cityId: number;
-  buildingsDictionary: IBuilding[];
-  buildingDependencyDictionary: IBuildingDependency[];
-  buildingResourcesDictionary: IBuildingResource[];
   updateCityResources: (cityResources: ICityResource[]) => void;
   cityResources: ICityResource[];
   buildings: ICityBuilding[] | undefined;
   setBuildings: (buildings: ICityBuilding[]) => void;
-  buildingsProduction?: IBuildingsProduction[];
   queue?: ICityBuildingQueue;
   setQueue: (q: ICityBuildingQueue | undefined) => void;
-  researchesDictionary: IResearch[];
   researches: IUserResearch[];
   timeLeft: number;
   getLvl: (buildingId: number) => number;
-  resourcesDictionary: IResourceDictionary[];
 }
 
 export const SelectedBuilding = ({
@@ -44,30 +35,33 @@ export const SelectedBuilding = ({
   buildings,
   setBuildings,
   cityId,
-  buildingsDictionary,
-  buildingDependencyDictionary,
   updateCityResources,
   cityResources,
-  buildingsProduction,
   queue,
   setQueue,
-  researchesDictionary,
   researches,
   timeLeft,
-  buildingResourcesDictionary,
   getLvl,
-  resourcesDictionary,
 }: IProps) => {
-  const getResourcesForBuilding = (buildingId: number, lvl: number) => {
+  const queryDictionaries = useFetchDictionaries();
+
+  const dictionaries = queryDictionaries.data;
+
+  const getResourcesForBuilding = (
+    buildingId: number,
+    lvl: number
+  ): IBuildingResource[] => {
     return (
-      buildingResourcesDictionary.filter(
+      dictionaries?.buildingResources.filter(
         (br) => br.buildingId === buildingId && br.lvl === lvl
       ) || []
     );
   };
 
   const getBuilding = (buildingId: number): IBuilding | undefined => {
-    return buildingsDictionary.find((building) => building.id === buildingId);
+    return dictionaries?.buildings.find(
+      (building) => building.id === buildingId
+    );
   };
 
   const run = (buildingId: number) => {
@@ -106,9 +100,6 @@ export const SelectedBuilding = ({
     getRequirements,
     getRequiredItem,
   } = useRequirementsLogic({
-    dependencyDictionary: buildingDependencyDictionary,
-    buildingsDictionary,
-    researchesDictionary,
     buildings,
     researches,
   });
@@ -143,16 +134,22 @@ export const SelectedBuilding = ({
 
   // TODO: refactor it?
   const getProductionResource = (resource: "population" | "gold") => {
-    const production = buildingsProduction?.find((bProduction) => {
-      return (
-        bProduction.buildingId === selectedBuildingId &&
-        bProduction.lvl === nextLvl &&
-        bProduction.resource === resource
-      );
-    });
+    const production = dictionaries?.buildingsProduction?.find(
+      (bProduction) => {
+        return (
+          bProduction.buildingId === selectedBuildingId &&
+          bProduction.lvl === nextLvl &&
+          bProduction.resource === resource
+        );
+      }
+    );
 
     return production?.qty;
   };
+
+  if (!dictionaries) {
+    return null;
+  }
 
   return (
     <SSelectedItem className={"row"}>
@@ -178,7 +175,7 @@ export const SelectedBuilding = ({
                     <SParam key={resource.resourceId}>
                       <Icon
                         title={getResourceSlug(
-                          resourcesDictionary,
+                          dictionaries.resourcesDictionary,
                           resource.resourceId
                         )}
                       />

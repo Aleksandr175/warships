@@ -129,6 +129,7 @@ export interface IDictionary {
   warshipDependencies: IWarshipDependency[];
   fleetTasksDictionary: IFleetTasksDictionary[];
   fleetStatusesDictionary: IFleetStatusesDictionary[];
+  resourcesDictionary: IResourceDictionary[];
 }
 
 export interface IBuilding {

@@ -60,7 +60,7 @@ export const CityResources = ({
         );
 
         return (
-          <SResource>
+          <SResource key={cityResource.resourceId}>
             <Icon title={resourceSlug} />
             {Math.floor(cityResource.qty)}{" "}
             {productions[resourceSlug]?.qty > 0 && (

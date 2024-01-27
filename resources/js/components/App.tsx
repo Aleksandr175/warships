@@ -27,7 +27,6 @@ const App = () => {
     isLoading,
     city,
     cityResources,
-    selectCity,
     setQueueWarship,
     setQueue,
     setWarships,
@@ -190,24 +189,15 @@ const App = () => {
                     element={
                       <Buildings
                         cityId={city.id}
-                        buildingsDictionary={dictionaries.buildings}
-                        buildingDependencyDictionary={
-                          dictionaries.buildingDependencies
-                        }
-                        buildingResourcesDictionary={
-                          dictionaries.buildingResources
-                        }
                         updateCityResources={updateCityResources}
                         cityResources={city.resources}
                         getBuildings={getBuildings}
                         buildings={buildings}
                         setBuildings={setBuildings}
-                        buildingsProduction={dictionaries.buildingsProduction}
                         setQueue={setQueue}
                         queue={queue}
-                        researchesDictionary={dictionaries.researches}
+                        // TODO: userResearches should be in dictionaries
                         researches={dictionaries.userResearches}
-                        resourcesDictionary={resourcesDictionary!}
                       />
                     }
                   />

@@ -16,23 +16,18 @@ import { Building } from "./Building";
 import { SContent, SH1 } from "../styles";
 import { getTimeLeft } from "../../utils";
 import { SelectedBuilding } from "./SelectedBuilding";
+import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 
 interface IProps {
   cityId: number;
-  buildingsDictionary: IBuilding[];
-  buildingDependencyDictionary: IBuildingDependency[];
-  buildingResourcesDictionary: IBuildingResource[];
   updateCityResources: (cityResources: ICityResource[]) => void;
   cityResources: ICityResource[];
   buildings: ICityBuilding[] | undefined;
   setBuildings: (buildings: ICityBuilding[]) => void;
   getBuildings: () => void;
-  buildingsProduction?: IBuildingsProduction[];
   queue?: ICityBuildingQueue;
   setQueue: (q: ICityBuildingQueue | undefined) => void;
-  researchesDictionary: IResearch[];
   researches: IUserResearch[];
-  resourcesDictionary: IResourceDictionary[];
 }
 
 export const Buildings = ({
@@ -40,25 +35,25 @@ export const Buildings = ({
   setBuildings,
   getBuildings,
   cityId,
-  buildingsDictionary,
-  buildingResourcesDictionary,
-  buildingDependencyDictionary,
   updateCityResources,
   cityResources,
-  buildingsProduction,
   queue,
   setQueue,
-  researchesDictionary,
   researches,
-  resourcesDictionary,
 }: IProps) => {
+  const queryDictionaries = useFetchDictionaries();
+
+  const dictionaries = queryDictionaries.data;
+
   const [selectedBuildingId, setSelectedBuildingId] = useState(0);
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const timer = useRef();
 
   useEffect(() => {
-    setSelectedBuildingId(buildingsDictionary[0]?.id || 0);
-  }, [buildingsDictionary]);
+    if (dictionaries) {
+      setSelectedBuildingId(dictionaries.buildings[0]?.id || 0);
+    }
+  }, [dictionaries]);
 
   const getLvl = (buildingId: number): number => {
     const building = buildings?.find((b) => b.buildingId === buildingId);
@@ -100,6 +95,10 @@ export const Buildings = ({
     });
   };
 
+  if (!dictionaries) {
+    return null;
+  }
+
   return (
     <SContent>
       <SH1>Buildings</SH1>
@@ -108,48 +107,41 @@ export const Buildings = ({
           selectedBuildingId={selectedBuildingId}
           buildings={buildings}
           setBuildings={setBuildings}
-          buildingsProduction={buildingsProduction}
-          buildingDependencyDictionary={buildingDependencyDictionary}
-          buildingResourcesDictionary={buildingResourcesDictionary}
           cityResources={cityResources}
           getLvl={getLvl}
           cityId={cityId}
           updateCityResources={updateCityResources}
           setQueue={setQueue}
-          researchesDictionary={researchesDictionary}
           researches={researches}
           timeLeft={timeLeft}
-          buildingsDictionary={buildingsDictionary}
           queue={queue}
-          resourcesDictionary={resourcesDictionary}
         />
       )}
 
-      {buildingsProduction &&
-        buildingsDictionary.map((item) => {
-          const lvl = getLvl(item.id);
+      {dictionaries.buildings.map((item) => {
+        const lvl = getLvl(item.id);
 
-          return (
-            <SItemWrapper
+        return (
+          <SItemWrapper
+            key={item.id}
+            onClick={() => {
+              setSelectedBuildingId(item.id);
+            }}
+          >
+            <Building
+              lvl={lvl}
               key={item.id}
-              onClick={() => {
-                setSelectedBuildingId(item.id);
-              }}
-            >
-              <Building
-                lvl={lvl}
-                key={item.id}
-                building={item}
-                timeLeft={
-                  queue?.buildingId === item.id
-                    ? getTimeLeft(queue?.deadline || "")
-                    : 0
-                }
-                selected={selectedBuildingId === item.id}
-              />
-            </SItemWrapper>
-          );
-        })}
+              building={item}
+              timeLeft={
+                queue?.buildingId === item.id
+                  ? getTimeLeft(queue?.deadline || "")
+                  : 0
+              }
+              selected={selectedBuildingId === item.id}
+            />
+          </SItemWrapper>
+        );
+      })}
     </SContent>
   );
 };

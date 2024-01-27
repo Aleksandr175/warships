@@ -182,9 +182,6 @@ export const SelectedWarship = ({
     getRequirements,
     getRequiredItem,
   } = useRequirementsLogic({
-    dependencyDictionary: warshipDependencies,
-    buildingsDictionary,
-    researchesDictionary,
     buildings,
     researches,
   });

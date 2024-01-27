@@ -7,48 +7,41 @@ import {
   IWarshipDependency,
 } from "../../types/types";
 import { IResearchDependency } from "../../types/types";
+import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 
 interface IProps {
-  dependencyDictionary:
-    | IBuildingDependency[]
-    | IResearchDependency[]
-    | IWarshipDependency[];
   buildings?: ICityBuilding[] | undefined;
   researches?: IUserResearch[];
-  buildingsDictionary?: IBuilding[];
-  researchesDictionary?: IResearch[];
 }
 
 type TItemType = "building" | "research" | "warship";
 
-export const useRequirementsLogic = ({
-  dependencyDictionary,
-  buildingsDictionary,
-  researchesDictionary,
-  buildings,
-  researches,
-}: IProps) => {
+export const useRequirementsLogic = ({ buildings, researches }: IProps) => {
+  const queryDictionaries = useFetchDictionaries();
+
+  const dictionaries = queryDictionaries.data;
+
   const hasRequirements = (
     type: TItemType,
     itemId: number,
     itemLvl?: number
   ): boolean | undefined => {
     if (type === "building") {
-      return dependencyDictionary.some(
+      return dictionaries?.buildingDependencies.some(
         (dependency) =>
           // @ts-ignore
           dependency.buildingId === itemId && dependency.buildingLvl === itemLvl
       );
     }
     if (type === "research") {
-      return dependencyDictionary.some(
+      return dictionaries?.researchDependencies.some(
         (dependency) =>
           // @ts-ignore
           dependency.researchId === itemId && dependency.researchLvl === itemLvl
       );
     }
     if (type === "warship") {
-      return dependencyDictionary.some(
+      return dictionaries?.warshipDependencies.some(
         (dependency) =>
           // @ts-ignore
           dependency.warshipId === itemId
@@ -60,12 +53,16 @@ export const useRequirementsLogic = ({
     type: TItemType,
     itemId: number,
     itemLvl?: number
-  ): IBuildingDependency[] | IResearchDependency[] | undefined => {
+  ):
+    | IBuildingDependency[]
+    | IResearchDependency[]
+    | IWarshipDependency[]
+    | undefined => {
     if (type === "building") {
       return (
         // TODO: fix types
         // @ts-ignore
-        dependencyDictionary.filter(
+        dictionaries?.buildingDependencies.filter(
           (dependency: { buildingId: number; buildingLvl: number }) =>
             dependency.buildingId === itemId &&
             dependency.buildingLvl === itemLvl
@@ -76,7 +73,7 @@ export const useRequirementsLogic = ({
       return (
         // TODO: fix types
         // @ts-ignore
-        dependencyDictionary.filter(
+        dictionaries?.researchDependencies.filter(
           (dependency: { researchId: number; researchLvl: number }) =>
             dependency.researchId === itemId &&
             dependency.researchLvl === itemLvl
@@ -87,7 +84,7 @@ export const useRequirementsLogic = ({
       return (
         // TODO: fix types
         // @ts-ignore
-        dependencyDictionary.filter(
+        dictionaries?.warshipDependencies.filter(
           (dependency: { warshipId: number }) => dependency.warshipId === itemId
         ) || ([] as IWarshipDependency[])
       );
@@ -95,22 +92,22 @@ export const useRequirementsLogic = ({
   };
 
   const getRequiredItem = (
-    dependency: IBuildingDependency | IResearchDependency
+    dependency: IBuildingDependency | IResearchDependency | IWarshipDependency
   ): IBuilding | IResearch | undefined => {
     if (dependency.requiredEntity === "building") {
-      return buildingsDictionary?.find(
+      return dictionaries?.buildings?.find(
         (item) => item.id === dependency.requiredEntityId
       );
     }
     if (dependency.requiredEntity === "research") {
-      return researchesDictionary?.find(
+      return dictionaries?.researches?.find(
         (item) => item.id === dependency.requiredEntityId
       );
     }
   };
 
   const hasRequirement = (
-    dependency: IBuildingDependency | IResearchDependency
+    dependency: IBuildingDependency | IResearchDependency | IWarshipDependency
   ) => {
     if (dependency.requiredEntity === "building") {
       return buildings?.some(

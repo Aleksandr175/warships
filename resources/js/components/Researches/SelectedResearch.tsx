@@ -104,9 +104,6 @@ export const SelectedResearch = ({
     getRequirements,
     getRequiredItem,
   } = useRequirementsLogic({
-    dependencyDictionary: researchDependencyDictionary,
-    buildingsDictionary,
-    researchesDictionary,
     researches,
   });
 

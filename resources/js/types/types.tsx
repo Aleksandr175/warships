@@ -40,12 +40,9 @@ export interface IResourceDictionary {
 }
 
 export interface ICityResources {
-  id?: number;
-  gold: number;
-  population: number;
-  productionGold?: number;
   cityResources?: ICityResource[];
   resourcesDictionary?: IResourceDictionary[];
+  productions: IProductions;
 }
 
 export interface ICityResource {
@@ -195,6 +192,10 @@ export interface IBuildingsProduction {
   lvl: number;
   qty: number;
   resource: string;
+}
+
+export interface IProductions {
+  [resourceSlug: string]: IBuildingsProduction;
 }
 
 export type TTask = "attack" | "move" | "trade" | "transport" | "expedition";

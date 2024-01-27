@@ -47,7 +47,7 @@ const App = () => {
     fleetDetails,
     fleetCitiesDictionary,
     fleetsIncoming,
-    getProductionGold,
+    getProductions,
     dictionaries,
     userId,
     logout,
@@ -136,11 +136,7 @@ const App = () => {
                       <CityResources
                         cityResources={cityResources!}
                         resourcesDictionary={resourcesDictionary}
-                        gold={0}
-                        population={0}
-                        /*gold={cityResources?.gold || 0}
-                      population={cityResources?.population || 0}*/
-                        productionGold={getProductionGold()}
+                        productions={getProductions()}
                       />
                     )}
                   </SColumn>

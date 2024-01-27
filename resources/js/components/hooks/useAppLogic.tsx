@@ -15,6 +15,7 @@ import {
   IUserResearch,
   ICityResource,
   IResourceDictionary,
+  IProductions,
 } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import Echo from "laravel-echo";
@@ -186,28 +187,20 @@ export const useAppLogic = () => {
     });
   };
 
-  const getProductionGold = () => {
-    if (buildings) {
-      // TODO change 2
-      const miner = buildings.find((building) => {
-        return building.buildingId === 2 && building.cityId === city?.id;
-      });
+  const getProductions = (): IProductions => {
+    const productions = {} as IProductions;
 
-      if (miner) {
-        const lvl = miner.lvl;
+    buildings?.forEach((building) => {
+      const production = dictionaries?.buildingsProduction?.find(
+        (bp) => bp.buildingId === building.buildingId && bp.lvl === building.lvl
+      );
 
-        const production = dictionaries?.buildingsProduction?.find(
-          (bp) =>
-            bp.buildingId === miner.buildingId &&
-            bp.lvl === lvl &&
-            bp.resource === "gold"
-        );
-
-        return production?.qty;
+      if (production) {
+        productions[production.resource] = production;
       }
-    }
+    });
 
-    return 0;
+    return productions;
   };
 
   const selectCity = (c: ICity) => {
@@ -229,7 +222,7 @@ export const useAppLogic = () => {
     cities,
     selectCity,
     cityResources,
-    getProductionGold,
+    getProductions,
     fleets,
     fleetCitiesDictionary,
     fleetsIncoming,

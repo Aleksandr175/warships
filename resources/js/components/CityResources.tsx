@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { getResourceSlug } from "../utils";
 
 export const CityResources = ({
-  productionGold,
+  productions,
   cityResources,
   resourcesDictionary,
 }: ICityResources) => {
@@ -54,20 +54,17 @@ export const CityResources = ({
   return (
     <SResources>
       {cityResources?.map((cityResource) => {
+        const resourceSlug = getResourceSlug(
+          resourcesDictionary!,
+          cityResource.resourceId
+        );
+
         return (
           <SResource>
-            <Icon
-              title={getResourceSlug(
-                resourcesDictionary!,
-                cityResource.resourceId
-              )}
-            />
+            <Icon title={resourceSlug} />
             {Math.floor(cityResource.qty)}{" "}
-            {getResourceSlug(resourcesDictionary!, cityResource.resourceId) ===
-              "gold" && (
-              <SProduction>
-                {productionGold ? `+${productionGold}` : ""}
-              </SProduction>
+            {productions[resourceSlug]?.qty > 0 && (
+              <SProduction>+{productions[resourceSlug]?.qty}</SProduction>
             )}
           </SResource>
         );

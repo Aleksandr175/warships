@@ -6,23 +6,18 @@ import React from "react";
 import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
 import {
-  IBuilding,
   ICityResearchQueue,
   ICityResource,
   IResearch,
-  IResearchDependency,
   IResearchResource,
-  IResourceDictionary,
   IUserResearch,
 } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
+import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 
 interface IProps {
   selectedResearchId: number;
   cityId: number;
-  researchesDictionary: IResearch[];
-  researchResourcesDictionary: IResearchResource[];
-  researchDependencyDictionary: IResearchDependency[];
   updateCityResources: (cityResources: ICityResource[]) => void;
   cityResources: ICityResource[];
   queue?: ICityResearchQueue;
@@ -30,32 +25,31 @@ interface IProps {
   researches: IUserResearch[];
   timeLeft: number;
   getLvl: (buildingId: number) => number;
-  buildingsDictionary: IBuilding[];
-  resourcesDictionary: IResourceDictionary[];
 }
 
 export const SelectedResearch = ({
   selectedResearchId,
   researches,
   cityId,
-  researchResourcesDictionary,
-  researchDependencyDictionary,
   updateCityResources,
   cityResources,
   queue,
   setQueue,
-  researchesDictionary,
   timeLeft,
   getLvl,
-  buildingsDictionary,
-  resourcesDictionary,
 }: IProps) => {
+  const queryDictionaries = useFetchDictionaries();
+
+  const dictionaries = queryDictionaries.data;
+
   const selectedResearch = getResearch(selectedResearchId)!;
   const lvl = getLvl(selectedResearchId);
   const nextLvl = lvl + 1;
 
   function getResearch(researchId: number): IResearch | undefined {
-    return researchesDictionary.find((research) => research.id === researchId);
+    return dictionaries?.researches.find(
+      (research) => research.id === researchId
+    );
   }
 
   const isCurrentResearchInProcess =
@@ -72,9 +66,8 @@ export const SelectedResearch = ({
     researchId: number,
     lvl: number
   ): IResearchResource[] {
-    console.log(researchId, lvl);
     return (
-      researchResourcesDictionary.filter(
+      dictionaries?.researchResources.filter(
         (rr) => rr.researchId === researchId && rr.lvl === lvl
       ) || []
     );
@@ -130,6 +123,10 @@ export const SelectedResearch = ({
       });
   }
 
+  if (!dictionaries) {
+    return null;
+  }
+
   return (
     <SSelectedItem className={"row"}>
       <div className={"col-4"}>
@@ -154,7 +151,7 @@ export const SelectedResearch = ({
                     <SParam key={resource.resourceId}>
                       <Icon
                         title={getResourceSlug(
-                          resourcesDictionary,
+                          dictionaries.resourcesDictionary,
                           resource.resourceId
                         )}
                       />

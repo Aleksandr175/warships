@@ -196,7 +196,7 @@ const App = () => {
                         setBuildings={setBuildings}
                         setQueue={setQueue}
                         queue={queue}
-                        // TODO: userResearches should be in dictionaries
+                        // TODO: userResearches should not be in dictionaries
                         researches={dictionaries.userResearches}
                       />
                     }
@@ -206,21 +206,13 @@ const App = () => {
                     element={
                       <Researches
                         cityId={city.id}
-                        dictionary={dictionaries.researches}
-                        researchResourcesDictionary={
-                          dictionaries.researchResources
-                        }
                         updateCityResources={updateCityResources}
                         cityResources={city.resources}
+                        // TODO: userResearches should not be in dictionaries
                         researches={dictionaries.userResearches}
                         setQueue={setQueueResearch}
                         queue={queueResearch}
                         getResearches={getResearches}
-                        researchDependencyDictionary={
-                          dictionaries.researchDependencies
-                        }
-                        buildingsDictionary={dictionaries.buildings}
-                        resourcesDictionary={resourcesDictionary!}
                       />
                     }
                   />
@@ -238,6 +230,7 @@ const App = () => {
                         setQueue={setQueueWarship}
                         queue={queueWarship}
                         warshipDependencies={dictionaries.warshipDependencies}
+                        // TODO: userResearches should not be in dictionaries
                         researches={dictionaries.userResearches}
                         researchesDictionary={dictionaries.researches}
                         buildings={buildings!}

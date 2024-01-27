@@ -1,12 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  IBuilding,
   ICityResearchQueue,
   ICityResource,
-  IResearch,
-  IResearchDependency,
-  IResearchResource,
-  IResourceDictionary,
   IUserResearch,
 } from "../../types/types";
 import { Research } from "./Research";
@@ -14,43 +9,40 @@ import { SContent, SH1 } from "../styles";
 import { getTimeLeft } from "../../utils";
 import styled from "styled-components";
 import { SelectedResearch } from "./SelectedResearch";
+import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 
 interface IProps {
   cityId: number;
-  dictionary: IResearch[];
-  researchResourcesDictionary: IResearchResource[];
   updateCityResources: (cityResources: ICityResource[]) => void;
   cityResources: ICityResource[];
   researches: IUserResearch[];
   queue?: ICityResearchQueue;
   setQueue: (q: ICityResearchQueue | undefined) => void;
   getResearches: () => void;
-  researchDependencyDictionary: IResearchDependency[];
-  buildingsDictionary: IBuilding[];
-  resourcesDictionary: IResourceDictionary[];
 }
 
 export const Researches = ({
   cityId,
-  dictionary,
-  researchResourcesDictionary,
   updateCityResources,
   cityResources,
   researches,
   queue,
   setQueue,
   getResearches,
-  researchDependencyDictionary,
-  buildingsDictionary,
-  resourcesDictionary,
 }: IProps) => {
+  const queryDictionaries = useFetchDictionaries();
+
+  const dictionaries = queryDictionaries.data;
+
   const [selectedResearchId, setSelectedResearchId] = useState(0);
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const timer = useRef();
 
   useEffect(() => {
-    setSelectedResearchId(dictionary[0]?.id || 0);
-  }, [dictionary]);
+    if (dictionaries) {
+      setSelectedResearchId(dictionaries.researches[0]?.id || 0);
+    }
+  }, [dictionaries]);
 
   function getLvl(researchId: number) {
     const research = researches?.find((r) => r.researchId === researchId);
@@ -92,6 +84,10 @@ export const Researches = ({
     });
   }
 
+  if (!dictionaries) {
+    return null;
+  }
+
   return (
     <SContent>
       <SH1>Researches</SH1>
@@ -100,25 +96,21 @@ export const Researches = ({
           selectedResearchId={selectedResearchId}
           researches={researches}
           cityId={cityId}
-          researchesDictionary={dictionary}
-          researchResourcesDictionary={researchResourcesDictionary}
-          researchDependencyDictionary={researchDependencyDictionary}
           updateCityResources={updateCityResources}
           cityResources={cityResources}
           queue={queue}
           setQueue={setQueue}
           timeLeft={timeLeft}
           getLvl={getLvl}
-          buildingsDictionary={buildingsDictionary}
-          resourcesDictionary={resourcesDictionary}
         />
       )}
 
-      {dictionary.map((item) => {
+      {dictionaries.researches.map((item) => {
         const lvl = getLvl(item.id);
 
         return (
           <SItemWrapper
+            key={item.id}
             onClick={() => {
               setSelectedResearchId(item.id);
             }}
@@ -143,14 +135,4 @@ export const Researches = ({
 
 const SItemWrapper = styled.div`
   display: inline-block;
-`;
-
-const SSelectedItem = styled.div`
-  margin-bottom: calc(var(--block-gutter-y) * 2);
-`;
-
-const SCardWrapper = styled.div`
-  height: 120px;
-  border-radius: var(--block-border-radius-small);
-  overflow: hidden;
 `;

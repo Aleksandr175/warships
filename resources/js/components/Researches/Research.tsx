@@ -1,13 +1,8 @@
 import React from "react";
-import {
-  ICityResearchQueue,
-  ICityResources,
-  IResearch,
-} from "../../types/types";
+import { IResearch } from "../../types/types";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { Card } from "../Common/Card";
-import styled, { css } from "styled-components";
 import { SCardWrapper } from "../styles";
 dayjs.extend(utc);
 

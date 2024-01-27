@@ -1,14 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  IBuilding,
-  IBuildingDependency,
-  IBuildingResource,
-  IBuildingsProduction,
   ICityBuilding,
   ICityBuildingQueue,
   ICityResource,
-  IResearch,
-  IResourceDictionary,
   IUserResearch,
 } from "../../types/types";
 import styled from "styled-components";

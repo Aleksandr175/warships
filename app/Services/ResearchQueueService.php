@@ -167,13 +167,17 @@ class ResearchQueueService
         $city          = null;
 
         if ($researchQueue && $researchQueue->id) {
-            // update resource
+            // find city
             $city = City::find($researchQueue->city_id);
 
-            $city->update([
-                'gold'       => $city->gold + $researchQueue->gold,
-                'population' => $city->population + $researchQueue->population,
-            ]);
+            $resources = ResearchQueueResource::where('research_queue_id', $researchQueue->id)->get();
+
+            foreach ($resources as $resource) {
+                $cityResource = $city->resources->where('resource_id', $resource->resource_id)->first();
+                $cityResource->increment('qty', $resource->qty);
+
+                $resource->delete();
+            }
 
             $researchQueue->delete();
         }

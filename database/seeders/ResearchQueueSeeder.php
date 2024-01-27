@@ -17,15 +17,13 @@ class ResearchQueueSeeder extends Seeder
     {
         $time = 100;
 
-        ResearchQueue::create([
-            'city_id' => config('constants.DEFAULT_USER_CITY_ID'),
-            'user_id' => config('constants.DEFAULT_USER_ID'),
-            'research_id' => config('constants.RESEARCHES.SHIP_GUNS'),
-            'gold' => 100,
-            'population' => 5,
-            'lvl' => 2,
-            'time' => $time,
-            'deadline' => Carbon::now()->addSeconds($time)
-        ]);
+        /*ResearchQueue::create([
+            'city_id'       => config('constants.DEFAULT_USER_CITY_ID'),
+            'user_id'       => config('constants.DEFAULT_USER_ID'),
+            'research_id'   => config('constants.RESEARCHES.SHIP_GUNS'),
+            'lvl'           => 2,
+            'time_required' => $time,
+            'deadline'      => Carbon::now()->addSeconds($time)
+        ]);*/
     }
 }

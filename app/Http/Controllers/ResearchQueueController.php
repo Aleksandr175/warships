@@ -40,9 +40,15 @@ class ResearchQueueController extends Controller
 
         $city = $researchQueueService->cancel($user->id);
 
-        return [
-            'queue'         => [],
-            'cityResources' => new CityResourcesResource($city)
-        ];
+        if ($city && $city->id) {
+            $cityResources = $city->resources;
+
+            return [
+                'queue'         => [],
+                'cityResources' => CityResourceV2Resource::collection($cityResources)
+            ];
+        }
+
+        return abort(403);
     }
 }

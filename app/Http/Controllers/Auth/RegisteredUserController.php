@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Archipelago;
 use App\Models\City;
+use App\Models\CityResource;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -61,12 +62,24 @@ class RegisteredUserController extends Controller
     {
         $archipelago = Archipelago::create();
 
-        City::factory(1)->create([
+        $city = City::factory(1)->create([
             'user_id'        => $user->id,
             'archipelago_id' => $archipelago->id,
             'coord_x'        => 3,
             'coord_y'        => 3,
-            'title'          => 'Player Island ' . $user->id
+            'title'          => 'Main Island'
+        ])[0];
+
+        CityResource::create([
+            'city_id' => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty' => 1000
+        ]);
+
+        CityResource::create([
+            'city_id' => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty' => 300
         ]);
 
         City::factory(1)->create([

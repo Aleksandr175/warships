@@ -37,14 +37,14 @@ class ResourceSeeder extends Seeder
             'id'          => config('constants.RESOURCE_IDS.PLANK'),
             'title'       => 'Ore',
             'description' => 'Ore description',
-            'slug'        => 'ore'
+            'slug'        => 'plank'
         ]);
 
         Resource::create([
             'id'          => config('constants.RESOURCE_IDS.LUMBER'),
             'title'       => 'Ore',
             'description' => 'Ore description',
-            'slug'        => 'ore'
+            'slug'        => 'lumber'
         ]);
 
         Resource::create([
@@ -58,14 +58,14 @@ class ResourceSeeder extends Seeder
             'id'          => config('constants.RESOURCE_IDS.IRON'),
             'title'       => 'Ore',
             'description' => 'Ore description',
-            'slug'        => 'ore'
+            'slug'        => 'iron'
         ]);
 
         Resource::create([
             'id'          => config('constants.RESOURCE_IDS.STEEL'),
             'title'       => 'Ore',
             'description' => 'Ore description',
-            'slug'        => 'ore'
+            'slug'        => 'steel'
         ]);
     }
 }

@@ -1,11 +1,14 @@
 <svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="29" y="123" width="88" height="60" rx="10" fill="#AC7431"/>
-<rect x="55" y="132" width="6" height="40" rx="3" fill="#DDAB6F"/>
-<rect x="86" y="132" width="6" height="40" rx="3" fill="#DDAB6F"/>
-<rect x="123" y="123" width="88" height="60" rx="10" fill="#AC7431"/>
-<rect x="149" y="132" width="6" height="40" rx="3" fill="#DDAB6F"/>
-<rect x="180" y="132" width="6" height="40" rx="3" fill="#DDAB6F"/>
-<rect x="76" y="57" width="88" height="60" rx="10" fill="#AC7431"/>
-<rect x="102" y="67" width="6" height="40" rx="3" fill="#DDAB6F"/>
-<rect x="133" y="67" width="6" height="40" rx="3" fill="#DDAB6F"/>
+<rect x="54.2593" y="80.2963" width="26.2963" height="78.8889" fill="#A78966"/>
+<rect x="80.5555" y="80.2963" width="26.2963" height="78.8889" fill="#957856"/>
+<rect x="106.852" y="80.2963" width="26.2963" height="78.8889" fill="#A78966"/>
+<rect x="120" y="80.2963" width="13.1481" height="78.8889" fill="#957856"/>
+<rect x="133.148" y="80.2963" width="26.2963" height="78.8889" fill="#816952"/>
+<rect x="159.444" y="80.2963" width="26.2963" height="78.8889" fill="#957856"/>
+<rect x="158.951" y="181.144" width="136.741" height="18.4074" transform="rotate(-129.124 158.951 181.144)" fill="#7F8189"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M120 133.256V104.085L173.231 169.529L158.951 181.144L120 133.256Z" fill="#5D5F66"/>
+<rect x="49" y="159.185" width="142" height="26.2963" fill="#816952"/>
+<rect x="49" y="159.185" width="71" height="26.2963" fill="#957856"/>
+<rect x="49" y="54" width="142" height="26.2963" fill="#816952"/>
+<rect x="49" y="54" width="71" height="26.2963" fill="#957856"/>
 </svg>

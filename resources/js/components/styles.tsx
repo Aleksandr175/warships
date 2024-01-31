@@ -46,9 +46,7 @@ export const SItemCorner = styled.span`
 
 // Main Layout
 
-export const SAppContainer = styled.div`
-  padding-top: var(--block-gutter-y);
-`;
+export const SAppContainer = styled.div``;
 
 export const SColumn = styled.div`
   background: var(--background-color);

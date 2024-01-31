@@ -27,14 +27,42 @@ class ResourceSeeder extends Seeder
         ]);
 
         Resource::create([
-            'id'          => config('constants.RESOURCE_IDS.LOGS'),
+            'id'          => config('constants.RESOURCE_IDS.LOG'),
             'title'       => 'Logs',
             'description' => 'Logs description',
             'slug'        => 'log'
         ]);
 
         Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.PLANK'),
+            'title'       => 'Ore',
+            'description' => 'Ore description',
+            'slug'        => 'ore'
+        ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.LUMBER'),
+            'title'       => 'Ore',
+            'description' => 'Ore description',
+            'slug'        => 'ore'
+        ]);
+
+        Resource::create([
             'id'          => config('constants.RESOURCE_IDS.ORE'),
+            'title'       => 'Ore',
+            'description' => 'Ore description',
+            'slug'        => 'ore'
+        ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.IRON'),
+            'title'       => 'Ore',
+            'description' => 'Ore description',
+            'slug'        => 'ore'
+        ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.STEEL'),
             'title'       => 'Ore',
             'description' => 'Ore description',
             'slug'        => 'ore'

@@ -108,7 +108,11 @@ return [
     'RESOURCE_IDS' => [
         'GOLD'       => 1,
         'POPULATION' => 2,
-        'LOGS'       => 3,
-        'ORE'        => 4
+        'LOG'        => 3,
+        'PLANK'      => 4,
+        'LUMBER'     => 5,
+        'ORE'        => 6,
+        'IRON'       => 7,
+        'STEEL'      => 8,
     ]
 ];

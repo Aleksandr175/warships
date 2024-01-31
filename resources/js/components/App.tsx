@@ -61,6 +61,41 @@ const App = () => {
   return (
     <Router>
       <SAppContainer className={"container"}>
+        {city && cities && (
+          <div className={"row"}>
+            <div className={"col-12"}>
+              <SHeaderBlock>
+                <SIslands>
+                  {cities.map((c) => {
+                    return (
+                      <SIsland
+                        key={c.id}
+                        /*active={c.id === city.id}*/
+                        onClick={() => {
+                          /*selectCity(c)*/
+                        }}
+                      >
+                        <Icon title={"island"} />[{city.coordX}:{city.coordY}]{" "}
+                        {c.title}
+                      </SIsland>
+                    );
+                  })}
+                </SIslands>
+
+                <SMessagesWrapper>
+                  <NavLink to={"/messages"}>
+                    <Icon title={"messages"} />
+                    {unreadMessagesNumber > 0 && (
+                      <SMessagesNumber>
+                        {unreadMessagesNumber > 9 ? `9+` : unreadMessagesNumber}
+                      </SMessagesNumber>
+                    )}
+                  </NavLink>
+                </SMessagesWrapper>
+              </SHeaderBlock>
+            </div>
+          </div>
+        )}
         <div className={"row"}>
           <div className="col-2">
             <SColumn>
@@ -129,49 +164,12 @@ const App = () => {
           <div className={"col-7"}>
             {city && cities && (
               <div className={"row"}>
-                <div className={"col-5"}>
+                <div className={"col-12"}>
                   <SColumn>
                     <CityResources
                       cityResources={cityResources!}
                       productions={getProductions()}
                     />
-                  </SColumn>
-                </div>
-                <div className={"col-5"}>
-                  <SColumn>
-                    <SIsland>
-                      <Icon title={"island"} />[{city.coordX}:{city.coordY}]
-                    </SIsland>
-                    {/*Islands:
-                                        {cities.map((c) => {
-                                            return (
-                                                <SCity
-                                                    key={c.id}
-                                                    active={c.id === city.id}
-                                                    onClick={() =>
-                                                        selectCity(c)
-                                                    }
-                                                >
-                                                    {c.title}
-                                                </SCity>
-                                            );
-                                        })}*/}
-                  </SColumn>
-                </div>
-                <div className={"col-2 text-center"}>
-                  <SColumn>
-                    <SMessagesWrapper>
-                      <NavLink to={"/messages"}>
-                        <Icon title={"messages"} />
-                        {unreadMessagesNumber > 0 && (
-                          <SMessagesNumber>
-                            {unreadMessagesNumber > 9
-                              ? `9+`
-                              : unreadMessagesNumber}
-                          </SMessagesNumber>
-                        )}
-                      </NavLink>
-                    </SMessagesWrapper>
                   </SColumn>
                 </div>
               </div>
@@ -273,12 +271,6 @@ const App = () => {
 
 export default App;
 
-const SIsland = styled.div`
-  > i {
-    padding-right: 5px;
-  }
-`;
-
 const SSeparator = styled.div`
   height: 1px;
   background: black;
@@ -304,4 +296,26 @@ const SMessagesNumber = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const SIslands = styled.div`
+  display: flex;
+  gap: calc(2 * var(--block-padding));
+`;
+
+const SIsland = styled.div`
+  > i {
+    padding-right: 5px;
+  }
+`;
+
+const SHeaderBlock = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: var(--background-color);
+  padding: 10px var(--block-padding);
+  border-radius: 0 0 var(--block-border-radius) var(--block-border-radius);
+  margin-bottom: var(--block-gutter-y);
 `;

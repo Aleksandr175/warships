@@ -72,7 +72,7 @@ class ResearchResourceSeeder extends Seeder
 
         ResearchResource::create([
             'research_id'   => config('constants.RESEARCHES.SHIP_HOLD'),
-            'resource_id'   => config('constants.RESOURCE_IDS.LOGS'),
+            'resource_id'   => config('constants.RESOURCE_IDS.LOG'),
             'qty'           => 100,
             'lvl'           => 1,
             'time_required' => 20,

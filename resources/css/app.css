@@ -4,7 +4,7 @@
 
 :root {
   --background-color: #EAF2FF;
-  --block-border-radius: 20px;
+  --block-border-radius: 10px;
     --block-border-radius-small: 10px;
   --block-padding: 20px;
   --block-gutter-y: 20px;

@@ -61,16 +61,17 @@ export const CityResources = ({
 
   return (
     <SResources>
-      {cityResources?.map((cityResource) => {
-        const resourceSlug = getResourceSlug(
-          dictionaries.resourcesDictionary,
-          cityResource.resourceId
+      {dictionaries?.resourcesDictionary?.map((resource) => {
+        const resourceSlug = resource.slug;
+
+        const cityResource = cityResources?.find(
+          (cityResource) => cityResource.resourceId === resource.id
         );
 
         return (
-          <SResource key={cityResource.resourceId}>
+          <SResource key={resource.id}>
             <Icon title={resourceSlug} />
-            {Math.floor(cityResource.qty)}{" "}
+            {Math.floor(cityResource?.qty || 0)}{" "}
             {productions[resourceSlug]?.qty > 0 && (
               <SProduction>+{productions[resourceSlug]?.qty}</SProduction>
             )}
@@ -83,13 +84,15 @@ export const CityResources = ({
 
 const SResources = styled.div`
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 20px;
 `;
 
 const SResource = styled.div`
   position: relative;
   display: flex;
+  width: 24%;
+  min-width: 24%;
   align-items: center;
 `;
 

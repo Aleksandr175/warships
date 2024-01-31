@@ -26,7 +26,7 @@ class WarshipResourceSeeder extends Seeder
 
         WarshipResource::create([
             'warship_id'  => config('constants.WARSHIPS.LUGGER'),
-            'resource_id' => config('constants.RESOURCE_IDS.LOGS'),
+            'resource_id' => config('constants.RESOURCE_IDS.LOG'),
             'qty'         => 10
         ]);
 
@@ -44,7 +44,7 @@ class WarshipResourceSeeder extends Seeder
 
         WarshipResource::create([
             'warship_id'  => config('constants.WARSHIPS.CARAVEL'),
-            'resource_id' => config('constants.RESOURCE_IDS.LOGS'),
+            'resource_id' => config('constants.RESOURCE_IDS.LOG'),
             'qty'         => 30
         ]);
 

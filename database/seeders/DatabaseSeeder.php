@@ -85,7 +85,7 @@ class DatabaseSeeder extends Seeder
 
         \App\Models\CityResource::create([
             'city_id'     => config('constants.DEFAULT_USER_CITY_ID'),
-            'resource_id' => config('constants.RESOURCE_IDS.LOGS'),
+            'resource_id' => config('constants.RESOURCE_IDS.LOG'),
             'qty'         => 200
         ]);
 

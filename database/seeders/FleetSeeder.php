@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\City;
 use App\Models\Fleet;
+use App\Models\FleetResource;
 use App\Models\FleetStatusDictionary;
 use App\Models\FleetTaskDictionary;
 use Carbon\Carbon;
@@ -35,57 +36,83 @@ class FleetSeeder extends Seeder
 
         $carbon = new Carbon();
 
-        Fleet::create([
+        $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => config('constants.DEFAULT_USER_2_CITY_ID'),
             'speed'          => 100,
-            'gold'           => 1000,
-            'population'     => 0,
             'repeating'      => 1,
             'fleet_task_id'  => $taskTrade->id,
             'status_id'      => $statusTrade1->id,
             'time'           => $time,
             'deadline'       => $carbon::now()->addSeconds($time)
+        ])->id;
+
+        FleetResource::create([
+            'fleet_id' => $fleetId,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty' => 1000
         ]);
 
-        Fleet::create([
+        $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => config('constants.DEFAULT_USER_CITY_ID_2'),
             'speed'          => 70,
-            'gold'           => 567,
-            'population'     => 0,
             'repeating'      => 0,
             'fleet_task_id'  => $taskMove->id,
             'status_id'      => $statusMove1->id,
             'time'           => $time,
             'deadline'       => $carbon::now()->addSeconds($time)
+        ])->id;
+
+        FleetResource::create([
+            'fleet_id' => $fleetId,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty' => 567
         ]);
 
-        Fleet::create([
+        $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => config('constants.DEFAULT_USER_CITY_ID_2'),
             'speed'          => 70,
-            'gold'           => 300,
-            'population'     => 0,
             'repeating'      => 0,
             'fleet_task_id'  => $taskTransport->id,
             'status_id'      => $statusTransport1->id,
             'time'           => $time,
             'deadline'       => $carbon::now()->addSeconds($time)
+        ])->id;
+
+        FleetResource::create([
+            'fleet_id' => $fleetId,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty' => 300
+        ]);
+        FleetResource::create([
+            'fleet_id' => $fleetId,
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty' => 10
         ]);
 
         // attack
-        Fleet::create([
+        $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => config('constants.DEFAULT_PIRATE_CITY_ID'),
             'speed'          => 70,
-            'gold'           => 50,
-            'population'     => 50,
             'repeating'      => 0,
             'fleet_task_id'  => $taskAttack->id,
             'status_id'      => $statusAttack1->id,
             'time'           => $time,
             'deadline'       => $carbon::now()->addSeconds($time)
+        ])->id;
+
+        FleetResource::create([
+            'fleet_id' => $fleetId,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty' => 50
+        ]);
+        FleetResource::create([
+            'fleet_id' => $fleetId,
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty' => 50
         ]);
 
         // expedition
@@ -93,8 +120,6 @@ class FleetSeeder extends Seeder
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => null,
             'speed'          => 70,
-            'gold'           => 0,
-            'population'     => 0,
             'repeating'      => 1,
             'fleet_task_id'  => $taskExpedition->id,
             'status_id'      => $statusExpeditionGoingToTarget->id,
@@ -107,8 +132,6 @@ class FleetSeeder extends Seeder
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => null,
             'speed'          => 70,
-            'gold'           => 0,
-            'population'     => 0,
             'repeating'      => 0,
             'fleet_task_id'  => $taskExpedition->id,
             'status_id'      => $statusExpeditionGoingToTarget->id,

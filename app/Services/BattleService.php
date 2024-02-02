@@ -9,6 +9,7 @@ use App\Models\City;
 use App\Models\CityDictionary;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
+use App\Models\FleetResource;
 use App\Models\Message;
 use App\Models\WarshipDictionary;
 
@@ -256,7 +257,7 @@ class BattleService
 
     }
 
-    public function getAvailableCapacity(Fleet $fleet, $fleetDetails): int
+    public function getAvailableCapacity(Fleet|null $fleet, $fleetDetails): int
     {
         $availableCapacity = 0;
 
@@ -264,7 +265,19 @@ class BattleService
             $availableCapacity += ceil($fleetDetails[$i]['qty']) * $fleetDetails[$i]['capacity'];
         }
 
-        return $availableCapacity - $fleet->gold - $fleet->population;
+        if (!$fleet) {
+            return $availableCapacity;
+        }
+
+        // get all resources of fleet
+        $fleetResources = FleetResource::where('fleet_id', $fleet->id)->get();
+
+        // subtract resources which we carry on fleet
+        foreach ($fleetResources as $fleetResource) {
+            $availableCapacity -= $fleetResource->qty;
+        }
+
+        return $availableCapacity;
     }
 
     public function populateFleetDetailsWithCapacityAndHealth($fleetDetails, $warshipsDictionary)
@@ -303,9 +316,10 @@ class BattleService
     {
         $availableCapacity = $this->getAvailableCapacity($fleet, $fleetDetails);
 
-        $coefficient = $isAdventure ? 1 : 2;
+        //$coefficient = $isAdventure ? 1 : 2;
+        $coefficient = 1;
 
-        // we can take only 50% of resources for common islands and 100% for adventure islands
+        // we can take whole 100% of resources for common islands (pirates) and 100% for adventure islands
         $cityGold       = floor($city->gold / $coefficient);
         $cityPopulation = floor($city->population / $coefficient);
 

@@ -38,6 +38,7 @@ export const Fleet = ({ warships, cities, city }: IProps) => {
   /* TODO: refactor it, add all new resources */
   const [gold, setGold] = useState(0);
   const [logs, setLogs] = useState(0);
+  // TODO: refactor this shit
   const [renderKey, setRenderKey] = useState(0);
 
   const [fleet, setFleet] = useState<IFleet>(() => {
@@ -132,7 +133,7 @@ export const Fleet = ({ warships, cities, city }: IProps) => {
         console.log(response);
 
         setActualCityWarships(response.data.warships);
-        alert("Fleet has been sent");
+        console.log("Fleet has been sent");
         setRenderKey(renderKey + 1);
       });
   };

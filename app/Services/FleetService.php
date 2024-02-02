@@ -4,21 +4,19 @@ namespace App\Services;
 
 use App\Events\CityDataUpdatedEvent;
 use App\Events\FleetUpdatedEvent;
-use App\Events\TestEvent;
-use App\Http\Resources\FleetDetailResource;
-use App\Http\Resources\FleetResource;
 use App\Http\Resources\WarshipResource;
 use App\Jobs\BattleJob;
 use App\Models\City;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
+use App\Models\FleetResource;
 use App\Models\FleetTaskDictionary;
 use App\Models\Message;
+use App\Models\Resource;
 use App\Models\User;
 use App\Models\Warship;
 use App\Models\WarshipDictionary;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 class FleetService
 {
@@ -47,6 +45,7 @@ class FleetService
         $this->taskTypeSlug        = $params->taskType;
         $this->updatedFleetDetails = [];
         $this->type                = $params->type; // map | adventure
+        $this->resources           = $params['resources'] ?: [];
 
         if ($this->taskTypeSlug !== 'expedition' && (!$this->coordX || !$this->coordY)) {
             return 'no coordinates';
@@ -135,10 +134,33 @@ class FleetService
             return 'Wrong gold number';
         }
 
-        $gold = $this->handleGold($this->gold, $userCity, $this->updatedFleetDetails);
+        $cityResources          = $userCity->resources;
+        $resourcesDict          = Resource::get();
+        $wholeAmountOfResources = 0;
 
-        // update gold for island
-        $userCity->increment('gold', -$gold);
+        foreach ($this->resources as $resourceSlug => $resourceAmount) {
+            $resourceExistInDict = false;
+            foreach ($resourcesDict as $resDict) {
+                if ($resDict->slug === $resourceSlug) {
+                    $resourceExistInDict = true;
+                }
+            }
+
+            if (!$resourceExistInDict) {
+                return 'Error: Some resources do not exist';
+            }
+
+            $wholeAmountOfResources += (int)$resourceAmount;
+        }
+
+        $warshipsDictionary        = WarshipDictionary::get();
+        $this->updatedFleetDetails = (new BattleService)->populateFleetDetailsWithCapacityAndHealth($this->updatedFleetDetails, $warshipsDictionary);
+
+        $availableCapacity = (new BattleService)->getAvailableCapacity(null, $this->updatedFleetDetails);
+
+        if ($availableCapacity < $wholeAmountOfResources) {
+            return 'Cant carry so many resources';
+        }
 
         $defaultFleetStatusId = 0;
         if ($this->taskTypeId === config('constants.FLEET_TASKS.TRADE')) {
@@ -164,11 +186,45 @@ class FleetService
             'fleet_task_id'  => $this->taskTypeId,
             'speed'          => 100,
             'time'           => $timeToTarget,
-            'gold'           => $gold,
             'repeating'      => $this->repeating,
             'status_id'      => $defaultFleetStatusId,
             'deadline'       => Carbon::now()->addSeconds($timeToTarget)
         ])->id;
+
+        // transfer resources from island to fleet
+        foreach ($this->resources as $resourceSlug => $resourceAmount) {
+            $resourceId = null;
+
+            foreach ($resourcesDict as $resDict) {
+                if ($resDict->slug === $resourceSlug) {
+                    $resourceId = $resDict->id;
+                }
+            }
+
+            if ($resourceId) {
+                foreach ($cityResources as $cityResource) {
+                    if ($resourceId === $cityResource->resource_id) {
+                        // check max available qty we can transfer to fleet
+                        $maxQty = $resourceAmount;
+
+                        if ($maxQty > $cityResource->qty) {
+                            $maxQty = $cityResource->qty;
+                        }
+
+                        FleetResource::create([
+                            'fleet_id'    => $fleetId,
+                            'resource_id' => $resourceId,
+                            'qty'        => $maxQty
+                        ]);
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        // update resources for island
+        $this->subtractResourcesFromCity($cityResources, $this->resources, $resourcesDict);
 
         $this->moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleetId, $this->updatedFleetDetails);
 
@@ -241,38 +297,6 @@ class FleetService
         $cities = $user->cities;
 
         CityDataUpdatedEvent::dispatch($user, $cities);
-    }
-
-    // get maximum gold which we can carry
-    // - gold should be not more than we have on island
-    // - gold should be not more than fleet can carry
-    // TODO: use function availableCapacity
-    public function handleGold($gold, $city, $fleetDetails): int
-    {
-        $actualGold = $gold;
-
-        if ($city->gold < $actualGold) {
-            $actualGold = $city->gold;
-        }
-
-        $warshipsDictionary = WarshipDictionary::get();
-
-        $capacity = 0;
-
-        foreach ($warshipsDictionary as $warshipDictionary) {
-            foreach ($fleetDetails as $fleetDetail) {
-                if ($fleetDetail['warship_id'] === $warshipDictionary['id']) {
-                    $capacity += $fleetDetail['qty'] * $warshipDictionary['capacity'];
-                    break;
-                }
-            }
-        }
-
-        if ($capacity < $actualGold) {
-            $actualGold = $capacity;
-        }
-
-        return $actualGold;
     }
 
     public function isCity($city): bool
@@ -616,6 +640,35 @@ class FleetService
             }
 
             $fleetDetail->delete();
+        }
+    }
+
+    public function subtractResourcesFromCity($cityResources, $subtractResources, $resourcesDict): void
+    {
+        // $subtractResources: ['slug' => qty]
+        foreach ($subtractResources as $subtractResourceSlug => $subtractResourceQty) {
+            $resourceId = null;
+
+            foreach ($resourcesDict as $resDict) {
+                if ($resDict->slug === $subtractResourceSlug) {
+                    $resourceId = $resDict->id;
+                }
+            }
+
+            if ($resourceId) {
+                foreach ($cityResources as $cityResource) {
+                    if ($resourceId === $cityResource->resource_id) {
+                        // check max available qty we can take from island (to fleet)
+                        $maxQty = $subtractResourceQty;
+
+                        if ($maxQty > $cityResource->qty) {
+                            $maxQty = $cityResource->qty;
+                        }
+
+                        $cityResource->decrement('qty', $maxQty);
+                    }
+                }
+            }
         }
     }
 }

@@ -34,7 +34,10 @@ export const Fleet = ({ warships, cities, city }: IProps) => {
   const [coordX, setCoordX] = useState<number>(0);
   const [coordY, setCoordY] = useState<number>(0);
   const [actualCityWarships, setActualCityWarships] = useState(warships);
+
+  /* TODO: refactor it, add all new resources */
   const [gold, setGold] = useState(0);
+  const [logs, setLogs] = useState(0);
   const [renderKey, setRenderKey] = useState(0);
 
   const [fleet, setFleet] = useState<IFleet>(() => {
@@ -116,7 +119,9 @@ export const Fleet = ({ warships, cities, city }: IProps) => {
       .post("/fleets/send", {
         ...fleet,
         fleetDetails,
-        gold,
+        resources: {
+          gold: gold,
+        },
         coordX,
         coordY,
         taskType,
@@ -273,8 +278,15 @@ export const Fleet = ({ warships, cities, city }: IProps) => {
               <div>
                 <strong>Gold (Capacity: {maxCapacity}):</strong>
               </div>
+              {/* TODO: change maxNumber, get cityResources */}
               <InputNumberGoldStyled
                 value={gold}
+                onChange={(value) => setGold(value)}
+                maxNumber={city.gold > maxCapacity ? maxCapacity : city.gold}
+              />
+
+              <InputNumberGoldStyled
+                value={logs}
                 onChange={(value) => setGold(value)}
                 maxNumber={city.gold > maxCapacity ? maxCapacity : city.gold}
               />

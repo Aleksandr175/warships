@@ -88,3 +88,4 @@ Has warships points: 0
 
 - generate warships depends on warship points
 - add ability to take materials from islands
+- add new resources to islands

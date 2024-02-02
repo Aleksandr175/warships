@@ -42,18 +42,39 @@ We create log for every shoot and log for result of battle. We need to know who 
 ### Notifications
 - in progress
 
-### Getting resources logic if battle between users
+### Getting resources logic if battle between user and pirates (IN PROCESS)
+We calculate full capacity of player.
+
+Formula:
+
+$wholeCapacity = warshipsQty * warshipsCapacity for each warship type in fleet;
+
+1) If user attacks pirates and win -> We get all resources from pirate island in equal proportion.
+
+Player can get maximum 100% of resources in pirate city.
+
+We get all resources in equal proportion.
+
+If sum of all resources is bigger than capacity -> we get as much as we can in equal proportion.
+
+2) If user attacks pirates and lost -> Player doen't get anything. Pirates doesn't get anything too.
+
+3) If pirates attack player and lost -> Player doen't get anything. Pirates doesn't get anything too.
+
+4) If pirates attack player and win -> Pirates get resources the same way as it was for .
+
+### Getting resources logic if battle between users (NOT NECESSARY)
 We calculate full capacity of A warships.
 
 Formula:
 
 $wholeCapacity = warshipsQty * warshipsCapacity for each warship type in fleet;
 
-"A" can get maximum 50% of resources in city.
+"A" can get maximum 100% of resources in city.
 
-We get 50% of gold and 50% of population from city.
+We get all resources in equal proportion.
 
-If sum of all resources is bigger than capacity -> first we get all gold and if we have space we get the rest of the "population".
+If sum of all resources is bigger than capacity -> we get as much as we can by equal proportion.
 
 ### Getting resources logic if battle between user and adventure island
 
@@ -65,9 +86,9 @@ $wholeCapacity = warshipsQty * warshipsCapacity for each warship type in fleet;
 
 "A" can get maximum 100% of resources in city.
 
-We get 100% of gold and 100% of population from city.
+We get all resources in equal proportion.
 
-If sum of all resources is bigger than capacity -> first we get all gold and if we have space we get the rest of the "population".
+If sum of all resources is bigger than capacity -> we get as much as we can by equal proportion.
 
 If defender island doesn't have any resources after battle - it will mark as "raided" and can't be attacked again.
 
@@ -79,3 +100,4 @@ If defender island doesn't have any resources after battle - it will mark as "ra
 - add ability to attack alien trade fleet in the city (while it is process of trading)
 - add notifications about battle result in real time
 - (DONE) when getting resources -> check capacity depends on what fleet had. Cas it could be sent with some resource to attack city.
+- get new resources in equal proportion after battle

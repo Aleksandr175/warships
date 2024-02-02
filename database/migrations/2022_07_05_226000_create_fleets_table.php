@@ -27,8 +27,6 @@ class CreateFleetsTable extends Migration
             $table->integer('status_id');
 
             $table->integer('speed')->default(0);
-            $table->integer('gold')->default(0);
-            $table->integer('population')->default(0);
             $table->integer('repeating')->default(0); // 0|1
 
             $table->integer('time')->default(0);

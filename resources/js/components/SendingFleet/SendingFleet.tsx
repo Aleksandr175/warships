@@ -4,10 +4,10 @@ import { httpClient } from "../../httpClient/httpClient";
 import styled, { css } from "styled-components";
 import {
   ICity,
+  ICityResource,
   ICityWarship,
   IFleet,
   IFleetWarshipsData,
-  IWarship,
   TTask,
   TType,
 } from "../../types/types";
@@ -16,15 +16,26 @@ import { InputNumber } from "../Common/InputNumber";
 import { SContent, SH1 } from "../styles";
 import { useSearchParams } from "react-router-dom";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
+import { Icon } from "../Common/Icon";
 
 interface IProps {
   warships: ICityWarship[] | undefined;
   cities: ICity[];
   city: ICity;
+  cityResources: ICityResource[];
+}
+
+interface IResources {
+  [slug: string]: number;
 }
 
 // TODO: add react hook form
-export const Fleet = ({ warships, cities, city }: IProps) => {
+export const SendingFleet = ({
+  warships,
+  cities,
+  city,
+  cityResources,
+}: IProps) => {
   const queryDictionaries = useFetchDictionaries();
 
   const dictionaries = queryDictionaries.data;
@@ -34,6 +45,8 @@ export const Fleet = ({ warships, cities, city }: IProps) => {
   const [coordX, setCoordX] = useState<number>(0);
   const [coordY, setCoordY] = useState<number>(0);
   const [actualCityWarships, setActualCityWarships] = useState(warships);
+
+  const [resources, setResources] = useState<IResources>({});
 
   /* TODO: refactor it, add all new resources */
   const [gold, setGold] = useState(0);
@@ -116,13 +129,15 @@ export const Fleet = ({ warships, cities, city }: IProps) => {
   };
 
   const sendFleet = (): void => {
+    const resourcesForFleet = Object.fromEntries(
+      Object.entries(resources).filter(([key, value]) => value > 0)
+    );
+
     httpClient
       .post("/fleets/send", {
         ...fleet,
         fleetDetails,
-        resources: {
-          gold: gold,
-        },
+        resources: resourcesForFleet,
         coordX,
         coordY,
         taskType,
@@ -161,9 +176,15 @@ export const Fleet = ({ warships, cities, city }: IProps) => {
 
   const maxCapacity = getMaxCapacity();
 
-  if (gold > maxCapacity) {
-    setGold(maxCapacity);
-  }
+  const getFreeCapacity = () => {
+    let remainCapacity = maxCapacity;
+
+    Object.entries(resources)?.forEach(([slug, value]) => {
+      remainCapacity -= value;
+    });
+
+    return remainCapacity;
+  };
 
   if (!dictionaries) {
     return null;
@@ -275,22 +296,55 @@ export const Fleet = ({ warships, cities, city }: IProps) => {
 
         {type === "map" && (
           <>
-            <div className={"col-4"}>
+            <div className={"col-12"}>
               <div>
-                <strong>Gold (Capacity: {maxCapacity}):</strong>
+                <strong>
+                  Resources (Full Capacity: {maxCapacity}, Free Capacity:{" "}
+                  {getFreeCapacity()}):
+                </strong>
               </div>
-              {/* TODO: change maxNumber, get cityResources */}
-              <InputNumberGoldStyled
-                value={gold}
-                onChange={(value) => setGold(value)}
-                maxNumber={city.gold > maxCapacity ? maxCapacity : city.gold}
-              />
+              <div className={"row"}>
+                {dictionaries?.resourcesDictionary?.map((resource) => {
+                  let maxAvailableAmount = maxCapacity;
+                  const resourceQtyInCity =
+                    cityResources.find(
+                      (cityResource) => cityResource.resourceId === resource.id
+                    )?.qty || 0;
 
-              <InputNumberGoldStyled
-                value={logs}
-                onChange={(value) => setGold(value)}
-                maxNumber={city.gold > maxCapacity ? maxCapacity : city.gold}
-              />
+                  if (maxAvailableAmount > resourceQtyInCity) {
+                    maxAvailableAmount = resourceQtyInCity;
+                  }
+
+                  return (
+                    <div className={"col-3"} key={resource.id}>
+                      <Icon title={resource.slug} />
+                      <InputNumberStyled
+                        value={resources[resource.slug]}
+                        onChange={(value) =>
+                          setResources((prevState) => {
+                            let remainCapacity = getFreeCapacity();
+
+                            remainCapacity += resources?.[resource.slug] || 0;
+
+                            if (value > remainCapacity) {
+                              value = remainCapacity;
+                            }
+
+                            if (value > maxAvailableAmount) {
+                              value = maxAvailableAmount;
+                            }
+
+                            return {
+                              ...prevState,
+                              [resource.slug]: value,
+                            };
+                          })
+                        }
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             <div className={"col-12"}>
@@ -383,6 +437,6 @@ const InputNumberCoordinatesStyled = styled(InputNumber)`
   margin-right: 20px;
 `;
 
-const InputNumberGoldStyled = styled(InputNumber)`
+const InputNumberStyled = styled(InputNumber)`
   width: 100px;
 `;

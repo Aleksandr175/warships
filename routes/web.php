@@ -123,7 +123,7 @@ Route::get('/map', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-Route::get('/fleets', function () {
+Route::get('/sending-fleets', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 

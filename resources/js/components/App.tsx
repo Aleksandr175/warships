@@ -12,7 +12,7 @@ import styled from "styled-components";
 import { CityResources } from "./CityResources";
 import { Warships } from "./Warships/Warships";
 import { Map } from "./Map/Map";
-import { Fleet } from "./Fleet/Fleet";
+import { SendingFleet } from "./SendingFleet/SendingFleet";
 import { useAppLogic } from "./hooks/useAppLogic";
 import { Fleets } from "./Fleets";
 import { Logs } from "./Logs/Logs";
@@ -132,7 +132,7 @@ const App = () => {
                 Warships
               </NavLink>
               <NavLink
-                to={"/fleets"}
+                to={"/sending-fleets"}
                 className={({ isActive }) =>
                   isActive ? "link selected-link" : "link"
                 }
@@ -230,9 +230,14 @@ const App = () => {
                     }
                   />
                   <Route
-                    path={"fleets"}
+                    path={"sending-fleets"}
                     element={
-                      <Fleet warships={warships} cities={cities} city={city} />
+                      <SendingFleet
+                        warships={warships}
+                        cities={cities}
+                        city={city}
+                        cityResources={city.resources}
+                      />
                     }
                   />
                   <Route path={"map"} element={<Map fleets={fleets} />} />

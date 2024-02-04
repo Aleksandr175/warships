@@ -277,7 +277,7 @@ class BattleService
             $availableCapacity -= $fleetResource->qty;
         }
 
-        return $availableCapacity;
+        return max($availableCapacity, 0);
     }
 
     public function populateFleetDetailsWithCapacityAndHealth($fleetDetails, $warshipsDictionary)

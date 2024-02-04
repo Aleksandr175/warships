@@ -7,6 +7,7 @@ use App\Events\FleetUpdatedEvent;
 use App\Http\Resources\WarshipResource;
 use App\Jobs\BattleJob;
 use App\Models\City;
+use App\Models\CityResource;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
 use App\Models\FleetResource;
@@ -214,7 +215,7 @@ class FleetService
                         FleetResource::create([
                             'fleet_id'    => $fleetId,
                             'resource_id' => $resourceId,
-                            'qty'        => $maxQty
+                            'qty'         => $maxQty
                         ]);
 
                         break;
@@ -325,9 +326,8 @@ class FleetService
     {
         // only if deadline is expired
         if ($fleet->deadline < Carbon::now()) {
-            $statusId          = null;
-            $deadline          = null;
-            $gold              = null;
+            $statusId = null;
+            $deadline = null;
             $repeating         = null;
             $shouldDeleteFleet = false;
 
@@ -374,10 +374,15 @@ class FleetService
                     $availableCapacity = (new BattleService)->getAvailableCapacity($fleet, $fleetDetails);
 
                     $gold = floor($availableCapacity * 0.1);
-                    dump('trade: fleet completed trading, got ' . $gold . ' gold');
+                    $goldForIsland = floor($gold / 2);
+                    $this->addResourceToFleet($fleet, config('constants.RESOURCE_IDS.GOLD'), $gold);
 
                     $targetCity = City::find($fleet->target_city_id);
-                    $targetCity->increment('gold', floor($gold / 2));
+
+                    // TODO: change logic for trading
+                    $this->addResourceToCity($targetCity->id, config('constants.RESOURCE_IDS.GOLD'), $goldForIsland);
+
+                    dump('trade: fleet completed trading, got ' . $gold . ' gold, island got: ' . $goldForIsland);
                 }
 
                 if ($fleet->isTradeGoingBack()) {
@@ -385,14 +390,16 @@ class FleetService
 
                     $city         = City::find($fleet->city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
-                    $city->increment('gold', $fleet->gold);
+
+                    // move all resources from Fleet to City
+                    $this->moveResourcesFromFleetToCity($fleet, $city);
 
                     Message::create([
                         'user_id'        => $city->user_id,
                         'content'        => 'Merchant fleet is back.',
                         'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_IS_BACK'),
-                        'gold'           => $fleet->gold,
-                        'population'     => $fleet->population,
+                        /*'gold'           => $fleet->gold,
+                        'population'     => $fleet->population,*/
                         'event_type'     => 'Fleet',
                         'city_id'        => $fleet->target_city_id,
                         'target_city_id' => $city->id,
@@ -401,7 +408,6 @@ class FleetService
                     if ($fleet->repeating) {
                         dump('trade: fleet repeats trade task, going to target');
                         // just repeat task
-                        $gold     = 0;
                         $statusId = config('constants.FLEET_STATUSES.TRADE_GOING_TO_TARGET');
                         // TODO: how long? // distance?
                         $deadline = Carbon::create($fleet->deadline)->addSecond(10);
@@ -427,17 +433,19 @@ class FleetService
                         // transfer fleet to warships in the island
                         $this->convertFleetDetailsToWarships($fleetDetails, $targetCity);
 
+                        $this->moveResourcesFromFleetToCity($fleet, $targetCity);
+
                         $shouldDeleteFleet = true;
 
                         Message::create([
                             'user_id'        => $city->user_id,
                             'content'        => 'Fleet moved to island.',
                             'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_DONE'),
-                            'gold'           => $fleet->gold,
-                            'population'     => $fleet->population,
+                            /*'gold'           => $fleet->gold,
+                            'population'     => $fleet->population,*/
                             'event_type'     => 'Fleet',
-                            'city_id'        => $city->id,
-                            'target_city_id' => $targetCity->id,
+                            'city_id'        => $fleet->city_id,
+                            'target_city_id' => $fleet->target_city_id,
                         ]);
                     } else {
                         dump('move: fleet is returning to original island');
@@ -451,11 +459,11 @@ class FleetService
                             'user_id'        => $city->user_id,
                             'content'        => 'Fleet can not be moved to island.',
                             'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_CANT'),
-                            'gold'           => $fleet->gold,
-                            'population'     => $fleet->population,
+                            /*'gold'           => $fleet->gold,
+                            'population'     => $fleet->population,*/
                             'event_type'     => 'Fleet',
-                            'city_id'        => $city->id,
-                            'target_city_id' => $targetCity->id,
+                            'city_id'        => $fleet->city_id,
+                            'target_city_id' => $fleet->target_city_id,
                         ]);
                     }
 
@@ -469,17 +477,19 @@ class FleetService
                     // transfer fleet to warships in the island
                     $this->convertFleetDetailsToWarships($fleetDetails, $city);
 
+                    $this->moveResourcesFromFleetToCity($fleet, $city);
+
                     $shouldDeleteFleet = true;
 
                     Message::create([
                         'user_id'        => $city->user_id,
                         'content'        => 'Fleet returned to island.',
                         'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_WENT_BACK'),
-                        'gold'           => $fleet->gold,
-                        'population'     => $fleet->population,
+                        /*'gold'           => $fleet->gold,
+                        'population'     => $fleet->population,*/
                         'event_type'     => 'Fleet',
-                        'city_id'        => $targetCity->id,
-                        'target_city_id' => $city->id,
+                        'city_id'        => $fleet->target_city_id,
+                        'target_city_id' => $fleet->city_id,
                     ]);
                 }
             }
@@ -492,10 +502,9 @@ class FleetService
                     // TODO: how long? // distance?
                     $deadline = Carbon::create($fleet->deadline)->addSecond(10);
 
-                    $gold = 0;
-
                     $targetCity = City::find($fleet->target_city_id);
-                    $targetCity->increment('gold', $fleet->gold);
+
+                    $this->moveResourcesFromFleetToCity($fleet, $targetCity);
                 }
 
                 if ($fleet->isTransportFleetGoingBack()) {
@@ -505,6 +514,8 @@ class FleetService
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
 
                     $this->convertFleetDetailsToWarships($fleetDetails, $city);
+
+                    $this->moveResourcesFromFleetToCity($fleet, $city);
 
                     $shouldDeleteFleet = true;
                 }
@@ -538,7 +549,12 @@ class FleetService
 
                     $city         = City::find($fleet->city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
-                    $city->increment('gold', $fleet->gold);
+
+                    // TODO: get all new resources and transfer it to city
+                    $resource = FleetResource::where('fleet_id', $fleet->id)->where('resource_id', config('constants.RESOURCE_IDS.GOLD'))->first();
+                    if ($resource) {
+                        $this->addResourceToCity($city->id, config('constants.RESOURCE_IDS.GOLD'), $resource->qty);
+                    }
 
                     if ($fleet->repeating) {
                         dump('expedition: fleet repeats expedition task, going to target');
@@ -558,7 +574,7 @@ class FleetService
                         'user_id'        => $city->user_id,
                         'content'        => 'Expedition Fleet is back.',
                         'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_IS_BACK'),
-                        'gold'           => $fleet->gold,
+                        /*'gold'           => $fleet->gold,*/
                         'event_type'     => 'Expedition',
                         'archipelago_id' => $city->archipelago_id,
                         'coord_x'        => $city->coord_x,
@@ -603,7 +619,7 @@ class FleetService
                 // update fleet
                 $fleet->update([
                     'status_id' => $statusId,
-                    'gold'      => $gold !== null ? $gold : $fleet->gold,
+                    /*'gold'      => $gold !== null ? $gold : $fleet->gold,*/
                     'deadline'  => $deadline,
                     'repeating' => $repeating !== null ? $repeating : $fleet->repeating
                 ]);
@@ -670,5 +686,46 @@ class FleetService
                 }
             }
         }
+    }
+
+    public function addResourceToCity(int $cityId, int $resourceId, int $qty): void
+    {
+        $resource = CityResource::where('city_id', $cityId)->where('resource_id', $resourceId)->first();
+
+        if ($resource) {
+            $resource->increment('qty', $qty);
+        } else {
+            CityResource::create([
+                'city_id'     => $cityId,
+                'resource_id' => $resourceId,
+                'qty',
+                $qty
+            ]);
+        }
+    }
+
+    public function addResourceToFleet(Fleet $fleet, int $resourceId, int $qty): void
+    {
+        $resource = FleetResource::where('fleet_id', $fleet->id)->where('resource_id', $resourceId)->first();
+        dump('RESOURCE:', $resource->resource_id, $resource->qty);
+        if ($resource) {
+            $resource->increment('qty', $qty);
+        } else {
+            FleetResource::create([
+                'fleet_id'    => $fleet->id,
+                'resource_id' => $resourceId,
+                'qty'         => $qty
+            ]);
+        }
+    }
+
+    public function moveResourcesFromFleetToCity(Fleet $fleet, City $city): void {
+        $resources = FleetResource::where('fleet_id', $fleet->id)->get();
+
+        foreach ($resources as $resource) {
+            $this->addResourceToCity($city->id, $resource->resource_id, $resource->qty);
+        }
+
+        FleetResource::where('fleet_id', $fleet->id)->delete();
     }
 }

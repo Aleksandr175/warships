@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class City
  *
+ * @property integer $id
  * @property integer $user_id
  * @property integer $city_dictionary_id
  * @property string  $title

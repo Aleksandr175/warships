@@ -14,20 +14,22 @@ class FleetDetailSeeder extends Seeder
      */
     public function run()
     {
+        $tradeFleetId = 1;
+
         FleetDetail::create([
-            'fleet_id'   => 1,
+            'fleet_id'   => $tradeFleetId,
             'warship_id' => config('constants.WARSHIPS.LUGGER'),
             'qty'        => 3,
         ]);
 
         FleetDetail::create([
-            'fleet_id'   => 1,
+            'fleet_id'   => $tradeFleetId,
             'warship_id' => config('constants.WARSHIPS.CARAVEL'),
             'qty'        => 2,
         ]);
 
         FleetDetail::create([
-            'fleet_id'   => 1,
+            'fleet_id'   => $tradeFleetId,
             'warship_id' => config('constants.WARSHIPS.GALERA'),
             'qty'        => 10,
         ]);

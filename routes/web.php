@@ -30,6 +30,12 @@ Route::get('/clear', function () {
 Route::get('/test-event', [\App\Http\Controllers\TestController::class, 'index']);
 
 Route::get('/server-start', function () {
+    echo "Starting migrate:fresh and seeding...\n";
+
+    Artisan::call('migrate:fresh --seed');
+
+    echo "Starting jobs...\n";
+
     \App\Jobs\ResourceJob::dispatch()->onQueue('resource');
     \App\Jobs\WarshipQueueJob::dispatch()->onQueue('warshipQueue');
     \App\Jobs\BuildJob::dispatch()->onQueue('buildingQueue');
@@ -38,7 +44,7 @@ Route::get('/server-start', function () {
     \App\Jobs\BattleJob::dispatch()->onQueue('battle');
     \App\Jobs\ExpeditionJob::dispatch()->onQueue('expedition');
 
-    return "Server started!";
+    return "Everything executed successfully!";
 });
 
 Route::get('/test-battle', function (\App\Services\BattleService $battleService) {

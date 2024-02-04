@@ -70,6 +70,24 @@ class FleetSeeder extends Seeder
             'qty' => 567
         ]);
 
+        // try to move warships to not our island -> it should be returned to original island
+        $fleetId = Fleet::create([
+            'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
+            'target_city_id' => config('constants.DEFAULT_USER_2_CITY_ID'),
+            'speed'          => 70,
+            'repeating'      => 0,
+            'fleet_task_id'  => $taskMove->id,
+            'status_id'      => $statusMove1->id,
+            'time'           => $time,
+            'deadline'       => $carbon::now()->addSeconds($time)
+        ])->id;
+
+        FleetResource::create([
+            'fleet_id' => $fleetId,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty' => 123
+        ]);
+
         $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => config('constants.DEFAULT_USER_CITY_ID_2'),

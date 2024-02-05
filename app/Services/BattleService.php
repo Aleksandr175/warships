@@ -6,7 +6,6 @@ use App\Models\Adventure;
 use App\Models\BattleLog;
 use App\Models\BattleLogDetail;
 use App\Models\City;
-use App\Models\CityDictionary;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
 use App\Models\FleetResource;
@@ -136,16 +135,14 @@ class BattleService
 
         $winner = count($attackingFleetDetails) > 0 ? 'attacker' : 'defender';
 
-        // $logAttacking - information about how much damage was dealt to the opposing side.
+        // $logAttacking - information about how much damage was dealt to the opposite side.
         dump('LOGS', 'Attack log: ', $logAttacking, 'Defence log: ', $logDefending);
-
-        $takeGold       = 0;
-        $takePopulation = 0;
 
         // calculate resources if attacker wins
         if ($winner === 'attacker') {
-            [$takeGold, $takePopulation] = $this->moveResourcesToAttackerFleet($fleet, $attackingFleetDetails, $targetCity, $isUserAttackingAdventureIsland);
-            $this->removeResourcesFromCity($targetCity, $takeGold, $takePopulation);
+            $this->moveResourcesToAttackerFleetAndRemoveItFromCity($fleet, $attackingFleetDetails, $targetCity);
+
+            $cityResources = $targetCity->resources->toArray();
 
             $fleet->update([
                 'status_id' => config('constants.FLEET_STATUSES.ATTACK_COMPLETED'),
@@ -153,7 +150,7 @@ class BattleService
 
             if ($isUserAttackingAdventureIsland) {
                 // mark island as raided if it doesn't have any resources
-                if ((int)$targetCity->gold === 0 && (int)$targetCity->population === 0) {
+                if (!count($cityResources)) {
                     $targetCity->update([
                         'raided' => 1
                     ]);
@@ -168,8 +165,8 @@ class BattleService
             'round'            => $round,
             'city_id'          => $targetCity->id,
             'winner'           => $winner,
-            'gold'             => $takeGold,
-            'population'       => $takePopulation
+            /*'gold'             => $takeGold,
+            'population'       => $takePopulation*/
         ]);
 
         $fleetDetails = FleetDetail::where('fleet_id', $fleet->id)->get();
@@ -193,6 +190,7 @@ class BattleService
         // remove fleet without any details
         $updatedFleetDetails = FleetDetail::where('fleet_id', $fleet->id)->get();
         if (!count($updatedFleetDetails)) {
+            FleetResource::where('fleet_id', $fleet->id)->delete();
             Fleet::where('id', $fleet->id)->delete();
         }
 
@@ -312,51 +310,30 @@ class BattleService
     }
 
     // move resources from city to fleet (can't move more than capacity of fleet)
-    public function moveResourcesToAttackerFleet(Fleet $fleet, $fleetDetails, City $city, bool $isAdventure): array
+    public function moveResourcesToAttackerFleetAndRemoveItFromCity(Fleet $fleet, $fleetDetails, City $city)
     {
         $availableCapacity = $this->getAvailableCapacity($fleet, $fleetDetails);
 
-        //$coefficient = $isAdventure ? 1 : 2;
-        $coefficient = 1;
-
         // we can take whole 100% of resources for common islands (pirates) and 100% for adventure islands
-        $cityGold       = floor($city->gold / $coefficient);
-        $cityPopulation = floor($city->population / $coefficient);
 
-        dump("availableCapacity $availableCapacity, cityGold $cityGold, cityPopulation $cityPopulation, isAdventure $isAdventure");
-        $takeGold       = 0;
-        $takePopulation = 0;
+        $cityResources = $city->resources;
 
-        if ($cityGold > $availableCapacity) {
-            $takeGold          = $availableCapacity;
-            $availableCapacity = 0;
-        } else {
-            $availableCapacity -= $cityGold;
-            $takeGold          = $cityGold;
-        }
+        dump("availableCapacity $availableCapacity");
+        dump('cityResources', $cityResources);
 
-        if ($availableCapacity) {
-            if ($cityPopulation > $availableCapacity) {
-                $takePopulation    = $availableCapacity;
-                $availableCapacity = 0;
-            } else {
-                $availableCapacity -= $cityPopulation;
-                $takePopulation    = $cityPopulation;
+        $distributedResources = $this->distributeResources($availableCapacity, $cityResources);
+
+        if (count($distributedResources)) {
+            foreach ($distributedResources as $distributedResource) {
+                $this->moveResourceToFleet($fleet, $distributedResource);
             }
+
+            $this->subtractResourcesFromCity($city, $distributedResources);
         }
 
-        $fleet->increment('gold', $takeGold);
-        $fleet->increment('population', $takePopulation);
+        dump("availableCapacity left $availableCapacity");
 
-        dump("availableCapacity left $availableCapacity, takeGold $takeGold, takePopulation $takePopulation");
-
-        return [$takeGold, $takePopulation];
-    }
-
-    public function removeResourcesFromCity($city, $gold, $population)
-    {
-        $city->decrement('gold', $gold);
-        $city->decrement('population', $population);
+        dump('Resources were taken, $distributedResources: ', $distributedResources);
     }
 
     /**
@@ -410,5 +387,59 @@ class BattleService
         }
 
         return [$warshipGroups, $log];
+    }
+
+    public function distributeResources(int $availableCapacity, $resources)
+    {
+        $resourcesArray = $resources->toArray();
+
+        // Step 1: Calculate total quantity
+        $totalQuantity = array_sum(array_column($resourcesArray, 'qty'));
+
+        // Initialize an array to store the distributed quantities
+        $distributedResources = [];
+
+        if ($availableCapacity > $totalQuantity) {
+            $availableCapacity = $totalQuantity;
+        }
+
+        // Step 2: Calculate the proportion and distribute the available capacity
+        foreach ($resourcesArray as $resource) {
+            if ($resource['qty'] > 0) {
+                // Calculate the proportion for each resource
+                $proportion = $resource['qty'] / $totalQuantity;
+
+                // Distribute the available capacity based on the proportion
+                $distributedResources[] = [
+                    'resource_id' => $resource['resource_id'],
+                    'qty'         => (int)($proportion * $availableCapacity),
+                ];
+            }
+        }
+
+        return $distributedResources;
+    }
+
+    // $resource = array['resource_id' => 123, 'qty' => 100]
+    public function moveResourceToFleet(Fleet $fleet, $resource)
+    {
+        $fleetResource = $fleet->resource($resource['resource_id']);
+
+        if ($fleetResource) {
+            $fleetResource->increment('qty', $resource['qty']);
+        } else {
+            FleetResource::create([
+                'fleet_id'    => $fleet->id,
+                'resource_id' => $resource['resource_id'],
+                'qty'         => $resource['qty']
+            ]);
+        }
+    }
+
+    public function subtractResourcesFromCity(City $city, $resources): void
+    {
+        foreach ($resources as $resource) {
+            (new FleetService())->addResourceToCity($city->id, $resource['resource_id'], $resource['qty'] * (-1));
+        }
     }
 }

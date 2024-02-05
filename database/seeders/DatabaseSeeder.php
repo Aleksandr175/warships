@@ -159,6 +159,24 @@ class DatabaseSeeder extends Seeder
             'population'         => 500
         ]);
 
+        \App\Models\CityResource::create([
+            'city_id'     => config('constants.DEFAULT_PIRATE_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'         => 5000
+        ]);
+
+        \App\Models\CityResource::create([
+            'city_id'     => config('constants.DEFAULT_PIRATE_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'         => 1000
+        ]);
+
+        \App\Models\CityResource::create([
+            'city_id'     => config('constants.DEFAULT_PIRATE_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.LOG'),
+            'qty'         => 100
+        ]);
+
         // Colonies for test
 
         \App\Models\City::factory(1)->create([
@@ -223,7 +241,6 @@ class DatabaseSeeder extends Seeder
         $this->call(FleetTaskDictionarySeeder::class);
         $this->call(FleetStatusDictionarySeeder::class);
 
-        $this->call(FleetDetailSeeder::class);
         $this->call(FleetSeeder::class);
 
         $this->call(BuildingDependencySeeder::class);

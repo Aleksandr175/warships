@@ -136,4 +136,12 @@ class Fleet extends Model
     {
         return $this->isExpeditionTask() && $this->status_id === config('constants.FLEET_STATUSES.EXPEDITION_GOING_BACK');
     }
+
+    public function resources() {
+        return $this->hasMany(FleetResource::class);
+    }
+
+    public function resource($resourceId) {
+        return $this->hasOne(FleetResource::class)->where('resource_id', $resourceId)->first();
+    }
 }

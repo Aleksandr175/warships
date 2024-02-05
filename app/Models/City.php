@@ -73,4 +73,9 @@ class City extends Model
     {
         return $this->hasMany(CityResource::class);
     }
+
+    public function resource($resourceId)
+    {
+        return $this->hasOne(CityResource::class)->where('resource_id', $resourceId)->first();
+    }
 }

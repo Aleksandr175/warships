@@ -86,18 +86,27 @@ $wholeCapacity = warshipsQty * warshipsCapacity for each warship type in fleet;
 
 "A" can get maximum 100% of resources in city.
 
-We get all resources in equal proportion.
+We get all resources in equal proportion (%).
 
 If sum of all resources is bigger than capacity -> we get as much as we can by equal proportion.
 
 If defender island doesn't have any resources after battle - it will mark as "raided" and can't be attacked again.
 
+#### Example:
+
+Capacity: 60
+
+Resources in City: 300, 200, 100
+
+Fleet will get 30, 20, 10
+
 ## Future updates
 
+- add skills for warships like ability to make double damage to some type of warships
 - set max round of battle (6-7?)
   - if no winner after max round -> it is a tie. Each side returns back without getting resources.
 - add fortress, increase damage & defence ability
 - add ability to attack alien trade fleet in the city (while it is process of trading)
 - add notifications about battle result in real time
 - (DONE) when getting resources -> check capacity depends on what fleet had. Cas it could be sent with some resource to attack city.
-- get new resources in equal proportion after battle
+- (DONE) get new resources in equal proportion after battle

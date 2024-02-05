@@ -2,6 +2,8 @@
 
 use App\Models\City;
 use App\Models\Fleet;
+use App\Models\FleetDetail;
+use App\Models\FleetResource;
 use App\Services\PirateService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +50,48 @@ Route::get('/server-start', function () {
 });
 
 Route::get('/test-battle', function (\App\Services\BattleService $battleService) {
+    $fleet = Fleet::create([
+        'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
+        'target_city_id' => config('constants.DEFAULT_PIRATE_CITY_ID'),
+        'speed'          => 70,
+        'repeating'      => 0,
+        'fleet_task_id'  => config('constants.FLEET_TASKS.ATTACK'),
+        'status_id'      => config('constants.FLEET_STATUSES.ATTACK_GOING_TO_TARGET'),
+        'time'           => 10,
+        'deadline'       => 123
+    ]);
+
+    FleetResource::create([
+        'fleet_id' => $fleet->id,
+        'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+        'qty' => 50
+    ]);
+    FleetResource::create([
+        'fleet_id' => $fleet->id,
+        'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+        'qty' => 20
+    ]);
+
+    FleetDetail::create([
+        'fleet_id'   => $fleet->id,
+        'warship_id' => config('constants.WARSHIPS.LUGGER'),
+        'qty'        => 20,
+    ]);
+    FleetDetail::create([
+        'fleet_id'   => $fleet->id,
+        'warship_id' => config('constants.WARSHIPS.CARAVEL'),
+        'qty'        => 10,
+    ]);
+    FleetDetail::create([
+        'fleet_id'   => $fleet->id,
+        'warship_id' => config('constants.WARSHIPS.GALERA'),
+        'qty'        => 5,
+    ]);
+
+    $battleService->handle($fleet);
+});
+
+Route::get('/test-battles', function (\App\Services\BattleService $battleService) {
     $fleetQueue = Fleet::where('fleet_task_id', config('constants.FLEET_TASKS.ATTACK'))->get();
 
     foreach ($fleetQueue as $fleet) {

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\City;
 use App\Models\Fleet;
+use App\Models\FleetDetail;
 use App\Models\FleetResource;
 use App\Models\FleetStatusDictionary;
 use App\Models\FleetTaskDictionary;
@@ -50,7 +51,25 @@ class FleetSeeder extends Seeder
         FleetResource::create([
             'fleet_id' => $fleetId,
             'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
-            'qty' => 1000
+            'qty' => 10
+        ]);
+
+        FleetDetail::create([
+            'fleet_id'   => $fleetId,
+            'warship_id' => config('constants.WARSHIPS.LUGGER'),
+            'qty'        => 3,
+        ]);
+
+        FleetDetail::create([
+            'fleet_id'   => $fleetId,
+            'warship_id' => config('constants.WARSHIPS.CARAVEL'),
+            'qty'        => 2,
+        ]);
+
+        FleetDetail::create([
+            'fleet_id'   => $fleetId,
+            'warship_id' => config('constants.WARSHIPS.GALERA'),
+            'qty'        => 10,
         ]);
 
         $fleetId = Fleet::create([
@@ -70,6 +89,18 @@ class FleetSeeder extends Seeder
             'qty' => 567
         ]);
 
+        FleetDetail::create([
+            'fleet_id'   => $fleetId,
+            'warship_id' => config('constants.WARSHIPS.LUGGER'),
+            'qty'        => 5,
+        ]);
+
+        FleetDetail::create([
+            'fleet_id'   => $fleetId,
+            'warship_id' => config('constants.WARSHIPS.GALERA'),
+            'qty'        => 3,
+        ]);
+
         // try to move warships to not our island -> it should be returned to original island
         $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
@@ -86,6 +117,12 @@ class FleetSeeder extends Seeder
             'fleet_id' => $fleetId,
             'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
             'qty' => 123
+        ]);
+
+        FleetDetail::create([
+            'fleet_id'   => $fleetId,
+            'warship_id' => config('constants.WARSHIPS.GALERA'),
+            'qty'        => 5,
         ]);
 
         $fleetId = Fleet::create([
@@ -122,6 +159,35 @@ class FleetSeeder extends Seeder
             'deadline'       => $carbon::now()->addSeconds($time)
         ])->id;
 
+        // just for test, we can't send resources if we send fleet to attack
+        FleetResource::create([
+            'fleet_id' => $fleetId,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty' => 500
+        ]);
+        FleetResource::create([
+            'fleet_id' => $fleetId,
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty' => 600
+        ]);
+
+        // fleet details for attack
+        FleetDetail::create([
+            'fleet_id'   => $fleetId,
+            'warship_id' => config('constants.WARSHIPS.LUGGER'),
+            'qty'        => 10,
+        ]);
+        FleetDetail::create([
+            'fleet_id'   => $fleetId,
+            'warship_id' => config('constants.WARSHIPS.CARAVEL'),
+            'qty'        => 5,
+        ]);
+        FleetDetail::create([
+            'fleet_id'   => $fleetId,
+            'warship_id' => config('constants.WARSHIPS.GALERA'),
+            'qty'        => 2,
+        ]);
+
         FleetResource::create([
             'fleet_id' => $fleetId,
             'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
@@ -134,7 +200,7 @@ class FleetSeeder extends Seeder
         ]);
 
         // expedition
-        Fleet::create([
+        $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => null,
             'speed'          => 70,
@@ -143,10 +209,16 @@ class FleetSeeder extends Seeder
             'status_id'      => $statusExpeditionGoingToTarget->id,
             'time'           => $time,
             'deadline'       => $carbon::now()->addSeconds($time)
+        ])->id;
+
+        FleetDetail::create([
+            'fleet_id'   => $fleetId,
+            'warship_id' => config('constants.WARSHIPS.LUGGER'),
+            'qty'        => 10,
         ]);
 
         // expedition
-        Fleet::create([
+        $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => null,
             'speed'          => 70,
@@ -155,6 +227,12 @@ class FleetSeeder extends Seeder
             'status_id'      => $statusExpeditionGoingToTarget->id,
             'time'           => $time,
             'deadline'       => $carbon::now()->addSeconds($time)
+        ])->id;
+
+        FleetDetail::create([
+            'fleet_id'   => $fleetId,
+            'warship_id' => config('constants.WARSHIPS.LUGGER'),
+            'qty'        => 10,
         ]);
     }
 }

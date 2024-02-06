@@ -16,56 +16,64 @@ class ResourceSeeder extends Seeder
             'id'          => config('constants.RESOURCE_IDS.GOLD'),
             'title'       => 'Gold',
             'description' => 'Gold description',
-            'slug'        => 'gold'
+            'slug'        => 'gold',
+            'value'       => 1,
         ]);
 
         Resource::create([
             'id'          => config('constants.RESOURCE_IDS.POPULATION'),
             'title'       => 'Population',
             'description' => 'Population description',
-            'slug'        => 'population'
+            'slug'        => 'population',
+            'value'       => 3,
         ]);
 
         Resource::create([
             'id'          => config('constants.RESOURCE_IDS.LOG'),
             'title'       => 'Logs',
             'description' => 'Logs description',
-            'slug'        => 'log'
+            'slug'        => 'log',
+            'value'       => 10,
         ]);
 
         Resource::create([
             'id'          => config('constants.RESOURCE_IDS.PLANK'),
-            'title'       => 'Ore',
-            'description' => 'Ore description',
-            'slug'        => 'plank'
+            'title'       => 'Plank',
+            'description' => 'Plank description',
+            'slug'        => 'plank',
+            'value'       => 30,
         ]);
 
         Resource::create([
             'id'          => config('constants.RESOURCE_IDS.LUMBER'),
-            'title'       => 'Ore',
-            'description' => 'Ore description',
-            'slug'        => 'lumber'
+            'title'       => 'Lumber',
+            'description' => 'Lumber description',
+            'slug'        => 'lumber',
+            'value'       => 100,
         ]);
 
         Resource::create([
             'id'          => config('constants.RESOURCE_IDS.ORE'),
             'title'       => 'Ore',
             'description' => 'Ore description',
-            'slug'        => 'ore'
+            'slug'        => 'ore',
+            'value'       => 10,
         ]);
 
         Resource::create([
             'id'          => config('constants.RESOURCE_IDS.IRON'),
-            'title'       => 'Ore',
-            'description' => 'Ore description',
-            'slug'        => 'iron'
+            'title'       => 'Iron',
+            'description' => 'Iron description',
+            'slug'        => 'iron',
+            'value'       => 30,
         ]);
 
         Resource::create([
             'id'          => config('constants.RESOURCE_IDS.STEEL'),
-            'title'       => 'Ore',
-            'description' => 'Ore description',
-            'slug'        => 'steel'
+            'title'       => 'Steel',
+            'description' => 'Steel description',
+            'slug'        => 'steel',
+            'value'       => 100,
         ]);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\City;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
 use App\Models\Message;
+use App\Models\Resource;
 use App\Models\User;
 use App\Models\WarshipDictionary;
 
@@ -39,13 +40,13 @@ class ExpeditionService
             $user = User::find($city->user_id);
 
             Message::create([
-                'user_id' => $user->id,
-                'content' => 'Expedition Fleet found nothing.',
-                'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_NOTHING'),
-                'event_type' => 'Expedition',
+                'user_id'        => $user->id,
+                'content'        => 'Expedition Fleet found nothing.',
+                'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_NOTHING'),
+                'event_type'     => 'Expedition',
                 'archipelago_id' => $city->archipelago_id,
-                'coord_x' => $city->coord_x,
-                'coord_y' => $city->coord_y,
+                'coord_x'        => $city->coord_x,
+                'coord_y'        => $city->coord_y,
             ]);
         }
 
@@ -58,7 +59,8 @@ class ExpeditionService
         }
     }
 
-    public function gainResources(Fleet $fleet, $fleetDetails): void {
+    public function gainResources(Fleet $fleet, $fleetDetails): void
+    {
         $warshipsDictionary = WarshipDictionary::get();
 
         $fleetDetails = (new BattleService)->populateFleetDetailsWithCapacityAndHealth($fleetDetails, $warshipsDictionary);
@@ -66,29 +68,36 @@ class ExpeditionService
         $availableCapacity = (new BattleService)->getAvailableCapacity($fleet, $fleetDetails);
 
         if ($availableCapacity > 0) {
-            $goldAmount = random_int(1, $availableCapacity);
+            $resourcesDict = Resource::get()->toArray();
 
-            $fleet->increment('gold', $goldAmount);
+            // TODO: add coefficient for capacity depends on lucky, we can get small/medium/large amount of resources
+            $distributedResources = $this->distributeResources(floor($availableCapacity / 4), $resourcesDict);
 
-            dump('gain resources', $goldAmount);
+            dump($distributedResources, $availableCapacity);
+
+            foreach ($distributedResources as $resource) {
+                (new BattleService())->moveResourceToFleet($fleet, $resource);
+            }
 
             $city = City::find($fleet->city_id);
             $user = User::find($city->user_id);
 
+            // TODO: add message info about resources
             Message::create([
-                'user_id' => $user->id,
-                'content' => 'Expedition Fleet found resources.',
-                'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_RESOURCES'),
-                'gold' => $goldAmount,
-                'event_type' => 'Expedition',
+                'user_id'        => $user->id,
+                'content'        => 'Expedition Fleet found resources.',
+                'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_RESOURCES'),
+                /*'gold' => $goldAmount,*/
+                'event_type'     => 'Expedition',
                 'archipelago_id' => $city->archipelago_id,
-                'coord_x' => $city->coord_x,
-                'coord_y' => $city->coord_y,
+                'coord_x'        => $city->coord_x,
+                'coord_y'        => $city->coord_y,
             ]);
         }
     }
 
-    public function loseEntireFleet(Fleet $fleet, $fleetDetails): void {
+    public function loseEntireFleet(Fleet $fleet, $fleetDetails): void
+    {
         $fleet->delete();
 
         foreach ($fleetDetails as $fleetDetail) {
@@ -99,20 +108,21 @@ class ExpeditionService
         $user = User::find($city->user_id);
 
         Message::create([
-            'user_id' => $user->id,
-            'content' => 'Expedition Fleet was lost.',
-            'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_LOST'),
-            'event_type' => 'Expedition',
+            'user_id'        => $user->id,
+            'content'        => 'Expedition Fleet was lost.',
+            'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_LOST'),
+            'event_type'     => 'Expedition',
             'archipelago_id' => $city->archipelago_id,
-            'coord_x' => $city->coord_x,
-            'coord_y' => $city->coord_y,
+            'coord_x'        => $city->coord_x,
+            'coord_y'        => $city->coord_y,
         ]);
 
 
         dump('delete fleet');
     }
 
-    public function handleStormDamage(Fleet $fleet, $fleetDetails): void {
+    public function handleStormDamage(Fleet $fleet, $fleetDetails): void
+    {
         foreach ($fleetDetails as $fleetDetail) {
             $fleetDetail->update(['qty' => floor($fleetDetail['qty'] * 0.8)]);
 
@@ -128,27 +138,63 @@ class ExpeditionService
             $fleet->delete();
 
             Message::create([
-                'user_id' => $user->id,
-                'content' => 'Expedition Fleet was lost.',
-                'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_LOST'),
-                'event_type' => 'Expedition',
+                'user_id'        => $user->id,
+                'content'        => 'Expedition Fleet was lost.',
+                'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_LOST'),
+                'event_type'     => 'Expedition',
                 'archipelago_id' => $city->archipelago_id,
-                'coord_x' => $city->coord_x,
-                'coord_y' => $city->coord_y,
+                'coord_x'        => $city->coord_x,
+                'coord_y'        => $city->coord_y,
             ]);
         } else {
             // TODO: add info about damaged warships
             Message::create([
-                'user_id' => $user->id,
-                'content' => 'Expedition Fleet was caught in a storm. Some warships have been destroyed',
-                'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_STORM'),
-                'event_type' => 'Expedition',
+                'user_id'        => $user->id,
+                'content'        => 'Expedition Fleet was caught in a storm. Some warships have been destroyed',
+                'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_STORM'),
+                'event_type'     => 'Expedition',
                 'archipelago_id' => $city->archipelago_id,
-                'coord_x' => $city->coord_x,
-                'coord_y' => $city->coord_y,
+                'coord_x'        => $city->coord_x,
+                'coord_y'        => $city->coord_y,
             ]);
         }
 
         dump('handle storm damage');
+    }
+
+    public function distributeResources(int $availableCapacity, $resourceDictionaryArr)
+    {
+        // Step 1: Calculate Total Value of resources
+        $totalValue = array_reduce($resourceDictionaryArr, static function ($carry, $resource) {
+            return $carry + $resource['value'];
+        }, 0);
+
+        $qtyOfResources = count($resourceDictionaryArr);
+        $capacityForEachResource = $totalValue / $qtyOfResources; // 60 capacity / 3 = 20 capacity for each resource
+
+        // Step 2: Distribute Resources with capacity per each resource
+        $totalQty = 0;
+        $distributedResources = [];
+        foreach ($resourceDictionaryArr as $resource) {
+            $distributedQty         = ($capacityForEachResource / $resource['value']);
+            $distributedResources[] = [
+                'resource_id' => $resource['id'],
+                'qty'         => $distributedQty,
+            ];
+
+            $totalQty += $distributedQty;
+        }
+
+        // Step 3: Fill whole capacity with resources by multiplying qty by coefficient
+        $coefficient = $availableCapacity / $totalQty; // 60 / 30 = 2; - we multiply all distributed resources by 2
+
+        for ($i = 0, $iMax = count($distributedResources); $i < $iMax; $i++) {
+            $distributedResources[$i]['qty'] = floor($distributedResources[$i]['qty'] * $coefficient);
+        }
+
+        // Step 4: Add some changes not to get resource
+        // TODO: use rand for qty? Depends on value, bigger value - less coefficient for rand
+
+        return $distributedResources;
     }
 }

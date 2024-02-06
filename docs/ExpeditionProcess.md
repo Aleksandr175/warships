@@ -6,17 +6,32 @@ We send fleet with expedition task.
 We don't need to select coordinates
 Fleet goes to unknown islands.
 
-After fleet arrives to unknown place and fleet should wait for 10 minutes. 
+After fleet arrives to unknown place and fleet should wait for 10 minutes.
 After that fleet gets 1 of 4 options and returns back to the original city.
 
 Fleet with that task can repeat its task if we set so while sending that fleet.
 
 ### Expedition Result
+
 #### Getting gold 75% chance
 
 Fleet gets gold by formula:
 
-$gold = random_int(1, $availableCapacity);
+$availableCapacity - 25% of available capacity of whole fleet (percent can be different - in the future)
+
+$totalValue - total value of all resource in dictionary
+
+$qtyOfResources - number of resources in dictionary
+
+$capacityForEachResource = $totalValue / $qtyOfResources;
+
+$distributedQty = ($capacityForEachResource / $resource['value']);
+
+If we have move space after distributing we can fill whole capacity by multiplying qty by coefficient
+
+$coefficient = $availableCapacity / $totalQty;
+
+We should multiply Qty of each resources by this coefficient. 
 
 We can't get more than we can carry.
 
@@ -41,4 +56,5 @@ We loose whole fleet with all fleet details.
 ### Future Updates
 
 - we can found something in expedition, like some boosters
-  - for attack, health, speed
+    - for attack, health, speed
+- different coefficient for capacity (small 25%/medium 50%/large 100%)

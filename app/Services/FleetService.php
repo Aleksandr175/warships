@@ -550,16 +550,11 @@ class FleetService
                     $city         = City::find($fleet->city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
 
-                    // TODO: get all new resources and transfer it to city
-                    $resource = FleetResource::where('fleet_id', $fleet->id)->where('resource_id', config('constants.RESOURCE_IDS.GOLD'))->first();
-                    if ($resource) {
-                        $this->addResourceToCity($city->id, config('constants.RESOURCE_IDS.GOLD'), $resource->qty);
-                    }
+                    $this->moveResourcesFromFleetToCity($fleet, $city);
 
                     if ($fleet->repeating) {
                         dump('expedition: fleet repeats expedition task, going to target');
                         // just repeat task
-                        $gold     = 0;
                         $statusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_TO_TARGET');
                         // TODO: how long? // distance?
                         $deadline = Carbon::create($fleet->deadline)->addSecond(10);
@@ -707,7 +702,7 @@ class FleetService
     public function addResourceToFleet(Fleet $fleet, int $resourceId, int $qty): void
     {
         $resource = FleetResource::where('fleet_id', $fleet->id)->where('resource_id', $resourceId)->first();
-        dump('RESOURCE:', $resource->resource_id, $resource->qty);
+
         if ($resource) {
             $resource->increment('qty', $qty);
         } else {

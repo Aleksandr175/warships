@@ -24,7 +24,6 @@ class FleetService
     private $cityId              = null;
     private $coordX              = null;
     private $coordY              = null;
-    private $gold                = null;
     private $fleetDetails        = [];
     private $updatedFleetDetails = [];
     private $repeating           = false;
@@ -33,6 +32,7 @@ class FleetService
     private $targetCity          = null;
     private $taskTypeId          = null;
     private $type                = null;
+    private $resources           = [];
 
     // send fleet to target
     public function send($params, $user)
@@ -40,7 +40,6 @@ class FleetService
         $this->cityId              = $params->cityId;
         $this->coordX              = $params->coordX;
         $this->coordY              = $params->coordY;
-        $this->gold                = $params->gold;
         $this->fleetDetails        = $params->fleetDetails;
         $this->repeating           = $params->repeating ? 1 : 0;
         $this->taskTypeSlug        = $params->taskType;
@@ -131,10 +130,6 @@ class FleetService
         // TODO: add speed param for time
         $timeToTarget = 10; // in seconds
 
-        if (($this->gold && !is_numeric($this->gold))) {
-            return 'Wrong gold number';
-        }
-
         $cityResources          = $userCity->resources;
         $resourcesDict          = Resource::get();
         $wholeAmountOfResources = 0;
@@ -206,10 +201,11 @@ class FleetService
                 foreach ($cityResources as $cityResource) {
                     if ($resourceId === $cityResource->resource_id) {
                         // check max available qty we can transfer to fleet
-                        $maxQty = $resourceAmount;
+                        $maxQty    = floor((int)$resourceAmount);
+                        $qtyInCity = floor($cityResource->qty);
 
-                        if ($maxQty > $cityResource->qty) {
-                            $maxQty = $cityResource->qty;
+                        if ($maxQty > $qtyInCity) {
+                            $maxQty = $qtyInCity;
                         }
 
                         FleetResource::create([
@@ -326,8 +322,8 @@ class FleetService
     {
         // only if deadline is expired
         if ($fleet->deadline < Carbon::now()) {
-            $statusId = null;
-            $deadline = null;
+            $statusId          = null;
+            $deadline          = null;
             $repeating         = null;
             $shouldDeleteFleet = false;
 
@@ -373,7 +369,7 @@ class FleetService
                     $fleetDetails      = (new BattleService)->populateFleetDetailsWithCapacityAndHealth($fleetDetails, $warshipsDictionary);
                     $availableCapacity = (new BattleService)->getAvailableCapacity($fleet, $fleetDetails);
 
-                    $gold = floor($availableCapacity * 0.1);
+                    $gold          = floor($availableCapacity * 0.1);
                     $goldForIsland = floor($gold / 2);
                     $this->addResourceToFleet($fleet, config('constants.RESOURCE_IDS.GOLD'), $gold);
 
@@ -714,7 +710,8 @@ class FleetService
         }
     }
 
-    public function moveResourcesFromFleetToCity(Fleet $fleet, City $city): void {
+    public function moveResourcesFromFleetToCity(Fleet $fleet, City $city): void
+    {
         $resources = FleetResource::where('fleet_id', $fleet->id)->get();
 
         foreach ($resources as $resource) {

@@ -67,7 +67,7 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
   };
 
   const sendFleetToExpedition = () => {
-    navigate(`/fleets?taskType=expedition`);
+    navigate(`/sending-fleets?taskType=expedition`);
   };
 
   const isFleetMovingToIsland = (cityId: number | undefined): boolean => {

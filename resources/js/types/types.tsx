@@ -28,8 +28,7 @@ export interface IMapCity {
   coordX: number;
   coordY: number;
   raided?: boolean;
-  gold?: number;
-  population?: number;
+  resources: ICityResource[];
 }
 
 export interface IResourceDictionary {

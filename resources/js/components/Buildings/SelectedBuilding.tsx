@@ -191,6 +191,7 @@ export const SelectedBuilding = ({
           )}
         </div>
         <div>
+          {/* TODO: change it to new resources */}
           {(getProductionResource("gold") ||
             getProductionResource("population")) && <SText>It provides:</SText>}
           <SParams>

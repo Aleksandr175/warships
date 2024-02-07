@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Adventure;
 use App\Models\Archipelago;
 use App\Models\City;
+use App\Models\CityResource;
+use App\Models\Resource;
 
 class CityService
 {
@@ -13,61 +15,182 @@ class CityService
         // TODO: add improved logic for calculation power of islands for adventure
         // change resources
         $adventureLvl = $adventure->adventure_level;
-        $baseAmount = (1.12 ** $adventureLvl * 500);
+        $baseAmount   = (1.12 ** $adventureLvl * 500);
 
-        City::create([
+        $resources   = Resource::get();
+        $baseAmounts = [];
+
+        foreach ($resources as $resource) {
+            $baseAmounts[$resource->id] = $baseAmount * (1 / $resource->value);
+        }
+
+        $city = City::create([
             'title'              => 'Empty Island',
             'adventure_id'       => $adventure->id,
             'city_dictionary_id' => config('constants.CITY_TYPE_ID.ADVENTURE_EMPTY'),
             'archipelago_id'     => $archipelago->id,
             'coord_x'            => 2,
             'coord_y'            => 2,
-            'gold'               => random_int($baseAmount / 100, $baseAmount / 10),
-            'population'         => 0
         ]);
 
-        City::create([
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'         => random_int($baseAmount / 100, $baseAmount / 10)
+        ]);
+
+        $city = City::create([
             'title'              => 'Village',
             'adventure_id'       => $adventure->id,
             'city_dictionary_id' => config('constants.CITY_TYPE_ID.ADVENTURE_VILLAGE'),
             'archipelago_id'     => $archipelago->id,
             'coord_x'            => 3,
             'coord_y'            => 4,
-            'gold'               => random_int($baseAmount / 3, $baseAmount),
-            'population'         => random_int($baseAmount / 10, $baseAmount / 3)
         ]);
 
-        City::create([
+        $coefficient = 0.5;
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'         => random_int($baseAmounts[config('constants.RESOURCE_IDS.GOLD')] * $coefficient / 2, $baseAmounts[config('constants.RESOURCE_IDS.GOLD')] * $coefficient),
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'         => random_int($baseAmounts[config('constants.RESOURCE_IDS.POPULATION')] * $coefficient / 2, $baseAmounts[config('constants.RESOURCE_IDS.POPULATION')] * $coefficient)
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.LOG'),
+            'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.LOG')] * $coefficient)
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.IRON'),
+            'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.IRON')] * $coefficient)
+        ]);
+
+        $city = City::create([
             'title'              => 'Rich City',
             'adventure_id'       => $adventure->id,
             'city_dictionary_id' => config('constants.CITY_TYPE_ID.ADVENTURE_RICH_CITY'),
             'archipelago_id'     => $archipelago->id,
             'coord_x'            => 5,
             'coord_y'            => 4,
-            'gold'               => random_int($baseAmount, $baseAmount * 2),
-            'population'         => random_int($baseAmount / 3, $baseAmount / 2)
         ]);
 
-        City::create([
+        $coefficient = 2;
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'         => random_int($baseAmounts[config('constants.RESOURCE_IDS.GOLD')] * $coefficient / 2, $baseAmounts[config('constants.RESOURCE_IDS.GOLD')] * $coefficient),
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'         => random_int($baseAmounts[config('constants.RESOURCE_IDS.POPULATION')] * $coefficient / 2, $baseAmounts[config('constants.RESOURCE_IDS.POPULATION')] * $coefficient)
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.LOG'),
+            'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.LOG')] * $coefficient)
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.PLANK'),
+            'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.PLANK')] * $coefficient)
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.ORE'),
+            'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.ORE')] * $coefficient)
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.IRON'),
+            'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.IRON')] * $coefficient)
+        ]);
+
+        $city = City::create([
             'title'              => 'Pirate Bay',
             'adventure_id'       => $adventure->id,
             'city_dictionary_id' => config('constants.CITY_TYPE_ID.ADVENTURE_PIRATE_BAY'),
             'archipelago_id'     => $archipelago->id,
             'coord_x'            => 2,
             'coord_y'            => 4,
-            'gold'               => random_int($baseAmount / 2, $baseAmount),
-            'population'         => random_int($baseAmount / 5, $baseAmount / 3)
         ]);
 
-        City::create([
-            'title'              => 'Village',
+        $coefficient = 1;
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'         => random_int($baseAmounts[config('constants.RESOURCE_IDS.GOLD')] * $coefficient / 2, $baseAmounts[config('constants.RESOURCE_IDS.GOLD')] * $coefficient),
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'         => random_int($baseAmounts[config('constants.RESOURCE_IDS.POPULATION')] * $coefficient / 2, $baseAmounts[config('constants.RESOURCE_IDS.POPULATION')] * $coefficient)
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.LOG'),
+            'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.LOG')] * $coefficient)
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.ORE'),
+            'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.ORE')] * $coefficient)
+        ]);
+
+        $city = City::create([
+            'title'              => 'Treasure Island',
             'adventure_id'       => $adventure->id,
             'city_dictionary_id' => config('constants.CITY_TYPE_ID.ADVENTURE_TREASURE'),
             'archipelago_id'     => $archipelago->id,
             'coord_x'            => 1,
             'coord_y'            => 3,
-            'gold'               => random_int($baseAmount * 2, $baseAmount * 3),
-            'population'         => 0
+        ]);
+
+        $coefficient = 3;
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'         => random_int($baseAmounts[config('constants.RESOURCE_IDS.GOLD')] * $coefficient / 2, $baseAmounts[config('constants.RESOURCE_IDS.GOLD')] * $coefficient),
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.LOG'),
+            'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.LOG')] * $coefficient)
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.PLANK'),
+            'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.PLANK')] * $coefficient)
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.ORE'),
+            'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.ORE')] * $coefficient)
+        ]);
+
+        CityResource::create([
+            'city_id'     => $city->id,
+            'resource_id' => config('constants.RESOURCE_IDS.IRON'),
+            'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.IRON')] * $coefficient)
         ]);
     }
 }

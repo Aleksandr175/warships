@@ -15,7 +15,6 @@ class CityResourceV2Resource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'         => $this->id,
             'cityId'     => $this->city_id,
             'resourceId' => $this->resource_id,
             'qty'        => $this->qty

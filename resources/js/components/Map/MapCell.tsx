@@ -11,6 +11,8 @@ import {
 } from "../styles";
 import { FleetWarships } from "../Common/FleetWarships";
 import { useNavigate } from "react-router-dom";
+import { getResourceSlug } from "../../utils";
+import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 
 interface IProps {
   city: IMapCity | undefined;
@@ -33,8 +35,15 @@ export const MapCell = ({
   mapType,
 }: IProps) => {
   const navigate = useNavigate();
+  const queryDictionaries = useFetchDictionaries();
+
+  const dictionaries = queryDictionaries.data;
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+  if (!dictionaries) {
+    return <></>;
+  }
 
   return (
     <SCell isHabited={isCity}>
@@ -50,14 +59,21 @@ export const MapCell = ({
                 {isAdventure && (
                   <SInfoWrapper>
                     <SResources>
-                      <SResource>
-                        <Icon title="gold" />
-                        {Math.floor(Number(city.gold))}
-                      </SResource>
-                      <SResource>
-                        <Icon title="worker" />
-                        {city.population}
-                      </SResource>
+                      {city.resources
+                        .filter((resource) => resource.qty > 0)
+                        .map((resource) => {
+                          return (
+                            <SResource key={resource.resourceId}>
+                              <Icon
+                                title={getResourceSlug(
+                                  dictionaries.resourcesDictionary,
+                                  resource.resourceId
+                                )}
+                              />
+                              {resource.qty}
+                            </SResource>
+                          );
+                        })}
                     </SResources>
 
                     {warships && warships.length > 0 && (
@@ -76,7 +92,7 @@ export const MapCell = ({
                       className={"btn btn-primary"}
                       onClick={() => {
                         navigate(
-                          `/fleets?coordX=${city?.coordX}&coordY=${city?.coordY}&taskType=attack&type=${mapType}`
+                          `/sending-fleets?coordX=${city?.coordX}&coordY=${city?.coordY}&taskType=attack&type=${mapType}`
                         );
                       }}
                     >
@@ -88,7 +104,7 @@ export const MapCell = ({
                         className={"btn btn-primary"}
                         onClick={() => {
                           navigate(
-                            `/fleets?coordX=${city?.coordX}&coordY=${city?.coordY}&taskType=move&type=${mapType}`
+                            `/sending-fleets?coordX=${city?.coordX}&coordY=${city?.coordY}&taskType=move&type=${mapType}`
                           );
                         }}
                       >
@@ -98,7 +114,7 @@ export const MapCell = ({
                         className={"btn btn-primary"}
                         onClick={() => {
                           navigate(
-                            `/fleets?coordX=${city?.coordX}&coordY=${city?.coordY}&taskType=transport&type=${mapType}`
+                            `/sending-fleets?coordX=${city?.coordX}&coordY=${city?.coordY}&taskType=transport&type=${mapType}`
                           );
                         }}
                       >

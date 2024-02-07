@@ -23,9 +23,8 @@ class MapAdventureCityResource extends JsonResource
             'title'            => $this->title,
             'coordX'           => $this->coord_x,
             'coordY'           => $this->coord_y,
-            'gold'             => $this->gold,
-            'population'       => $this->population,
             'raided'           => $this->raided,
+            'resources'        => CityResourceV2Resource::collection($this->resources)
         ];
     }
 }

@@ -19,7 +19,7 @@ class BuildingProductionsResource extends JsonResource
             'id'         => $this->id,
             'buildingId' => $this->building_id,
             'lvl'        => $this->lvl,
-            'resource'   => $this['resource'],
+            'resourceId' => $this->resource_id,
             'qty'        => $this->qty
         ];
     }

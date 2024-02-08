@@ -9,6 +9,7 @@ export interface ICity {
   coordX: number;
   coordY: number;
   resources: ICityResource[];
+  resourcesProductionCoefficient: ICityProductionCoefficient[];
 }
 
 export interface ICityShort {
@@ -17,6 +18,12 @@ export interface ICityShort {
   archipelagoId: number;
   coordX: number;
   coordY: number;
+}
+
+export interface ICityProductionCoefficient {
+  cityId: number;
+  resourceId: number;
+  coefficient: number;
 }
 
 export interface IMapCity {
@@ -188,10 +195,11 @@ export interface IUserResearch {
 }
 
 export interface IBuildingsProduction {
+  id: number;
   buildingId: number;
+  resourceId: number;
   lvl: number;
   qty: number;
-  resource: string;
 }
 
 export interface IProductions {

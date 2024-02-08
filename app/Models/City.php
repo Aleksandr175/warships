@@ -78,4 +78,8 @@ class City extends Model
     {
         return $this->hasOne(CityResource::class)->where('resource_id', $resourceId)->first();
     }
+
+    public function resourcesProductionCoefficient() {
+        return $this->hasMany(CityResourcesProductionCoefficient::class);
+    }
 }

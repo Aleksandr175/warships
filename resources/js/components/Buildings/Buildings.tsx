@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  ICity,
   ICityBuilding,
   ICityBuildingQueue,
   ICityResource,
@@ -13,7 +14,7 @@ import { SelectedBuilding } from "./SelectedBuilding";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 
 interface IProps {
-  cityId: number;
+  city: ICity;
   updateCityResources: (cityResources: ICityResource[]) => void;
   cityResources: ICityResource[];
   buildings: ICityBuilding[] | undefined;
@@ -28,7 +29,7 @@ export const Buildings = ({
   buildings,
   setBuildings,
   getBuildings,
-  cityId,
+  city,
   updateCityResources,
   cityResources,
   queue,
@@ -103,7 +104,7 @@ export const Buildings = ({
           setBuildings={setBuildings}
           cityResources={cityResources}
           getLvl={getLvl}
-          cityId={cityId}
+          city={city}
           updateCityResources={updateCityResources}
           setQueue={setQueue}
           researches={researches}

@@ -20,7 +20,7 @@ class UserResource extends JsonResource
             'name'   => $this->name,
             'email'  => $this->email,
             'userId' => $this->id,
-            'cities' => CityResource::collection($this->cities->load('resources')),
+            'cities' => CityResource::collection($this->cities->load('resources', 'resourcesProductionCoefficient')),
         ];
     }
 }

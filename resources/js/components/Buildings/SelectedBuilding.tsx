@@ -8,6 +8,7 @@ import { httpClient } from "../../httpClient/httpClient";
 import {
   IBuilding,
   IBuildingResource,
+  ICity,
   ICityBuilding,
   ICityBuildingQueue,
   ICityResource,
@@ -18,7 +19,7 @@ import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 
 interface IProps {
   selectedBuildingId: number;
-  cityId: number;
+  city: ICity;
   updateCityResources: (cityResources: ICityResource[]) => void;
   cityResources: ICityResource[];
   buildings: ICityBuilding[] | undefined;
@@ -34,7 +35,7 @@ export const SelectedBuilding = ({
   selectedBuildingId,
   buildings,
   setBuildings,
-  cityId,
+  city,
   updateCityResources,
   cityResources,
   queue,
@@ -67,7 +68,7 @@ export const SelectedBuilding = ({
   const run = (buildingId: number) => {
     httpClient
       .post("/build", {
-        cityId,
+        cityId: city.id,
         buildingId,
       })
       .then((response) => {
@@ -80,7 +81,7 @@ export const SelectedBuilding = ({
   const cancel = (buildingId: number) => {
     httpClient
       .post("/build/" + buildingId + "/cancel", {
-        cityId,
+        cityId: city.id,
       })
       .then((response) => {
         setBuildings(response.data.buildings);
@@ -132,20 +133,13 @@ export const SelectedBuilding = ({
     return false;
   };
 
-  // TODO: refactor it?
-  const getProductionResource = (resource: "population" | "gold") => {
-    const production = dictionaries?.buildingsProduction?.find(
-      (bProduction) => {
-        return (
-          bProduction.buildingId === selectedBuildingId &&
-          bProduction.lvl === nextLvl &&
-          bProduction.resource === resource
-        );
-      }
+  // production of next lvl building
+  const production = dictionaries?.buildingsProduction.filter((bProduction) => {
+    return (
+      bProduction.buildingId === selectedBuildingId &&
+      bProduction.lvl === nextLvl
     );
-
-    return production?.qty;
-  };
+  });
 
   if (!dictionaries) {
     return null;
@@ -191,27 +185,33 @@ export const SelectedBuilding = ({
           )}
         </div>
         <div>
-          {/* TODO: change it to new resources */}
-          {(getProductionResource("gold") ||
-            getProductionResource("population")) && <SText>It provides:</SText>}
-          <SParams>
-            {getProductionResource("gold") ? (
-              <SParam>
-                <Icon title={"gold"} />
-                {getProductionResource("gold")}
-              </SParam>
-            ) : (
-              ""
-            )}
-            {getProductionResource("population") ? (
-              <SParam>
-                <Icon title={"worker"} />
-                {getProductionResource("population")}
-              </SParam>
-            ) : (
-              ""
-            )}
-          </SParams>
+          {production && production.length > 0 && (
+            <>
+              <SText>It provides:</SText>
+
+              <SParams>
+                {production.map((bProduction) => {
+                  const coefficient =
+                    city?.resourcesProductionCoefficient?.find(
+                      (production) =>
+                        production.resourceId === bProduction.resourceId
+                    )?.coefficient || 1;
+
+                  return (
+                    <SParam>
+                      <Icon
+                        title={getResourceSlug(
+                          dictionaries.resourcesDictionary,
+                          bProduction.resourceId
+                        )}
+                      />
+                      {bProduction.qty * coefficient}
+                    </SParam>
+                  );
+                })}
+              </SParams>
+            </>
+          )}
 
           {hasRequirements("building", selectedBuildingId, nextLvl) && (
             <>

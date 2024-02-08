@@ -15,9 +15,7 @@ class CityFactory extends Factory
     {
         return [
             'city_dictionary_id' => 1,
-            'title' => 'Island',
-            'gold' => 100,
-            'population' => 50
+            'title'              => 'Island',
         ];
     }
 }

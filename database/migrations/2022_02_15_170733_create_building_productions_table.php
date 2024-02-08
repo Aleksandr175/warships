@@ -20,7 +20,8 @@ class CreateBuildingProductionsTable extends Migration
             $table->foreign('building_id')->references('id')->on('buildings');
 
             $table->integer('lvl')->default(1);
-            $table->string('resource', 50);
+
+            $table->integer('resource_id');
 
             $table->integer('qty')->default(0);
 

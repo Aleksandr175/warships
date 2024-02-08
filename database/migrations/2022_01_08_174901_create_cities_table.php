@@ -27,9 +27,6 @@ class CreateCitiesTable extends Migration
 
             $table->integer('appearance_id')->default(1);
 
-            $table->float('gold')->default(0); // TODO: get rid of it, it should be string? or not?
-            $table->integer('population')->default(0);
-
             $table->smallInteger('raided')->default(0); // 1 | 0, used for adventure islands
 
             $table->foreign('city_dictionary_id')->references('id')->on('city_dictionary')->onDelete('cascade')->onUpdate('cascade');

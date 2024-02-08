@@ -183,7 +183,7 @@ const App = () => {
                     path={"buildings"}
                     element={
                       <Buildings
-                        cityId={city.id}
+                        city={city}
                         updateCityResources={updateCityResources}
                         cityResources={city.resources}
                         getBuildings={getBuildings}

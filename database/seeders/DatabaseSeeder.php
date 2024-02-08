@@ -55,20 +55,30 @@ class DatabaseSeeder extends Seeder
             'archipelago_id' => 1,
             'coord_x'        => 3,
             'coord_y'        => 3,
-            'gold'           => 2000,
-            'population'     => 700
         ]);
 
-        \App\Models\City::factory(1)->create([
-            'id'                 => config('constants.DEFAULT_USER_CITY_ID_2'),
-            'user_id'            => config('constants.DEFAULT_USER_ID'),
-            'title'              => 'Volcano',
-            'archipelago_id'     => 1,
-            'coord_x'            => 3,
-            'coord_y'            => 5,
-            'gold'               => 1500,
-            'population'         => 300,
-            'city_dictionary_id' => config('constants.CITY_TYPE_ID.COLONY')
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => config('constants.DEFAULT_USER_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'coefficient' => 1
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => config('constants.DEFAULT_USER_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'coefficient' => 1
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => config('constants.DEFAULT_USER_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.LOG'),
+            'coefficient' => 0.1
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => config('constants.DEFAULT_USER_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.ORE'),
+            'coefficient' => 0.1
         ]);
 
         \App\Models\CityResource::create([
@@ -87,6 +97,16 @@ class DatabaseSeeder extends Seeder
             'city_id'     => config('constants.DEFAULT_USER_CITY_ID'),
             'resource_id' => config('constants.RESOURCE_IDS.LOG'),
             'qty'         => 200
+        ]);
+
+        \App\Models\City::factory(1)->create([
+            'id'                 => config('constants.DEFAULT_USER_CITY_ID_2'),
+            'user_id'            => config('constants.DEFAULT_USER_ID'),
+            'title'              => 'Volcano',
+            'archipelago_id'     => 1,
+            'coord_x'            => 3,
+            'coord_y'            => 5,
+            'city_dictionary_id' => config('constants.CITY_TYPE_ID.COLONY')
         ]);
 
         \App\Models\CityResource::create([
@@ -113,8 +133,6 @@ class DatabaseSeeder extends Seeder
             'archipelago_id' => 2,
             'coord_x'        => 4,
             'coord_y'        => 4,
-            'gold'           => 1500,
-            'population'     => 300
         ]);
 
         \App\Models\CityResource::create([
@@ -129,7 +147,7 @@ class DatabaseSeeder extends Seeder
             'qty'         => 400
         ]);
 
-        // TODO: Change coordinates
+        // TODO: Change coordinates, fix this seeder
         for ($i = 0; $i < 150; $i++) {
             $archipelago = \App\Models\Archipelago::create([
                 'type' => 'usual'
@@ -141,8 +159,6 @@ class DatabaseSeeder extends Seeder
                 'archipelago_id' => $archipelago->id,
                 'coord_x'        => 3,
                 'coord_y'        => 3,
-                'gold'           => 500,
-                'population'     => 300
             ]);
         }
 
@@ -155,8 +171,6 @@ class DatabaseSeeder extends Seeder
             'archipelago_id'     => 1,
             'coord_x'            => 2,
             'coord_y'            => 1,
-            'gold'               => 2000,
-            'population'         => 500
         ]);
 
         \App\Models\CityResource::create([
@@ -187,8 +201,6 @@ class DatabaseSeeder extends Seeder
             'coord_x'            => 4,
             'coord_y'            => 2,
             'appearance_id'      => 3,
-            'gold'               => 2000,
-            'population'         => 700
         ]);
 
         \App\Models\City::factory(1)->create([
@@ -199,8 +211,6 @@ class DatabaseSeeder extends Seeder
             'coord_x'            => 5,
             'coord_y'            => 3,
             'appearance_id'      => 3,
-            'gold'               => 2000,
-            'population'         => 700
         ]);
 
         \App\Models\City::factory(1)->create([
@@ -211,8 +221,6 @@ class DatabaseSeeder extends Seeder
             'coord_x'            => 1,
             'coord_y'            => 4,
             'appearance_id'      => 4,
-            'gold'               => 2000,
-            'population'         => 700
         ]);
 
         $this->call(BuildingDictionarySeeder::class);

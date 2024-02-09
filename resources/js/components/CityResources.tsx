@@ -2,16 +2,51 @@ import React, { useRef } from "react";
 import { ICityResources } from "../types/types";
 import { Icon } from "./Common/Icon";
 import styled from "styled-components";
-import { getResourceSlug } from "../utils";
+import { getCityResourceProductionCoefficient } from "../utils";
 import { useFetchDictionaries } from "../hooks/useFetchDictionaries";
 
 export const CityResources = ({
-  productions,
+  buildings,
   cityResources,
+  city,
 }: ICityResources) => {
   const queryDictionaries = useFetchDictionaries();
 
   const dictionaries = queryDictionaries.data;
+
+  const getProduction = (resourceId: number): number => {
+    // find building which produces resourceId
+    const buildingId =
+      dictionaries?.buildingsProduction.find((bProduction) => {
+        return bProduction.resourceId === resourceId;
+      })?.buildingId || 0;
+
+    if (buildingId) {
+      // get lvl of building we have in city
+      const lvl = buildings?.find(
+        (building) => building.buildingId === buildingId
+      )?.lvl;
+
+      if (lvl) {
+        const coefficient = getCityResourceProductionCoefficient(
+          city,
+          resourceId
+        );
+
+        const production =
+          dictionaries?.buildingsProduction.find(
+            (bProduction) =>
+              bProduction.buildingId === buildingId &&
+              bProduction.resourceId === resourceId &&
+              bProduction.lvl === lvl
+          )?.qty || 0;
+
+        return production * coefficient;
+      }
+    }
+
+    return 0;
+  };
 
   const timer = useRef<NodeJS.Timeout | null>(null);
 
@@ -68,13 +103,13 @@ export const CityResources = ({
           (cityResource) => cityResource.resourceId === resource.id
         );
 
+        const production = getProduction(resource.id);
+
         return (
           <SResource key={resource.id}>
             <Icon title={resourceSlug} />
             {Math.floor(cityResource?.qty || 0)}{" "}
-            {productions[resourceSlug]?.qty > 0 && (
-              <SProduction>+{productions[resourceSlug]?.qty}</SProduction>
-            )}
+            {production > 0 && <SProduction>+{production}</SProduction>}
           </SResource>
         );
       })}

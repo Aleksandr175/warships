@@ -1,6 +1,6 @@
 # Expedition
 
-### Expedition process
+## Expedition process
 
 We send fleet with expedition task.
 We don't need to select coordinates
@@ -11,9 +11,9 @@ After that fleet gets 1 of 4 options and returns back to the original city.
 
 Fleet with that task can repeat its task if we set so while sending that fleet.
 
-### Expedition Result
+## Expedition Result
 
-#### Getting gold 75% chance
+### Getting gold 75% chance
 
 Fleet gets gold by formula:
 
@@ -35,7 +35,7 @@ We should multiply Qty of each resources by this coefficient.
 
 We can't get more than we can carry.
 
-#### Storm 4% chance
+### Storm 4% chance
 
 During storm, we loose 20% of each fleet detail in our Fleet.
 
@@ -45,15 +45,15 @@ Formula is:
 
 $fleetDetail->update(['qty' => floor($fleetDetail['qty'] * 0.8)]);
 
-#### Nothing 20% chance
+### Nothing 20% chance
 
 Nothing happened during expedition.
 
-#### Lost whole fleet 1% chance
+### Lost whole fleet 1% chance
 
 We loose whole fleet with all fleet details.
 
-### Future Updates
+## Future Updates
 
 - we can found something in expedition, like some boosters
     - for attack, health, speed

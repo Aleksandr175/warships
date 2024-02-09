@@ -1,7 +1,11 @@
 import { Card } from "../Common/Card";
 import { SButtonsBlock, SH2, SParam, SParams, SText } from "../styles";
 import { Icon } from "../Common/Icon";
-import { convertSecondsToTime, getResourceSlug } from "../../utils";
+import {
+  convertSecondsToTime,
+  getCityResourceProductionCoefficient,
+  getResourceSlug,
+} from "../../utils";
 import React from "react";
 import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
@@ -191,11 +195,10 @@ export const SelectedBuilding = ({
 
               <SParams>
                 {production.map((bProduction) => {
-                  const coefficient =
-                    city?.resourcesProductionCoefficient?.find(
-                      (production) =>
-                        production.resourceId === bProduction.resourceId
-                    )?.coefficient || 1;
+                  const coefficient = getCityResourceProductionCoefficient(
+                    city,
+                    bProduction.resourceId
+                  );
 
                   return (
                     <SParam>

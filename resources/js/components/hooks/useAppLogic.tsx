@@ -33,8 +33,6 @@ export const useAppLogic = () => {
   const [fleetDetails, setFleetDetails] = useState<IFleetWarshipsData[]>();
   const [fleetCitiesDictionary, setFleetCitiesDictionary] =
     useState<IMapCity[]>();
-  const [resourcesDictionary, setResourcesDictionary] =
-    useState<IResourceDictionary[]>();
 
   const [queue, setQueue] = useState<ICityBuildingQueue>();
   const [queueWarship, setQueueWarship] = useState<ICityWarshipQueue[]>();
@@ -99,7 +97,6 @@ export const useAppLogic = () => {
         setUserId(response.data.data.userId);
 
         setUnreadMessagesNumber(respDictionary.data.unreadMessagesNumber);
-        setResourcesDictionary(respDictionary.data.resourcesDictionary);
 
         setWebsockets(response.data.data.userId);
         setIsLoading(false);
@@ -192,22 +189,6 @@ export const useAppLogic = () => {
     });
   };
 
-  const getProductions = (): IProductions => {
-    const productions = {} as IProductions;
-
-    buildings?.forEach((building) => {
-      const production = dictionaries?.buildingsProduction?.find(
-        (bp) => bp.buildingId === building.buildingId && bp.lvl === building.lvl
-      );
-
-      if (production) {
-        productions[production.resource] = production;
-      }
-    });
-
-    return productions;
-  };
-
   const selectCity = (c: ICity) => {
     setCity(c);
   };
@@ -227,7 +208,6 @@ export const useAppLogic = () => {
     cities,
     selectCity,
     cityResources,
-    getProductions,
     fleets,
     fleetCitiesDictionary,
     fleetsIncoming,
@@ -250,6 +230,5 @@ export const useAppLogic = () => {
     getResearches,
     logout,
     unreadMessagesNumber,
-    resourcesDictionary,
   };
 };

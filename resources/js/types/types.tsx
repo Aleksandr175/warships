@@ -47,8 +47,8 @@ export interface IResourceDictionary {
 
 export interface ICityResources {
   cityResources?: ICityResource[];
-  resourcesDictionary?: IResourceDictionary[];
-  productions: IProductions;
+  buildings: ICityBuilding[] | undefined;
+  city: ICity;
 }
 
 export interface ICityResource {

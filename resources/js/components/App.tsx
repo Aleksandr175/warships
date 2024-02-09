@@ -46,12 +46,10 @@ const App = () => {
     fleetDetails,
     fleetCitiesDictionary,
     fleetsIncoming,
-    getProductions,
     dictionaries,
     userId,
     logout,
     unreadMessagesNumber,
-    resourcesDictionary,
   } = useAppLogic();
 
   if (isLoading) {
@@ -168,7 +166,8 @@ const App = () => {
                   <SColumn>
                     <CityResources
                       cityResources={cityResources!}
-                      productions={getProductions()}
+                      buildings={buildings}
+                      city={city}
                     />
                   </SColumn>
                 </div>

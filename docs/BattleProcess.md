@@ -2,7 +2,7 @@
 
 2 side of battle: attacker (A) & defender (D).
 
-### Shooting logic
+## Shooting logic
 If A and D together has warships - we can have new round.
 
 Each round we calculate attack force for each side.
@@ -20,7 +20,7 @@ $defendingDamageToEachType = $defendingForce / count($attackingFleetDetails);
 
 If we have A dealt 1000 damage, and D has 5 type of warships -> it means each type of warship on D side will get 200 damage.
 
-#### Shot function:
+### Shot function:
 We calculate whole health of warship type
 
 $wholeHealth = warshipsQty * warshipsHealth;
@@ -32,17 +32,17 @@ If warship qty is 0 -> means we don't have this type of warship anymore.
 
 We log every shoot.
 
-### Calculate result
+## Calculate result
 After shooting we calculate warships in fleet and update this value in database and in the city.
 If fleet has no warships -> we remove this fleet.
 
-### Logs
+## Logs
 We create log for every shoot and log for result of battle. We need to know who is winner.
 
-### Notifications
+## Notifications
 - in progress
 
-### Getting resources logic if battle between user and pirates (IN PROCESS)
+## Getting resources logic if battle between user and pirates (IN PROCESS)
 We calculate full capacity of player.
 
 Formula:
@@ -63,7 +63,7 @@ If sum of all resources is bigger than capacity -> we get as much as we can in e
 
 4) If pirates attack player and win -> Pirates get resources the same way as it was for .
 
-### Getting resources logic if battle between users (NOT NECESSARY)
+## Getting resources logic if battle between users (NOT NECESSARY)
 We calculate full capacity of A warships.
 
 Formula:
@@ -76,7 +76,7 @@ We get all resources in equal proportion.
 
 If sum of all resources is bigger than capacity -> we get as much as we can by equal proportion.
 
-### Getting resources logic if battle between user and adventure island
+## Getting resources logic if battle between user and adventure island
 
 We calculate full capacity of A warships.
 
@@ -92,7 +92,7 @@ If sum of all resources is bigger than capacity -> we get as much as we can by e
 
 If defender island doesn't have any resources after battle - it will mark as "raided" and can't be attacked again.
 
-#### Example:
+### Example:
 
 Capacity: 60
 

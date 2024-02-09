@@ -1,6 +1,6 @@
 # Adventure
 
-### Process
+## Process
 
 Server generates first level adventure for user if user tries to get adventure map.
 
@@ -22,7 +22,7 @@ If all islands are raided - it means that we can change adventure to next level.
 
 We get resources after battle as it is described in usual battle process.
 
-### Map content
+## Map content
 
 Each adventure map includes several islands:
 - 1 empty island with just a few resources
@@ -31,11 +31,11 @@ Each adventure map includes several islands:
 - 1 rich city with good amount of resources and good amount of warships
 - 1 treasure island with a lot of resources and no warships
 
-### Formulas
+## Formulas
 
 Warships points are converted to warships while generating island.
 
-#### Empty Island
+### Empty Island
 Has resources by formula:
 
 $gold = $lvl * 100
@@ -44,7 +44,7 @@ $population = 0
 
 Has warships: 0
 
-#### Village
+### Village
 
 Has resources by formula:
 
@@ -54,7 +54,7 @@ $population = $lvl * 50
 
 Has warships points: $lvl * 100
 
-#### Pirate bay
+### Pirate bay
 
 Has resources by formula:
 
@@ -64,7 +64,7 @@ $population = $lvl * 100
 
 Has warships points: $lvl * 300
 
-#### Rich City
+### Rich City
 
 Has resources by formula:
 
@@ -74,7 +74,7 @@ $population = $lvl * 400
 
 Has warships points: $lvl * 700
 
-#### Treasure Island
+### Treasure Island
 
 Has resources by formula:
 
@@ -84,7 +84,7 @@ $population = 0
 
 Has warships points: 0
 
-### Future updates
+## Future updates
 
 - generate warships depends on warship points
 - add ability to take materials from islands

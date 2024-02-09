@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { ICity } from "./types/types";
 
 export const convertSecondsToTime = (seconds: number): string => {
   if (seconds < 0) {
@@ -27,5 +28,16 @@ export const getResourceSlug = <T extends { id: N; slug?: string }, N>(
   return (
     resourcesDictionary?.find((resource) => resource.id === resourceId)?.slug ||
     ""
+  );
+};
+
+export const getCityResourceProductionCoefficient = (
+  city: ICity,
+  resourceId: number
+): number => {
+  return (
+    city?.resourcesProductionCoefficient?.find(
+      (production) => production.resourceId === resourceId
+    )?.coefficient || 1
   );
 };

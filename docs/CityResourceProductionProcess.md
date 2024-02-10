@@ -8,11 +8,13 @@ On main island we produce gold and population with coefficient 1, logs and ore w
 
 Final quantity of resources we get with formula:
 
-$qty = $productionResourcePerHour * $coefficient;
+$qty = $productionResourcePerHour * $coefficient * $timeDiff;
+
+$timeDiff - is gap in seconds between now and last moment of updating resource.
 
 ## Resources calculation
 
-We calculate produced resources on island each one minute. We calculate gap we get for 1 minute and add it to island.
+We calculate produced resources on island every minute. We calculate gap we get for 1 minute and add it to island.
 
 We calculate produced resources for all resources for what we have buildings on island.
 

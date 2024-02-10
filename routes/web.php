@@ -99,6 +99,16 @@ Route::get('/test-battles', function (\App\Services\BattleService $battleService
     }
 });
 
+Route::get('/test-production-resources', function (\App\Services\ResourceService $resourceService) {
+    $cities = City::get();
+
+    foreach ($cities as $city) {
+        $resourceService->handle($city);
+    }
+
+    dump('All is done');
+});
+
 Route::get('/test-expedition', function (\App\Services\ExpeditionService $expeditionService) {
     $fleetQueue = Fleet::where('fleet_task_id', config('constants.FLEET_TASKS.EXPEDITION'))->get();
 

@@ -17,7 +17,7 @@ class CityResourceV2Resource extends JsonResource
         return [
             'cityId'     => $this->city_id,
             'resourceId' => $this->resource_id,
-            'qty'        => $this->qty
+            'qty'        => floor($this->qty)
         ];
     }
 }

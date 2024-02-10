@@ -16,10 +16,12 @@ return new class extends Migration {
             $table->bigInteger('city_id')->unsigned();
             $table->bigInteger('resource_id')->unsigned();
 
-            $table->integer('qty')->default(0);
+            $table->float('qty')->default(0);
 
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('resource_id')->references('id')->on('resources')->onDelete('cascade')->onUpdate('cascade');
+
+            $table->timestamp('resource_last_updated')->default(Carbon\Carbon::now());
 
             $table->timestamps();
         });

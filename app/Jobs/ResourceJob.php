@@ -2,11 +2,10 @@
 
 namespace App\Jobs;
 
-use App\Models\BuildingProduction;
 use App\Models\City;
+use App\Services\ResourceService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -31,31 +30,11 @@ class ResourceJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(ResourceService $resourceService)
     {
         $cities = City::all();
         foreach ($cities as $city) {
-            $miner = $city->buildings()->where('id', 2)->first();
-            $gold = $city->gold;
-            $production = 0;
-            $now = Carbon::now();
-
-            if ($miner && $miner->lvl) {
-                $minerLvl = $miner->lvl;
-
-                $buildingProduction = BuildingProduction::where('building_id', 2)->where('lvl', $minerLvl)->first();
-
-                $resourceLastUpdated = Carbon::parse($city->resource_last_updated);
-
-                $timeDiff = $now->diffInSeconds($resourceLastUpdated);
-
-                $production = $timeDiff * $buildingProduction->qty / 3600;
-            }
-
-            $city->update([
-                'gold' => $gold + $production,
-                'resource_last_updated' => $now
-            ]);
+            $resourceService->handle($city);
         }
     }
 }

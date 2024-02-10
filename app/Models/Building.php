@@ -16,7 +16,13 @@ class Building extends Model
 
     protected $guarded = [];
 
-    public function buildingResources() {
+    public function buildingResources()
+    {
         return $this->hasMany(BuildingResource::class);
+    }
+
+    public function buildingProduction(int $lvl)
+    {
+        return $this->hasMany(BuildingProduction::class)->where('lvl', $lvl);
     }
 }

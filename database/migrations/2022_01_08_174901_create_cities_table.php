@@ -30,7 +30,6 @@ class CreateCitiesTable extends Migration
             $table->smallInteger('raided')->default(0); // 1 | 0, used for adventure islands
 
             $table->foreign('city_dictionary_id')->references('id')->on('city_dictionary')->onDelete('cascade')->onUpdate('cascade');
-            $table->timestamp('resource_last_updated')->default(Carbon\Carbon::now());
 
             $table->timestamps();
         });

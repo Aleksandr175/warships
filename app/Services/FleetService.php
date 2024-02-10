@@ -689,8 +689,7 @@ class FleetService
             CityResource::create([
                 'city_id'     => $cityId,
                 'resource_id' => $resourceId,
-                'qty',
-                $qty
+                'qty'         => $qty
             ]);
         }
     }

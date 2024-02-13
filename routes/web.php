@@ -203,4 +203,8 @@ Route::get('/messages/{messageId}', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
+Route::get('/refining', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
 require __DIR__ . '/auth.php';

@@ -21,6 +21,7 @@ import { Icon } from "./Common/Icon";
 import { SAppContainer, SColumn } from "./styles";
 import { Messages } from "./Messages/Messages";
 import { Message } from "./Messages/Message";
+import { Refining } from "./Refining/Refining";
 
 const App = () => {
   const {
@@ -114,20 +115,28 @@ const App = () => {
                 Buildings
               </NavLink>
               <NavLink
-                to={"/researches"}
-                className={({ isActive }) =>
-                  isActive ? "link selected-link" : "link"
-                }
-              >
-                Researches
-              </NavLink>
-              <NavLink
                 to={"/warships"}
                 className={({ isActive }) =>
                   isActive ? "link selected-link" : "link"
                 }
               >
                 Warships
+              </NavLink>
+              <NavLink
+                to={"/refining"}
+                className={({ isActive }) =>
+                  isActive ? "link selected-link" : "link"
+                }
+              >
+                Refining
+              </NavLink>
+              <NavLink
+                to={"/researches"}
+                className={({ isActive }) =>
+                  isActive ? "link selected-link" : "link"
+                }
+              >
+                Researches
               </NavLink>
               <NavLink
                 to={"/sending-fleets"}
@@ -240,6 +249,7 @@ const App = () => {
                     }
                   />
                   <Route path={"map"} element={<Map fleets={fleets} />} />
+                  <Route path={"refining"} element={<Refining />} />
                   <Route
                     path="logs/:id"
                     element={<Log userId={userId || 0} />}

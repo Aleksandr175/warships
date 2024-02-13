@@ -41,6 +41,19 @@ export const MapCell = ({
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
+  // Sort the array of objects by coefficient in descending order
+  const sortedResources = (city?.resourcesProductionCoefficient || []).sort(
+    (a, b) => b.coefficient - a.coefficient
+  );
+
+  const mainResources =
+    sortedResources.filter((resource) => {
+      return resource.coefficient === sortedResources[0].coefficient;
+    }) || [];
+
+  console.log(sortedResources);
+  console.log(mainResources);
+
   if (!dictionaries) {
     return <></>;
   }
@@ -144,6 +157,21 @@ export const MapCell = ({
               <Icon title={"check"} />
             </SCityMarkStatus>
           )}
+
+          {mainResources && (
+            <SCityMainResourceMark>
+              {mainResources.map((resource) => {
+                return (
+                  <Icon
+                    title={getResourceSlug(
+                      dictionaries.resourcesDictionary,
+                      resource.resourceId
+                    )}
+                  />
+                );
+              })}
+            </SCityMainResourceMark>
+          )}
         </>
       )}
     </SCell>
@@ -171,6 +199,14 @@ const SCityMarkStatus = styled.div`
   top: 0;
   right: 0;
   width: 32px;
+  height: 32px;
+`;
+
+const SCityMainResourceMark = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 96px;
   height: 32px;
 `;
 

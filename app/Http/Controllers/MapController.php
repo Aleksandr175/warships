@@ -16,7 +16,7 @@ class MapController extends Controller
         $archipelagoId = $mainCity->archipelago_id;
 
         // get all islands in archipelago (incl. pirates and etc.)
-        $cities = City::where('archipelago_id', $archipelagoId)->get();
+        $cities = City::where('archipelago_id', $archipelagoId)->with('resourcesProductionCoefficient')->get();
 
         return [
             'cities' => MapCityResource::collection($cities)

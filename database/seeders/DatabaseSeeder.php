@@ -121,6 +121,18 @@ class DatabaseSeeder extends Seeder
             'qty'         => 300
         ]);
 
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => config('constants.DEFAULT_USER_CITY_ID_2'),
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'coefficient' => 0.1
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => config('constants.DEFAULT_USER_CITY_ID_2'),
+            'resource_id' => config('constants.RESOURCE_IDS.ORE'),
+            'coefficient' => 1
+        ]);
+
         \App\Models\Archipelago::create([
             'id'   => 2,
             'type' => 'usual'
@@ -153,12 +165,24 @@ class DatabaseSeeder extends Seeder
                 'type' => 'usual'
             ]);
 
-            \App\Models\City::factory(1)->create([
+            $cityId = \App\Models\City::factory(1)->create([
                 'user_id'        => random_int(config('constants.DEFAULT_USER_ID_2') + 1, config('constants.DEFAULT_USER_ID_2') + 10),
                 'title'          => 'Island',
                 'archipelago_id' => $archipelago->id,
                 'coord_x'        => 3,
                 'coord_y'        => 3,
+            ])[0]->id;
+
+            \App\Models\CityResourcesProductionCoefficient::create([
+                'city_id'     => $cityId,
+                'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+                'coefficient' => 0.1
+            ]);
+
+            \App\Models\CityResourcesProductionCoefficient::create([
+                'city_id'     => $cityId,
+                'resource_id' => config('constants.RESOURCE_IDS.ORE'),
+                'coefficient' => 1
             ]);
         }
 
@@ -189,6 +213,12 @@ class DatabaseSeeder extends Seeder
             'city_id'     => config('constants.DEFAULT_PIRATE_CITY_ID'),
             'resource_id' => config('constants.RESOURCE_IDS.LOG'),
             'qty'         => 100
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => config('constants.DEFAULT_PIRATE_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'coefficient' => 1
         ]);
 
         // Colonies for test

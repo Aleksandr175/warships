@@ -36,6 +36,7 @@ export interface IMapCity {
   coordY: number;
   raided?: boolean;
   resources: ICityResource[];
+  resourcesProductionCoefficient: ICityProductionCoefficient[];
 }
 
 export interface IResourceDictionary {

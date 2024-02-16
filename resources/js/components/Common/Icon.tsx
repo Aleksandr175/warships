@@ -23,8 +23,8 @@ export const Icon = ({
 };
 
 const SIconWrapper = styled.i<{ size?: TSize }>`
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   display: inline-flex;
   position: relative;
   vertical-align: middle;
@@ -38,11 +38,27 @@ const SIconWrapper = styled.i<{ size?: TSize }>`
           height: 16px;
         `
       : ""};
+
+  ${({ size }) =>
+    size === "normal"
+      ? css`
+          width: 24px;
+          height: 24px;
+        `
+      : ""};
+
+  ${({ size }) =>
+    size === "extra-big"
+      ? css`
+          width: 48px;
+          height: 48px;
+        `
+      : ""};
 `;
 
 const SIcon = styled.i<{ size?: TSize }>`
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center center;

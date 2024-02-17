@@ -256,3 +256,22 @@ export type IFleetIncoming = Pick<
   | "deadline"
   | "repeating"
 >;
+
+export interface IRefiningRecipe {
+  inputResourceId: number;
+  inputQty: number;
+  outputResourceId: number;
+  outputQty: number;
+  refiningLevelRequired: number;
+  time: number;
+}
+
+export interface IRefiningQueue {
+  cityId: number;
+  inputResourceId: number;
+  inputQty: number;
+  outputResourceId: number;
+  outputQty: number;
+  time: number;
+  deadline: string;
+}

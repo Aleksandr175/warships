@@ -1,18 +1,103 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import { SContent, SH1, SH2 } from "../styles";
 import styled, { css } from "styled-components";
 import { Icon } from "../Common/Icon";
 import { ProgressBar } from "../Common/ProgressBar";
+import { httpClient } from "../../httpClient/httpClient";
+import { ICity, IRefiningQueue } from "../../types/types";
+import { useFetchRefiningRecipes } from "../../hooks/useFetchRefiningRecipes";
+import { getResourceSlug, getTimeLeft } from "../../utils";
 
-export const Refining = () => {
+export const Refining = ({ city }: { city: ICity }) => {
   const queryDictionaries = useFetchDictionaries();
 
   const dictionaries = queryDictionaries.data;
 
-  // TODO: get recipes
+  const numberOfSlots = 4; // TODO: get it from server
 
-  console.log("Refining");
+  const [refiningQueue, setRefiningQueue] = useState<IRefiningQueue[]>([]);
+
+  const getRefiningQueue = () => {
+    if (!city?.id) {
+      return;
+    }
+
+    httpClient.get("/refining?cityId=" + city?.id).then((response) => {
+      setRefiningQueue(response.data.refiningQueue);
+    });
+  };
+
+  useEffect(() => {
+    getRefiningQueue();
+  }, []);
+
+  const queryRefiningRecipes = useFetchRefiningRecipes();
+
+  const renderSlots = () => {
+    const slots = [];
+
+    for (let i = 0; i < numberOfSlots; i++) {
+      if (refiningQueue[i]) {
+        const refining = refiningQueue[i];
+        let timeLeft = getTimeLeft(refining.deadline);
+
+        if (timeLeft < 0) {
+          timeLeft = 0;
+        }
+
+        slots.push(
+          <SRefiningSlot empty={false} key={refining.deadline}>
+            <SRefiningMaterials>
+              {dictionaries?.resourcesDictionary && (
+                <SRefiningMaterialSlot>
+                  <Icon
+                    title={getResourceSlug(
+                      dictionaries?.resourcesDictionary,
+                      refining.inputResourceId
+                    )}
+                    size={"big"}
+                  />
+                </SRefiningMaterialSlot>
+              )}
+              <SRefiningMaterialTitle>
+                {refining.outputQty}
+              </SRefiningMaterialTitle>
+              {dictionaries?.resourcesDictionary && (
+                <SRefiningMaterialSlot>
+                  <Icon
+                    title={getResourceSlug(
+                      dictionaries?.resourcesDictionary,
+                      refining.outputResourceId
+                    )}
+                    size={"big"}
+                  />
+                </SRefiningMaterialSlot>
+              )}
+            </SRefiningMaterials>
+
+            <SProgressWrapper>
+              <ProgressBar
+                percent={Math.ceil(
+                  ((refining.time - timeLeft) / refining.time) * 100
+                )}
+              />
+            </SProgressWrapper>
+          </SRefiningSlot>
+        );
+      } else {
+        slots.push(
+          <SRefiningSlot empty={true} key={i}>
+            <SRefiningMaterials>
+              <SRefiningMaterialTitle>Free Slot</SRefiningMaterialTitle>
+            </SRefiningMaterials>
+          </SRefiningSlot>
+        );
+      }
+    }
+
+    return slots;
+  };
 
   if (!dictionaries) {
     return null;
@@ -21,63 +106,14 @@ export const Refining = () => {
   return (
     <SContent>
       <SH1>Refining Resources</SH1>
-      <SRefiningSlots>
-        <SRefiningSlot empty={false}>
-          <SRefiningMaterials>
-            <SRefiningMaterialSlot>
-              <Icon title={"log"} size={"big"} />
-            </SRefiningMaterialSlot>
-            <SRefiningMaterialTitle>120</SRefiningMaterialTitle>
-            <SRefiningMaterialSlot>
-              <Icon title={"plank"} size={"big"} />
-            </SRefiningMaterialSlot>
-          </SRefiningMaterials>
-
-          <SProgressWrapper>
-            <ProgressBar percent={31} />
-          </SProgressWrapper>
-        </SRefiningSlot>
-
-        <SRefiningSlot empty={false}>
-          <SRefiningMaterials>
-            <SRefiningMaterialSlot>
-              <Icon title={"plank"} size={"big"} />
-            </SRefiningMaterialSlot>
-            <SRefiningMaterialTitle>55</SRefiningMaterialTitle>
-            <SRefiningMaterialSlot>
-              <Icon title={"lumber"} size={"big"} />
-            </SRefiningMaterialSlot>
-          </SRefiningMaterials>
-
-          <SProgressWrapper>
-            <ProgressBar percent={100} />
-          </SProgressWrapper>
-        </SRefiningSlot>
-
-        <SRefiningSlot empty={false}>
-          <SRefiningMaterials>
-            <SRefiningMaterialSlot>
-              <Icon title={"ore"} size={"big"} />
-            </SRefiningMaterialSlot>
-            <SRefiningMaterialTitle>999</SRefiningMaterialTitle>
-            <SRefiningMaterialSlot>
-              <Icon title={"iron"} size={"big"} />
-            </SRefiningMaterialSlot>
-          </SRefiningMaterials>
-
-          <SProgressWrapper>
-            <ProgressBar percent={0} />
-          </SProgressWrapper>
-        </SRefiningSlot>
-
-        <SRefiningSlot empty={true}>
-          <SRefiningMaterials>
-            <SRefiningMaterialTitle>Free Slot</SRefiningMaterialTitle>
-          </SRefiningMaterials>
-        </SRefiningSlot>
-      </SRefiningSlots>
+      <SRefiningSlots>{renderSlots()}</SRefiningSlots>
 
       <SH2>Refining Recipes</SH2>
+
+      {queryRefiningRecipes?.data?.refiningRecipes.map(() => {
+        // TODO: print recipe
+        return <div>123</div>;
+      })}
     </SContent>
   );
 };

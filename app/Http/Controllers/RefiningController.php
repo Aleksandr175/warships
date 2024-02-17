@@ -18,17 +18,22 @@ class RefiningController extends Controller
 
         $city = City::where('id', $cityId)->where('user_id', $userId)->first();
 
-        // TODO: add checking lvl of refining building
-        $recipes = RefiningRecipe::get();
-
         if ($city && $city->id) {
             return [
-                'refiningRecipes' => RefiningRecipeResource::collection($recipes),
-                'refiningQueue'   => $city->refiningQueue ? RefiningQueueResource::collection($city->refiningQueue) : [],
+                'refiningQueue' => $city->refiningQueue ? RefiningQueueResource::collection($city->refiningQueue) : [],
             ];
         }
 
         return abort(403);
+    }
 
+    public function getRecipes()
+    {
+        // TODO: add checking lvl of refining building
+        $recipes = RefiningRecipe::get();
+
+        return [
+            'refiningRecipes' => RefiningRecipeResource::collection($recipes),
+        ];
     }
 }

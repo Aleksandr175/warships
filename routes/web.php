@@ -156,6 +156,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/messages/{message}', [\App\Http\Controllers\MessageController::class, 'getMessage']);
     Route::get('/api/messages', [\App\Http\Controllers\MessageController::class, 'index']);
 
+    Route::get('/api/refining', [\App\Http\Controllers\RefiningController::class, 'get']);
+
     Route::get('/api/logout', [\App\Http\Controllers\Controller::class, 'logout']);
 });
 

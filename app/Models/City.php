@@ -44,6 +44,11 @@ class City extends Model
         return $this->hasOne(CityBuildingQueue::class);
     }
 
+    public function refiningQueue()
+    {
+        return $this->hasMany(RefiningQueue::class);
+    }
+
     public function warshipQueues()
     {
         return $this->hasMany(WarshipQueue::class);
@@ -79,7 +84,8 @@ class City extends Model
         return $this->hasOne(CityResource::class)->where('resource_id', $resourceId)->first();
     }
 
-    public function resourcesProductionCoefficient() {
+    public function resourcesProductionCoefficient()
+    {
         return $this->hasMany(CityResourcesProductionCoefficient::class);
     }
 }

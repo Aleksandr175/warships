@@ -286,5 +286,8 @@ class DatabaseSeeder extends Seeder
         $this->call(WarshipDependencySeeder::class);
 
         $this->call(MessageSeeder::class);
+
+        $this->call(RefiningRecipeSeeder::class);
+        $this->call(RefiningQueueSeeder::class);
     }
 }

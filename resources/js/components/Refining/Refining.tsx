@@ -5,9 +5,15 @@ import styled, { css } from "styled-components";
 import { Icon } from "../Common/Icon";
 import { ProgressBar } from "../Common/ProgressBar";
 import { httpClient } from "../../httpClient/httpClient";
-import { ICity, IRefiningQueue } from "../../types/types";
+import { ICity, IRefiningQueue, IRefiningRecipeForm } from "../../types/types";
 import { useFetchRefiningRecipes } from "../../hooks/useFetchRefiningRecipes";
 import { getResourceSlug, getTimeLeft } from "../../utils";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { InputNumber } from "../Common/InputNumber";
+
+interface IFormValues {
+  refiningRecipes: IRefiningRecipeForm[];
+}
 
 export const Refining = ({ city }: { city: ICity }) => {
   const queryDictionaries = useFetchDictionaries();
@@ -33,6 +39,27 @@ export const Refining = ({ city }: { city: ICity }) => {
   }, []);
 
   const queryRefiningRecipes = useFetchRefiningRecipes();
+
+  const form = useForm<IFormValues>({
+    defaultValues: {
+      refiningRecipes: [],
+    },
+  });
+
+  const { handleSubmit, control, reset } = form;
+
+  const { fields: refiningRecipes } = useFieldArray({
+    control, // control props comes from useForm (optional: if you are using FormContext)
+    name: "refiningRecipes",
+  });
+
+  useEffect(() => {
+    if (queryRefiningRecipes.data) {
+      reset({
+        refiningRecipes: queryRefiningRecipes.data.refiningRecipes,
+      });
+    }
+  }, [queryRefiningRecipes?.data]);
 
   const renderSlots = () => {
     const slots = [];
@@ -99,6 +126,11 @@ export const Refining = ({ city }: { city: ICity }) => {
     return slots;
   };
 
+  // TODO: send only one recipe to backend
+  const onSubmit = (data: IFormValues) => {
+    console.log(data);
+  };
+
   if (!dictionaries) {
     return null;
   }
@@ -110,9 +142,66 @@ export const Refining = ({ city }: { city: ICity }) => {
 
       <SH2>Refining Recipes</SH2>
 
-      {queryRefiningRecipes?.data?.refiningRecipes.map(() => {
-        // TODO: print recipe
-        return <div>123</div>;
+      {refiningRecipes?.map((recipe, index) => {
+        return (
+          <SRecipe key={recipe.id}>
+            <SRecipeResource>
+              <Icon
+                title={getResourceSlug(
+                  dictionaries?.resourcesDictionary,
+                  recipe.inputResourceId
+                )}
+                size={"big"}
+              />
+              <SXIcon>x</SXIcon>
+              {recipe.inputQty}
+            </SRecipeResource>
+
+            <Icon title={"arrow"} size={"big"} />
+
+            <SRecipeResource>
+              <Icon
+                title={getResourceSlug(
+                  dictionaries?.resourcesDictionary,
+                  recipe.outputResourceId
+                )}
+                size={"big"}
+              />
+              <SXIcon>x</SXIcon>
+              {recipe.outputQty}
+            </SRecipeResource>
+
+            <div>
+              <Controller
+                name={`refiningRecipes.${index}.qty`}
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <InputNumberStyled
+                      {...field}
+                      onChange={(value) => {
+                        field.onChange(value);
+                      }}
+                      /*disabled={
+                        !hasAllRequirements("warship", selectedWarshipId) ||
+                        !availableWarships
+                      }*/
+                    />
+                  );
+                }}
+              />
+
+              {/* TODO: send only one recipe to backend */}
+              <button
+                className={"btn btn-primary"}
+                /*disabled={!isValid}*/
+                onClick={handleSubmit(onSubmit)}
+              >
+                Order
+              </button>
+            </div>
+          </SRecipe>
+        );
       })}
     </SContent>
   );
@@ -188,4 +277,32 @@ const SProgressWrapper = styled.div`
   bottom: 10px;
   left: 10px;
   right: 10px;
+`;
+
+const SRecipe = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
+const SRecipeResource = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #616267;
+`;
+
+const SXIcon = styled.span`
+  display: inline-block;
+  margin-left: 5px;
+`;
+
+const InputNumberStyled = styled(InputNumber)`
+  display: inline-block;
+  width: 80px;
+  border: none;
+  border-radius: 5px;
+  margin-right: 10px;
 `;

@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
-  IBuilding,
   ICityBuilding,
   ICityResource,
   ICityWarship,
   ICityWarshipQueue,
-  IResearch,
-  IResourceDictionary,
   IUserResearch,
-  IWarship,
-  IWarshipDependency,
 } from "../../types/types";
 import { Warship } from "./Warship";
 import dayjs from "dayjs";

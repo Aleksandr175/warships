@@ -258,12 +258,17 @@ export type IFleetIncoming = Pick<
 >;
 
 export interface IRefiningRecipe {
+  refiningRecipeId: number;
   inputResourceId: number;
   inputQty: number;
   outputResourceId: number;
   outputQty: number;
   refiningLevelRequired: number;
   time: number;
+}
+
+export interface IRefiningRecipeForm extends IRefiningRecipe {
+  qty: number;
 }
 
 export interface IRefiningQueue {

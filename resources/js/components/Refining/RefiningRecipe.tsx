@@ -2,29 +2,32 @@ import React from "react";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import styled from "styled-components";
 import { Icon } from "../Common/Icon";
-import { ICityResource, IRefiningRecipe } from "../../types/types";
+import { ICity, ICityResource, IRefiningRecipe } from "../../types/types";
 import { getResourceSlug } from "../../utils";
 import { Controller, useForm } from "react-hook-form";
 import { InputNumber } from "../Common/InputNumber";
+import { useMutateRefiningQueue } from "../../hooks/useMutateRefiningQueue";
 
 interface IFormValues {
-  qty: number | null;
+  qty: number;
 }
 
 export const RefiningRecipe = ({
   recipe,
+  city,
   cityResources,
 }: {
   recipe: IRefiningRecipe;
   cityResources: ICityResource[];
-}) => {
+  city: ICity;
+}): React.ReactElement => {
   const queryDictionaries = useFetchDictionaries();
 
   const dictionaries = queryDictionaries.data;
 
   const form = useForm<IFormValues>({
     defaultValues: {
-      qty: null,
+      qty: 0,
     },
   });
 
@@ -41,13 +44,31 @@ export const RefiningRecipe = ({
 
   const { handleSubmit, formState, control, reset } = form;
 
+  const { mutate: mutateRefiningQueue, isPending } = useMutateRefiningQueue({
+    onSuccess: (response: any) => {
+      // TODO: update data after request
+      console.log(response);
+      reset({
+        qty: 0,
+      });
+      /*setBuildings(response.data.buildings);
+    setQueue(response.data.buildingQueue);
+    updateCityResources(response.data.cityResources);*/
+    },
+  });
+
   const { isValid } = formState;
   const onSubmit = (data: IFormValues) => {
     console.log(data);
+    mutateRefiningQueue({
+      cityId: city.id,
+      qty: data.qty,
+      recipeId: recipe.refiningRecipeId,
+    });
   };
 
   if (!dictionaries) {
-    return null;
+    return <></>;
   }
 
   return (
@@ -84,6 +105,7 @@ export const RefiningRecipe = ({
           control={control}
           rules={{
             required: true,
+            min: 1,
           }}
           render={({ field }) => {
             return (

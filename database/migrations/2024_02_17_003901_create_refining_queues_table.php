@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('refining_queues', function (Blueprint $table) {
             $table->id();
             $table->integer('city_id');
+            $table->integer('refining_recipe_id');
             $table->integer('input_resource_id');
             $table->integer('input_qty');
             $table->integer('output_resource_id');

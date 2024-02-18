@@ -158,6 +158,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/api/refining', [\App\Http\Controllers\RefiningController::class, 'get']);
     Route::get('/api/refining-recipes', [\App\Http\Controllers\RefiningController::class, 'getRecipes']);
+    Route::post('/api/refining/run', [\App\Http\Controllers\RefiningQueueController::class, 'run']);
 
     Route::get('/api/logout', [\App\Http\Controllers\Controller::class, 'logout']);
 });

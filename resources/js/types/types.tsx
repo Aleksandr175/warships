@@ -258,7 +258,6 @@ export type IFleetIncoming = Pick<
 >;
 
 export interface IRefiningRecipe {
-  id: number;
   refiningRecipeId: number;
   inputResourceId: number;
   inputQty: number;

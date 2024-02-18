@@ -17,6 +17,7 @@ class RefiningQueueSeeder extends Seeder
 
         RefiningQueue::create([
             'city_id'            => config('constants.DEFAULT_USER_CITY_ID'),
+            'refining_recipe_id' => 1,
             'input_resource_id'  => config('constants.RESOURCE_IDS.LOG'),
             'input_qty'          => 15,
             'output_resource_id' => config('constants.RESOURCE_IDS.PLANK'),

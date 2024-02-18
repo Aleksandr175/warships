@@ -120,8 +120,9 @@ export const Refining = ({
       {queryRefiningRecipes?.data?.refiningRecipes?.map((recipe, index) => {
         return (
           <RefiningRecipe
-            key={recipe.id}
+            key={recipe.refiningRecipeId}
             recipe={recipe}
+            city={city}
             cityResources={cityResources}
           />
         );

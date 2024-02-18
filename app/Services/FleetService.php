@@ -376,7 +376,8 @@ class FleetService
                     $targetCity = City::find($fleet->target_city_id);
 
                     // TODO: change logic for trading
-                    $this->addResourceToCity($targetCity->id, config('constants.RESOURCE_IDS.GOLD'), $goldForIsland);
+                    $cityService = new CityService();
+                    $cityService->addResourceToCity($targetCity->id, config('constants.RESOURCE_IDS.GOLD'), $goldForIsland);
 
                     dump('trade: fleet completed trading, got ' . $gold . ' gold, island got: ' . $goldForIsland);
                 }
@@ -679,21 +680,6 @@ class FleetService
         }
     }
 
-    public function addResourceToCity(int $cityId, int $resourceId, int $qty): void
-    {
-        $resource = CityResource::where('city_id', $cityId)->where('resource_id', $resourceId)->first();
-
-        if ($resource) {
-            $resource->increment('qty', $qty);
-        } else {
-            CityResource::create([
-                'city_id'     => $cityId,
-                'resource_id' => $resourceId,
-                'qty'         => $qty
-            ]);
-        }
-    }
-
     public function addResourceToFleet(Fleet $fleet, int $resourceId, int $qty): void
     {
         $resource = FleetResource::where('fleet_id', $fleet->id)->where('resource_id', $resourceId)->first();
@@ -713,8 +699,10 @@ class FleetService
     {
         $resources = FleetResource::where('fleet_id', $fleet->id)->get();
 
+        $cityService = new CityService();
+
         foreach ($resources as $resource) {
-            $this->addResourceToCity($city->id, $resource->resource_id, $resource->qty);
+            $cityService->addResourceToCity($city->id, $resource->resource_id, $resource->qty);
         }
 
         FleetResource::where('fleet_id', $fleet->id)->delete();

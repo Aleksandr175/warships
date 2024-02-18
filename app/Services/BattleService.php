@@ -438,8 +438,10 @@ class BattleService
 
     public function subtractResourcesFromCity(City $city, $resources): void
     {
+        $cityService = new CityService();
+
         foreach ($resources as $resource) {
-            (new FleetService())->addResourceToCity($city->id, $resource['resource_id'], $resource['qty'] * (-1));
+            $cityService->addResourceToCity($city->id, $resource['resource_id'], $resource['qty'] * (-1));
         }
     }
 }

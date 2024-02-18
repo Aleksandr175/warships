@@ -13,6 +13,16 @@ class RefiningQueueService
     protected $userId;
     protected $city;
 
+    public function handle(RefiningQueue $refiningQueue): void
+    {
+        $cityId = $refiningQueue->city_id;
+
+        $cityService = new CityService();
+        $cityService->addResourceToCity($cityId, $refiningQueue->output_resource_id, $refiningQueue->output_qty);
+
+        $refiningQueue->delete();
+    }
+
     public function canStore($city, $recipeId, $qty): bool
     {
         $recipe = RefiningRecipe::where('id', $recipeId)->first();

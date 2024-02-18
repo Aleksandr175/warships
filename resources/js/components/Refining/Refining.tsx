@@ -40,6 +40,10 @@ export const Refining = ({
 
   useEffect(() => {
     getRefiningQueue();
+
+    setInterval(() => {
+      getRefiningQueue();
+    }, 3000);
   }, []);
 
   useEffect(() => {

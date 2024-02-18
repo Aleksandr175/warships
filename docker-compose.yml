@@ -155,6 +155,25 @@ services:
             # Add other environment variables as needed
         networks:
             - sail
+    job-listener-refining:
+        build:
+            context: ./docker/8.2
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        volumes:
+            - '.:/var/www/html'
+        command: php artisan queue:listen --queue=refining
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            IGNITION_LOCAL_SITES_PATH: '${PWD}'
+            DB_HOST: mysql
+            # Add other environment variables as needed
+        networks:
+            - sail
     job-listener-fleet:
         build:
             context: ./docker/8.2

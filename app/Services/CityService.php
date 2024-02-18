@@ -193,4 +193,19 @@ class CityService
             'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.IRON')] * $coefficient)
         ]);
     }
+
+    public function addResourceToCity(int $cityId, int $resourceId, int $qty): void
+    {
+        $resource = CityResource::where('city_id', $cityId)->where('resource_id', $resourceId)->first();
+
+        if ($resource) {
+            $resource->increment('qty', $qty);
+        } else {
+            CityResource::create([
+                'city_id'     => $cityId,
+                'resource_id' => $resourceId,
+                'qty'         => $qty
+            ]);
+        }
+    }
 }

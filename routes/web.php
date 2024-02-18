@@ -4,7 +4,9 @@ use App\Models\City;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
 use App\Models\FleetResource;
+use App\Models\RefiningQueue;
 use App\Services\PirateService;
+use App\Services\RefiningQueueService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -45,6 +47,7 @@ Route::get('/server-start', function () {
     \App\Jobs\PirateJob::dispatch()->onQueue('pirateLogic');
     \App\Jobs\BattleJob::dispatch()->onQueue('battle');
     \App\Jobs\ExpeditionJob::dispatch()->onQueue('expedition');
+    \App\Jobs\RefiningJob::dispatch()->onQueue('refining');
 
     return "Everything executed successfully!";
 });
@@ -62,14 +65,14 @@ Route::get('/test-battle', function (\App\Services\BattleService $battleService)
     ]);
 
     FleetResource::create([
-        'fleet_id' => $fleet->id,
+        'fleet_id'    => $fleet->id,
         'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
-        'qty' => 50
+        'qty'         => 50
     ]);
     FleetResource::create([
-        'fleet_id' => $fleet->id,
+        'fleet_id'    => $fleet->id,
         'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
-        'qty' => 20
+        'qty'         => 20
     ]);
 
     FleetDetail::create([
@@ -125,6 +128,16 @@ Route::get('/test-pirate-logic', function (\App\Services\BattleService $battleSe
         $pirateService->handle($city);
     }
 });
+
+Route::get('/test-refining', function (\App\Services\RefiningQueueService $refiningQueueService) {
+    $refiningQueue   = RefiningQueue::get();
+    $refiningService = new RefiningQueueService();
+
+    foreach ($refiningQueue as $refiningQueueItem) {
+        $refiningService->handle($refiningQueueItem);
+    }
+});
+
 
 Route::get('/test-adventure-map', [\App\Http\Controllers\AdventureController::class, 'showMap']);
 

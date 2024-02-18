@@ -13,9 +13,11 @@ import { RefiningRecipe } from "./RefiningRecipe";
 export const Refining = ({
   city,
   cityResources,
+  updateCityResources,
 }: {
   city: ICity;
   cityResources: ICityResource[];
+  updateCityResources: (resources: ICityResource[]) => void;
 }) => {
   const queryDictionaries = useFetchDictionaries();
 
@@ -24,6 +26,7 @@ export const Refining = ({
   const numberOfSlots = 4; // TODO: get it from server
 
   const [refiningQueue, setRefiningQueue] = useState<IRefiningQueue[]>([]);
+  const [hasAvailableSlots, setHasAvailableSlots] = useState<boolean>(false);
 
   const getRefiningQueue = () => {
     if (!city?.id) {
@@ -39,6 +42,11 @@ export const Refining = ({
     getRefiningQueue();
   }, []);
 
+  useEffect(() => {
+    setHasAvailableSlots(refiningQueue.length < numberOfSlots);
+  }, [refiningQueue]);
+
+  console.log(hasAvailableSlots);
   const queryRefiningRecipes = useFetchRefiningRecipes();
 
   const renderSlots = () => {
@@ -124,6 +132,9 @@ export const Refining = ({
             recipe={recipe}
             city={city}
             cityResources={cityResources}
+            setQueue={setRefiningQueue}
+            updateCityResources={updateCityResources}
+            hasAvailableSlots={hasAvailableSlots}
           />
         );
       })}

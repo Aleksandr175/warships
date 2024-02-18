@@ -2,7 +2,12 @@ import React from "react";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import styled from "styled-components";
 import { Icon } from "../Common/Icon";
-import { ICity, ICityResource, IRefiningRecipe } from "../../types/types";
+import {
+  ICity,
+  ICityResource,
+  IRefiningQueue,
+  IRefiningRecipe,
+} from "../../types/types";
 import { getResourceSlug } from "../../utils";
 import { Controller, useForm } from "react-hook-form";
 import { InputNumber } from "../Common/InputNumber";
@@ -16,10 +21,16 @@ export const RefiningRecipe = ({
   recipe,
   city,
   cityResources,
+  setQueue,
+  updateCityResources,
+  hasAvailableSlots,
 }: {
   recipe: IRefiningRecipe;
   cityResources: ICityResource[];
   city: ICity;
+  setQueue: (queue: IRefiningQueue[]) => void;
+  updateCityResources: (resources: ICityResource[]) => void;
+  hasAvailableSlots: boolean;
 }): React.ReactElement => {
   const queryDictionaries = useFetchDictionaries();
 
@@ -46,14 +57,11 @@ export const RefiningRecipe = ({
 
   const { mutate: mutateRefiningQueue, isPending } = useMutateRefiningQueue({
     onSuccess: (response: any) => {
-      // TODO: update data after request
-      console.log(response);
       reset({
         qty: 0,
       });
-      /*setBuildings(response.data.buildings);
-    setQueue(response.data.buildingQueue);
-    updateCityResources(response.data.cityResources);*/
+      setQueue(response.data.queue);
+      updateCityResources(response.data.cityResources);
     },
   });
 
@@ -115,6 +123,7 @@ export const RefiningRecipe = ({
                   field.onChange(value);
                 }}
                 maxNumber={maxAvailableRecipes()}
+                disabled={!hasAvailableSlots}
               />
             );
           }}
@@ -122,7 +131,7 @@ export const RefiningRecipe = ({
 
         <button
           className={"btn btn-primary"}
-          disabled={!isValid}
+          disabled={!isValid || !hasAvailableSlots}
           onClick={handleSubmit(onSubmit)}
         >
           Order

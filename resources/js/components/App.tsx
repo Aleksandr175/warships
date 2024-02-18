@@ -252,7 +252,11 @@ const App = () => {
                   <Route
                     path={"refining"}
                     element={
-                      <Refining city={city} cityResources={city.resources} />
+                      <Refining
+                        city={city}
+                        cityResources={city.resources}
+                        updateCityResources={updateCityResources}
+                      />
                     }
                   />
                   <Route

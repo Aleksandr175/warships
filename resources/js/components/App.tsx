@@ -249,7 +249,12 @@ const App = () => {
                     }
                   />
                   <Route path={"map"} element={<Map fleets={fleets} />} />
-                  <Route path={"refining"} element={<Refining city={city} />} />
+                  <Route
+                    path={"refining"}
+                    element={
+                      <Refining city={city} cityResources={city.resources} />
+                    }
+                  />
                   <Route
                     path="logs/:id"
                     element={<Log userId={userId || 0} />}

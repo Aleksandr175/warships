@@ -23,8 +23,7 @@ export const Refining = ({
 
   const dictionaries = queryDictionaries.data;
 
-  const numberOfSlots = 4; // TODO: get it from server
-
+  const [refiningSlots, setRefiningSlot] = useState<number>(0);
   const [refiningQueue, setRefiningQueue] = useState<IRefiningQueue[]>([]);
   const [hasAvailableSlots, setHasAvailableSlots] = useState<boolean>(false);
 
@@ -35,19 +34,22 @@ export const Refining = ({
 
     httpClient.get("/refining?cityId=" + city?.id).then((response) => {
       setRefiningQueue(response.data.refiningQueue);
+      setRefiningSlot(response.data.refiningSlots);
     });
   };
 
   useEffect(() => {
     getRefiningQueue();
 
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       getRefiningQueue();
     }, 3000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
-    setHasAvailableSlots(refiningQueue.length < numberOfSlots);
+    setHasAvailableSlots(refiningQueue.length < refiningSlots);
   }, [refiningQueue]);
 
   console.log(hasAvailableSlots);
@@ -56,7 +58,7 @@ export const Refining = ({
   const renderSlots = () => {
     const slots = [];
 
-    for (let i = 0; i < numberOfSlots; i++) {
+    for (let i = 0; i < refiningSlots; i++) {
       if (refiningQueue[i]) {
         const refining = refiningQueue[i];
         let timeLeft = getTimeLeft(refining.deadline);

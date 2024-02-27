@@ -18,9 +18,13 @@ class RefiningController extends Controller
 
         $city = City::where('id', $cityId)->where('user_id', $userId)->first();
 
+        // TODO: add slots depends on refining building
+        $refiningSlots = 4;
+
         if ($city && $city->id) {
             return [
                 'refiningQueue' => $city->refiningQueue ? RefiningQueueResource::collection($city->refiningQueue) : [],
+                'refiningSlots' => $refiningSlots
             ];
         }
 

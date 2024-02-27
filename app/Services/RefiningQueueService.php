@@ -23,7 +23,7 @@ class RefiningQueueService
         $refiningQueue->delete();
     }
 
-    public function canStore($city, $recipeId, $qty): bool
+    public function canStore(City $city, $recipeId, $qty): bool
     {
         $recipe = RefiningRecipe::where('id', $recipeId)->first();
 
@@ -33,7 +33,7 @@ class RefiningQueueService
 
         // TODO: check refining lvl required
         // TODO: check available slots
-        $hasAllRequirements = $this->hasAllRequirements($this->city, $recipe, $qty);
+        $hasAllRequirements = $this->hasAllRequirements($city, $recipe, $qty);
 
         if (!$hasAllRequirements) {
             return false;
@@ -57,13 +57,19 @@ class RefiningQueueService
         return $hasEnoughRequiredResourceQty;
     }
 
-    public function hasAllRequirements($city, RefiningRecipe $recipe, $qty): bool
+    public function hasAllRequirements(City $city, RefiningRecipe $recipe, $qty): bool
     {
         // TODO: check refining lvl required
-        // TODO: check available slots
         $requiredRefiningBuildingLvl = $recipe->refining_level_required;
 
         $hasAllRequirements = true;
+
+        $refiningQueue = $city->refiningQueue;
+
+        // TODO: calculate max available slots
+        if (count($refiningQueue) > 4) {
+            $hasAllRequirements = false;
+        }
 
         return $hasAllRequirements;
     }

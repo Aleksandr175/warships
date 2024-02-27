@@ -16,226 +16,249 @@ class BuildingResourceSeeder extends Seeder
      */
     public function run()
     {
-        $building1 = BuildingDictionary::where('id', config('constants.BUILDINGS.MAIN'))->first();
-        $building2 = BuildingDictionary::where('id', config('constants.BUILDINGS.MINE'))->first();
-        $building3 = BuildingDictionary::where('id', config('constants.BUILDINGS.HOUSES'))->first();
         $building4 = BuildingDictionary::where('id', config('constants.BUILDINGS.TAVERN'))->first();
         $building5 = BuildingDictionary::where('id', config('constants.BUILDINGS.FARM'))->first();
-        $building6 = BuildingDictionary::where('id', config('constants.BUILDINGS.SHIPYARD'))->first();
         $building7 = BuildingDictionary::where('id', config('constants.BUILDINGS.DOCK'))->first();
-        $building8 = BuildingDictionary::where('id', config('constants.BUILDINGS.FORTRESS'))->first();
-
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 100,
-            'lvl'           => 1,
-            'time_required' => 5,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty'           => 20,
-            'lvl'           => 1,
-            'time_required' => 5,
-        ]);
-
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 200,
-            'lvl'           => 2,
-            'time_required' => 50,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty'           => 30,
-            'lvl'           => 2,
-            'time_required' => 50,
-        ]);
-
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 400,
-            'lvl'           => 3,
-            'time_required' => 100,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty'           => 50,
-            'lvl'           => 3,
-            'time_required' => 100,
-        ]);
-
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 1500,
-            'lvl'           => 4,
-            'time_required' => 250,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty'           => 250,
-            'lvl'           => 4,
-            'time_required' => 250,
-        ]);
-
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 10000,
-            'lvl'           => 5,
-            'time_required' => 500,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty'           => 2000,
-            'lvl'           => 5,
-            'time_required' => 500,
-        ]);
-
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 15000,
-            'lvl'           => 6,
-            'time_required' => 800,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty'           => 5000,
-            'lvl'           => 6,
-            'time_required' => 800,
-        ]);
-
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 50000,
-            'lvl'           => 7,
-            'time_required' => 1200,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building1->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty'           => 20000,
-            'lvl'           => 7,
-            'time_required' => 1200,
-        ]);
 
 
-        BuildingResource::create([
-            'building_id'   => $building2->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 100,
-            'lvl'           => 1,
-            'time_required' => 5,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building2->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty'           => 20,
-            'lvl'           => 1,
-            'time_required' => 5,
-        ]);
+        // Define the base quantities and increase factor
+        $baseResourceQty = [
+            config('constants.BUILDINGS.MAIN')     => [
+                config('constants.RESOURCE_IDS.GOLD')       => [
+                    'qty'             => 200,
+                    'start_lvl'       => 1,
+                    'increase_factor' => 1.4 // Factor by which to increase quantities for each level
+                ],
+                config('constants.RESOURCE_IDS.POPULATION') => [
+                    'qty'             => 100,
+                    'start_lvl'       => 1,
+                    'increase_factor' => 1.3
+                ],
+                config('constants.RESOURCE_IDS.LOG')        => [
+                    'qty'             => 10,
+                    'start_lvl'       => 5,
+                    'increase_factor' => 1.27
+                ],
+                config('constants.RESOURCE_IDS.PLANK')      => [
+                    'qty'             => 5,
+                    'start_lvl'       => 8,
+                    'increase_factor' => 1.25
+                ],
+                config('constants.RESOURCE_IDS.LUMBER')     => [
+                    'qty'             => 2,
+                    'start_lvl'       => 11,
+                    'increase_factor' => 1.2
+                ],
+                config('constants.RESOURCE_IDS.ORE')        => [
+                    'qty'             => 8,
+                    'start_lvl'       => 8,
+                    'increase_factor' => 1.27
+                ],
+                config('constants.RESOURCE_IDS.IRON')       => [
+                    'qty'             => 4,
+                    'start_lvl'       => 14,
+                    'increase_factor' => 1.25
+                ],
+                config('constants.RESOURCE_IDS.STEEL')      => [
+                    'qty'             => 1,
+                    'start_lvl'       => 17,
+                    'increase_factor' => 1.2
+                ],
+            ],
+            config('constants.BUILDINGS.MINE')     => [
+                config('constants.RESOURCE_IDS.GOLD')       => [
+                    'qty'             => 300,
+                    'start_lvl'       => 1,
+                    'increase_factor' => 1.4 // Factor by which to increase quantities for each level
+                ],
+                config('constants.RESOURCE_IDS.POPULATION') => [
+                    'qty'             => 100,
+                    'start_lvl'       => 1,
+                    'increase_factor' => 1.3
+                ],
+                config('constants.RESOURCE_IDS.LOG')        => [
+                    'qty'             => 5,
+                    'start_lvl'       => 4,
+                    'increase_factor' => 1.27
+                ],
+                config('constants.RESOURCE_IDS.PLANK')      => [
+                    'qty'             => 4,
+                    'start_lvl'       => 6,
+                    'increase_factor' => 1.25
+                ],
+                config('constants.RESOURCE_IDS.LUMBER')     => [
+                    'qty'             => 3,
+                    'start_lvl'       => 10,
+                    'increase_factor' => 1.2
+                ],
+                config('constants.RESOURCE_IDS.ORE')        => [
+                    'qty'             => 5,
+                    'start_lvl'       => 8,
+                    'increase_factor' => 1.27
+                ],
+                config('constants.RESOURCE_IDS.IRON')       => [
+                    'qty'             => 4,
+                    'start_lvl'       => 13,
+                    'increase_factor' => 1.25
+                ],
+                config('constants.RESOURCE_IDS.STEEL')      => [
+                    'qty'             => 3,
+                    'start_lvl'       => 19,
+                    'increase_factor' => 1.2
+                ],
+            ],
+            config('constants.BUILDINGS.HOUSES')    => [
+                config('constants.RESOURCE_IDS.GOLD')   => [
+                    'qty'             => 150,
+                    'start_lvl'       => 1,
+                    'increase_factor' => 1.4 // Factor by which to increase quantities for each level
+                ],
+                config('constants.RESOURCE_IDS.LOG')    => [
+                    'qty'             => 5,
+                    'start_lvl'       => 4,
+                    'increase_factor' => 1.27
+                ],
+                config('constants.RESOURCE_IDS.PLANK')  => [
+                    'qty'             => 2,
+                    'start_lvl'       => 10,
+                    'increase_factor' => 1.25
+                ],
+                config('constants.RESOURCE_IDS.LUMBER') => [
+                    'qty'             => 1,
+                    'start_lvl'       => 15,
+                    'increase_factor' => 1.2
+                ],
+                config('constants.RESOURCE_IDS.ORE')    => [
+                    'qty'             => 3,
+                    'start_lvl'       => 13,
+                    'increase_factor' => 1.27
+                ],
+                config('constants.RESOURCE_IDS.IRON')   => [
+                    'qty'             => 1,
+                    'start_lvl'       => 20,
+                    'increase_factor' => 1.25
+                ],
+            ],
+            config('constants.BUILDINGS.FORTRESS') => [
+                config('constants.RESOURCE_IDS.GOLD')       => [
+                    'qty'             => 1000,
+                    'start_lvl'       => 1,
+                    'increase_factor' => 1.4
+                ],
+                config('constants.RESOURCE_IDS.POPULATION') => [
+                    'qty'             => 100,
+                    'start_lvl'       => 1,
+                    'increase_factor' => 1.45
+                ],
+                config('constants.RESOURCE_IDS.LOG')        => [
+                    'qty'             => 100,
+                    'start_lvl'       => 1,
+                    'increase_factor' => 1.5
+                ],
+                config('constants.RESOURCE_IDS.PLANK')      => [
+                    'qty'             => 20,
+                    'start_lvl'       => 3,
+                    'increase_factor' => 1.25
+                ],
+                config('constants.RESOURCE_IDS.LUMBER')     => [
+                    'qty'             => 10,
+                    'start_lvl'       => 8,
+                    'increase_factor' => 1.5
+                ],
+                config('constants.RESOURCE_IDS.ORE')        => [
+                    'qty'             => 50,
+                    'start_lvl'       => 3,
+                    'increase_factor' => 1.5
+                ],
+                config('constants.RESOURCE_IDS.IRON')       => [
+                    'qty'             => 20,
+                    'start_lvl'       => 5,
+                    'increase_factor' => 1.5
+                ],
+                config('constants.RESOURCE_IDS.STEEL')      => [
+                    'qty'             => 20,
+                    'start_lvl'       => 12,
+                    'increase_factor' => 1.5
+                ],
+            ],
+            config('constants.BUILDINGS.SHIPYARD') => [
+                config('constants.RESOURCE_IDS.GOLD')       => [
+                    'qty'             => 500,
+                    'start_lvl'       => 1,
+                    'increase_factor' => 1.4
+                ],
+                config('constants.RESOURCE_IDS.POPULATION') => [
+                    'qty'             => 300,
+                    'start_lvl'       => 1,
+                    'increase_factor' => 1.4
+                ],
+                config('constants.RESOURCE_IDS.LOG')        => [
+                    'qty'             => 10,
+                    'start_lvl'       => 4,
+                    'increase_factor' => 1.27
+                ],
+                config('constants.RESOURCE_IDS.PLANK')      => [
+                    'qty'             => 10,
+                    'start_lvl'       => 10,
+                    'increase_factor' => 1.25
+                ],
+                config('constants.RESOURCE_IDS.LUMBER')     => [
+                    'qty'             => 4,
+                    'start_lvl'       => 15,
+                    'increase_factor' => 1.2
+                ],
+                config('constants.RESOURCE_IDS.ORE')        => [
+                    'qty'             => 7,
+                    'start_lvl'       => 13,
+                    'increase_factor' => 1.27
+                ],
+                config('constants.RESOURCE_IDS.IRON')       => [
+                    'qty'             => 3,
+                    'start_lvl'       => 18,
+                    'increase_factor' => 1.25
+                ],
+            ],
+        ];
 
-        BuildingResource::create([
-            'building_id'   => $building2->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 200,
-            'lvl'           => 2,
-            'time_required' => 50,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building2->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty'           => 30,
-            'lvl'           => 2,
-            'time_required' => 50,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building2->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.LOG'),
-            'qty'           => 5,
-            'lvl'           => 2,
-            'time_required' => 100,
-        ]);
+        // Define the number of levels for each building
+        $buildingLevels = [
+            config('constants.BUILDINGS.MAIN')     => 45,
+            config('constants.BUILDINGS.MINE')     => 40,
+            config('constants.BUILDINGS.HOUSES')   => 40,
+            config('constants.BUILDINGS.FORTRESS') => 15,
+            config('constants.BUILDINGS.SHIPYARD') => 20,
+            // Define levels for other buildings
+            // ...
+        ];
 
-        BuildingResource::create([
-            'building_id'   => $building2->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 400,
-            'lvl'           => 3,
-            'time_required' => 100,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building2->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty'           => 50,
-            'lvl'           => 3,
-            'time_required' => 100,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building2->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.LOG'),
-            'qty'           => 10,
-            'lvl'           => 3,
-            'time_required' => 100,
-        ]);
+        // Loop through each building and generate resource requirements for each level
+        foreach ($buildingLevels as $buildingId => $maxLevel) {
+            // Calculate resource requirements for each level
+            for ($level = 1; $level <= $maxLevel; $level++) {
+                $resources = [];
 
+                // Calculate resource quantities based on the increase factor
+                foreach ($baseResourceQty[$buildingId] as $resource => $resourceData) {
+                    if ($resourceData['start_lvl'] <= $level) {
+                        $qty = (int)($resourceData['qty'] * pow($resourceData['increase_factor'], $level - 1));
 
-        BuildingResource::create([
-            'building_id'   => $building3->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 100,
-            'lvl'           => 1,
-            'time_required' => 5,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building3->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty'           => 20,
-            'lvl'           => 1,
-            'time_required' => 5,
-        ]);
+                        // Calculate quantity for the current level
+                        $resources[] = [
+                            'building_id'   => $buildingId, // Building ID
+                            'lvl'           => $level, // Level
+                            'resource_id'   => $resource, // Resource ID
+                            'qty'           => $qty, // Quantity
+                            'time_required' => 10 // TODO: calculate required time
+                        ];
+                    }
+                }
 
-        BuildingResource::create([
-            'building_id'   => $building3->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 200,
-            'lvl'           => 2,
-            'time_required' => 50,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building3->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty'           => 30,
-            'lvl'           => 2,
-            'time_required' => 50,
-        ]);
-
-        BuildingResource::create([
-            'building_id'   => $building3->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 400,
-            'lvl'           => 3,
-            'time_required' => 100,
-        ]);
-        BuildingResource::create([
-            'building_id'   => $building3->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty'           => 50,
-            'lvl'           => 3,
-            'time_required' => 100,
-        ]);
-
+                if ($resources) {
+                    // Insert resource requirements into the database
+                    BuildingResource::insert($resources);
+                }
+            }
+        }
 
         BuildingResource::create([
             'building_id'   => $building4->id,
@@ -255,28 +278,11 @@ class BuildingResourceSeeder extends Seeder
         ]);
 
         BuildingResource::create([
-            'building_id'   => $building6->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 1000,
-            'lvl'           => 1,
-            'time_required' => 100,
-        ]);
-
-        BuildingResource::create([
             'building_id'   => $building7->id,
             'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
             'qty'           => 2000,
             'lvl'           => 1,
             'time_required' => 200,
         ]);
-
-        BuildingResource::create([
-            'building_id'   => $building8->id,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'           => 3000,
-            'lvl'           => 1,
-            'time_required' => 300,
-        ]);
-
     }
 }

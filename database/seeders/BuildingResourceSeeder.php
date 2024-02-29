@@ -107,7 +107,7 @@ class BuildingResourceSeeder extends Seeder
                     'increase_factor' => 1.2
                 ],
             ],
-            config('constants.BUILDINGS.HOUSES')    => [
+            config('constants.BUILDINGS.HOUSES')   => [
                 config('constants.RESOURCE_IDS.GOLD')   => [
                     'qty'             => 150,
                     'start_lvl'       => 1,
@@ -237,18 +237,29 @@ class BuildingResourceSeeder extends Seeder
             for ($level = 1; $level <= $maxLevel; $level++) {
                 $resources = [];
 
-                // Calculate resource quantities based on the increase factor
-                foreach ($baseResourceQty[$buildingId] as $resource => $resourceData) {
+                // Calculate time for building
+                $qty = 0;
+                foreach ($baseResourceQty[$buildingId] as $resourceId => $resourceData) {
                     if ($resourceData['start_lvl'] <= $level) {
-                        $qty = (int)($resourceData['qty'] * pow($resourceData['increase_factor'], $level - 1));
+                        // Calculate quantity for the current level
+                        $qty += floor($resourceData['qty'] * pow($resourceData['increase_factor'], $level - 1));
+                    }
+                }
+
+                $requiredTime = floor($qty / 10);
+
+                // Calculate resource quantities based on the increase factor
+                foreach ($baseResourceQty[$buildingId] as $resourceId => $resourceData) {
+                    if ($resourceData['start_lvl'] <= $level) {
+                        $qty = floor($resourceData['qty'] * pow($resourceData['increase_factor'], $level - 1));
 
                         // Calculate quantity for the current level
                         $resources[] = [
                             'building_id'   => $buildingId, // Building ID
                             'lvl'           => $level, // Level
-                            'resource_id'   => $resource, // Resource ID
+                            'resource_id'   => $resourceId, // Resource ID
                             'qty'           => $qty, // Quantity
-                            'time_required' => 10 // TODO: calculate required time
+                            'time_required' => $requiredTime
                         ];
                     }
                 }

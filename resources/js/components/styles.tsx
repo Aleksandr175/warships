@@ -71,11 +71,18 @@ export const SButtonsBlock = styled.div`
 export const SParams = styled.div`
   display: flex;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 `;
 
 export const SParam = styled.div`
-  width: 80px;
+  width: 100px;
   color: #949494;
+  display: flex;
+  align-items: center;
+
+  > i {
+    margin-right: 5px;
+  }
 `;
 
 export const SCardWrapper = styled.div<{ selected?: boolean }>`

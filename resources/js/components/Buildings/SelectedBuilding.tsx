@@ -208,7 +208,7 @@ export const SelectedBuilding = ({
                           bProduction.resourceId
                         )}
                       />
-                      {bProduction.qty * coefficient}
+                      {Math.floor(bProduction.qty * coefficient)}
                     </SParam>
                   );
                 })}

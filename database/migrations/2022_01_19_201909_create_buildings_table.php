@@ -16,13 +16,10 @@ class CreateBuildingsTable extends Migration
         Schema::create('buildings', function (Blueprint $table) {
             $table->id();
 
-            $table->bigInteger('building_id')->unsigned();
-            $table->bigInteger('city_id')->unsigned();
+            $table->integer('building_id')->unsigned();
+            $table->integer('city_id')->unsigned();
 
             $table->integer('lvl')->default(1);
-
-            $table->foreign('building_id')->references('id')->on('buildings')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade')->onUpdate('cascade');
 
             $table->timestamps();
         });

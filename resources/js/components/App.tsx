@@ -8,7 +8,7 @@ import {
 import { Overview } from "./Overview";
 import { Buildings } from "./Buildings/Buildings";
 import { Researches } from "./Researches/Researches";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { CityResources } from "./CityResources";
 import { Warships } from "./Warships/Warships";
 import { Map } from "./Map/Map";
@@ -51,6 +51,7 @@ const App = () => {
     userId,
     logout,
     unreadMessagesNumber,
+    selectCity,
   } = useAppLogic();
 
   if (isLoading) {
@@ -69,9 +70,9 @@ const App = () => {
                     return (
                       <SIsland
                         key={c.id}
-                        /*active={c.id === city.id}*/
+                        active={c.id === city.id}
                         onClick={() => {
-                          /*selectCity(c)*/
+                          selectCity(c);
                         }}
                       >
                         <Icon title={"island"} />[{city.coordX}:{city.coordY}]{" "}
@@ -326,10 +327,16 @@ const SIslands = styled.div`
   gap: calc(2 * var(--block-padding));
 `;
 
-const SIsland = styled.div`
+const SIsland = styled.div<{ active?: boolean }>`
   > i {
     padding-right: 5px;
   }
+
+  ${({ active }) =>
+    active &&
+    css`
+      font-weight: 700;
+    `};
 `;
 
 const SHeaderBlock = styled.div`

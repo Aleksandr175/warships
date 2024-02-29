@@ -46,7 +46,7 @@ export const Refining = ({
     }, 3000);
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [city]);
 
   useEffect(() => {
     setHasAvailableSlots(refiningQueue.length < refiningSlots);

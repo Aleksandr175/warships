@@ -82,6 +82,26 @@ class WarshipQueueService
             ->get();
         $hasAllRequirements = true;
 
+        $shipyardBuilding = $city->building(config('constants.BUILDINGS.SHIPYARD'));
+
+        $shipyardBuildingLvl = 0;
+        // TODO: check shipyard lvl and get slots
+        if ($shipyardBuilding) {
+            $shipyardBuildingLvl = $shipyardBuilding->lvl;
+        }
+
+        if (!$shipyardBuildingLvl) {
+            return false;
+        }
+
+        $warshipQueue = $city->refiningQueue;
+
+        // TODO: calculate max available slots for warship queue
+        if (count($warshipQueue) > 2) {
+            $hasAllRequirements = false;
+        }
+
+
         $researches = Research::where('user_id', $this->userId)->get();
 
         if ($requirements) {
@@ -117,11 +137,13 @@ class WarshipQueueService
 
     public function updateWarshipQueue()
     {
-        $warshipDict = WarshipDictionary::find($this->warshipId)->load('requiredResources');
+        $warshipDict   = WarshipDictionary::find($this->warshipId)->load('requiredResources');
         $cityResources = $this->city->resources;
 
         // Determine the maximum number of warships that can be built with the available resources
-        $maxBuildableQty = 1000;
+        // number could not be more than one slot can have
+        // TODO: define slot capacity
+        $maxBuildableQty = 10;
 
         foreach ($warshipDict->requiredResources as $requiredResource) {
             $maxQtyForResource = 0;
@@ -141,18 +163,12 @@ class WarshipQueueService
         // Determine the actual quantity to build (minimum of requestedQty and maxBuildableQty)
         $actualWarshipsQtyToBuild = min($this->qty, $maxBuildableQty);
 
-        $time                   = $this->qty * $warshipDict->time;
+        $time = $actualWarshipsQtyToBuild * $warshipDict->time;
 
         $queue = WarshipQueue::where('user_id', $this->userId)->where('city_id', $this->city->id)->orderBy('deadline')->get();
 
-        if ($this->qty > 0) {
-            if (!count($queue)) {
-                // just add time for first queue
-                $deadline = Carbon::now()->addSeconds($time);
-            } else {
-                // calculate deadline for next item in queue
-                $deadline = Carbon::create($queue[count($queue) - 1]->deadline)->addSeconds($time);
-            }
+        if ($actualWarshipsQtyToBuild > 0) {
+            $deadline = Carbon::now()->addSeconds($time);
 
             $queue->push(WarshipQueue::create([
                 'user_id'    => $this->userId,

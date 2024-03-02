@@ -5,15 +5,11 @@ import {
   ICityBuildingQueue,
   ICityFleet,
   ICityResearchQueue,
-  ICityWarship,
-  ICityWarshipQueue,
   IFleetWarshipsData,
   IFleetIncoming,
   IMapCity,
   IUserResearch,
   ICityResource,
-  IResourceDictionary,
-  IProductions,
 } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import Echo from "laravel-echo";
@@ -27,7 +23,6 @@ export const useAppLogic = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [buildings, setBuildings] = useState<ICityBuilding[] | undefined>();
   const [researches, setResearches] = useState<IUserResearch[] | undefined>();
-  const [warships, setWarships] = useState<ICityWarship[] | undefined>();
   const [fleets, setFleets] = useState<ICityFleet[]>();
   const [fleetsIncoming, setFleetsIncoming] = useState<IFleetIncoming[]>();
   const [fleetDetails, setFleetDetails] = useState<IFleetWarshipsData[]>();
@@ -35,7 +30,6 @@ export const useAppLogic = () => {
     useState<IMapCity[]>();
 
   const [queue, setQueue] = useState<ICityBuildingQueue>();
-  const [queueWarship, setQueueWarship] = useState<ICityWarshipQueue[]>();
   const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
   const [userId, setUserId] = useState<number>();
   const [unreadMessagesNumber, setUnreadMessagesNumber] = useState<number>(0);
@@ -114,7 +108,6 @@ export const useAppLogic = () => {
     getCityResources();
     getBuildings();
     getResearches();
-    getWarships();
     getFleets();
   }, [city]);
 
@@ -124,7 +117,6 @@ export const useAppLogic = () => {
       getCityResources();
       getBuildings();
       getResearches();
-      getWarships();
       getFleets();
     }, 3000);
 
@@ -158,19 +150,6 @@ export const useAppLogic = () => {
       setBuildings(response.data.buildings);
       setQueue(response.data.buildingQueue);
     });
-  };
-
-  const getWarships = () => {
-    if (!city?.id) {
-      return;
-    }
-
-    httpClient.get("/warships?cityId=" + city?.id).then((response) => {
-      setWarships(response.data.warships);
-      setQueueWarship(response.data.queue);
-    });
-
-    getCityResources();
   };
 
   const getFleets = () => {
@@ -220,11 +199,6 @@ export const useAppLogic = () => {
     setQueue,
     queueResearch,
     setQueueResearch,
-    warships,
-    setWarships,
-    getWarships,
-    queueWarship,
-    setQueueWarship,
     fleetDetails,
     userId,
     getResearches,

@@ -16,9 +16,13 @@ class WarshipController extends Controller
 
         $city = City::where('id', $cityId)->where('user_id', $userId)->first();
 
+        // TODO: calculate slots depends on shipyard building
+        $warshipSlots = 2;
+
         if ($city && $city->id) {
             return [
                 'warships' => $city->warships ? WarshipResource::collection($city->warships) : [],
+                'warshipSlots' => $warshipSlots,
                 'queue' => $city->warshipQueues && count($city->warshipQueues) ? CityWarshipQueueResource::collection($city->warshipQueues) : [],
             ];
         }

@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
         $this->call(CityDictionarySeeder::class);
         $this->call(ResourceSeeder::class);
 
-        // pirates id 1
         \App\Models\User::factory(1)->create([
             'id'   => config('constants.DEFAULT_PIRATE_ID'),
             'name' => 'Pirates'

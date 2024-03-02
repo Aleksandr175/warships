@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
+  ICity,
   ICityBuilding,
   ICityResource,
   ICityWarship,
   ICityWarshipQueue,
-  IUserResearch,
 } from "../../types/types";
 import { Warship } from "./Warship";
 import dayjs from "dayjs";
@@ -15,32 +15,21 @@ import { SContent, SH1 } from "../styles";
 import styled from "styled-components";
 import { SelectedWarship } from "./SelectedWarship";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
+import { httpClient } from "../../httpClient/httpClient";
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
 interface IProps {
-  cityId: number;
+  city: ICity;
   updateCityResources: (cityResources: ICityResource[]) => void;
   cityResources: ICityResource[];
-  warships: ICityWarship[] | undefined;
-  setWarships: (warships: ICityWarship[]) => void;
-  getWarships: () => void;
-  queue?: ICityWarshipQueue[];
-  setQueue: (q: ICityWarshipQueue[] | undefined) => void;
-  researches: IUserResearch[];
   buildings: ICityBuilding[];
 }
 
 export const Warships = ({
-  warships,
-  setWarships,
-  getWarships,
-  cityId,
+  city,
   updateCityResources,
   cityResources,
-  queue,
-  setQueue,
-  researches,
   buildings,
 }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
@@ -49,11 +38,43 @@ export const Warships = ({
 
   const [selectedWarshipId, setSelectedWarshipId] = useState(0);
 
+  const [warshipSlots, setWarshipSlots] = useState<number>(0);
+  const [warshipQueue, setWarshipQueue] = useState<ICityWarshipQueue[]>([]);
+  const [hasAvailableSlots, setHasAvailableSlots] = useState<boolean>(false);
+  const [warships, setWarships] = useState<ICityWarship[] | undefined>();
+
   useEffect(() => {
     if (dictionaries) {
       setSelectedWarshipId(dictionaries.warshipsDictionary[0]?.id || 0);
     }
   }, [dictionaries]);
+
+  useEffect(() => {
+    getWarships();
+
+    const intervalId = setInterval(() => {
+      getWarships();
+    }, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [city]);
+
+  const getWarships = () => {
+    if (!city?.id) {
+      return;
+    }
+
+    httpClient.get("/warships?cityId=" + city?.id).then((response) => {
+      setWarships(response.data.warships);
+      setWarshipQueue(response.data.queue);
+      setWarshipSlots(response.data.warshipSlots);
+    });
+  };
+
+  useEffect(() => {
+    console.log(warshipQueue.length < warshipSlots);
+    setHasAvailableSlots(warshipQueue.length < warshipSlots);
+  }, [warshipQueue]);
 
   function getQty(warshipId: number): number {
     return (
@@ -72,15 +93,16 @@ export const Warships = ({
         {selectedWarshipId && (
           <SelectedWarship
             selectedWarshipId={selectedWarshipId}
-            cityId={cityId}
+            cityId={city.id}
             cityResources={cityResources}
             getWarships={getWarships}
-            setQueue={setQueue}
+            setQueue={setWarshipQueue}
             buildings={buildings}
-            researches={researches}
+            researches={dictionaries.userResearches}
             getQty={getQty}
             setWarships={setWarships}
             updateCityResources={updateCityResources}
+            hasAvailableSlots={hasAvailableSlots}
           />
         )}
 
@@ -105,11 +127,13 @@ export const Warships = ({
         })}
       </SContent>
 
-      {queue && queue.length > 0 && (
-        <SContent>
-          <WarshipsQueue queue={queue} sync={getWarships} />
-        </SContent>
-      )}
+      <SContent>
+        <WarshipsQueue
+          queue={warshipQueue}
+          sync={getWarships}
+          warshipSlots={warshipSlots}
+        />
+      </SContent>
     </>
   );
 };

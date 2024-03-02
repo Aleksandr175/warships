@@ -28,13 +28,8 @@ const App = () => {
     isLoading,
     city,
     cityResources,
-    setQueueWarship,
     setQueue,
-    setWarships,
     queue,
-    getWarships,
-    warships,
-    queueWarship,
     updateCityResources,
     cities,
     setQueueResearch,
@@ -224,16 +219,9 @@ const App = () => {
                     path={"warships"}
                     element={
                       <Warships
-                        cityId={city.id}
+                        city={city}
                         updateCityResources={updateCityResources}
                         cityResources={city.resources}
-                        getWarships={getWarships}
-                        warships={warships}
-                        setWarships={setWarships}
-                        setQueue={setQueueWarship}
-                        queue={queueWarship}
-                        // TODO: userResearches should not be in dictionaries
-                        researches={dictionaries.userResearches}
                         buildings={buildings!}
                       />
                     }
@@ -242,7 +230,6 @@ const App = () => {
                     path={"sending-fleets"}
                     element={
                       <SendingFleet
-                        warships={warships}
                         cities={cities}
                         city={city}
                         cityResources={city.resources}

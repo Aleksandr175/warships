@@ -28,10 +28,11 @@ interface IProps {
   setWarships: (warships: ICityWarship[]) => void;
   getWarships: () => void;
   queue?: ICityWarshipQueue[];
-  setQueue: (q: ICityWarshipQueue[] | undefined) => void;
+  setQueue: (q: ICityWarshipQueue[]) => void;
   getQty: (warshipId: number) => number;
   researches: IUserResearch[];
   buildings: ICityBuilding[];
+  hasAvailableSlots: boolean;
 }
 
 interface IFormValues {
@@ -55,6 +56,7 @@ export const SelectedWarship = ({
   researches,
   getQty,
   setWarships,
+  hasAvailableSlots,
 }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
 
@@ -239,6 +241,7 @@ export const SelectedWarship = ({
           </SParams>
         </div>
         <div>
+          {/* TODO: add max available warships we can build with one slot */}
           <SText>You can build: {availableWarships}</SText>
         </div>
         <SButtonsBlock>
@@ -266,7 +269,8 @@ export const SelectedWarship = ({
                   }}
                   disabled={
                     !hasAllRequirements("warship", selectedWarshipId) ||
-                    !availableWarships
+                    !availableWarships ||
+                    !hasAvailableSlots
                   }
                 />
               );
@@ -275,7 +279,7 @@ export const SelectedWarship = ({
 
           <button
             className={"btn btn-primary"}
-            disabled={!isValid}
+            disabled={!isValid || !hasAvailableSlots}
             onClick={handleSubmit(onSubmit)}
           >
             Create

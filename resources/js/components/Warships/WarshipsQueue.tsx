@@ -13,9 +13,10 @@ dayjs.extend(customParseFormat);
 interface IProps {
   queue?: ICityWarshipQueue[];
   sync: () => void;
+  warshipSlots: number;
 }
 
-export const WarshipsQueue = ({ queue, sync }: IProps) => {
+export const WarshipsQueue = ({ queue, sync, warshipSlots }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
 
   const dictionaries = queryDictionaries.data;
@@ -60,7 +61,9 @@ export const WarshipsQueue = ({ queue, sync }: IProps) => {
 
   return (
     <>
-      <SH2>Warships Queue</SH2>
+      <SH2>
+        Warships Queue ({queue?.length} / {warshipSlots})
+      </SH2>
       <STable>
         <div>
           <SCellHeader>Warship</SCellHeader>

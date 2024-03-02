@@ -19,7 +19,6 @@ import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import { Icon } from "../Common/Icon";
 
 interface IProps {
-  warships: ICityWarship[] | undefined;
   cities: ICity[];
   city: ICity;
   cityResources: ICityResource[];
@@ -30,12 +29,7 @@ interface IResources {
 }
 
 // TODO: add react hook form
-export const SendingFleet = ({
-  warships,
-  cities,
-  city,
-  cityResources,
-}: IProps) => {
+export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
 
   const dictionaries = queryDictionaries.data;
@@ -44,13 +38,11 @@ export const SendingFleet = ({
   const [taskType, setTaskType] = useState<TTask>("trade");
   const [coordX, setCoordX] = useState<number>(0);
   const [coordY, setCoordY] = useState<number>(0);
+  const [warships, setWarships] = useState<ICityWarship[] | undefined>();
   const [actualCityWarships, setActualCityWarships] = useState(warships);
 
   const [resources, setResources] = useState<IResources>({});
 
-  /* TODO: refactor it, add all new resources */
-  const [gold, setGold] = useState(0);
-  const [logs, setLogs] = useState(0);
   // TODO: refactor this shit
   const [renderKey, setRenderKey] = useState(0);
 

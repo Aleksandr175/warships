@@ -94,10 +94,10 @@ class WarshipQueueService
             return false;
         }
 
-        $warshipQueue = $city->refiningQueue;
+        $warshipQueue = $city->warshipQueue;
 
         // TODO: calculate max available slots for warship queue
-        if (count($warshipQueue) > 2) {
+        if (count($warshipQueue) >= 2) {
             $hasAllRequirements = false;
         }
 

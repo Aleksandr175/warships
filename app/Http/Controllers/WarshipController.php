@@ -23,7 +23,7 @@ class WarshipController extends Controller
             return [
                 'warships' => $city->warships ? WarshipResource::collection($city->warships) : [],
                 'warshipSlots' => $warshipSlots,
-                'queue' => $city->warshipQueues && count($city->warshipQueues) ? CityWarshipQueueResource::collection($city->warshipQueues) : [],
+                'queue' => $city->warshipQueue && count($city->warshipQueue) ? CityWarshipQueueResource::collection($city->warshipQueue) : [],
             ];
         }
 

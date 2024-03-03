@@ -49,7 +49,7 @@ class City extends Model
         return $this->hasMany(RefiningQueue::class);
     }
 
-    public function warshipQueues()
+    public function warshipQueue()
     {
         return $this->hasMany(WarshipQueue::class);
     }

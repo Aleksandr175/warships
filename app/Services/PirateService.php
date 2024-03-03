@@ -58,7 +58,7 @@ class PirateService
 
             dump('Total warships in city: ' . $totalWarships);
 
-            if (count($city->warshipQueues) > 0) {
+            if (count($city->warshipQueue) > 0) {
                 dump('Pirates has warship queue, skip...');
 
                 return;

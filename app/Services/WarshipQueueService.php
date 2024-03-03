@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Requests\Api\WarshipCreateRequest;
+use App\Models\BuildingQueueSlot;
 use App\Models\City;
 use App\Models\Research;
 use App\Models\WarshipDependency;
@@ -30,7 +31,7 @@ class WarshipQueueService
 
         $this->city = City::where('id', $cityId)->where('user_id', $this->userId)->first();
 
-        if ($this->city && $this->city->id && $this->canBuild()) {
+        if ($this->city && $this->city->id && $this->canBuild($this->city)) {
             return $this->updateWarshipQueue();
         }
 
@@ -58,9 +59,9 @@ class WarshipQueueService
         return $queue;
     }
 
-    public function canBuild()
+    public function canBuild($city)
     {
-        $hasAllRequirements = $this->hasAllRequirements($this->city, $this->warshipId);
+        $hasAllRequirements = $this->hasAllRequirements($city, $this->warshipId);
         /*$hasEnoughResources = false;*/
 
         // found out what resources we need for warship
@@ -85,7 +86,7 @@ class WarshipQueueService
         $shipyardBuilding = $city->building(config('constants.BUILDINGS.SHIPYARD'));
 
         $shipyardBuildingLvl = 0;
-        // TODO: check shipyard lvl and get slots
+
         if ($shipyardBuilding) {
             $shipyardBuildingLvl = $shipyardBuilding->lvl;
         }
@@ -96,11 +97,17 @@ class WarshipQueueService
 
         $warshipQueue = $city->warshipQueue;
 
-        // TODO: calculate max available slots for warship queue
-        if (count($warshipQueue) >= 2) {
-            $hasAllRequirements = false;
+        $maxWarshipSlots = 0;
+
+        $slotsData = BuildingQueueSlot::slots($shipyardBuilding->building_id, $shipyardBuildingLvl);
+
+        if ($slotsData) {
+            $maxWarshipSlots = $slotsData->slots;
         }
 
+        if (count($warshipQueue) >= $maxWarshipSlots) {
+            $hasAllRequirements = false;
+        }
 
         $researches = Research::where('user_id', $this->userId)->get();
 

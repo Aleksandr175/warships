@@ -17,7 +17,7 @@ class WarshipDependencySeeder extends Seeder
             'warship_id' => config('constants.WARSHIPS.LUGGER'),
 
             'required_entity'     => 'building',
-            'required_entity_id'  => config('constants.WARSHIPS.LUGGER'),
+            'required_entity_id'  => config('constants.BUILDINGS.SHIPYARD'),
             'required_entity_lvl' => 1
         ]);
 

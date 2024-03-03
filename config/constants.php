@@ -105,6 +105,11 @@ return [
         'COMPLETED' => 2,
     ],
 
+    'RESOURCE_TYPE_IDS' => [
+        'COMMON' => 1,
+        'CARD'   => 2,
+    ],
+
     'RESOURCE_IDS' => [
         'GOLD'       => 1,
         'POPULATION' => 2,
@@ -114,5 +119,9 @@ return [
         'ORE'        => 6,
         'IRON'       => 7,
         'STEEL'      => 8,
+
+        'CARD_LUGGER_ATTACK'   => 9,
+        'CARD_LUGGER_CAPACITY' => 10,
+        'CARD_LUGGER_HEALTH'   => 11,
     ]
 ];

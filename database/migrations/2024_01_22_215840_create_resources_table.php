@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('slug');
             $table->string('value')->default(1);
+            $table->integer('type'); // 1 - common resourse / card / unique resource
 
             $table->timestamps();
         });

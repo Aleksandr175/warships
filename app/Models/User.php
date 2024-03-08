@@ -78,4 +78,8 @@ class User extends Authenticatable
     public function adventure() {
         return $this->hasOne(Adventure::class)->orderBy('adventure_level', 'DESC');
     }
+
+    public function warshipImprovements() {
+        return $this->hasMany(WarshipImprovement::class);
+    }
 }

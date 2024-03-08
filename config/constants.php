@@ -123,5 +123,8 @@ return [
         'CARD_LUGGER_ATTACK'   => 9,
         'CARD_LUGGER_CAPACITY' => 10,
         'CARD_LUGGER_HEALTH'   => 11,
+        'CARD_CARAVEL_ATTACK'   => 12,
+        'CARD_CARAVEL_CAPACITY' => 13,
+        'CARD_CARAVEL_HEALTH'   => 14,
     ]
 ];

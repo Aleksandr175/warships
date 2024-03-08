@@ -35,10 +35,10 @@ class WarshipImprovementRecipeSeeder extends Seeder
             WarshipImprovementRecipe::create([
                 'warship_id'          => config('constants.WARSHIPS.LUGGER'),
                 'improvement_type'    => 'health',
-                'level'               => 1,
+                'level'               => $i,
                 'resource_id'         => config('constants.RESOURCE_IDS.CARD_LUGGER_HEALTH'),
-                'qty'                 => 1,
-                'percent_improvement' => 1,
+                'qty'                 => $i,
+                'percent_improvement' => $i,
             ]);
 
 
@@ -63,10 +63,10 @@ class WarshipImprovementRecipeSeeder extends Seeder
             WarshipImprovementRecipe::create([
                 'warship_id'          => config('constants.WARSHIPS.CARAVEL'),
                 'improvement_type'    => 'health',
-                'level'               => 1,
+                'level'               => $i,
                 'resource_id'         => config('constants.RESOURCE_IDS.CARD_CARAVEL_HEALTH'),
-                'qty'                 => 1,
-                'percent_improvement' => 1,
+                'qty'                 => $i,
+                'percent_improvement' => $i,
             ]);
         }
     }

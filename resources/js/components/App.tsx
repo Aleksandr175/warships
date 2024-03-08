@@ -22,6 +22,7 @@ import { SAppContainer, SColumn } from "./styles";
 import { Messages } from "./Messages/Messages";
 import { Message } from "./Messages/Message";
 import { Refining } from "./Refining/Refining";
+import { WarshipsImrovements } from "./WarshipsImprovements/WarshipsImrovements";
 
 const App = () => {
   const {
@@ -117,6 +118,14 @@ const App = () => {
                 }
               >
                 Warships
+              </NavLink>
+              <NavLink
+                to={"/warships-improvements"}
+                className={({ isActive }) =>
+                  isActive ? "link selected-link" : "link"
+                }
+              >
+                Warships Improvements
               </NavLink>
               <NavLink
                 to={"/refining"}
@@ -225,6 +234,10 @@ const App = () => {
                         buildings={buildings!}
                       />
                     }
+                  />
+                  <Route
+                    path={"warships-improvements"}
+                    element={<WarshipsImrovements />}
                   />
                   <Route
                     path={"sending-fleets"}

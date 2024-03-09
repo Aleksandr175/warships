@@ -82,4 +82,8 @@ class User extends Authenticatable
     public function warshipImprovements() {
         return $this->hasMany(WarshipImprovement::class);
     }
+
+    public function resources() {
+        return $this->hasMany(UserResource::class);
+    }
 }

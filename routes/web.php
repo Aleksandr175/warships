@@ -143,6 +143,7 @@ Route::get('/test-adventure-map', [\App\Http\Controllers\AdventureController::cl
 
 Route::middleware('auth')->group(function () {
     Route::get('/api/user', [\App\Http\Controllers\UserController::class, 'get']);
+    Route::get('/api/user/resources', [\App\Http\Controllers\UserController::class, 'resources']);
     Route::get('/api/buildings', [\App\Http\Controllers\BuildingController::class, 'get']);
     Route::get('/api/researches', [\App\Http\Controllers\ResearchController::class, 'get']);
     Route::get('/api/warships', [\App\Http\Controllers\WarshipController::class, 'get']);
@@ -174,6 +175,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/refining/run', [\App\Http\Controllers\RefiningQueueController::class, 'run']);
 
     Route::get('/api/warship-improvements', [\App\Http\Controllers\WarshipImprovementController::class, 'get']);
+    Route::post('/api/warship-improvements', [\App\Http\Controllers\WarshipImprovementController::class, 'improve']);
 
     Route::get('/api/logout', [\App\Http\Controllers\Controller::class, 'logout']);
 });

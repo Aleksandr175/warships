@@ -237,11 +237,7 @@ const App = () => {
                   />
                   <Route
                     path={"warships-improvements"}
-                    element={
-                      <WarshipsImprovements
-                        cityResources={cityResources || []}
-                      />
-                    }
+                    element={<WarshipsImprovements />}
                   />
                   <Route
                     path={"sending-fleets"}

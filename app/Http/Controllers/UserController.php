@@ -14,6 +14,7 @@ use App\Http\Resources\ResearchResourceResource;
 use App\Http\Resources\ResourceDictionaryResource;
 use App\Http\Resources\UserResearchResource;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\UserResourceResource;
 use App\Http\Resources\WarshipDependencyResource;
 use App\Http\Resources\WarshipDictionaryResource;
 use App\Models\BuildingDependency;
@@ -78,6 +79,17 @@ class UserController extends Controller
             'warshipDependencies'     => WarshipDependencyResource::collection($warshipDependencies),
             'unreadMessagesNumber'    => $unreadMessagesNumber,
             'resourcesDictionary'     => ResourceDictionaryResource::collection($resourcesDictionary)
+        ];
+    }
+
+    public function resources()
+    {
+        $user = Auth::user();
+
+        $userResources = $user->resources;
+
+        return [
+            'resources' => UserResourceResource::collection($userResources)
         ];
     }
 }

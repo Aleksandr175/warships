@@ -1,8 +1,8 @@
 import { useCustomQuery } from "./useCustomQuery";
 import { IRefiningRecipe } from "../types/types";
+import { UseQueryOptions } from "@tanstack/react-query";
 
-// TODO add types
-export const useFetchRefiningRecipes = (queryParams?: any) => {
+export const useFetchRefiningRecipes = (queryParams?: UseQueryOptions<any>) => {
   return useCustomQuery<{
     refiningRecipes: IRefiningRecipe[];
   }>({

@@ -44,6 +44,7 @@ export interface IResourceDictionary {
   title: string;
   description: string;
   slug: string;
+  type: number;
 }
 
 export interface ICityResources {
@@ -302,4 +303,13 @@ export interface IWarshipImprovementRecipe {
   resourceId: number;
   qty: number;
   percentImprovement: number;
+}
+
+export interface IUserResources {
+  resources: IUserResource[];
+}
+
+export interface IUserResource {
+  resourceId: number;
+  qty: number;
 }

@@ -1,4 +1,3 @@
-import { UseQueryOptions } from "@tanstack/react-query";
 import { useCustomQuery } from "./useCustomQuery";
 import { IDictionary } from "../types/types";
 

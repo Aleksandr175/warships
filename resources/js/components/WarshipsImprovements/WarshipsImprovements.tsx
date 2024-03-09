@@ -1,28 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { SContent, SH1 } from "../styles";
 import styled from "styled-components";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import { useFetchWarshipsImprovements } from "../../hooks/useFetchWarshipsImprovements";
 import { Card } from "../Common/Card";
 import { Icon } from "../Common/Icon";
-import { ICityResource, IWarshipImprovementRecipe } from "../../types/types";
+import { IUserResources, IWarshipImprovementRecipe } from "../../types/types";
+import { useMutateWarshipImprovement } from "../../hooks/useMutateWarshipImprovement";
+import { useFetchUserResources } from "../../hooks/useFetchUserResources";
+import { useQueryClient } from "@tanstack/react-query";
 
-interface IProps {
-  cityResources: ICityResource[];
-}
-
-export const WarshipsImprovements = ({ cityResources }: IProps) => {
+export const WarshipsImprovements = () => {
   const queryDictionaries = useFetchDictionaries();
   const queryWarshipImprovements = useFetchWarshipsImprovements();
+  const queryClient = useQueryClient();
 
-  const dictionaries = queryDictionaries.data;
-  const currentWarshipImprovements =
-    queryWarshipImprovements?.data?.warshipImprovements;
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      queryUserResources.refetch();
+    }, 3000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const queryUserResources = useFetchUserResources();
 
   const getCurrentImprovementValue = (recipe: IWarshipImprovementRecipe) => {
     return (
       currentWarshipImprovements?.find(
-        (improvement) =>
+        (improvement: any) =>
           improvement.improvementType === recipe.improvementType &&
           improvement.warshipId === recipe.warshipId
       )?.percentImprovement || 0
@@ -38,11 +44,41 @@ export const WarshipsImprovements = ({ cityResources }: IProps) => {
 
   const availableCards = (recipe: IWarshipImprovementRecipe) => {
     return (
-      cityResources.find(
+      userResources?.resources.find(
         (resource) => resource.resourceId === recipe.resourceId
       )?.qty || 0
     );
   };
+
+  const {
+    mutate: mutateWarshipImprovement,
+    isPending: isImprovementInProgress,
+    data: queryWarshipImprovementData,
+  } = useMutateWarshipImprovement({
+    onSuccess: (resp) => {
+      queryClient.setQueryData(
+        ["/user/resources"],
+        (oldQueryData: IUserResources) => {
+          return {
+            ...oldQueryData,
+            resources: resp.data.userResources,
+          };
+        }
+      );
+    },
+  });
+
+  const warshipImprovementData = queryWarshipImprovementData?.data;
+
+  const currentWarshipImprovements =
+    warshipImprovementData?.warshipImprovements ||
+    queryWarshipImprovements?.data?.warshipImprovements;
+
+  const warshipImprovementRecipes =
+    warshipImprovementData?.warshipImprovementRecipes ||
+    queryWarshipImprovements.data?.warshipImprovementRecipes;
+
+  const userResources = queryUserResources?.data;
 
   if (queryWarshipImprovements.isLoading || queryDictionaries.isLoading) {
     return <></>;
@@ -53,48 +89,47 @@ export const WarshipsImprovements = ({ cityResources }: IProps) => {
       <SH1>Warships Improvements</SH1>
 
       <SImprovementsList>
-        {queryWarshipImprovements.data?.warshipImprovementRecipes?.map(
-          (recipe) => {
-            const availableCardsQty = availableCards(recipe);
+        {warshipImprovementRecipes?.map((recipe) => {
+          const availableCardsQty = availableCards(recipe);
 
-            return (
-              <SImprovementCard key={recipe.warshipId}>
-                <SCardWrapper>
-                  <Card
-                    objectId={recipe.warshipId}
-                    labelText={availableCardsQty + " / " + recipe.qty}
-                    timer={0}
-                    imagePath={"warships"}
-                  />
-                </SCardWrapper>
-                <SCardDescription>
-                  <SCardParams>
-                    <Icon title={recipe.improvementType} />
+          return (
+            <SImprovementCard key={recipe.id}>
+              <SCardWrapper>
+                <Card
+                  objectId={recipe.warshipId}
+                  labelText={availableCardsQty + " / " + recipe.qty}
+                  timer={0}
+                  imagePath={"warships"}
+                />
+              </SCardWrapper>
+              <SCardDescription>
+                <SCardParams>
+                  <Icon title={recipe.improvementType} />
 
-                    <SImprovementParams>
-                      {getCurrentImprovementValue(recipe)}%
-                      <Icon title={"arrow"} />
-                      {recipe.percentImprovement}
-                    </SImprovementParams>
-                  </SCardParams>
+                  <SImprovementParams>
+                    {getCurrentImprovementValue(recipe)}%
+                    <Icon title={"arrow"} />
+                    {recipe.percentImprovement}
+                  </SImprovementParams>
+                </SCardParams>
 
-                  {isImprovementAvailable(availableCardsQty, recipe) && (
-                    <SCardButton>
-                      <button
-                        className={"btn btn-primary"}
-                        onClick={() => {
-                          console.log("something");
-                        }}
-                      >
-                        Improve
-                      </button>
-                    </SCardButton>
-                  )}
-                </SCardDescription>
-              </SImprovementCard>
-            );
-          }
-        )}
+                {isImprovementAvailable(availableCardsQty, recipe) && (
+                  <SCardButton>
+                    <button
+                      disabled={isImprovementInProgress}
+                      className={"btn btn-primary"}
+                      onClick={() => {
+                        mutateWarshipImprovement({ recipeId: recipe.id });
+                      }}
+                    >
+                      Improve
+                    </button>
+                  </SCardButton>
+                )}
+              </SCardDescription>
+            </SImprovementCard>
+          );
+        })}
       </SImprovementsList>
     </SContent>
   );

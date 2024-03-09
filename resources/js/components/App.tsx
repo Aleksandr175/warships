@@ -22,7 +22,7 @@ import { SAppContainer, SColumn } from "./styles";
 import { Messages } from "./Messages/Messages";
 import { Message } from "./Messages/Message";
 import { Refining } from "./Refining/Refining";
-import { WarshipsImrovements } from "./WarshipsImprovements/WarshipsImrovements";
+import { WarshipsImprovements } from "./WarshipsImprovements/WarshipsImprovements";
 
 const App = () => {
   const {
@@ -237,7 +237,11 @@ const App = () => {
                   />
                   <Route
                     path={"warships-improvements"}
-                    element={<WarshipsImrovements />}
+                    element={
+                      <WarshipsImprovements
+                        cityResources={cityResources || []}
+                      />
+                    }
                   />
                   <Route
                     path={"sending-fleets"}

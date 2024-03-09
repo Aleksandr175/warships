@@ -3,25 +3,22 @@ import styled from "styled-components";
 import { convertSecondsToTime } from "../../utils";
 
 interface IProps {
-  object: {
-    id: number;
-    title: string;
-    description: string;
-  };
-  qty?: number;
+  objectId: number;
+  labelText?: string | number;
   imagePath: string;
   timer: number;
 }
 
-export const Card = ({ object, qty, imagePath, timer = 0 }: IProps) => {
+export const Card = ({ objectId, labelText, imagePath, timer = 0 }: IProps) => {
   return (
     <SCardImageWrapper
       style={{
-        backgroundImage: `url("../images/${imagePath}/${object.id}.svg")`,
+        backgroundImage: `url("../images/${imagePath}/${objectId}.svg")`,
       }}
     >
       <SLabelWrapper>
-        {timer > 0 && <STimer>{convertSecondsToTime(timer)}</STimer>} {qty}
+        {timer > 0 && <STimer>{convertSecondsToTime(timer)}</STimer>}{" "}
+        {labelText}
       </SLabelWrapper>
     </SCardImageWrapper>
   );

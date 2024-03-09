@@ -14,8 +14,8 @@ export const Warship = ({ warship, selected, currentQty }: IProps) => {
   return (
     <SCardWrapper key={warship.id} selected={selected}>
       <Card
-        object={warship}
-        qty={currentQty}
+        objectId={warship.id}
+        labelText={currentQty}
         timer={0}
         imagePath={"warships"}
       />

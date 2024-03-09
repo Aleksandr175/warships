@@ -280,3 +280,26 @@ export interface IRefiningQueue {
   time: number;
   deadline: string;
 }
+
+export interface IWarshipImprovements {
+  warshipImprovementRecipes: IWarshipImprovementRecipe[];
+  warshipImprovements: IWarshipImprovement[];
+}
+
+export interface IWarshipImprovement {
+  id: number;
+  warshipId: number;
+  improvementType: "attack" | "health" | "capacity";
+  level: number;
+  percentImprovement: number;
+}
+
+export interface IWarshipImprovementRecipe {
+  id: number;
+  warshipId: number;
+  improvementType: "attack" | "health" | "capacity";
+  level: number;
+  resourceId: number;
+  qty: number;
+  percentImprovement: number;
+}

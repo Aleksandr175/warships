@@ -17,8 +17,8 @@ export const Building = ({ building, lvl, timeLeft, selected }: IProps) => {
   return (
     <SCardWrapper key={building.id} selected={selected}>
       <Card
-        object={building}
-        qty={lvl}
+        objectId={building.id}
+        labelText={lvl}
         imagePath={"buildings"}
         timer={timeLeft}
       />

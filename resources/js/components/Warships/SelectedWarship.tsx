@@ -193,8 +193,8 @@ export const SelectedWarship = ({
       <div className={"col-4"}>
         <SCardWrapper>
           <Card
-            object={selectedWarship}
-            qty={getQty(selectedWarshipId)}
+            objectId={selectedWarship.id}
+            labelText={getQty(selectedWarshipId)}
             timer={0}
             imagePath={"warships"}
           />
@@ -233,7 +233,7 @@ export const SelectedWarship = ({
               <Icon title={"attack"} /> {attack}
             </SParam>
             <SParam>
-              <Icon title={"heart"} /> {health}
+              <Icon title={"health"} /> {health}
             </SParam>
             <SParam>
               <Icon title={"speed"} /> {speed}

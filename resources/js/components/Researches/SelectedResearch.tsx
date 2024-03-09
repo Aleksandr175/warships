@@ -132,8 +132,8 @@ export const SelectedResearch = ({
       <div className={"col-4"}>
         <SCardWrapper>
           <Card
-            object={selectedResearch}
-            qty={lvl}
+            objectId={selectedResearch.id}
+            labelText={lvl}
             timer={queue?.researchId === selectedResearchId ? timeLeft : 0}
             imagePath={"researches"}
           />

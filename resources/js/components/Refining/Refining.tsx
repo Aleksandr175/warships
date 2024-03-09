@@ -52,7 +52,6 @@ export const Refining = ({
     setHasAvailableSlots(refiningQueue.length < refiningSlots);
   }, [refiningQueue]);
 
-  console.log(hasAvailableSlots);
   const queryRefiningRecipes = useFetchRefiningRecipes();
 
   const renderSlots = () => {

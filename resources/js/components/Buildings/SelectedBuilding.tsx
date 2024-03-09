@@ -154,8 +154,8 @@ export const SelectedBuilding = ({
       <div className={"col-4"}>
         <SCardWrapper>
           <Card
-            object={selectedBuilding}
-            qty={lvl}
+            objectId={selectedBuilding.id}
+            labelText={lvl}
             timer={queue?.buildingId === selectedBuildingId ? timeLeft : 0}
             imagePath={"buildings"}
           />

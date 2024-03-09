@@ -98,6 +98,18 @@ class DatabaseSeeder extends Seeder
             'qty'         => 200
         ]);
 
+        \App\Models\CityResource::create([
+            'city_id'     => config('constants.DEFAULT_USER_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.CARD_LUGGER_ATTACK'),
+            'qty'         => 5
+        ]);
+
+        \App\Models\CityResource::create([
+            'city_id'     => config('constants.DEFAULT_USER_CITY_ID'),
+            'resource_id' => config('constants.RESOURCE_IDS.CARD_LUGGER_CAPACITY'),
+            'qty'         => 3
+        ]);
+
         \App\Models\City::factory(1)->create([
             'id'                 => config('constants.DEFAULT_USER_CITY_ID_2'),
             'user_id'            => config('constants.DEFAULT_USER_ID'),

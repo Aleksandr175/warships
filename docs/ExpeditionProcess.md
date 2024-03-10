@@ -35,6 +35,10 @@ We should multiply Qty of each resources by this coefficient.
 
 We can't get more than we can carry.
 
+We can find Cards for improving warships. Cards don't have weight.
+
+We can find 1 type of card for 1 warship randomly. Quantity: 0-2, randomly.
+
 ### Storm 4% chance
 
 During storm, we loose 20% of each fleet detail in our Fleet.

@@ -68,15 +68,28 @@ class ExpeditionService
         $availableCapacity = (new BattleService)->getAvailableCapacity($fleet, $fleetDetails);
 
         if ($availableCapacity > 0) {
-            $resourcesDict = Resource::get()->toArray();
+            $resourcesDict = Resource::where('type', config('constants.RESOURCE_TYPE_IDS.COMMON'))
+                ->get()->toArray();
+
+            $resourcesCardsDict = Resource::where('type', config('constants.RESOURCE_TYPE_IDS.CARD'))
+                ->get()->toArray();
 
             // TODO: add coefficient for capacity depends on lucky, we can get small/medium/large amount of resources
+            // example: 50% change get small amount of resources, 40% medium and 10% large amount
             $distributedResources = $this->distributeResources(floor($availableCapacity / 4), $resourcesDict);
 
             dump($distributedResources, $availableCapacity);
 
             foreach ($distributedResources as $resource) {
                 (new BattleService())->moveResourceToFleet($fleet, $resource);
+            }
+
+            // we can find some cards in expedition
+            $cardInfo = $this->getWarshipCards($resourcesCardsDict);
+
+            if ($cardInfo['qty'] > 0) {
+                dump('GOT CARD', $cardInfo);
+                (new BattleService())->moveResourceToFleet($fleet, $cardInfo);
             }
 
             $city = City::find($fleet->city_id);
@@ -87,7 +100,6 @@ class ExpeditionService
                 'user_id'        => $user->id,
                 'content'        => 'Expedition Fleet found resources.',
                 'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_RESOURCES'),
-                /*'gold' => $goldAmount,*/
                 'event_type'     => 'Expedition',
                 'archipelago_id' => $city->archipelago_id,
                 'coord_x'        => $city->coord_x,
@@ -169,11 +181,11 @@ class ExpeditionService
             return $carry + $resource['value'];
         }, 0);
 
-        $qtyOfResources = count($resourceDictionaryArr);
+        $qtyOfResources          = count($resourceDictionaryArr);
         $capacityForEachResource = $totalValue / $qtyOfResources; // 60 capacity / 3 = 20 capacity for each resource
 
         // Step 2: Distribute Resources with capacity per each resource
-        $totalQty = 0;
+        $totalQty             = 0;
         $distributedResources = [];
         foreach ($resourceDictionaryArr as $resource) {
             $distributedQty         = ($capacityForEachResource / $resource['value']);
@@ -196,5 +208,17 @@ class ExpeditionService
         // TODO: use rand for qty? Depends on value, bigger value - less coefficient for rand
 
         return $distributedResources;
+    }
+
+    public function getWarshipCards($resourcesCards)
+    {
+        $randomArrayIndex = array_rand($resourcesCards, 1);
+        $randomCard       = $resourcesCards[$randomArrayIndex];
+        $randomQty        = random_int(0, 2);
+
+        return [
+            'resource_id' => $randomCard['id'],
+            'qty'         => $randomQty
+        ];
     }
 }

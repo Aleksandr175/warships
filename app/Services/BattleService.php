@@ -11,6 +11,7 @@ use App\Models\FleetDetail;
 use App\Models\FleetResource;
 use App\Models\Message;
 use App\Models\WarshipDictionary;
+use App\Models\WarshipImprovement;
 
 class BattleService
 {
@@ -42,7 +43,7 @@ class BattleService
         $attackingUserId = $userId;
         $defendingUserId = $targetCityUserId;
 
-        dump("Attacker is $attackingUserId, Defender is: $defendingUserId");
+        dump("Attacker ID is $attackingUserId, Defender ID is: $defendingUserId");
 
         // TODO if we attack player's island
         // get warships in target island
@@ -59,6 +60,11 @@ class BattleService
         // set needed data for attacker, like health and capacity
         $attackingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($attackingFleetDetails, $warshipsDictionary);
 
+        $researchImprovements  = [];
+        $warshipImprovements   = WarshipImprovement::where('user_id', $attackingUserId)->get()->toArray();
+        $attackingFleetDetails = $this->addWarshipsImprovementsBonuses($attackingFleetDetails, $warshipsDictionary, $warshipImprovements, $researchImprovements);
+        dump('Populated attacking fleet details with bonuses: ', $attackingFleetDetails);
+
         $defendingFleetDetails = [];
         $defendingWarships     = $targetCity->warships;
 
@@ -74,11 +80,19 @@ class BattleService
             // set needed data for defender, like health and capacity
             $defendingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($defendingFleetDetails, $warshipsDictionary);
 
+            $researchImprovements  = [];
+            $warshipImprovements   = WarshipImprovement::where('user_id', $defendingUserId)->get()->toArray();
+            $defendingFleetDetails = $this->addWarshipsImprovementsBonuses($defendingFleetDetails, $warshipsDictionary, $warshipImprovements, $researchImprovements);
+            dump('Populated defending fleet details with bonuses: ', $defendingFleetDetails);
+
             // calculate rounds while we have warships on each side
             do {
-                $attackingForce = $this->calculateFleetAttack($attackingFleetDetails, $warshipsDictionary);
+                $attackingForce = $this->calculateFleetAttack($attackingFleetDetails);
+                dump('Attacker Force: ', $attackingForce);
+
                 // TODO: add Fortress attack value
-                $defendingForce = $this->calculateFleetAttack($attackingFleetDetails, $warshipsDictionary);
+                $defendingForce = $this->calculateFleetAttack($defendingFleetDetails);
+                dump('Defender Force: ', $defendingForce);
 
                 $attackingDamageToEachType = $attackingForce / count($defendingWarships);
                 $defendingDamageToEachType = $defendingForce / count($attackingFleetDetails);
@@ -138,8 +152,12 @@ class BattleService
         // $logAttacking - information about how much damage was dealt to the opposite side.
         dump('LOGS', 'Attack log: ', $logAttacking, 'Defence log: ', $logDefending);
 
+        dump('Attacker Fleet details left ', $attackingFleetDetails);
+        dump('Defender Fleet details left ', $defendingFleetDetails);
+
         // calculate resources if attacker wins
         if ($winner === 'attacker') {
+            dump('Attacker WON');
             $this->moveResourcesToAttackerFleetAndRemoveItFromCity($fleet, $attackingFleetDetails, $targetCity);
 
             $cityResources = $targetCity->resources->toArray();
@@ -165,8 +183,6 @@ class BattleService
             'round'            => $round,
             'city_id'          => $targetCity->id,
             'winner'           => $winner,
-            /*'gold'             => $takeGold,
-            'population'       => $takePopulation*/
         ]);
 
         $fleetDetails = FleetDetail::where('fleet_id', $fleet->id)->get();
@@ -285,6 +301,7 @@ class BattleService
                 if ($fleetDetails[$i]['warship_id'] === $warshipDictionary['id']) {
                     $fleetDetails[$i]['health']   = $warshipDictionary['health'];
                     $fleetDetails[$i]['capacity'] = $warshipDictionary['capacity'];
+                    $fleetDetails[$i]['attack']   = $warshipDictionary['attack'];
                     break;
                 }
             }
@@ -293,17 +310,28 @@ class BattleService
         return $fleetDetails;
     }
 
-    public function calculateFleetAttack($fleetDetails, $warshipsDictionary): int
+    public function addWarshipsImprovementsBonuses($fleetDetails, $warshipsDictionary, $warshipImprovements, $researchImprovements)
     {
-        $attackForce = 0;
+        // TODO: add researches bonuses
 
-        foreach ($warshipsDictionary as $warshipDictionary) {
-            foreach ($fleetDetails as $detail) {
-                if ($detail['warship_id'] === $warshipDictionary['id']) {
-                    $attackForce += ceil($detail['qty']) * $warshipDictionary['attack'];
+        foreach ($warshipImprovements as $warshipImprovement) {
+            for ($i = 0, $iMax = count($fleetDetails); $i < $iMax; $i++) {
+                if ($fleetDetails[$i]['warship_id'] === $warshipImprovement['warship_id']) {
+                    $fleetDetails[$i][$warshipImprovement['improvement_type']] += floor($fleetDetails[$i][$warshipImprovement['improvement_type']] * $warshipImprovement['percent_improvement'] / 100);
                     break;
                 }
             }
+        }
+
+        return $fleetDetails;
+    }
+
+    public function calculateFleetAttack($fleetDetails): int
+    {
+        $attackForce = 0;
+
+        foreach ($fleetDetails as $detail) {
+            $attackForce += ceil($detail['qty']) * $detail['attack'];
         }
 
         return $attackForce;

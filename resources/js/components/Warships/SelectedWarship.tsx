@@ -12,7 +12,9 @@ import {
   ICityWarshipQueue,
   IUserResearch,
   IWarship,
+  IWarshipImprovement,
   IWarshipRequiredResource,
+  TImprovementType,
 } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
 import { InputNumber } from "../Common/InputNumber";
@@ -33,6 +35,7 @@ interface IProps {
   researches: IUserResearch[];
   buildings: ICityBuilding[];
   hasAvailableSlots: boolean;
+  warshipImprovements?: IWarshipImprovement[];
 }
 
 interface IFormValues {
@@ -57,6 +60,7 @@ export const SelectedWarship = ({
   getQty,
   setWarships,
   hasAvailableSlots,
+  warshipImprovements,
 }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
 
@@ -184,6 +188,19 @@ export const SelectedWarship = ({
     reset(DEFAULT_VALUES);
   };
 
+  const getWarshipImprovementPercent = (
+    warshipId: number,
+    improvementType: TImprovementType
+  ) => {
+    return (
+      warshipImprovements?.find(
+        (improvement) =>
+          improvement.improvementType === improvementType &&
+          improvement.warshipId === warshipId
+      )?.percentImprovement || 0
+    );
+  };
+
   if (!dictionaries) {
     return null;
   }
@@ -227,13 +244,34 @@ export const SelectedWarship = ({
           <SText>Warship Params:</SText>
           <SParams>
             <SParam>
-              <Icon title={"capacity"} /> {capacity}
+              <Icon title={"capacity"} />{" "}
+              {capacity +
+                Math.floor(
+                  (capacity *
+                    getWarshipImprovementPercent(
+                      selectedWarshipId,
+                      "capacity"
+                    )) /
+                    100
+                )}
             </SParam>
             <SParam>
-              <Icon title={"attack"} /> {attack}
+              <Icon title={"attack"} />{" "}
+              {attack +
+                Math.floor(
+                  (attack *
+                    getWarshipImprovementPercent(selectedWarshipId, "attack")) /
+                    100
+                )}
             </SParam>
             <SParam>
-              <Icon title={"health"} /> {health}
+              <Icon title={"health"} />{" "}
+              {health +
+                Math.floor(
+                  (health *
+                    getWarshipImprovementPercent(selectedWarshipId, "health")) /
+                    100
+                )}
             </SParam>
             <SParam>
               <Icon title={"speed"} /> {speed}

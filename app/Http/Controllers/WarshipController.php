@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\CityWarshipQueueResource;
+use App\Http\Resources\WarshipImprovementResource;
 use App\Http\Resources\WarshipResource;
 use App\Models\BuildingQueueSlot;
 use App\Models\City;
@@ -13,10 +14,14 @@ class WarshipController extends Controller
 {
     public function get(Request $request)
     {
-        $userId = Auth::user()->id;
+        $user   = Auth::user();
         $cityId = $request->get('cityId');
 
-        $city = City::where('id', $cityId)->where('user_id', $userId)->first();
+        $city = City::where('id', $cityId)->where('user_id', $user->id)->first();
+
+        if (!$city) {
+            return abort(403);
+        }
 
         $maxWarshipSlots = 0;
 
@@ -32,11 +37,14 @@ class WarshipController extends Controller
             }
         }
 
+        $warshipImprovements = $user->warshipImprovements;
+
         if ($city && $city->id) {
             return [
-                'warships'     => $city->warships ? WarshipResource::collection($city->warships) : [],
-                'warshipSlots' => $maxWarshipSlots,
-                'queue'        => $city->warshipQueue && count($city->warshipQueue) ? CityWarshipQueueResource::collection($city->warshipQueue) : [],
+                'warships'            => $city->warships ? WarshipResource::collection($city->warships) : [],
+                'warshipSlots'        => $maxWarshipSlots,
+                'queue'               => $city->warshipQueue && count($city->warshipQueue) ? CityWarshipQueueResource::collection($city->warshipQueue) : [],
+                'warshipImprovements' => WarshipImprovementResource::collection($warshipImprovements),
             ];
         }
 

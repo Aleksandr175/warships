@@ -290,7 +290,7 @@ export interface IWarshipImprovements {
 export interface IWarshipImprovement {
   id: number;
   warshipId: number;
-  improvementType: "attack" | "health" | "capacity";
+  improvementType: TImprovementType;
   level: number;
   percentImprovement: number;
 }
@@ -298,12 +298,14 @@ export interface IWarshipImprovement {
 export interface IWarshipImprovementRecipe {
   id: number;
   warshipId: number;
-  improvementType: "attack" | "health" | "capacity";
+  improvementType: TImprovementType;
   level: number;
   resourceId: number;
   qty: number;
   percentImprovement: number;
 }
+
+export type TImprovementType = "attack" | "health" | "capacity";
 
 export interface IUserResources {
   resources: IUserResource[];

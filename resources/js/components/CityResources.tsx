@@ -103,7 +103,7 @@ export const CityResources = ({
           (cityResource) => cityResource.resourceId === resource.id
         );
 
-        const production = getProduction(resource.id);
+        const production = Math.floor(getProduction(resource.id));
 
         return (
           <SResource key={resource.id}>

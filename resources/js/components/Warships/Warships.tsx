@@ -5,6 +5,7 @@ import {
   ICityResource,
   ICityWarship,
   ICityWarshipQueue,
+  IWarshipImprovement,
 } from "../../types/types";
 import { Warship } from "./Warship";
 import dayjs from "dayjs";
@@ -42,6 +43,9 @@ export const Warships = ({
   const [warshipQueue, setWarshipQueue] = useState<ICityWarshipQueue[]>([]);
   const [hasAvailableSlots, setHasAvailableSlots] = useState<boolean>(false);
   const [warships, setWarships] = useState<ICityWarship[] | undefined>();
+  const [warshipImprovements, setWarshipImprovements] = useState<
+    IWarshipImprovement[] | undefined
+  >();
 
   useEffect(() => {
     if (dictionaries) {
@@ -68,6 +72,7 @@ export const Warships = ({
       setWarships(response.data.warships);
       setWarshipQueue(response.data.queue);
       setWarshipSlots(response.data.warshipSlots);
+      setWarshipImprovements(response.data.warshipImprovements);
     });
   };
 
@@ -103,6 +108,7 @@ export const Warships = ({
             setWarships={setWarships}
             updateCityResources={updateCityResources}
             hasAvailableSlots={hasAvailableSlots}
+            warshipImprovements={warshipImprovements}
           />
         )}
 

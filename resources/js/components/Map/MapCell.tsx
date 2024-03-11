@@ -51,9 +51,6 @@ export const MapCell = ({
       return resource.coefficient === sortedResources[0].coefficient;
     }) || [];
 
-  console.log(sortedResources);
-  console.log(mainResources);
-
   if (!dictionaries) {
     return <></>;
   }

@@ -51,8 +51,6 @@ export const RefiningRecipe = ({
     return Math.min(Math.floor(cityResourceAmount / recipe.inputQty), 100);
   };
 
-  console.log(maxAvailableRecipes());
-
   const { handleSubmit, formState, control, reset } = form;
 
   const { mutate: mutateRefiningQueue, isPending } = useMutateRefiningQueue({

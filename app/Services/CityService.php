@@ -12,6 +12,9 @@ class CityService
 {
     public function generateCitiesForAdventure(Adventure $adventure, Archipelago $archipelago)
     {
+        $resourcesCardsDict = Resource::where('type', config('constants.RESOURCE_TYPE_IDS.CARD'))
+            ->get()->toArray();
+
         // TODO: add improved logic for calculation power of islands for adventure
         // change resources
         $adventureLvl = $adventure->adventure_level;
@@ -73,6 +76,8 @@ class CityService
             'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.IRON')] * $coefficient)
         ]);
 
+
+
         $city = City::create([
             'title'              => 'Rich City',
             'adventure_id'       => $adventure->id,
@@ -119,6 +124,10 @@ class CityService
             'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.IRON')] * $coefficient)
         ]);
 
+        $numberOfWarships = random_int(1, 3);
+        $this->generateWarshipCardsForCity($city, $numberOfWarships, $resourcesCardsDict);
+
+
         $city = City::create([
             'title'              => 'Pirate Bay',
             'adventure_id'       => $adventure->id,
@@ -152,6 +161,10 @@ class CityService
             'resource_id' => config('constants.RESOURCE_IDS.ORE'),
             'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.ORE')] * $coefficient)
         ]);
+
+        $numberOfWarships = 1;
+        $this->generateWarshipCardsForCity($city, $numberOfWarships, $resourcesCardsDict);
+
 
         $city = City::create([
             'title'              => 'Treasure Island',
@@ -192,6 +205,9 @@ class CityService
             'resource_id' => config('constants.RESOURCE_IDS.IRON'),
             'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.IRON')] * $coefficient)
         ]);
+
+        $numberOfWarships = random_int(1, 3);
+        $this->generateWarshipCardsForCity($city, $numberOfWarships, $resourcesCardsDict);
     }
 
     public function addResourceToCity(int $cityId, int $resourceId, int $qty): void
@@ -206,6 +222,40 @@ class CityService
                 'resource_id' => $resourceId,
                 'qty'         => $qty
             ]);
+        }
+    }
+
+    public function generateWarshipCards($resourcesCards)
+    {
+        $randomArrayIndex = array_rand($resourcesCards, 1);
+        $randomCard       = $resourcesCards[$randomArrayIndex];
+        $randomQty        = random_int(0, 3);
+
+        return [
+            'resource_id' => $randomCard['id'],
+            'qty'         => $randomQty
+        ];
+    }
+
+    public function generateWarshipCardsForCity(City $city, int $numberOfWarships, $resourcesCardsDict): void
+    {
+        // generate some cards for adventure
+        for ($i = 0; $i < $numberOfWarships; $i++) {
+            $cardInfo = $this->generateWarshipCards($resourcesCardsDict);
+
+            if ($cardInfo['qty'] > 0) {
+                $resourceExist = CityResource::where('city_id', $city->id)->where('resource_id', $cardInfo['resource_id'])->first();
+
+                if ($resourceExist) {
+                    $resourceExist->increment('qty', $cardInfo['qty']);
+                } else {
+                    CityResource::create([
+                        'city_id'     => $city->id,
+                        'resource_id' => $cardInfo['resource_id'],
+                        'qty'         => $cardInfo['qty']
+                    ]);
+                }
+            }
         }
     }
 }

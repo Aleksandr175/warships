@@ -2,8 +2,6 @@ import styled, { css } from "styled-components";
 import React from "react";
 
 export const ProgressBar = ({ percent }: { percent: number }) => {
-  console.log("Progress ", percent);
-
   return (
     <SProgressBarWrapper>
       <SProgressBarLine>

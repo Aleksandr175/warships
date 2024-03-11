@@ -77,7 +77,6 @@ export const Warships = ({
   };
 
   useEffect(() => {
-    console.log(warshipQueue.length < warshipSlots);
     setHasAvailableSlots(warshipQueue.length < warshipSlots);
   }, [warshipQueue]);
 

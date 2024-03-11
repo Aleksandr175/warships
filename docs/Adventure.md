@@ -64,6 +64,8 @@ $population = $lvl * 100
 
 Has warships points: $lvl * 300
 
+Island can have warships cards for 1 warship (random) with 0-3 cards of one type
+
 ### Rich City
 
 Has resources by formula:
@@ -74,6 +76,8 @@ $population = $lvl * 400
 
 Has warships points: $lvl * 700
 
+Island can have warships cards for 1-3 warships (random) with 0-3 cards of one type
+
 ### Treasure Island
 
 Has resources by formula:
@@ -83,6 +87,8 @@ $gold = $lvl * 800
 $population = 0
 
 Has warships points: 0
+
+Island can have warships cards for 1-3 warships (random) with 0-3 cards of one type
 
 ## Future updates
 

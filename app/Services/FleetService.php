@@ -329,6 +329,8 @@ class FleetService
 
             $city = City::find($fleet->city_id);
 
+            $resourcesDictionary = Resource::get()->toArray();
+
             // task: trade
             if ($fleet->isTradeTask()) {
                 if ($fleet->isTradeGoingToTarget()) {
@@ -389,7 +391,7 @@ class FleetService
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
 
                     // move all resources from Fleet to City
-                    $this->moveResourcesFromFleetToCity($fleet, $city);
+                    $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
 
                     Message::create([
                         'user_id'        => $city->user_id,
@@ -430,7 +432,7 @@ class FleetService
                         // transfer fleet to warships in the island
                         $this->convertFleetDetailsToWarships($fleetDetails, $targetCity);
 
-                        $this->moveResourcesFromFleetToCity($fleet, $targetCity);
+                        $this->moveResourcesFromFleetToCityOrUser($fleet, $targetCity, $resourcesDictionary);
 
                         $shouldDeleteFleet = true;
 
@@ -474,7 +476,7 @@ class FleetService
                     // transfer fleet to warships in the island
                     $this->convertFleetDetailsToWarships($fleetDetails, $city);
 
-                    $this->moveResourcesFromFleetToCity($fleet, $city);
+                    $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
 
                     $shouldDeleteFleet = true;
 
@@ -501,7 +503,7 @@ class FleetService
 
                     $targetCity = City::find($fleet->target_city_id);
 
-                    $this->moveResourcesFromFleetToCity($fleet, $targetCity);
+                    $this->moveResourcesFromFleetToCityOrUser($fleet, $targetCity, $resourcesDictionary);
                 }
 
                 if ($fleet->isTransportFleetGoingBack()) {
@@ -512,7 +514,7 @@ class FleetService
 
                     $this->convertFleetDetailsToWarships($fleetDetails, $city);
 
-                    $this->moveResourcesFromFleetToCity($fleet, $city);
+                    $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
 
                     $shouldDeleteFleet = true;
                 }
@@ -547,7 +549,7 @@ class FleetService
                     $city         = City::find($fleet->city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
 
-                    $this->moveResourcesFromFleetToCity($fleet, $city);
+                    $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
 
                     if ($fleet->repeating) {
                         dump('expedition: fleet repeats expedition task, going to target');
@@ -695,14 +697,30 @@ class FleetService
         }
     }
 
-    public function moveResourcesFromFleetToCity(Fleet $fleet, City $city): void
+    public function moveResourcesFromFleetToCityOrUser(Fleet $fleet, City $city, $resourcesDictionary): void
     {
         $resources = FleetResource::where('fleet_id', $fleet->id)->get();
 
         $cityService = new CityService();
+        $userService = new UserService();
 
         foreach ($resources as $resource) {
-            $cityService->addResourceToCity($city->id, $resource->resource_id, $resource->qty);
+            $resourceType = $resourcesDictionary[0]['type'];
+            foreach ($resourcesDictionary as $resourceDict) {
+                if ($resourceDict['id'] === $resource['resource_id']) {
+                    $resourceType = $resourceDict['type'];
+                    break;
+                }
+            }
+
+            if ($resourceType === config('constants.RESOURCE_TYPE_IDS.COMMON')) {
+                $cityService->addResourceToCity($city->id, $resource->resource_id, $resource->qty);
+            }
+
+            // some unique resources move to user, not city
+            if ($resourceType === config('constants.RESOURCE_TYPE_IDS.CARD')) {
+                $userService->addResourceToUser($city->user_id, $resource->resource_id, $resource->qty);
+            }
         }
 
         FleetResource::where('fleet_id', $fleet->id)->delete();

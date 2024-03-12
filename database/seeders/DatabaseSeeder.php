@@ -171,7 +171,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // TODO: Change coordinates, fix this seeder
-        for ($i = 0; $i < 150; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $archipelago = \App\Models\Archipelago::create([
                 'type' => 'usual'
             ]);

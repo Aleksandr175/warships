@@ -90,13 +90,18 @@ export const CityResources = ({
     );
   };*/
 
+  // 1 - common, 2 - card
+  const cityResourcesDictionary = dictionaries?.resourcesDictionary?.filter(
+    (resource) => resource.type === 1
+  );
+
   if (!dictionaries) {
     return null;
   }
 
   return (
     <SResources>
-      {dictionaries?.resourcesDictionary?.map((resource) => {
+      {cityResourcesDictionary?.map((resource) => {
         const resourceSlug = resource.slug;
 
         const cityResource = cityResources?.find(

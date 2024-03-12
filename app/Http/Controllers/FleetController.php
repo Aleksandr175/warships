@@ -82,15 +82,11 @@ class FleetController extends Controller
     public function send(Request $request, FleetService $fleetService)
     {
         $user = Auth::user();
-        // TODO calculate gold for sending fleet
         $response = $fleetService->send($request, $user);
 
         return $response;
 
         // TODO
-        // check if we have enough gold for task - take it from player
-
-        // make fleet, set target, details
         // calculate time to target
     }
 }

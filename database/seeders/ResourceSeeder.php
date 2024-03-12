@@ -112,7 +112,113 @@ class ResourceSeeder extends Seeder
             'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
         ]);
 
-        // TODO: add seeders for all warships...
-        // ...
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.CARD_CARAVEL_ATTACK'),
+            'title'       => 'Attack Card For Caravel',
+            'description' => 'Attack Card',
+            'slug'        => 'caravel_attack_card',
+            'value'       => 600,
+            'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
+        ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.CARD_CARAVEL_CAPACITY'),
+            'title'       => 'Capacity Card For Caravel',
+            'description' => 'Capacity Card',
+            'slug'        => 'caravel_capacity_card',
+            'value'       => 600,
+            'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
+        ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.CARD_CARAVEL_HEALTH'),
+            'title'       => 'Health Card For Caravel',
+            'description' => 'Health Card',
+            'slug'        => 'caravel_health_card',
+            'value'       => 600,
+            'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
+        ]);
+
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.CARD_GALERA_ATTACK'),
+            'title'       => 'Attack Card For Galera',
+            'description' => 'Attack Card',
+            'slug'        => 'galera_attack_card',
+            'value'       => 700,
+            'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
+        ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.CARD_GALERA_CAPACITY'),
+            'title'       => 'Capacity Card For Galera',
+            'description' => 'Capacity Card',
+            'slug'        => 'galera_capacity_card',
+            'value'       => 700,
+            'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
+        ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.CARD_GALERA_HEALTH'),
+            'title'       => 'Health Card For Galera',
+            'description' => 'Health Card',
+            'slug'        => 'galera_health_card',
+            'value'       => 700,
+            'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
+        ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.CARD_FRIGATE_ATTACK'),
+            'title'       => 'Attack Card For Frigate',
+            'description' => 'Attack Card',
+            'slug'        => 'frigate_attack_card',
+            'value'       => 800,
+            'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
+        ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.CARD_FRIGATE_CAPACITY'),
+            'title'       => 'Capacity Card For Frigate',
+            'description' => 'Capacity Card',
+            'slug'        => 'frigate_capacity_card',
+            'value'       => 800,
+            'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
+        ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.CARD_FRIGATE_HEALTH'),
+            'title'       => 'Health Card For Frigate',
+            'description' => 'Health Card',
+            'slug'        => 'frigate_health_card',
+            'value'       => 800,
+            'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
+        ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.CARD_BATTLESHIP_ATTACK'),
+            'title'       => 'Attack Card For Battleship',
+            'description' => 'Attack Card',
+            'slug'        => 'battleship_attack_card',
+            'value'       => 1000,
+            'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
+        ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.CARD_BATTLESHIP_CAPACITY'),
+            'title'       => 'Capacity Card For Battleship',
+            'description' => 'Capacity Card',
+            'slug'        => 'battleship_capacity_card',
+            'value'       => 1000,
+            'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
+        ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.CARD_BATTLESHIP_HEALTH'),
+            'title'       => 'Health Card For Battleship',
+            'description' => 'Health Card',
+            'slug'        => 'battleship_health_card',
+            'value'       => 1000,
+            'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
+        ]);
     }
 }

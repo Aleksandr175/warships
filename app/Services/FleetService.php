@@ -150,7 +150,8 @@ class FleetService
         }
 
         $warshipsDictionary        = WarshipDictionary::get();
-        $this->updatedFleetDetails = (new BattleService)->populateFleetDetailsWithCapacityAndHealth($this->updatedFleetDetails, $warshipsDictionary);
+
+        $this->updatedFleetDetails = (new BattleService)->populateFleetDetailsWithCapacityAndHealth($user->id, $this->updatedFleetDetails, $warshipsDictionary);
 
         $availableCapacity = (new BattleService)->getAvailableCapacity(null, $this->updatedFleetDetails);
 
@@ -368,7 +369,7 @@ class FleetService
                     $warshipsDictionary = WarshipDictionary::get();
 
                     $fleetDetails      = FleetDetail::getFleetDetails([$fleet->id])->toArray();
-                    $fleetDetails      = (new BattleService)->populateFleetDetailsWithCapacityAndHealth($fleetDetails, $warshipsDictionary);
+                    $fleetDetails      = (new BattleService)->populateFleetDetailsWithCapacityAndHealth($city->user_id, $fleetDetails, $warshipsDictionary);
                     $availableCapacity = (new BattleService)->getAvailableCapacity($fleet, $fleetDetails);
 
                     $gold          = floor($availableCapacity * 0.1);

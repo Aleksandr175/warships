@@ -22,9 +22,11 @@ class ExpeditionService
 
         $isDestroyed = false;
 
+        $userId = City::find($fleet->city_id)->user_id;
+
         if ($randomNumber <= 75) {
             // 75% chance: Gain resources
-            $this->gainResources($fleet, $fleetDetails);
+            $this->gainResources($userId, $fleet, $fleetDetails);
         } elseif ($randomNumber <= 76) {
             // 1% chance: Lose the entire fleet
             $this->loseEntireFleet($fleet, $fleetDetails);
@@ -59,11 +61,11 @@ class ExpeditionService
         }
     }
 
-    public function gainResources(Fleet $fleet, $fleetDetails): void
+    public function gainResources($userId, Fleet $fleet, $fleetDetails): void
     {
         $warshipsDictionary = WarshipDictionary::get();
 
-        $fleetDetails = (new BattleService)->populateFleetDetailsWithCapacityAndHealth($fleetDetails, $warshipsDictionary);
+        $fleetDetails = (new BattleService)->populateFleetDetailsWithCapacityAndHealth($userId, $fleetDetails, $warshipsDictionary);
 
         $availableCapacity = (new BattleService)->getAvailableCapacity($fleet, $fleetDetails);
 

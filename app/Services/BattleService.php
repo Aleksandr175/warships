@@ -58,11 +58,8 @@ class BattleService
         $logDefending = [];
 
         // set needed data for attacker, like health and capacity
-        $attackingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($attackingFleetDetails, $warshipsDictionary);
+        $attackingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($attackingUserId, $attackingFleetDetails, $warshipsDictionary);
 
-        $researchImprovements  = [];
-        $warshipImprovements   = WarshipImprovement::where('user_id', $attackingUserId)->get()->toArray();
-        $attackingFleetDetails = $this->addWarshipsImprovementsBonuses($attackingFleetDetails, $warshipsDictionary, $warshipImprovements, $researchImprovements);
         dump('Populated attacking fleet details with bonuses: ', $attackingFleetDetails);
 
         $defendingFleetDetails = [];
@@ -78,11 +75,8 @@ class BattleService
             }
 
             // set needed data for defender, like health and capacity
-            $defendingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($defendingFleetDetails, $warshipsDictionary);
+            $defendingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($defendingUserId, $defendingFleetDetails, $warshipsDictionary);
 
-            $researchImprovements  = [];
-            $warshipImprovements   = WarshipImprovement::where('user_id', $defendingUserId)->get()->toArray();
-            $defendingFleetDetails = $this->addWarshipsImprovementsBonuses($defendingFleetDetails, $warshipsDictionary, $warshipImprovements, $researchImprovements);
             dump('Populated defending fleet details with bonuses: ', $defendingFleetDetails);
 
             // calculate rounds while we have warships on each side
@@ -294,7 +288,7 @@ class BattleService
         return max($availableCapacity, 0);
     }
 
-    public function populateFleetDetailsWithCapacityAndHealth($fleetDetails, $warshipsDictionary)
+    public function populateFleetDetailsWithCapacityAndHealth(int $userId, $fleetDetails, $warshipsDictionary)
     {
         foreach ($warshipsDictionary as $warshipDictionary) {
             for ($i = 0, $iMax = count($fleetDetails); $i < $iMax; $i++) {
@@ -307,7 +301,11 @@ class BattleService
             }
         }
 
-        return $fleetDetails;
+        // get all bonuses
+        $researchImprovements      = [];
+        $warshipImprovements       = WarshipImprovement::where('user_id', $userId)->get()->toArray();
+
+        return $this->addWarshipsImprovementsBonuses($fleetDetails, $warshipsDictionary, $warshipImprovements, $researchImprovements);
     }
 
     public function addWarshipsImprovementsBonuses($fleetDetails, $warshipsDictionary, $warshipImprovements, $researchImprovements)

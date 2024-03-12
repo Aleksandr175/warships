@@ -1,7 +1,11 @@
 import { Card } from "../Common/Card";
 import { SButtonsBlock, SH2, SParam, SParams, SText } from "../styles";
 import { Icon } from "../Common/Icon";
-import { convertSecondsToTime, getResourceSlug } from "../../utils";
+import {
+  convertSecondsToTime,
+  getResourceSlug,
+  getWarshipImprovementPercent,
+} from "../../utils";
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
@@ -188,20 +192,7 @@ export const SelectedWarship = ({
     reset(DEFAULT_VALUES);
   };
 
-  const getWarshipImprovementPercent = (
-    warshipId: number,
-    improvementType: TImprovementType
-  ) => {
-    return (
-      warshipImprovements?.find(
-        (improvement) =>
-          improvement.improvementType === improvementType &&
-          improvement.warshipId === warshipId
-      )?.percentImprovement || 0
-    );
-  };
-
-  if (!dictionaries) {
+  if (!dictionaries || !warshipImprovements) {
     return null;
   }
 
@@ -249,6 +240,7 @@ export const SelectedWarship = ({
                 Math.floor(
                   (capacity *
                     getWarshipImprovementPercent(
+                      warshipImprovements,
                       selectedWarshipId,
                       "capacity"
                     )) /
@@ -260,7 +252,11 @@ export const SelectedWarship = ({
               {attack +
                 Math.floor(
                   (attack *
-                    getWarshipImprovementPercent(selectedWarshipId, "attack")) /
+                    getWarshipImprovementPercent(
+                      warshipImprovements,
+                      selectedWarshipId,
+                      "attack"
+                    )) /
                     100
                 )}
             </SParam>
@@ -269,7 +265,11 @@ export const SelectedWarship = ({
               {health +
                 Math.floor(
                   (health *
-                    getWarshipImprovementPercent(selectedWarshipId, "health")) /
+                    getWarshipImprovementPercent(
+                      warshipImprovements,
+                      selectedWarshipId,
+                      "health"
+                    )) /
                     100
                 )}
             </SParam>

@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { ICity } from "./types/types";
+import { ICity, IWarshipImprovement, TImprovementType } from "./types/types";
 
 export const convertSecondsToTime = (seconds: number): string => {
   if (seconds < 0) {
@@ -39,5 +39,19 @@ export const getCityResourceProductionCoefficient = (
     city?.resourcesProductionCoefficient?.find(
       (production) => production.resourceId === resourceId
     )?.coefficient || 1
+  );
+};
+
+export const getWarshipImprovementPercent = (
+  warshipImprovements: IWarshipImprovement[],
+  warshipId: number,
+  improvementType: TImprovementType
+) => {
+  return (
+    warshipImprovements?.find(
+      (improvement) =>
+        improvement.improvementType === improvementType &&
+        improvement.warshipId === warshipId
+    )?.percentImprovement || 0
   );
 };

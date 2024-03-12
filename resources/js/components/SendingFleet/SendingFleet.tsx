@@ -17,6 +17,8 @@ import { SContent, SH1 } from "../styles";
 import { useSearchParams } from "react-router-dom";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import { Icon } from "../Common/Icon";
+import { useFetchWarshipsImprovements } from "../../hooks/useFetchWarshipsImprovements";
+import { getWarshipImprovementPercent } from "../../utils";
 
 interface IProps {
   cities: ICity[];
@@ -31,6 +33,10 @@ interface IResources {
 // TODO: add react hook form
 export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
+  const queryWarshipImprovements = useFetchWarshipsImprovements();
+
+  const warshipImprovements =
+    queryWarshipImprovements?.data?.warshipImprovements;
 
   const dictionaries = queryDictionaries.data;
 
@@ -42,6 +48,26 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
   const [actualCityWarships, setActualCityWarships] = useState(warships);
 
   const [resources, setResources] = useState<IResources>({});
+
+  useEffect(() => {
+    getWarships();
+
+    const intervalId = setInterval(() => {
+      getWarships();
+    }, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [city]);
+
+  const getWarships = () => {
+    if (!city?.id) {
+      return;
+    }
+
+    httpClient.get("/warships?cityId=" + city?.id).then((response) => {
+      setWarships(response.data.warships);
+    });
+  };
 
   // TODO: refactor this shit
   const [renderKey, setRenderKey] = useState(0);
@@ -158,8 +184,19 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
         (warship) => warship.id === fDetail.warshipId
       );
 
-      if (dictWarship) {
-        maxCapacity += dictWarship.capacity * fDetail.qty;
+      if (dictWarship && warshipImprovements) {
+        maxCapacity +=
+          (dictWarship.capacity +
+            Math.floor(
+              (dictWarship.capacity *
+                getWarshipImprovementPercent(
+                  warshipImprovements,
+                  dictWarship.id,
+                  "capacity"
+                )) /
+                100
+            )) *
+          fDetail.qty;
       }
     });
 
@@ -178,7 +215,12 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
     return remainCapacity;
   };
 
-  if (!dictionaries) {
+  // 1 - common, 2 - card
+  const cityResourcesDictionary = dictionaries?.resourcesDictionary?.filter(
+    (resource) => resource.type === 1
+  );
+
+  if (!dictionaries || !warshipImprovements) {
     return null;
   }
 
@@ -296,7 +338,7 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
                 </strong>
               </div>
               <div className={"row"}>
-                {dictionaries?.resourcesDictionary?.map((resource) => {
+                {cityResourcesDictionary?.map((resource) => {
                   let maxAvailableAmount = maxCapacity;
                   const resourceQtyInCity =
                     cityResources.find(

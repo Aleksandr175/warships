@@ -64,6 +64,13 @@ class UserController extends Controller
 
         $unreadMessagesNumber = $user->unreadMessagesNumber();
 
+        $tradeSystem      = $userResearches->where('research_id', config('constants.RESEARCHES.TRADE_SYSTEM'))->first();
+        $tradeFleetNumber = 0;
+        if ($tradeSystem) {
+            $tradeFleetNumber = $tradeSystem->lvl;
+        }
+
+
         return [
             'buildings'               => BuildingDictionaryResource::collection($buildings),
             'buildingResources'       => BuildingResourceResource::collection($buildingResources),
@@ -78,7 +85,10 @@ class UserController extends Controller
             'researchDependencies'    => ResearchDependencyResource::collection($researchDependencies),
             'warshipDependencies'     => WarshipDependencyResource::collection($warshipDependencies),
             'unreadMessagesNumber'    => $unreadMessagesNumber,
-            'resourcesDictionary'     => ResourceDictionaryResource::collection($resourcesDictionary)
+            'resourcesDictionary'     => ResourceDictionaryResource::collection($resourcesDictionary),
+            'maxFleetNumbers'            => [
+                'trade' => $tradeFleetNumber
+            ]
         ];
     }
 

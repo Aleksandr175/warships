@@ -138,6 +138,9 @@ export interface IDictionary {
   fleetTasksDictionary: IFleetTasksDictionary[];
   fleetStatusesDictionary: IFleetStatusesDictionary[];
   resourcesDictionary: IResourceDictionary[];
+  maxFleetNumbers: {
+    trade: number;
+  };
 }
 
 export interface IBuilding {

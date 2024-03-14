@@ -8,11 +8,11 @@ import {
   IFleetIncoming,
   IMapCity,
 } from "../types/types";
+import { useFetchDictionaries } from "../hooks/useFetchDictionaries";
 
 export const Fleets = ({
   fleets,
   fleetsIncoming,
-  dictionaries,
   fleetCitiesDictionary,
   fleetDetails,
 }: {
@@ -22,6 +22,10 @@ export const Fleets = ({
   fleetCitiesDictionary: IMapCity[];
   fleetDetails: IFleetWarshipsData[] | undefined;
 }) => {
+  const queryDictionaries = useFetchDictionaries();
+
+  const dictionaries = queryDictionaries.data;
+
   const getFleetDetails = (fleetId: number): IFleetWarshipsData[] => {
     return fleetDetails?.filter((detail) => detail.fleetId === fleetId)!;
   };
@@ -43,9 +47,13 @@ export const Fleets = ({
     ...(fleetsIncoming || []),
   ].filter((fleet) => fleet.fleetTaskId === expeditionFleetTaskId);
 
+  if (!dictionaries) {
+    return <></>;
+  }
+
   return (
     <SColumnFleets>
-      <p>Active Fleets</p>
+      <strong>Active Fleets</strong>
       {!fleets?.length && !fleetsIncoming?.length && <p>No Active Fleets</p>}
 
       {fleets &&
@@ -55,7 +63,6 @@ export const Fleets = ({
               key={fleet.id}
               fleet={fleet}
               fleetDetails={getFleetDetails(fleet.id)}
-              dictionaries={dictionaries}
               // TODO: sent city and target city, not whole dictionary of cities
               fleetCities={fleetCitiesDictionary}
             />
@@ -64,14 +71,13 @@ export const Fleets = ({
 
       {fleetsIncoming && fleetsIncoming.length > 0 && (
         <>
-          <p>Incoming Fleets</p>
+          <strong>Incoming Fleets</strong>
           {fleetsIncoming.map((fleet) => {
             return (
               <Fleet
                 key={fleet.id}
                 fleet={fleet}
                 fleetDetails={getFleetDetails(fleet.id)}
-                dictionaries={dictionaries}
                 // TODO: sent city and target city, not whole dictionary of cities
                 fleetCities={fleetCitiesDictionary}
               />
@@ -82,14 +88,16 @@ export const Fleets = ({
 
       {fleetsTrading && fleetsTrading.length > 0 && (
         <>
-          <p>Trading Fleets</p>
+          <strong>
+            Trading Fleets ({fleetsTrading.length} /{" "}
+            {dictionaries.maxFleetNumbers.trade})
+          </strong>
           {fleetsTrading.map((fleet) => {
             return (
               <Fleet
                 key={fleet.id}
                 fleet={fleet}
                 fleetDetails={getFleetDetails(fleet.id)}
-                dictionaries={dictionaries}
                 // TODO: sent city and target city, not whole dictionary of cities
                 fleetCities={fleetCitiesDictionary}
               />
@@ -100,14 +108,13 @@ export const Fleets = ({
 
       {fleetsExpedition && fleetsExpedition.length > 0 && (
         <>
-          <p>Expedition Fleets</p>
+          <strong>Expedition Fleets</strong>
           {fleetsExpedition.map((fleet) => {
             return (
               <Fleet
                 key={fleet.id}
                 fleet={fleet}
                 fleetDetails={getFleetDetails(fleet.id)}
-                dictionaries={dictionaries}
                 // TODO: sent city and target city, not whole dictionary of cities
                 fleetCities={fleetCitiesDictionary}
               />

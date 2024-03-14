@@ -10,18 +10,21 @@ import styled, { css } from "styled-components";
 import { Icon } from "./Common/Icon";
 import { convertSecondsToTime, getTimeLeft } from "../utils";
 import { FleetWarships } from "./Common/FleetWarships";
+import { useFetchDictionaries } from "../hooks/useFetchDictionaries";
 
 export const Fleet = ({
   fleet,
-  dictionaries,
   fleetCities,
   fleetDetails,
 }: {
   fleet: ICityFleet | IFleetIncoming;
-  dictionaries: IDictionary;
   fleetCities: IMapCity[];
   fleetDetails: IFleetWarshipsData[];
 }) => {
+  const queryDictionaries = useFetchDictionaries();
+
+  const dictionaries = queryDictionaries.data;
+
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const timer = useRef();
 
@@ -49,7 +52,7 @@ export const Fleet = ({
   }, [timeLeft]);
 
   const getFleetTaskIconName = (fleetTaskId: number): string => {
-    const fleetTask = dictionaries.fleetTasksDictionary.find(
+    const fleetTask = dictionaries?.fleetTasksDictionary.find(
       (task) => fleetTaskId === task.id
     );
 
@@ -75,7 +78,7 @@ export const Fleet = ({
   };
 
   const getFleetStatusTitle = (fleetStatusId: number): string => {
-    const fleetStatus = dictionaries.fleetStatusesDictionary.find(
+    const fleetStatus = dictionaries?.fleetStatusesDictionary.find(
       (status) => fleetStatusId === status.id
     );
 

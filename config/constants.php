@@ -38,6 +38,7 @@ return [
         'SHIP_SAILS'        => 2,
         'SHIP_GUNS'         => 3,
         'SHIP_HOLD'         => 4,
+        'TRADE_SYSTEM'      => 5,
     ],
     'WARSHIPS'   => [
         'LUGGER'     => 1,

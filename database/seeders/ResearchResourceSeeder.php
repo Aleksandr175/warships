@@ -77,5 +77,53 @@ class ResearchResourceSeeder extends Seeder
             'lvl'           => 1,
             'time_required' => 20,
         ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.TRADE_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 300,
+            'lvl'           => 1,
+            'time_required' => 20,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.TRADE_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 1000,
+            'lvl'           => 2,
+            'time_required' => 100,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.TRADE_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 400,
+            'lvl'           => 2,
+            'time_required' => 100,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.TRADE_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 10000,
+            'lvl'           => 3,
+            'time_required' => 300,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.TRADE_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 800,
+            'lvl'           => 3,
+            'time_required' => 300,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.TRADE_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.ORE'),
+            'qty'           => 100,
+            'lvl'           => 3,
+            'time_required' => 300,
+        ]);
     }
 }

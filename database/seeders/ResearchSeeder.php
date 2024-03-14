@@ -25,5 +25,11 @@ class ResearchSeeder extends Seeder
             'research_id' => config('constants.RESEARCHES.SHIP_SAILS'),
             'lvl'         => 1
         ]);
+
+        Research::create([
+            'user_id'     => config('constants.DEFAULT_USER_ID'),
+            'research_id' => config('constants.RESEARCHES.TRADE_SYSTEM'),
+            'lvl'         => 2
+        ]);
     }
 }

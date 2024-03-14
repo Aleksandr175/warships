@@ -7,12 +7,12 @@ use App\Events\FleetUpdatedEvent;
 use App\Http\Resources\WarshipResource;
 use App\Jobs\BattleJob;
 use App\Models\City;
-use App\Models\CityResource;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
 use App\Models\FleetResource;
 use App\Models\FleetTaskDictionary;
 use App\Models\Message;
+use App\Models\Research;
 use App\Models\Resource;
 use App\Models\User;
 use App\Models\Warship;
@@ -149,7 +149,7 @@ class FleetService
             $wholeAmountOfResources += (int)$resourceAmount;
         }
 
-        $warshipsDictionary        = WarshipDictionary::get();
+        $warshipsDictionary = WarshipDictionary::get();
 
         $this->updatedFleetDetails = (new BattleService)->populateFleetDetailsWithCapacityAndHealth($user->id, $this->updatedFleetDetails, $warshipsDictionary);
 
@@ -159,21 +159,26 @@ class FleetService
             return 'Cant carry so many resources';
         }
 
-        $defaultFleetStatusId = 0;
-        if ($this->taskTypeId === config('constants.FLEET_TASKS.TRADE')) {
-            $defaultFleetStatusId = config('constants.FLEET_STATUSES.TRADE_GOING_TO_TARGET');
-        }
-        if ($this->taskTypeId === config('constants.FLEET_TASKS.MOVE')) {
-            $defaultFleetStatusId = config('constants.FLEET_STATUSES.MOVING_GOING_TO_TARGET');
-        }
-        if ($this->taskTypeId === config('constants.FLEET_TASKS.ATTACK')) {
-            $defaultFleetStatusId = config('constants.FLEET_STATUSES.ATTACK_GOING_TO_TARGET');
-        }
-        if ($this->taskTypeId === config('constants.FLEET_TASKS.TRANSPORT')) {
-            $defaultFleetStatusId = config('constants.FLEET_STATUSES.TRANSPORT_GOING_TO_TARGET');
-        }
-        if ($this->taskTypeId === config('constants.FLEET_TASKS.EXPEDITION')) {
-            $defaultFleetStatusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_TO_TARGET');
+        $defaultFleetStatusId = $this->getDefaultFleetTaskStatus($this->taskTypeId);
+
+        if ($defaultFleetStatusId === config('constants.FLEET_TASKS.TRADE')) {
+            // get trade system for checking amount of trade fleets
+            $tradeSystemResearch = Research::where('user_id', $user->id)->where('research_id', config('constants.RESEARCHES.TRADE_SYSTEM'))->first();
+            $tradeSystemLvl = 0;
+            if ($tradeSystemResearch) {
+                $tradeSystemLvl = $tradeSystemResearch->lvl;
+            }
+
+            $userCityIds = $user->cities->pluck('id')->toArray();
+            $tradeFleets = Fleet::whereIn('city_id', $userCityIds)->where('fleet_task_id', config('constants.FLEET_TASKS.TRADE'))->get();
+
+            if (count($tradeFleets) >= $tradeSystemLvl) {
+                return 'You cant send more trade fleets';
+            }
+
+            if ($this->targetCity?->user_id === $user->id) {
+                return 'You cant trade with your islands';
+            }
         }
 
         // create fleet and details
@@ -188,41 +193,7 @@ class FleetService
             'deadline'       => Carbon::now()->addSeconds($timeToTarget)
         ])->id;
 
-        // transfer resources from island to fleet
-        foreach ($this->resources as $resourceSlug => $resourceAmount) {
-            $resourceId = null;
-
-            foreach ($resourcesDict as $resDict) {
-                if ($resDict->slug === $resourceSlug) {
-                    $resourceId = $resDict->id;
-                }
-            }
-
-            if ($resourceId) {
-                foreach ($cityResources as $cityResource) {
-                    if ($resourceId === $cityResource->resource_id) {
-                        // check max available qty we can transfer to fleet
-                        $maxQty    = floor((int)$resourceAmount);
-                        $qtyInCity = floor($cityResource->qty);
-
-                        if ($maxQty > $qtyInCity) {
-                            $maxQty = $qtyInCity;
-                        }
-
-                        FleetResource::create([
-                            'fleet_id'    => $fleetId,
-                            'resource_id' => $resourceId,
-                            'qty'         => $maxQty
-                        ]);
-
-                        break;
-                    }
-                }
-            }
-        }
-
-        // update resources for island
-        $this->subtractResourcesFromCity($cityResources, $this->resources, $resourcesDict);
+        $this->transferResourcesFromCityToFleet($fleetId, $cityResources, $this->resources, $resourcesDict);
 
         $this->moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleetId, $this->updatedFleetDetails);
 
@@ -374,7 +345,7 @@ class FleetService
 
                     $gold          = floor($availableCapacity * 0.1);
                     $goldForIsland = floor($gold / 2);
-                    $this->addResourceToFleet($fleet, config('constants.RESOURCE_IDS.GOLD'), $gold);
+                    $this->addResourceToFleet($fleet->id, config('constants.RESOURCE_IDS.GOLD'), $gold);
 
                     $targetCity = City::find($fleet->target_city_id);
 
@@ -654,7 +625,40 @@ class FleetService
         }
     }
 
-    public function subtractResourcesFromCity($cityResources, $subtractResources, $resourcesDict): void
+    public function transferResourcesFromCityToFleet(int $fleetId, $cityResources, $resources, $resourcesDict): void
+    {
+        // transfer resources from island to fleet
+        foreach ($resources as $resourceSlug => $resourceAmount) {
+            $resourceId = null;
+
+            foreach ($resourcesDict as $resDict) {
+                if ($resDict->slug === $resourceSlug) {
+                    $resourceId = $resDict->id;
+                }
+            }
+
+            if ($resourceId) {
+                foreach ($cityResources as $cityResource) {
+                    if ($resourceId === $cityResource->resource_id) {
+                        // check max available qty we can transfer to fleet
+                        $maxQty    = floor((int)$resourceAmount);
+                        $qtyInCity = floor($cityResource->qty);
+
+                        if ($maxQty > $qtyInCity) {
+                            $maxQty = $qtyInCity;
+                        }
+
+                        $this->addResourceToFleet($fleetId, $resourceId, $maxQty);
+                        $cityResource->decrement('qty', $maxQty);
+
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /*public function subtractResourcesFromCity($cityResources, $subtractResources, $resourcesDict): void
     {
         // $subtractResources: ['slug' => qty]
         foreach ($subtractResources as $subtractResourceSlug => $subtractResourceQty) {
@@ -681,17 +685,17 @@ class FleetService
                 }
             }
         }
-    }
+    }*/
 
-    public function addResourceToFleet(Fleet $fleet, int $resourceId, int $qty): void
+    public function addResourceToFleet(int $fleetId, int $resourceId, int $qty): void
     {
-        $resource = FleetResource::where('fleet_id', $fleet->id)->where('resource_id', $resourceId)->first();
+        $resource = FleetResource::where('fleet_id', $fleetId)->where('resource_id', $resourceId)->first();
 
         if ($resource) {
             $resource->increment('qty', $qty);
         } else {
             FleetResource::create([
-                'fleet_id'    => $fleet->id,
+                'fleet_id'    => $fleetId,
                 'resource_id' => $resourceId,
                 'qty'         => $qty
             ]);
@@ -725,5 +729,28 @@ class FleetService
         }
 
         FleetResource::where('fleet_id', $fleet->id)->delete();
+    }
+
+    public function getDefaultFleetTaskStatus(int $taskTypeId)
+    {
+        $defaultFleetStatusId = 0;
+
+        if ($taskTypeId === config('constants.FLEET_TASKS.TRADE')) {
+            $defaultFleetStatusId = config('constants.FLEET_STATUSES.TRADE_GOING_TO_TARGET');
+        }
+        if ($taskTypeId === config('constants.FLEET_TASKS.MOVE')) {
+            $defaultFleetStatusId = config('constants.FLEET_STATUSES.MOVING_GOING_TO_TARGET');
+        }
+        if ($taskTypeId === config('constants.FLEET_TASKS.ATTACK')) {
+            $defaultFleetStatusId = config('constants.FLEET_STATUSES.ATTACK_GOING_TO_TARGET');
+        }
+        if ($taskTypeId === config('constants.FLEET_TASKS.TRANSPORT')) {
+            $defaultFleetStatusId = config('constants.FLEET_STATUSES.TRANSPORT_GOING_TO_TARGET');
+        }
+        if ($taskTypeId === config('constants.FLEET_TASKS.EXPEDITION')) {
+            $defaultFleetStatusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_TO_TARGET');
+        }
+
+        return $defaultFleetStatusId;
     }
 }

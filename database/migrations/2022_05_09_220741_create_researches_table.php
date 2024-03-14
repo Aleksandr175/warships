@@ -21,7 +21,7 @@ class CreateResearchesTable extends Migration
 
             $table->integer('lvl')->default(1);
 
-            $table->foreign('research_id')->references('id')->on('researches')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('research_id')->references('id')->on('research_dictionary')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
 
             $table->timestamps();

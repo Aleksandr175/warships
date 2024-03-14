@@ -18,5 +18,6 @@ class ResearchDictionarySeeder extends Seeder
         ResearchDictionary::create(['id' => config('constants.RESEARCHES.SHIP_SAILS'), 'title' => 'Improved sails', 'description' => '+10% ship speed']);
         ResearchDictionary::create(['id' => config('constants.RESEARCHES.SHIP_GUNS'), 'title' => 'Improved guns', 'description' => '+10% to ship attack, allows you to build warships']);
         ResearchDictionary::create(['id' => config('constants.RESEARCHES.SHIP_HOLD'), 'title' => 'Ship hold', 'description' => 'Increases the capacity of merchant ships by 10%']);
+        ResearchDictionary::create(['id' => config('constants.RESEARCHES.TRADE_SYSTEM'), 'title' => 'Trade System', 'description' => 'Increases maximum number of trading fleets by 1']);
     }
 }

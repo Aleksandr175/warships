@@ -136,5 +136,20 @@ return [
         'CARD_BATTLESHIP_ATTACK'   => 21,
         'CARD_BATTLESHIP_CAPACITY' => 22,
         'CARD_BATTLESHIP_HEALTH'   => 23,
+    ],
+
+    'DURATION' => [ // sec
+        'TRADING_GOING_TO' => 10,
+        'TRADING_GOING_BACK' => 10,
+        'TRADING' => 20 * 60,
+        'ATTACK_GOING_TO' => 10,
+        'ATTACK_GOING_BACK' => 10,
+        'TRANSPORT_GOING_TO' => 10,
+        'TRANSPORT_GOING_BACK' => 10,
+        'MOVE_GOING_TO' => 10,
+        'MOVE_GOING_BACK' => 10,
+        'EXPEDITION_GOING_TO' => 10,
+        'EXPEDITION_GOING_BACK' => 10,
+        'EXPEDITION' => 30 * 60,
     ]
 ];

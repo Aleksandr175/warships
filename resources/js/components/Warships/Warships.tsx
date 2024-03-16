@@ -132,13 +132,15 @@ export const Warships = ({
         })}
       </SContent>
 
-      <SContent>
-        <WarshipsQueue
-          queue={warshipQueue}
-          sync={getWarships}
-          warshipSlots={warshipSlots}
-        />
-      </SContent>
+      {warshipQueue?.length > 0 && (
+        <SContent>
+          <WarshipsQueue
+            queue={warshipQueue}
+            sync={getWarships}
+            warshipSlots={warshipSlots}
+          />
+        </SContent>
+      )}
     </>
   );
 };

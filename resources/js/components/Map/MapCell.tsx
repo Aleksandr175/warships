@@ -146,7 +146,7 @@ export const MapCell = ({
           </Popover>
           {isFleetMovingToIsland && (
             <SCityMarkFleet>
-              <Icon title={"moving"} />
+              <Icon title={"attack"} />
             </SCityMarkFleet>
           )}
           {isIslandRaided && (

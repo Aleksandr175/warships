@@ -57,6 +57,7 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
   const getAdventure = () => {
     setIsLoading(true);
     setType("adventure");
+
     httpClient.get("/map/adventure").then((response) => {
       setCities(response.data.cities);
       setAdventureWarships(response.data.warships);
@@ -64,6 +65,10 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
 
       setIsLoading(false);
     });
+  };
+
+  const sendFleetToTrade = () => {
+    navigate(`/sending-fleets?taskType=trade`);
   };
 
   const sendFleetToExpedition = () => {
@@ -116,6 +121,24 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
                 onClick={sendFleetToExpedition}
               >
                 Send
+              </button>
+            </SMapActionDescription>
+          </SMapAction>
+        </SColumn>
+        <SColumn>
+          <SMapAction>
+            <SMapActionLogoTrade
+              style={{
+                backgroundImage: 'url("../../../images/icons/directions.svg")',
+              }}
+            ></SMapActionLogoTrade>
+            <SMapActionDescription>
+              <strong>Trade</strong>
+
+              <p>Get some gold with trading!</p>
+
+              <button className={"btn btn-primary"} onClick={sendFleetToTrade}>
+                Trade
               </button>
             </SMapActionDescription>
           </SMapAction>
@@ -178,13 +201,12 @@ const SCells = styled.div`
 
 const SRow = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  gap: 20px;
   margin-bottom: 30px;
 `;
 
-const SColumn = styled.div`
-  width: 50%;
-`;
+const SColumn = styled.div``;
 
 const SMapAction = styled.div`
   display: flex;
@@ -199,8 +221,16 @@ const SMapActionLogo = styled.div`
   background-repeat: no-repeat;
 `;
 
+const SMapActionLogoTrade = styled(SMapActionLogo)`
+  width: 70px;
+  height: 70px;
+  min-width: 70px;
+  margin-top: 15px;
+`;
+
 const SMapActionDescription = styled.div`
   p {
+    font-size: 12px;
     color: #949494;
   }
 `;

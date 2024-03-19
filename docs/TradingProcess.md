@@ -2,7 +2,7 @@
 
 ## Trade process
 
-We send fleet with trade task. We can trade with any city, even with pirates.
+We send fleet with trade task. We can trade with any city, even with pirates, but we can't choose target city, it happens randomly.
 
 After fleet arrives in the city it should wait for 20 minutes. After that fleet gets gold and returns back to the original city.
 

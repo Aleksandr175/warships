@@ -47,7 +47,7 @@ class FleetService
         $this->type                = $params->type; // map | adventure
         $this->resources           = $params['resources'] ?: [];
 
-        if ($this->taskTypeSlug !== 'expedition' && (!$this->coordX || !$this->coordY)) {
+        if ($this->taskTypeSlug !== 'expedition' && $this->taskTypeSlug !== 'trade' && (!$this->coordX || !$this->coordY)) {
             return 'no coordinates';
         }
 
@@ -64,7 +64,7 @@ class FleetService
             $archipelagoId = $user->archipelagoId();
         }
 
-        if ($this->taskTypeSlug !== 'expedition') {
+        if ($this->taskTypeSlug !== 'expedition' && $this->taskTypeSlug !== 'trade') {
             // get target city by coordinates and archipelago id
             $this->targetCity = $this->getCityByCoords($archipelagoId, (int)$this->coordX, (int)$this->coordY);
 
@@ -156,6 +156,7 @@ class FleetService
         $defaultFleetStatusId = $this->getDefaultFleetTaskStatus($this->taskTypeId);
         $timeToTarget         = $this->getTimeToTarget($defaultFleetStatusId);
 
+        // some logic for sending trade fleet
         if ($defaultFleetStatusId === config('constants.FLEET_TASKS.TRADE')) {
             // get trade system for checking amount of trade fleets
             $tradeSystemResearch = Research::where('user_id', $user->id)->where('research_id', config('constants.RESEARCHES.TRADE_SYSTEM'))->first();
@@ -171,9 +172,17 @@ class FleetService
                 return 'You cant send more trade fleets';
             }
 
-            if ($this->targetCity?->user_id === $user->id) {
-                return 'You cant trade with your islands';
+            // select city for trading
+            $randomCityForTrading = City::where('city_dictionary_id', config('constants.CITY_TYPE_ID.ISLAND'))
+                ->where('user_id', '!=', $user->id)
+                ->inRandomOrder()
+                ->first();
+
+            if (!$randomCityForTrading) {
+                return 'Cant find city for trading';
             }
+
+            $this->targetCity = $randomCityForTrading;
         }
 
         // create fleet and details

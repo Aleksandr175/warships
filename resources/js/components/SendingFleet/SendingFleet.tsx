@@ -226,7 +226,10 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
 
   return (
     <SContent>
-      <SH1>Send Fleet {type === "adventure" ? "to Adventure" : ""}</SH1>
+      <SH1>
+        Send Fleet {type === "adventure" ? "to Adventure" : ""}
+        {taskType === "trade" ? "to Trade" : ""}
+      </SH1>
 
       {dictionaries.warshipsDictionary.map((item) => {
         return (
@@ -285,7 +288,7 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
           )}
         </div>
 
-        {taskType !== "expedition" && (
+        {taskType !== "expedition" && taskType !== "trade" && (
           <div className={"col-12"}>
             <div>
               <strong>Target Island:</strong>
@@ -328,7 +331,7 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
           </div>
         )}
 
-        {type === "map" && (
+        {type === "map" && taskType !== "expedition" && taskType !== "trade" && (
           <>
             <div className={"col-12"}>
               <div>
@@ -410,7 +413,11 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
           <button
             className={"btn btn-primary"}
             disabled={
-              !taskType || (taskType !== "expedition" && (!coordY || !coordX))
+              getMaxCapacity() === 0 ||
+              !taskType ||
+              (taskType !== "expedition" &&
+                taskType !== "trade" &&
+                (!coordY || !coordX))
             }
             onClick={sendFleet}
           >

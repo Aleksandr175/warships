@@ -11,6 +11,7 @@ import {
 import { SContent, SH1 } from "../styles";
 import { useNavigate } from "react-router-dom";
 import { MapCell } from "./MapCell";
+import { useFetchMap } from "../../hooks/useFetchMap";
 
 export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
   const size = 5 * 5;
@@ -34,13 +35,13 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    httpClient.get("/map").then((response) => {
-      setCities(response.data.cities);
+  const queryMap = useFetchMap();
 
-      setIsLoading(false);
-    });
-  }, []);
+  useEffect(() => {
+    if (queryMap?.data) {
+      setCities(queryMap.data.cities);
+    }
+  }, [queryMap?.data]);
 
   const isCityHere = (y: number, x: number): boolean => {
     return (
@@ -95,7 +96,7 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
     return [];
   };
 
-  if (isLoading) {
+  if (queryMap.isPending) {
     return <>Loading...</>;
   }
 

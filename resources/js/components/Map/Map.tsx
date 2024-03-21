@@ -38,7 +38,7 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
   const queryMap = useFetchMap();
 
   useEffect(() => {
-    if (queryMap?.data) {
+    if (queryMap?.data && adventureLvl === 0) {
       setCities(queryMap.data.cities);
     }
   }, [queryMap?.data]);

@@ -47,7 +47,7 @@ export const MapCell = ({
   );
 
   const mainResources =
-    sortedResources.filter((resource) => {
+    sortedResources?.filter((resource) => {
       return resource.coefficient === sortedResources[0].coefficient;
     }) || [];
 
@@ -70,7 +70,7 @@ export const MapCell = ({
                   <SInfoWrapper>
                     <SResources>
                       {city.resources
-                        .filter((resource) => resource.qty > 0)
+                        ?.filter((resource) => resource.qty > 0)
                         .map((resource) => {
                           return (
                             <SResource key={resource.resourceId}>

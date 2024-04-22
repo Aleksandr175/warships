@@ -118,7 +118,7 @@ export const useAppLogic = () => {
       getBuildings();
       getResearches();
       getFleets();
-    }, 3000);
+    }, 5000);
 
     return () => {
       clearTimeout(updateTimer);

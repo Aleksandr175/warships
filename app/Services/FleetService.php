@@ -64,13 +64,26 @@ class FleetService
             $archipelagoId = $user->archipelagoId();
         }
 
+        // get player's city
+        $userCity = $user->city($this->cityId);
+
+        if (!($userCity && $userCity->id)) {
+            return 'it is not city of current user';
+        }
+
         if ($this->taskTypeSlug !== 'expedition' && $this->taskTypeSlug !== 'trade') {
             // get target city by coordinates and archipelago id
             $this->targetCity = $this->getCityByCoords($archipelagoId, (int)$this->coordX, (int)$this->coordY);
 
             // we need target city, except for expedition
             if (!$this->isCity($this->targetCity)) {
-                return 'there is no city';
+                return 'there is no island';
+            }
+
+            if ($this->targetCity->coord_y === $userCity->coord_y &&
+                $this->targetCity->coord_x === $userCity->coord_x &&
+                $this->targetCity->archipelago_id === $userCity->archipelago_id) {
+                return 'Your fleet is already in this island';
             }
 
             if ($this->type === 'adventure') {
@@ -102,13 +115,6 @@ class FleetService
         }
 
         $this->taskTypeId = $this->taskType->id;
-
-        // get player's city
-        $userCity = $user->city($this->cityId);
-
-        if (!($userCity && $userCity->id)) {
-            return 'it is not city of current user';
-        }
 
         if (!$this->fleetDetails || !count($this->fleetDetails)) {
             return 'No warships in fleet';
@@ -218,10 +224,10 @@ class FleetService
 
         foreach ($warshipGroupInCity as $warshipGroup) {
             foreach ($fleetDetails as $fleetDetail) {
-                if ($fleetDetail['warshipId'] === $warshipGroup->id && $fleetDetail['qty'] > 0 && $warshipGroup->qty > 0) {
+                if ($fleetDetail['warshipId'] === $warshipGroup->warship_id && $fleetDetail['qty'] > 0 && $warshipGroup->qty > 0) {
                     $detail = [
                         'qty'        => min($warshipGroup->qty, $fleetDetail['qty']),
-                        'warship_id' => $warshipGroup->id
+                        'warship_id' => $warshipGroup->warship_id
                     ];
 
                     $updatedFleetDetails[] = $detail;

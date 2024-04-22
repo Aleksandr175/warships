@@ -97,7 +97,7 @@ export const MapCell = ({
                 </SCloseButton>
 
                 <SPopoverButtons>
-                  {isAdventure ? (
+                  {isAdventure || isPirates ? (
                     <button
                       className={"btn btn-primary"}
                       onClick={() => {

@@ -79,6 +79,16 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
       cityId: city.id,
     } as IFleet;
   });
+
+  useEffect(() => {
+    setFleet((oldFleetData) => {
+      return {
+        ...oldFleetData,
+        cityId: city.id,
+      };
+    });
+  }, [city]);
+
   const [fleetDetails, setFleetDetails] = useState<IFleetWarshipsData[]>(
     [] as IFleetWarshipsData[]
   );
@@ -166,6 +176,7 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
         console.log(response);
 
         setActualCityWarships(response.data.warships);
+        setResources({});
         console.log("Fleet has been sent");
         setRenderKey(renderKey + 1);
       });
@@ -229,6 +240,7 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
       <SH1>
         Send Fleet {type === "adventure" ? "to Adventure" : ""}
         {taskType === "trade" ? "to Trade" : ""}
+        {taskType === "attack" ? "to Attack" : ""}
       </SH1>
 
       {dictionaries.warshipsDictionary.map((item) => {
@@ -258,7 +270,7 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
             Attack
           </STaskType>
 
-          {type !== "adventure" && (
+          {type !== "adventure" && taskType !== "attack" && (
             <>
               <STaskType
                 active={taskType === "trade"}
@@ -288,125 +300,139 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
           )}
         </div>
 
-        {taskType !== "expedition" && taskType !== "trade" && (
-          <div className={"col-12"}>
-            <div>
-              <strong>Target Island:</strong>
-            </div>
-            {type === "map" && (
+        {taskType !== "expedition" &&
+          taskType !== "trade" &&
+          taskType !== "attack" && (
+            <div className={"col-12"}>
               <div>
-                {cities.map((city) => {
-                  return (
-                    <SCityPreset
-                      key={city.id}
-                      active={city.coordX === coordX && city.coordY === coordY}
-                      onClick={() => chooseCity(city)}
-                    >
-                      {city.title}
-                    </SCityPreset>
-                  );
-                })}
+                <strong>Target Island:</strong>
               </div>
-            )}
+              {type === "map" && (
+                <div>
+                  {cities.map((city) => {
+                    return (
+                      <SCityPreset
+                        key={city.id}
+                        active={
+                          city.coordX === coordX && city.coordY === coordY
+                        }
+                        onClick={() => chooseCity(city)}
+                      >
+                        {city.title}
+                      </SCityPreset>
+                    );
+                  })}
+                </div>
+              )}
 
-            <SCoordinatesBlock>
-              <div>
-                <strong>Or Coordinates:</strong>
-              </div>
-              <div>
-                X:{" "}
-                <InputNumberCoordinatesStyled
-                  value={coordX}
-                  onChange={(value) => setCoordX(value)}
-                  maxNumber={100}
-                />
-                Y:{" "}
-                <InputNumberCoordinatesStyled
-                  value={coordY}
-                  onChange={(value) => setCoordY(value)}
-                  maxNumber={100}
-                />
-              </div>
-            </SCoordinatesBlock>
+              <SCoordinatesBlock>
+                <div>
+                  <strong>Or Coordinates:</strong>
+                </div>
+                <div>
+                  X:{" "}
+                  <InputNumberCoordinatesStyled
+                    value={coordX}
+                    onChange={(value) => setCoordX(value)}
+                    maxNumber={100}
+                  />
+                  Y:{" "}
+                  <InputNumberCoordinatesStyled
+                    value={coordY}
+                    onChange={(value) => setCoordY(value)}
+                    maxNumber={100}
+                  />
+                </div>
+              </SCoordinatesBlock>
+            </div>
+          )}
+
+        {type === "map" && taskType === "attack" && (
+          <div className={"col-12"}>
+            <strong>Resources (Full Capacity: {maxCapacity})</strong>
           </div>
         )}
 
-        {type === "map" && taskType !== "expedition" && taskType !== "trade" && (
-          <>
-            <div className={"col-12"}>
-              <div>
-                <strong>
-                  Resources (Full Capacity: {maxCapacity}, Free Capacity:{" "}
-                  {getFreeCapacity()}):
-                </strong>
+        {type === "map" &&
+          taskType !== "expedition" &&
+          taskType !== "trade" &&
+          taskType !== "attack" && (
+            <>
+              <div className={"col-12"}>
+                <div>
+                  <strong>
+                    Resources (Full Capacity: {maxCapacity}, Free Capacity:{" "}
+                    {getFreeCapacity()}):
+                  </strong>
+                </div>
+                <div className={"row"}>
+                  {cityResourcesDictionary?.map((resource) => {
+                    let maxAvailableAmount = maxCapacity;
+                    const resourceQtyInCity =
+                      cityResources.find(
+                        (cityResource) =>
+                          cityResource.resourceId === resource.id
+                      )?.qty || 0;
+
+                    if (maxAvailableAmount > resourceQtyInCity) {
+                      maxAvailableAmount = resourceQtyInCity;
+                    }
+
+                    return (
+                      <div className={"col-3"} key={resource.id}>
+                        <Icon title={resource.slug} />
+                        <InputNumberStyled
+                          value={resources[resource.slug]}
+                          onChange={(value) =>
+                            setResources((prevState) => {
+                              let remainCapacity = getFreeCapacity();
+
+                              remainCapacity += resources?.[resource.slug] || 0;
+
+                              if (value > remainCapacity) {
+                                value = remainCapacity;
+                              }
+
+                              if (value > maxAvailableAmount) {
+                                value = maxAvailableAmount;
+                              }
+
+                              return {
+                                ...prevState,
+                                [resource.slug]: value,
+                              };
+                            })
+                          }
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <div className={"row"}>
-                {cityResourcesDictionary?.map((resource) => {
-                  let maxAvailableAmount = maxCapacity;
-                  const resourceQtyInCity =
-                    cityResources.find(
-                      (cityResource) => cityResource.resourceId === resource.id
-                    )?.qty || 0;
 
-                  if (maxAvailableAmount > resourceQtyInCity) {
-                    maxAvailableAmount = resourceQtyInCity;
-                  }
-
-                  return (
-                    <div className={"col-3"} key={resource.id}>
-                      <Icon title={resource.slug} />
-                      <InputNumberStyled
-                        value={resources[resource.slug]}
-                        onChange={(value) =>
-                          setResources((prevState) => {
-                            let remainCapacity = getFreeCapacity();
-
-                            remainCapacity += resources?.[resource.slug] || 0;
-
-                            if (value > remainCapacity) {
-                              value = remainCapacity;
-                            }
-
-                            if (value > maxAvailableAmount) {
-                              value = maxAvailableAmount;
-                            }
-
-                            return {
-                              ...prevState,
-                              [resource.slug]: value,
-                            };
-                          })
-                        }
-                      />
-                    </div>
-                  );
-                })}
+              <div className={"col-12"}>
+                <div>
+                  <strong>Repeating:</strong>
+                </div>
+                <STaskType
+                  active={repeating}
+                  onClick={() => {
+                    setRepeating(true);
+                  }}
+                >
+                  Yes
+                </STaskType>
+                <STaskType
+                  active={!repeating}
+                  onClick={() => {
+                    setRepeating(false);
+                  }}
+                >
+                  No
+                </STaskType>
               </div>
-            </div>
-
-            <div className={"col-12"}>
-              <div>
-                <strong>Repeating:</strong>
-              </div>
-              <STaskType
-                active={repeating}
-                onClick={() => {
-                  setRepeating(true);
-                }}
-              >
-                Yes
-              </STaskType>
-              <STaskType
-                active={!repeating}
-                onClick={() => {
-                  setRepeating(false);
-                }}
-              >
-                No
-              </STaskType>
-            </div>
-          </>
-        )}
+            </>
+          )}
 
         <div className={"col-12"}>
           <br />
@@ -417,6 +443,7 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
               !taskType ||
               (taskType !== "expedition" &&
                 taskType !== "trade" &&
+                taskType !== "attack" &&
                 (!coordY || !coordX))
             }
             onClick={sendFleet}

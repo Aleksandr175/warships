@@ -71,7 +71,7 @@ const App = () => {
                           selectCity(c);
                         }}
                       >
-                        <Icon title={"island"} />[{city.coordX}:{city.coordY}]{" "}
+                        <Icon title={"island"} />[{c.coordX}:{c.coordY}]{" "}
                         {c.title}
                       </SIsland>
                     );

@@ -6,6 +6,7 @@ use App\Http\Resources\RefiningQueueResource;
 use App\Http\Resources\RefiningRecipeResource;
 use App\Models\City;
 use App\Models\RefiningRecipe;
+use App\Services\RefiningQueueService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,8 +19,9 @@ class RefiningController extends Controller
 
         $city = City::where('id', $cityId)->where('user_id', $userId)->first();
 
-        // TODO: add slots depends on refining building
-        $refiningSlots = 4;
+
+        $refiningService = new RefiningQueueService();
+        $refiningSlots = $refiningService->getMaxAvailableSlots($city);
 
         if ($city && $city->id) {
             return [

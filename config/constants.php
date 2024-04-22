@@ -32,6 +32,8 @@ return [
         'SHIPYARD' => 6,
         'DOCK'     => 7,
         'FORTRESS' => 8,
+        'WORKSHOP' => 9,
+        //'EMBASSY' => 10,
     ],
     'RESEARCHES' => [
         'SHIP_TECHNOLOGIES' => 1,

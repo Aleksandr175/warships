@@ -39,6 +39,12 @@ class BuildingSeeder extends Seeder
         ]);
 
         Building::create([
+            'city_id'     => config('constants.DEFAULT_USER_CITY_ID'),
+            'building_id' => config('constants.BUILDINGS.WORKSHOP'),
+            'lvl'         => 2
+        ]);
+
+        Building::create([
             'city_id'     => config('constants.DEFAULT_USER_CITY_ID_2'),
             'building_id' => config('constants.BUILDINGS.MAIN'),
             'lvl'         => 25

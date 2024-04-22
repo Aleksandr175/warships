@@ -218,6 +218,43 @@ class BuildingResourceSeeder extends Seeder
                     'increase_factor' => 1.25
                 ],
             ],
+            config('constants.BUILDINGS.WORKSHOP') => [
+                config('constants.RESOURCE_IDS.GOLD')       => [
+                    'qty'             => 500,
+                    'start_lvl'       => 1,
+                    'increase_factor' => 1.5
+                ],
+                config('constants.RESOURCE_IDS.POPULATION') => [
+                    'qty'             => 300,
+                    'start_lvl'       => 1,
+                    'increase_factor' => 1.5
+                ],
+                config('constants.RESOURCE_IDS.LOG')        => [
+                    'qty'             => 100,
+                    'start_lvl'       => 3,
+                    'increase_factor' => 1.3
+                ],
+                config('constants.RESOURCE_IDS.PLANK')      => [
+                    'qty'             => 50,
+                    'start_lvl'       => 4,
+                    'increase_factor' => 1.5
+                ],
+                config('constants.RESOURCE_IDS.LUMBER')     => [
+                    'qty'             => 4,
+                    'start_lvl'       => 5,
+                    'increase_factor' => 1.5
+                ],
+                config('constants.RESOURCE_IDS.ORE')        => [
+                    'qty'             => 300,
+                    'start_lvl'       => 4,
+                    'increase_factor' => 1.5
+                ],
+                config('constants.RESOURCE_IDS.IRON')       => [
+                    'qty'             => 300,
+                    'start_lvl'       => 5,
+                    'increase_factor' => 1.5
+                ],
+            ],
         ];
 
         // Define the number of levels for each building
@@ -227,6 +264,7 @@ class BuildingResourceSeeder extends Seeder
             config('constants.BUILDINGS.HOUSES')   => 40,
             config('constants.BUILDINGS.FORTRESS') => 15,
             config('constants.BUILDINGS.SHIPYARD') => 20,
+            config('constants.BUILDINGS.WORKSHOP') => 6,
             // Define levels for other buildings
             // ...
         ];

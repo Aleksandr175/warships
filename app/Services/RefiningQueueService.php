@@ -31,8 +31,15 @@ class RefiningQueueService
             return false;
         }
 
-        // TODO: check refining lvl required
-        // TODO: check available slots
+        if ($qty > 100) {
+            $qty = 100;
+        }
+
+        if ($qty < 0) {
+            return false;
+        }
+
+        // TODO: check refining lvl required inside
         $hasAllRequirements = $this->hasAllRequirements($city, $recipe, $qty);
 
         if (!$hasAllRequirements) {
@@ -66,8 +73,7 @@ class RefiningQueueService
 
         $refiningQueue = $city->refiningQueue;
 
-        // TODO: calculate max available slots
-        if (count($refiningQueue) > 4) {
+        if (count($refiningQueue) > $this->getMaxAvailableSlots($city)) {
             $hasAllRequirements = false;
         }
 
@@ -120,5 +126,16 @@ class RefiningQueueService
             'time'               => $timeRequired,
             'deadline'           => Carbon::now()->addSeconds($timeRequired)
         ]);
+    }
+
+    public function getMaxAvailableSlots(City $city): int
+    {
+        if (!$city->id) {
+            return 0;
+        }
+
+        $workshop = $city->building(config('constants.BUILDINGS.WORKSHOP'));
+
+        return $workshop->lvl ?? 0;
     }
 }

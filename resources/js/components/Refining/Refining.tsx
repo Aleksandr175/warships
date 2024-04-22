@@ -125,7 +125,9 @@ export const Refining = ({
 
   return (
     <SContent>
-      <SH1>Refining Resources</SH1>
+      <SH1>
+        Refining Resources ({refiningQueue.length} / {refiningSlots})
+      </SH1>
       <SRefiningSlots>{renderSlots()}</SRefiningSlots>
 
       <SH2>Refining Recipes</SH2>

@@ -22,5 +22,6 @@ class BuildingDictionarySeeder extends Seeder
         BuildingDictionary::create(['id' => config('constants.BUILDINGS.SHIPYARD'), 'title' => 'Shipyard', 'description' => 'It produces warships']);
         BuildingDictionary::create(['id' => config('constants.BUILDINGS.DOCK'), 'title' => 'Dock', 'description' => 'Allows sea merchants to trade on the island']);
         BuildingDictionary::create(['id' => config('constants.BUILDINGS.FORTRESS'), 'title' => 'Fort', 'description' => 'The main defensive structure']);
+        BuildingDictionary::create(['id' => config('constants.BUILDINGS.WORKSHOP'), 'title' => 'Workshop', 'description' => 'Each level of workshop increase amount of available slots']);
     }
 }

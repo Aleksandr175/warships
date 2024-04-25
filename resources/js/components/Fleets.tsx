@@ -47,27 +47,38 @@ export const Fleets = ({
     ...(fleetsIncoming || []),
   ].filter((fleet) => fleet.fleetTaskId === expeditionFleetTaskId);
 
+  const activeFleets = fleets?.filter(
+    (fleet) =>
+      fleet.fleetTaskId !== expeditionFleetTaskId &&
+      fleet.fleetTaskId !== tradeFleetTaskId
+  );
+
   if (!dictionaries) {
     return <></>;
   }
 
   return (
     <SColumnFleets>
-      <strong>Active Fleets</strong>
-      {!fleets?.length && !fleetsIncoming?.length && <p>No Active Fleets</p>}
+      {!activeFleets?.length && !fleetsIncoming?.length && (
+        <p>No Active Fleets</p>
+      )}
 
-      {fleets &&
-        fleets.map((fleet) => {
-          return (
-            <Fleet
-              key={fleet.id}
-              fleet={fleet}
-              fleetDetails={getFleetDetails(fleet.id)}
-              // TODO: sent city and target city, not whole dictionary of cities
-              fleetCities={fleetCitiesDictionary}
-            />
-          );
-        })}
+      {activeFleets && activeFleets.length > 0 && (
+        <>
+          <strong>Active Fleets</strong>
+          {activeFleets.map((fleet) => {
+            return (
+              <Fleet
+                key={fleet.id}
+                fleet={fleet}
+                fleetDetails={getFleetDetails(fleet.id)}
+                // TODO: sent city and target city, not whole dictionary of cities
+                fleetCities={fleetCitiesDictionary}
+              />
+            );
+          })}
+        </>
+      )}
 
       {fleetsIncoming && fleetsIncoming.length > 0 && (
         <>

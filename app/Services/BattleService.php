@@ -88,6 +88,10 @@ class BattleService
                 $defendingForce = $this->calculateFleetAttack($defendingFleetDetails);
                 dump('Defender Force: ', $defendingForce);
 
+                if ($attackingForce === 0 || $defendingForce === 0) {
+                    break;
+                }
+
                 $attackingDamageToEachType = $attackingForce / count($defendingWarships);
                 $defendingDamageToEachType = $defendingForce / count($attackingFleetDetails);
 
@@ -401,7 +405,7 @@ class BattleService
                 'damage'     => $logDamage,
             ];
 
-            if ($warshipGroups[$i]['qty'] === 0) {
+            if ($wholeHealth === 0) {
                 array_splice($warshipGroups, $i, 1);
                 $i--;
                 $iMax--;

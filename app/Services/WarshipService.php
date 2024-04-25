@@ -6,6 +6,7 @@ use App\Models\Adventure;
 use App\Models\Archipelago;
 use App\Models\City;
 use App\Models\Warship;
+use App\Models\WarshipDictionary;
 
 class WarshipService
 {
@@ -145,6 +146,44 @@ class WarshipService
 
                     break;
             }
+        }
+    }
+
+    // get quantity of warships we can build in city
+    public function hasResourceToBuildWarships(City $city, $warshipId, $qtyToBuild) {
+        $warshipDict   = WarshipDictionary::find($warshipId)->load('requiredResources');
+        $cityResources = $city->resources;
+
+        $maxBuildableQty = $qtyToBuild;
+
+        if ($maxBuildableQty > 10) {
+            $maxBuildableQty = 10;
+        }
+
+        foreach ($warshipDict->requiredResources as $requiredResource) {
+            $maxQtyForResource = 0;
+
+            // Find the corresponding resource in the city resources
+            foreach ($cityResources as $cityResource) {
+                if ($cityResource->resource_id === $requiredResource->resource_id) {
+                    // Calculate the maximum buildable quantity based on this resource
+                    $maxQtyForResource = floor($cityResource->qty / $requiredResource->qty);
+                }
+            }
+
+            // Update the maximum buildable quantity if needed
+            $maxBuildableQty = min($maxBuildableQty, $maxQtyForResource);
+        }
+
+        return $maxBuildableQty;
+    }
+
+    public function subtractResourcesForWarships(int $cityId, WarshipDictionary $warshipDict, int $qty): void {
+        $cityService = new CityService();
+
+        foreach ($warshipDict->requiredResources as $requiredResource) {
+            $requiredResourceQty = $requiredResource->qty * $qty * (-1);
+            $cityService->addResourceToCity($cityId, $requiredResource->resource_id, $requiredResourceQty);
         }
     }
 }

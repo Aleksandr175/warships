@@ -145,60 +145,30 @@ class WarshipQueueService
     public function updateWarshipQueue()
     {
         $warshipDict   = WarshipDictionary::find($this->warshipId)->load('requiredResources');
-        $cityResources = $this->city->resources;
 
+        $warshipService = new WarshipService();
         // Determine the maximum number of warships that can be built with the available resources
         // number could not be more than one slot can have
-        // TODO: define slot capacity
-        $maxBuildableQty = 10;
+        $availableWarshipQtyToBuild = $warshipService->hasResourceToBuildWarships($this->city, $this->warshipId, $this->qty);
 
-        foreach ($warshipDict->requiredResources as $requiredResource) {
-            $maxQtyForResource = 0;
-
-            // Find the corresponding resource in the city resources
-            foreach ($cityResources as $cityResource) {
-                if ($cityResource->resource_id === $requiredResource->resource_id) {
-                    // Calculate the maximum buildable quantity based on this resource
-                    $maxQtyForResource = floor($cityResource->qty / $requiredResource->qty);
-                }
-            }
-
-            // Update the maximum buildable quantity if needed
-            $maxBuildableQty = min($maxBuildableQty, $maxQtyForResource);
-        }
-
-        // Determine the actual quantity to build (minimum of requestedQty and maxBuildableQty)
-        $actualWarshipsQtyToBuild = min($this->qty, $maxBuildableQty);
-
-        $time = $actualWarshipsQtyToBuild * $warshipDict->time;
+        $time = $availableWarshipQtyToBuild * $warshipDict->time;
 
         $queue = WarshipQueue::where('user_id', $this->userId)->where('city_id', $this->city->id)->orderBy('deadline')->get();
 
-        if ($actualWarshipsQtyToBuild > 0) {
+        if ($availableWarshipQtyToBuild > 0) {
             $deadline = Carbon::now()->addSeconds($time);
 
             $queue->push(WarshipQueue::create([
                 'user_id'    => $this->userId,
                 'city_id'    => $this->city->id,
                 'warship_id' => $this->warshipId,
-                'qty'        => $actualWarshipsQtyToBuild,
+                'qty'        => $availableWarshipQtyToBuild,
                 'time'       => $time,
                 'deadline'   => $deadline
             ]));
 
             // Subtract the required amount of each resource from the city
-            foreach ($warshipDict->requiredResources as $requiredResource) {
-                $requiredQty = $requiredResource->qty * $actualWarshipsQtyToBuild;
-
-                // Find the corresponding resource in the city resources
-                $cityResource = $cityResources->where('resource_id', $requiredResource->resource_id)->first();
-
-                // Subtract the required quantity from the city's resource
-                $cityResource->qty -= $requiredQty;
-
-                // Save the changes to the database
-                $cityResource->save();
-            }
+            $warshipService->subtractResourcesForWarships($this->city->id, $warshipDict, $availableWarshipQtyToBuild);
         }
 
         return $queue;

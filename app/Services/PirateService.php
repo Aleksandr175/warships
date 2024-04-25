@@ -17,7 +17,6 @@ class PirateService
             dump('no pirate fleet -> sending new one to some player');
 
             $timeToTarget = 1000;
-            $gold         = 0;
             $speed        = 100;
 
             $warshipGroupsInCity = $city->warships;
@@ -42,7 +41,6 @@ class PirateService
                 'fleet_task_id'  => 3, //attack
                 'speed'          => $speed,
                 'time'           => $timeToTarget,
-                'gold'           => $gold,
                 'repeating'      => 0,
                 'status_id'      => 1, // TODO: set default value for fleet status id
                 'deadline'       => Carbon::now()->addSeconds($timeToTarget)
@@ -66,14 +64,13 @@ class PirateService
 
             // Pirate island cant have more than 100 warships
             if ($totalWarships < 100) {
-                // Find the most expensive warship based on both gold and population costs
-                $mostExpensiveWarship = WarshipDictionary::find(4); // frigate
+                $warshipService = new WarshipService();
+                // Find the most expensive warship based on resources it requires
+                $warshipQtyToBuild = $warshipService->hasResourceToBuildWarships($city, config('constants.WARSHIPS.FRIGATE'), 1);
 
-                // Check if you have more resources (both gold and population) than required for the most expensive warship
-                if (
-                    $city->gold >= $mostExpensiveWarship->gold &&
-                    $city->population >= $mostExpensiveWarship->population
-                ) {
+                // If we can build at least one the most expensive warship
+                // it means we can start process of building some warships for pirate island
+                if ($warshipQtyToBuild !== 0) {
                     // Define the chances of building each type of warship
                     $chances = [
                         1 => 50,  // lugger: 50% chance
@@ -84,7 +81,7 @@ class PirateService
                     ];
 
                     // Calculate a random number between 1 and 100
-                    $randomNumber = mt_rand(1, 100);
+                    $randomNumber = random_int(1, 100);
 
                     // Determine which type of warship to create based on chances
                     $chosenWarshipId = null;
@@ -100,13 +97,13 @@ class PirateService
                     }
 
                     if ($chosenWarshipId !== null) {
-                        // Check if there are enough resources (both gold and population) to create this type of warship
-                        $warshipData = WarshipDictionary::find($chosenWarshipId);
+                        // Find can we build chosen warship
+                        $warshipQtyToBuild = $warshipService->hasResourceToBuildWarships($city, config('constants.WARSHIPS.FRIGATE'), 1);
 
-                        if (
-                            $city->gold >= $warshipData->gold &&
-                            $city->population >= $warshipData->population
-                        ) {
+                        if ($warshipQtyToBuild > 0) {
+                            // Check if there are enough resources (both gold and population) to create this type of warship
+                            $warshipData = WarshipDictionary::find($chosenWarshipId);
+
                             $warshipQueueService = new WarshipQueueService();
                             $warshipQueueService->orderWarship(1, [
                                 'cityId'    => $city->id,
@@ -116,9 +113,8 @@ class PirateService
 
                             dump("Pirates is building a warship with id: $chosenWarshipId in cityId: $city->id");
 
-                            // Deduct the resources from the city
-                            $city->decrement('gold', $warshipData->gold);
-                            $city->decrement('population', $warshipData->population);
+                            // Subtract the required amount of each resource from the city for warship
+                            $warshipService->subtractResourcesForWarships($city->id, $warshipData, 1);
                         }
                     }
                 }

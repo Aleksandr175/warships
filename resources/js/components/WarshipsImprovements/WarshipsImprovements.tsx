@@ -18,7 +18,7 @@ export const WarshipsImprovements = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       queryUserResources.refetch();
-    }, 3000);
+    }, 5000);
 
     return () => clearInterval(intervalId);
   }, []);

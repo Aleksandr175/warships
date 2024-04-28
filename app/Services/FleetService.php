@@ -751,8 +751,9 @@ class FleetService
                 $cityService->addResourceToCity($city->id, $resource->resource_id, $resource->qty);
             }
 
-            // some unique resources move to user, not city
-            if ($resourceType === config('constants.RESOURCE_TYPE_IDS.CARD')) {
+            // some unique resources we move to user, not city
+            if ($resourceType === config('constants.RESOURCE_TYPE_IDS.CARD')
+                || $resourceType === config('constants.RESOURCE_TYPE_IDS.RESEARCH')) {
                 $userService->addResourceToUser($city->user_id, $resource->resource_id, $resource->qty);
             }
         }

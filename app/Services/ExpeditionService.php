@@ -73,6 +73,9 @@ class ExpeditionService
             $resourcesDict = Resource::where('type', config('constants.RESOURCE_TYPE_IDS.COMMON'))
                 ->get()->toArray();
 
+            $resourceResearchDict = Resource::where('type', config('constants.RESOURCE_TYPE_IDS.RESEARCH'))
+                ->get()->toArray();
+
             $resourcesCardsDict = Resource::where('type', config('constants.RESOURCE_TYPE_IDS.CARD'))
                 ->get()->toArray();
 
@@ -93,6 +96,11 @@ class ExpeditionService
                 dump('GOT CARD', $cardInfo);
                 (new BattleService())->moveResourceToFleet($fleet, $cardInfo);
             }
+
+            // we find some knowledge in expedition
+            $researchResource = $this->getResearchResources($resourceResearchDict);
+            dump('GOT RESEARCH RESOURCES', $researchResource);
+            (new BattleService())->moveResourceToFleet($fleet, $researchResource);
 
             $city = City::find($fleet->city_id);
             $user = User::find($city->user_id);
@@ -217,6 +225,18 @@ class ExpeditionService
         $randomArrayIndex = array_rand($resourcesCards, 1);
         $randomCard       = $resourcesCards[$randomArrayIndex];
         $randomQty        = random_int(0, 2);
+
+        return [
+            'resource_id' => $randomCard['id'],
+            'qty'         => $randomQty
+        ];
+    }
+
+    public function getResearchResources($resources)
+    {
+        $randomArrayIndex = array_rand($resources, 1);
+        $randomCard       = $resources[$randomArrayIndex];
+        $randomQty        = random_int(1, 5);
 
         return [
             'resource_id' => $randomCard['id'],

@@ -2,7 +2,7 @@ import { Card } from "../Common/Card";
 import { SButtonsBlock, SH2, SParam, SParams, SText } from "../styles";
 import { Icon } from "../Common/Icon";
 import { convertSecondsToTime, getResourceSlug } from "../../utils";
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
 import {
@@ -14,6 +14,7 @@ import {
 } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
+import { useFetchUserResources } from "../../hooks/useFetchUserResources";
 
 interface IProps {
   selectedResearchId: number;
@@ -38,6 +39,18 @@ export const SelectedResearch = ({
   timeLeft,
   getLvl,
 }: IProps) => {
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      queryUserResources.refetch();
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const queryUserResources = useFetchUserResources();
+
+  const userResources = queryUserResources?.data;
+
   const queryDictionaries = useFetchDictionaries();
 
   const dictionaries = queryDictionaries.data;
@@ -79,16 +92,19 @@ export const SelectedResearch = ({
         (cr) => cr.resourceId === resource.resourceId
       );
 
-      if (!cityResource || cityResource.qty < resource.qty) {
+      const userResource = userResources?.resources.find(
+        (cr) => cr.resourceId === resource.resourceId
+      );
+
+      if (
+        (!cityResource || cityResource.qty < resource.qty) &&
+        (!userResource || userResource.qty < resource.qty)
+      ) {
         return true;
       }
     }
 
-    if (!requiredResources?.length) {
-      return true;
-    }
-
-    return false;
+    return !requiredResources?.length;
   }
 
   const {
@@ -130,7 +146,7 @@ export const SelectedResearch = ({
 
     if (knowledgeResourceId) {
       return (
-        cityResources.find(
+        userResources?.resources.find(
           (resource) => resource.resourceId === knowledgeResourceId
         )?.qty || 0
       );

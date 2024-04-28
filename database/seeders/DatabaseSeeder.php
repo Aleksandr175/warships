@@ -110,8 +110,8 @@ class DatabaseSeeder extends Seeder
             'qty'         => 3
         ]);
 
-        \App\Models\CityResource::create([
-            'city_id'     => config('constants.DEFAULT_USER_CITY_ID'),
+        \App\Models\UserResource::create([
+            'user_id'     => config('constants.DEFAULT_USER_ID'),
             'resource_id' => config('constants.RESOURCE_IDS.KNOWLEDGE'),
             'qty'         => 100
         ]);

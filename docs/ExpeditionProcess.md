@@ -43,7 +43,7 @@ We can find 1 type of card for 1 warship randomly. Quantity: 0-2, randomly.
 
 During storm, we loose 20% of each fleet detail in our Fleet.
 
-If we had 20 luggers and 4 frigate - we loose 4 luggers and 1 frigate (we can't loose less than 1 warship).
+If we had 20 luggers and 4 frigate - we loose 4 luggers and 1 frigate (we can't lose less than 1 warship).
 
 Formula is:
 

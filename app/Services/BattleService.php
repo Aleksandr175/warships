@@ -269,6 +269,8 @@ class BattleService
 
     }
 
+    // get available capacity of fleet, we check if fleet already had some resources
+    // if it had 100 and total capacity was 1000 -> we get 900 available capacity
     public function getAvailableCapacity(Fleet|null $fleet, $fleetDetails): int
     {
         $availableCapacity = 0;

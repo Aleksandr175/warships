@@ -15,9 +15,11 @@ Fleet with that task can repeat its task if we set so while sending that fleet.
 
 ### Getting gold 75% chance
 
-Fleet gets gold by formula:
+Fleet gets resources by special algo.
 
-$availableCapacity - 25% of available capacity of whole fleet (percent can be different - in the future)
+We calculate $availableCapacity and we get only 25% of available capacity of whole fleet (percent can be different - in the future)
+
+We distribute resource by their value. Bigger value - less amount of this resource we get.
 
 $totalValue - total value of all resource in dictionary
 
@@ -38,6 +40,8 @@ We can't get more than we can carry.
 We can find Cards for improving warships. Cards don't have weight.
 
 We can find 1 type of card for 1 warship randomly. Quantity: 0-2, randomly.
+
+We can find Knowledge. Knowledge doesn't have weight.
 
 ### Storm 4% chance
 

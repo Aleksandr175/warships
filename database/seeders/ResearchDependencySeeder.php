@@ -56,5 +56,23 @@ class ResearchDependencySeeder extends Seeder
             'required_entity_id'  => config('constants.RESEARCHES.SHIP_TECHNOLOGIES'),
             'required_entity_lvl' => 1
         ]);
+
+        ResearchDependency::create([
+            'research_id'  => config('constants.RESEARCHES.EXPEDITION_SYSTEM'),
+            'research_lvl' => 2,
+
+            'required_entity'     => 'building',
+            'required_entity_id'  => config('constants.BUILDINGS.MAIN'),
+            'required_entity_lvl' => 10
+        ]);
+
+        ResearchDependency::create([
+            'research_id'  => config('constants.RESEARCHES.EXPEDITION_SYSTEM'),
+            'research_lvl' => 3,
+
+            'required_entity'     => 'building',
+            'required_entity_id'  => config('constants.BUILDINGS.MAIN'),
+            'required_entity_lvl' => 15
+        ]);
     }
 }

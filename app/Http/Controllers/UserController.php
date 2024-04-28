@@ -70,6 +70,11 @@ class UserController extends Controller
             $tradeFleetNumber = $tradeSystem->lvl;
         }
 
+        $expeditionSystem      = $userResearches->where('research_id', config('constants.RESEARCHES.EXPEDITION_SYSTEM'))->first();
+        $expeditionFleetNumber = 0;
+        if ($expeditionSystem) {
+            $expeditionFleetNumber = $expeditionSystem->lvl;
+        }
 
         return [
             'buildings'               => BuildingDictionaryResource::collection($buildings),
@@ -86,8 +91,9 @@ class UserController extends Controller
             'warshipDependencies'     => WarshipDependencyResource::collection($warshipDependencies),
             'unreadMessagesNumber'    => $unreadMessagesNumber,
             'resourcesDictionary'     => ResourceDictionaryResource::collection($resourcesDictionary),
-            'maxFleetNumbers'            => [
-                'trade' => $tradeFleetNumber
+            'maxFleetNumbers'         => [
+                'trade'      => $tradeFleetNumber,
+                'expedition' => $expeditionFleetNumber
             ]
         ];
     }

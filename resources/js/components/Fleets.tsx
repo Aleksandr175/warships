@@ -119,7 +119,10 @@ export const Fleets = ({
 
       {fleetsExpedition && fleetsExpedition.length > 0 && (
         <>
-          <strong>Expedition Fleets</strong>
+          <strong>
+            Expedition Fleets ({fleetsExpedition.length} /{" "}
+            {dictionaries.maxFleetNumbers.expedition})
+          </strong>
           {fleetsExpedition.map((fleet) => {
             return (
               <Fleet

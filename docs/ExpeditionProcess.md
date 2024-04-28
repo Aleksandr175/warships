@@ -41,7 +41,8 @@ We can find Cards for improving warships. Cards don't have weight.
 
 We can find 1 type of card for 1 warship randomly. Quantity: 0-2, randomly.
 
-We can find Knowledge. Knowledge doesn't have weight.
+We can find Knowledge by formula rand(1, 5). 
+Knowledge doesn't have weight.
 
 ### Storm 4% chance
 
@@ -65,4 +66,5 @@ We loose whole fleet with all fleet details.
 
 - we can found something in expedition, like some boosters
     - for attack, health, speed
+    - (DONE) knowledge 
 - different coefficient for capacity (small 25%/medium 50%/large 100%)

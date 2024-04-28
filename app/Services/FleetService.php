@@ -163,7 +163,7 @@ class FleetService
         $timeToTarget         = $this->getTimeToTarget($defaultFleetStatusId);
 
         // some logic for sending trade fleet
-        if ($defaultFleetStatusId === config('constants.FLEET_TASKS.TRADE')) {
+        if ($this->taskTypeId === config('constants.FLEET_TASKS.TRADE')) {
             // get trade system for checking amount of trade fleets
             $tradeSystemResearch = Research::where('user_id', $user->id)->where('research_id', config('constants.RESEARCHES.TRADE_SYSTEM'))->first();
             $tradeSystemLvl      = 0;
@@ -189,6 +189,23 @@ class FleetService
             }
 
             $this->targetCity = $randomCityForTrading;
+        }
+
+        // some logic for sending expedition fleet
+        if ($this->taskTypeId === config('constants.FLEET_TASKS.EXPEDITION')) {
+            // get expedition system for checking amount of expedition fleets
+            $expeditionSystemResearch = Research::where('user_id', $user->id)->where('research_id', config('constants.RESEARCHES.EXPEDITION_SYSTEM'))->first();
+            $expeditionSystemLvl      = 0;
+            if ($expeditionSystemResearch) {
+                $expeditionSystemLvl = $expeditionSystemResearch->lvl;
+            }
+
+            $userCityIds      = $user->cities->pluck('id')->toArray();
+            $expeditionFleets = Fleet::whereIn('city_id', $userCityIds)->where('fleet_task_id', config('constants.FLEET_TASKS.EXPEDITION'))->get();
+
+            if (count($expeditionFleets) >= $expeditionSystemLvl) {
+                return 'You cant send more expedition fleets';
+            }
         }
 
         // create fleet and details

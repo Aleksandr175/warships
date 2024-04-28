@@ -140,6 +140,7 @@ export interface IDictionary {
   resourcesDictionary: IResourceDictionary[];
   maxFleetNumbers: {
     trade: number;
+    expedition: number;
   };
 }
 

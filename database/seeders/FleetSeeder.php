@@ -20,8 +20,6 @@ class FleetSeeder extends Seeder
      */
     public function run()
     {
-        $myCity         = City::find(config('constants.DEFAULT_USER_CITY_ID'));
-
         $taskTrade      = FleetTaskDictionary::find(config('constants.FLEET_TASKS.TRADE'));
         $taskMove       = FleetTaskDictionary::find(config('constants.FLEET_TASKS.MOVE'));
         $taskAttack     = FleetTaskDictionary::find(config('constants.FLEET_TASKS.ATTACK'));
@@ -75,7 +73,7 @@ class FleetSeeder extends Seeder
         $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => config('constants.DEFAULT_USER_CITY_ID_2'),
-            'speed'          => 70,
+            'speed'          => 71,
             'repeating'      => 0,
             'fleet_task_id'  => $taskMove->id,
             'status_id'      => $statusMove1->id,
@@ -105,7 +103,7 @@ class FleetSeeder extends Seeder
         $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => config('constants.DEFAULT_USER_2_CITY_ID'),
-            'speed'          => 70,
+            'speed'          => 72,
             'repeating'      => 0,
             'fleet_task_id'  => $taskMove->id,
             'status_id'      => $statusMove1->id,
@@ -128,7 +126,7 @@ class FleetSeeder extends Seeder
         $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => config('constants.DEFAULT_USER_CITY_ID_2'),
-            'speed'          => 70,
+            'speed'          => 73,
             'repeating'      => 0,
             'fleet_task_id'  => $taskTransport->id,
             'status_id'      => $statusTransport1->id,
@@ -147,11 +145,17 @@ class FleetSeeder extends Seeder
             'qty' => 10
         ]);
 
+        FleetDetail::create([
+            'fleet_id'   => $fleetId,
+            'warship_id' => config('constants.WARSHIPS.CARAVEL'),
+            'qty'        => 2,
+        ]);
+
         // attack
         $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => config('constants.DEFAULT_PIRATE_CITY_ID'),
-            'speed'          => 70,
+            'speed'          => 74,
             'repeating'      => 0,
             'fleet_task_id'  => $taskAttack->id,
             'status_id'      => $statusAttack1->id,
@@ -203,7 +207,7 @@ class FleetSeeder extends Seeder
         $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => null,
-            'speed'          => 70,
+            'speed'          => 75,
             'repeating'      => 1,
             'fleet_task_id'  => $taskExpedition->id,
             'status_id'      => $statusExpeditionGoingToTarget->id,
@@ -221,7 +225,7 @@ class FleetSeeder extends Seeder
         $fleetId = Fleet::create([
             'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
             'target_city_id' => null,
-            'speed'          => 70,
+            'speed'          => 76,
             'repeating'      => 0,
             'fleet_task_id'  => $taskExpedition->id,
             'status_id'      => $statusExpeditionGoingToTarget->id,

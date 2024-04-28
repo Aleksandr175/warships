@@ -189,5 +189,53 @@ class ResearchResourceSeeder extends Seeder
             'lvl'           => 3,
             'time_required' => 300,
         ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.EXPEDITION_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 300,
+            'lvl'           => 1,
+            'time_required' => 100,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.EXPEDITION_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'           => 100,
+            'lvl'           => 1,
+            'time_required' => 100,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.EXPEDITION_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.KNOWLEDGE'),
+            'qty'           => 50,
+            'lvl'           => 2,
+            'time_required' => 400,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.EXPEDITION_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 1000,
+            'lvl'           => 2,
+            'time_required' => 400,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.EXPEDITION_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.KNOWLEDGE'),
+            'qty'           => 150,
+            'lvl'           => 3,
+            'time_required' => 1000,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.EXPEDITION_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 4000,
+            'lvl'           => 3,
+            'time_required' => 1000,
+        ]);
     }
 }

@@ -41,6 +41,7 @@ return [
         'SHIP_GUNS'         => 3,
         'SHIP_HOLD'         => 4,
         'TRADE_SYSTEM'      => 5,
+        'EXPEDITION_SYSTEM' => 6,
     ],
     'WARSHIPS'   => [
         'LUGGER'     => 1,
@@ -51,11 +52,11 @@ return [
     ],
 
     'FLEET_TASKS' => [
-        'TRADE'      => 1,
-        'MOVE'       => 2,
-        'ATTACK'     => 3,
-        'TRANSPORT'  => 4,
-        'EXPEDITION' => 5,
+        'TRADE'      => 1000,
+        'MOVE'       => 1001,
+        'ATTACK'     => 1002,
+        'TRANSPORT'  => 1003,
+        'EXPEDITION' => 1004,
     ],
 
     'FLEET_STATUSES' => [

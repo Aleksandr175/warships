@@ -220,5 +220,14 @@ class ResourceSeeder extends Seeder
             'value'       => 1000,
             'type'        => config('constants.RESOURCE_TYPE_IDS.CARD'),
         ]);
+
+        Resource::create([
+            'id'          => config('constants.RESOURCE_IDS.KNOWLEDGE'),
+            'title'       => 'Knowledge',
+            'description' => 'Knowledge needs for researches',
+            'slug'        => 'knowledge',
+            'value'       => 1000,
+            'type'        => config('constants.RESOURCE_TYPE_IDS.RESEARCH'),
+        ]);
     }
 }

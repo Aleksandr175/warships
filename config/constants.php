@@ -109,8 +109,9 @@ return [
     ],
 
     'RESOURCE_TYPE_IDS' => [
-        'COMMON' => 1,
-        'CARD'   => 2,
+        'COMMON'   => 1,
+        'CARD'     => 2,
+        'RESEARCH' => 3,
     ],
 
     'RESOURCE_IDS' => [
@@ -138,20 +139,22 @@ return [
         'CARD_BATTLESHIP_ATTACK'   => 21,
         'CARD_BATTLESHIP_CAPACITY' => 22,
         'CARD_BATTLESHIP_HEALTH'   => 23,
+
+        'KNOWLEDGE' => 100,
     ],
 
     'DURATION' => [ // sec
-        'TRADING_GOING_TO' => 10,
-        'TRADING_GOING_BACK' => 10,
-        'TRADING' => 20 * 60,
-        'ATTACK_GOING_TO' => 10,
-        'ATTACK_GOING_BACK' => 10,
-        'TRANSPORT_GOING_TO' => 10,
-        'TRANSPORT_GOING_BACK' => 10,
-        'MOVE_GOING_TO' => 10,
-        'MOVE_GOING_BACK' => 10,
-        'EXPEDITION_GOING_TO' => 10,
+        'TRADING_GOING_TO'      => 10,
+        'TRADING_GOING_BACK'    => 10,
+        'TRADING'               => 20 * 60,
+        'ATTACK_GOING_TO'       => 10,
+        'ATTACK_GOING_BACK'     => 10,
+        'TRANSPORT_GOING_TO'    => 10,
+        'TRANSPORT_GOING_BACK'  => 10,
+        'MOVE_GOING_TO'         => 10,
+        'MOVE_GOING_BACK'       => 10,
+        'EXPEDITION_GOING_TO'   => 10,
         'EXPEDITION_GOING_BACK' => 10,
-        'EXPEDITION' => 30 * 60,
+        'EXPEDITION'            => 30 * 60,
     ]
 ];

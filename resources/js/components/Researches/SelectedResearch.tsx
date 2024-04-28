@@ -123,6 +123,22 @@ export const SelectedResearch = ({
       });
   }
 
+  const getKnowledgeAmount = () => {
+    const knowledgeResourceId = dictionaries?.resourcesDictionary.find(
+      (resource) => resource.slug === "knowledge"
+    )?.id;
+
+    if (knowledgeResourceId) {
+      return (
+        cityResources.find(
+          (resource) => resource.resourceId === knowledgeResourceId
+        )?.qty || 0
+      );
+    } else {
+      return 0;
+    }
+  };
+
   if (!dictionaries) {
     return null;
   }
@@ -212,6 +228,10 @@ export const SelectedResearch = ({
           )}
         </SButtonsBlock>
         <SText>{selectedResearch?.description}</SText>
+
+        <p>
+          You have {getKnowledgeAmount()} <Icon title={"knowledge"} />
+        </p>
       </div>
     </SSelectedItem>
   );

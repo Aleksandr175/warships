@@ -16,4 +16,8 @@ class ResearchQueue extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function resources() {
+        return $this->hasMany(ResearchQueueResource::class);
+    }
 }

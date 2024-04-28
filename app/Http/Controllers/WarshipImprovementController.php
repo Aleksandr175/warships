@@ -9,6 +9,7 @@ use App\Http\Resources\WarshipImprovementResource;
 use App\Models\UserResource;
 use App\Models\WarshipImprovement;
 use App\Models\WarshipImprovementRecipe;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -74,7 +75,7 @@ class WarshipImprovementController extends Controller
         }
 
         $this->makeImprovement($improvementRecipe, $user);
-        $this->subtractUserResource($user, $improvementRecipe->resource_id, $improvementRecipe->qty);
+        (new UserService())->addResourceToUser($user->id, $improvementRecipe->resource_id, $improvementRecipe->qty * (-1));
 
         $warshipImprovements = $user->warshipImprovements;
         $improvementRecipes  = $this->getWarshipImprovementRecipes();

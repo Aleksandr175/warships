@@ -20,4 +20,8 @@ class UserService
             ]);
         }
     }
+
+    public function subtractResourceFromUser(int $cityId, int $resourceId, int $qty): void {
+        $this->addResourceToUser($cityId, $resourceId, $qty * (-1));
+    }
 }

@@ -9,6 +9,8 @@ use App\Models\ResearchDependency;
 use App\Models\ResearchQueue;
 use App\Models\ResearchQueueResource;
 use App\Models\ResearchResource;
+use App\Models\Resource;
+use App\Models\User;
 use Carbon\Carbon;
 
 class ResearchQueueService
@@ -37,18 +39,11 @@ class ResearchQueueService
         // found out what resources we need for research
         $requiredResources = ResearchResource::where('research_id', $this->researchId)->where('lvl', $this->nextLvl)->get();
         $cityResources     = $city->resources;
+        $userResources     = User::find($this->userId)->resources;
 
         $canOrder = true;
         foreach ($requiredResources as $requiredResource) {
-            $hasEnoughRequiredResourceQty = false;
-            // Find the corresponding resource in the city resources
-            foreach ($cityResources as $cityResource) {
-                if ($cityResource->resource_id === $requiredResource->resource_id
-                    && $cityResource->qty >= $requiredResource->qty) {
-                    $hasEnoughRequiredResourceQty = true;
-                    break;
-                }
-            }
+            $hasEnoughRequiredResourceQty = $this->hasEnoughResource($cityResources, $requiredResource) || $this->hasEnoughResource($userResources, $requiredResource);
 
             if (!$hasEnoughRequiredResourceQty) {
                 $canOrder = false;
@@ -58,6 +53,21 @@ class ResearchQueueService
         }
 
         return $canOrder;
+    }
+
+    public function hasEnoughResource($resources, $requiredResource): bool
+    {
+        $hasEnoughRequiredResourceQty = false;
+        // Find the corresponding resource in the city/user resources
+        foreach ($resources as $resource) {
+            if ($resource->resource_id === $requiredResource->resource_id
+                && $resource->qty >= $requiredResource->qty) {
+                $hasEnoughRequiredResourceQty = true;
+                break;
+            }
+        }
+
+        return $hasEnoughRequiredResourceQty;
     }
 
     public function hasAllRequirements($city, $researchId, $nextLvl): bool
@@ -119,9 +129,9 @@ class ResearchQueueService
         return abort(403);
     }
 
-    public function updateQueue($city): ResearchQueue
+    public function updateQueue(City $city): ResearchQueue
     {
-        $cityResources = $city->resources;
+        $userId = $city->user_id;
 
         // found out what resources we need for research
         $requiredResources = ResearchResource::where('research_id', $this->researchId)->where('lvl', $this->nextLvl)->get();
@@ -131,13 +141,15 @@ class ResearchQueueService
 
         // Subtract the required amount of each resource from the city
         foreach ($requiredResources as $requiredResource) {
-            // Find the corresponding resource in the city resources
-            $cityResource = $cityResources->where('resource_id', $requiredResource->resource_id)->first();
+            $typeOfResource = Resource::find($requiredResource->resource_id)->type;
 
-            // Subtract the required quantity from the city's resource
-            $cityResource->qty -= $requiredResource->qty;
+            if ($typeOfResource === config('constants.RESOURCE_TYPE_IDS.COMMON')) {
+                (new CityService())->subtractResourceFromCity($city->id, $requiredResource->resource_id, $requiredResource->qty);
+            }
 
-            $cityResource->save();
+            if ($typeOfResource === config('constants.RESOURCE_TYPE_IDS.RESEARCH')) {
+                (new UserService())->subtractResourceFromUser($userId, $requiredResource->resource_id, $requiredResource->qty);
+            }
         }
 
         $researchQueue = ResearchQueue::create([
@@ -161,7 +173,7 @@ class ResearchQueueService
         return $researchQueue;
     }
 
-    public function cancel($userId): City
+    public function cancel(int $userId): City
     {
         $researchQueue = ResearchQueue::where('user_id', $userId)->first();
         $city          = null;
@@ -173,8 +185,15 @@ class ResearchQueueService
             $resources = ResearchQueueResource::where('research_queue_id', $researchQueue->id)->get();
 
             foreach ($resources as $resource) {
-                $cityResource = $city->resources->where('resource_id', $resource->resource_id)->first();
-                $cityResource->increment('qty', $resource->qty);
+                $typeOfResource = Resource::find($resource->resource_id)->type;
+
+                if ($typeOfResource === config('constants.RESOURCE_TYPE_IDS.COMMON')) {
+                    (new CityService())->addResourceToCity($city->id, $resource->resource_id, $resource->qty);
+                }
+
+                if ($typeOfResource === config('constants.RESOURCE_TYPE_IDS.RESEARCH')) {
+                    (new UserService())->addResourceToUser($userId, $resource->resource_id, $resource->qty);
+                }
 
                 $resource->delete();
             }

@@ -225,6 +225,10 @@ class CityService
         }
     }
 
+    public function subtractResourceFromCity(int $cityId, int $resourceId, int $qty): void {
+        $this->addResourceToCity($cityId, $resourceId, $qty * (-1));
+    }
+
     public function generateWarshipCards($resourcesCards)
     {
         $randomArrayIndex = array_rand($resourcesCards, 1);

@@ -133,7 +133,6 @@ export const SelectedResearch = ({
     httpClient
       .post("/researches/" + researchId + "/cancel")
       .then((response) => {
-        /*setBuildings(response.data.buildings);*/
         setQueue(undefined);
         updateCityResources(response.data.cityResources);
       });

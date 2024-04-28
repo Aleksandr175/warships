@@ -30,6 +30,8 @@ class ResearchController extends Controller
                     ]);
                 }
 
+                $queue->resources()->delete();
+                $queue->delete();
                 $user->researchesQueue()->delete();
             }
         }

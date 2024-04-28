@@ -64,6 +64,7 @@ class City extends Model
         return $this->hasMany(Warship::class)->where('warship_id', $warshipId)->first();
     }
 
+    // TODO: check if this fleet contents incoming and outgoing fleets or only outgoing (for pirate logic)
     public function fleets()
     {
         return $this->hasMany(Fleet::class);

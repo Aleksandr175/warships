@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Archipelago;
 use App\Models\City;
 use App\Models\Fleet;
-use App\Models\FleetDetail;
 use App\Models\WarshipDictionary;
 use Carbon\Carbon;
 
@@ -14,7 +14,7 @@ class PirateService
     public function handle(City $city)
     {
         if (!count($city->fleets)) {
-            dump('no pirate fleet -> sending new one to some player');
+            dump('no active pirate fleets -> sending new one to player in archipelago');
 
             $timeToTarget = 1000;
             $speed        = 100;
@@ -31,18 +31,32 @@ class PirateService
                 return false;
             }
 
-            // TODO: get random user
-            $targetCityId = 10;
+            $archipelagoId = $city->archipelago_id;
+            $archipelago = Archipelago::find($archipelagoId);
+
+            if (!$archipelago) {
+                dump('No arhipelago');
+                return false;
+            }
+
+            $userCities = $archipelago->userCities;
+
+            if (!count($userCities)) {
+                dump('No user islands in arhipelago');
+                return false;
+            }
+
+            $targetCityId = $userCities->random()->id;
 
             // create fleet and details
             $fleetId = (new Fleet)->create([
                 'city_id'        => $city->id,
                 'target_city_id' => $targetCityId,
-                'fleet_task_id'  => 3, //attack
+                'fleet_task_id'  => config('constants.FLEET_TASKS.ATTACK'),
                 'speed'          => $speed,
                 'time'           => $timeToTarget,
                 'repeating'      => 0,
-                'status_id'      => 1, // TODO: set default value for fleet status id
+                'status_id'      => config('constants.FLEET_STATUSES.ATTACK_GOING_TO_TARGET'),
                 'deadline'       => Carbon::now()->addSeconds($timeToTarget)
             ])->id;
 

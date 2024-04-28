@@ -121,7 +121,7 @@ Route::get('/test-expedition', function (\App\Services\ExpeditionService $expedi
 });
 
 Route::get('/test-pirate-logic', function (\App\Services\BattleService $battleService) {
-    $cities        = City::get()->where('city_dictionary_id', 2);
+    $cities        = City::get()->where('city_dictionary_id', config('constants.CITY_TYPE_ID.PIRATE_BAY'));
     $pirateService = new PirateService();
 
     foreach ($cities as $city) {

@@ -346,7 +346,6 @@ class FleetService
 
                     Message::create([
                         'user_id'        => $city->user_id,
-                        'content'        => 'Merchant fleet starts trading.',
                         'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_START_TRADING'),
                         'event_type'     => 'Fleet',
                         'city_id'        => $city->id,
@@ -444,10 +443,7 @@ class FleetService
 
                         Message::create([
                             'user_id'        => $city->user_id,
-                            'content'        => 'Fleet moved to island.',
                             'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_DONE'),
-                            /*'gold'           => $fleet->gold,
-                            'population'     => $fleet->population,*/
                             'event_type'     => 'Fleet',
                             'city_id'        => $fleet->city_id,
                             'target_city_id' => $fleet->target_city_id,
@@ -464,10 +460,7 @@ class FleetService
 
                         Message::create([
                             'user_id'        => $city->user_id,
-                            'content'        => 'Fleet can not be moved to island.',
                             'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_CANT'),
-                            /*'gold'           => $fleet->gold,
-                            'population'     => $fleet->population,*/
                             'event_type'     => 'Fleet',
                             'city_id'        => $fleet->city_id,
                             'target_city_id' => $fleet->target_city_id,
@@ -490,10 +483,7 @@ class FleetService
 
                     Message::create([
                         'user_id'        => $city->user_id,
-                        'content'        => 'Fleet returned to island.',
                         'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_WENT_BACK'),
-                        /*'gold'           => $fleet->gold,
-                        'population'     => $fleet->population,*/
                         'event_type'     => 'Fleet',
                         'city_id'        => $fleet->target_city_id,
                         'target_city_id' => $fleet->city_id,
@@ -582,7 +572,6 @@ class FleetService
 
                     Message::create([
                         'user_id'        => $city->user_id,
-                        'content'        => 'Expedition Fleet is back.',
                         'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_IS_BACK'),
                         'event_type'     => 'Expedition',
                         'archipelago_id' => $city->archipelago_id,

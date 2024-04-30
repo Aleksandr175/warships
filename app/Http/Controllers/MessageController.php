@@ -37,11 +37,14 @@ class MessageController extends Controller
         if ($message['user_id'] === $user->id) {
             $message->update(['is_read' => 1]);
 
+            $cities = City::whereIn('id', [$message->city_id, $message->target_city_id])->get();
+
             // get message with additional resources and fleet details info
             $message->with('resources', 'fleetDetails');
 
             return [
                 'message' => new MessageResource($message),
+                'cities'  => CityShortInfoResource::collection($cities),
             ];
         }
 

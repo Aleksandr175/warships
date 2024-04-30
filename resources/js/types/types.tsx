@@ -138,10 +138,16 @@ export interface IDictionary {
   fleetTasksDictionary: IFleetTasksDictionary[];
   fleetStatusesDictionary: IFleetStatusesDictionary[];
   resourcesDictionary: IResourceDictionary[];
+  messageTemplates: IMessageTemplate[];
   maxFleetNumbers: {
     trade: number;
     expedition: number;
   };
+}
+
+export interface IMessageTemplate {
+  templateId: number;
+  title: string;
 }
 
 export interface IBuilding {
@@ -312,10 +318,10 @@ export interface IWarshipImprovementRecipe {
 export type TImprovementType = "attack" | "health" | "capacity";
 
 export interface IUserResources {
-  resources: IUserResource[];
+  resources: IResource[];
 }
 
-export interface IUserResource {
+export interface IResource {
   resourceId: number;
   qty: number;
 }

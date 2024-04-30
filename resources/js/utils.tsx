@@ -55,3 +55,9 @@ export const getWarshipImprovementPercent = (
     )?.percentImprovement || 0
   );
 };
+
+// format server date to local date
+// "2024-04-30T15:54:23.000000Z" -> 30 Apr, 2024, 17:54:23
+export const formatDate = (date: string) => {
+  return dayjs(new Date(date)).utc(true).format("DD MMM, YYYY, HH:mm:ss");
+};

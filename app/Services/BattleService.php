@@ -231,7 +231,6 @@ class BattleService
         // for attacker
         Message::create([
             'user_id'        => $userId,
-            'content'        => 'Battle happened.',
             'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_ATTACK_HAPPENED'),
             'event_type'     => 'Battle',
             'city_id'        => $city->id,
@@ -243,7 +242,6 @@ class BattleService
         if ($targetCityUserId) {
             Message::create([
                 'user_id'        => $targetCityUserId,
-                'content'        => 'Battle happened.',
                 'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_DEFEND_HAPPENED'),
                 'event_type'     => 'Battle',
                 'city_id'        => $targetCity->id,

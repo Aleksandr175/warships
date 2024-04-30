@@ -1,3 +1,5 @@
+import { IFleetWarshipsData, IResource } from "../../types/types";
+
 export interface IMessage {
   id: number;
   content: string;
@@ -9,6 +11,8 @@ export interface IMessage {
   coordY: number;
   battleLogId: number;
   createdAt: string;
-  gold: number;
-  population: number;
+  cityId?: number;
+  targetCityId?: number;
+  fleetDetails: IFleetWarshipsData[];
+  resources: IResource[];
 }

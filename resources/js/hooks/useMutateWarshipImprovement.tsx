@@ -2,7 +2,7 @@ import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { httpClient } from "../httpClient/httpClient";
 import { AxiosResponse } from "axios";
 import {
-  IUserResource,
+  IResource,
   IWarshipImprovement,
   IWarshipImprovementRecipe,
 } from "../types/types";
@@ -11,7 +11,7 @@ interface IMutateWarshipImprovementRequest {
   recipeId: number;
 }
 interface IMutateWarshipImprovementResponse {
-  userResources: IUserResource[];
+  userResources: IResource[];
   warshipImprovementRecipes: IWarshipImprovementRecipe[];
   warshipImprovements: IWarshipImprovement[];
 }

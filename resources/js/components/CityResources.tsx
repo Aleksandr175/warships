@@ -134,13 +134,13 @@ const SResource = styled.div`
   width: 24%;
   min-width: 24%;
   align-items: center;
+  gap: 5px;
 `;
 
 const SProduction = styled.span`
   position: relative;
   display: inline-block;
   top: -5px;
-  padding-left: 5px;
   color: green;
   font-size: 12px;
   font-weight: 600;

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
 
-            $table->text('content');
+            $table->text('content')->nullable();
             $table->integer('template_id')->default(1);
             $table->boolean('is_read')->default(false);
             $table->string('event_type')->nullable();

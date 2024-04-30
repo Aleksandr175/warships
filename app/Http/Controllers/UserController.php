@@ -90,6 +90,61 @@ class UserController extends Controller
             'researchDependencies'    => ResearchDependencyResource::collection($researchDependencies),
             'warshipDependencies'     => WarshipDependencyResource::collection($warshipDependencies),
             'unreadMessagesNumber'    => $unreadMessagesNumber,
+            'messageTemplates'        => [
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_START_TRADING'),
+                    'title'      => 'Trade Fleet starts trading',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_IS_BACK'),
+                    'title'      => 'Trade Fleet is back',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_DONE'),
+                    'title'      => 'Fleet Moved successfully',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_CANT'),
+                    'title'      => 'Fleet can not be moved',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_WENT_BACK'),
+                    'title'      => 'Fleet is back',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_WENT_BACK'),
+                    'title'      => 'Fleet is back',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_RESOURCES'),
+                    'title'      => 'Expedition Fleet found resources',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_STORM'),
+                    'title'      => 'Expedition Fleet was in storm',
+                    'content'    => 'Expedition Fleet was caught in a storm. Some warships have been destroyed',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_LOST'),
+                    'title'      => 'Expedition Fleet has been lost',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_NOTHING'),
+                    'title'      => 'Expedition Fleet found nothing',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_IS_BACK'),
+                    'title'      => 'Expedition Fleet is back',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_ATTACK_HAPPENED'),
+                    'title'      => 'You attack island',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_DEFEND_HAPPENED'),
+                    'title'      => 'Your island has been attacked',
+                ],
+            ],
             'resourcesDictionary'     => ResourceDictionaryResource::collection($resourcesDictionary),
             'maxFleetNumbers'         => [
                 'trade'      => $tradeFleetNumber,

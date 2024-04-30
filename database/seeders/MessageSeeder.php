@@ -19,20 +19,22 @@ class MessageSeeder extends Seeder
             Message::create([
                 'user_id'     => config('constants.DEFAULT_USER_ID'),
                 'content'     => 'Test message',
-                'template_id' => 1,
+                'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_START_TRADING'),
             ]);
         }
 
         Message::create([
             'user_id'     => config('constants.DEFAULT_USER_ID'),
             'content'     => 'Test message',
-            'template_id' => 1,
+            'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_START_TRADING'),
         ]);
 
         $messageId = Message::create([
-            'user_id'     => config('constants.DEFAULT_USER_ID'),
-            'content'     => 'Test Trade Fleet Return message',
-            'template_id' => 1,
+            'user_id'        => config('constants.DEFAULT_USER_ID'),
+            'content'        => 'Test Trade Fleet Return message',
+            'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_IS_BACK'),
+            'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
+            'target_city_id' => config('constants.DEFAULT_USER_CITY_ID_2'),
         ])->id;
 
         MessageFleetDetail::create([
@@ -49,14 +51,14 @@ class MessageSeeder extends Seeder
         ]);
 
         MessageFleetResource::create([
-            'message_id' => $messageId,
-            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
-            'qty'        => 200
+            'message_id'  => $messageId,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'         => 200
         ]);
         MessageFleetResource::create([
-            'message_id' => $messageId,
-            'resource_id'   => config('constants.RESOURCE_IDS.LOG'),
-            'qty'        => 50
+            'message_id'  => $messageId,
+            'resource_id' => config('constants.RESOURCE_IDS.LOG'),
+            'qty'         => 50
         ]);
 
         Message::create([
@@ -66,6 +68,7 @@ class MessageSeeder extends Seeder
             'archipelago_id' => 1,
             'coord_x'        => 3,
             'coord_y'        => 3,
+            'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_DEFEND_HAPPENED'),
         ]);
 
         Message::create([
@@ -75,6 +78,7 @@ class MessageSeeder extends Seeder
             'archipelago_id' => 1,
             'coord_x'        => 3,
             'coord_y'        => 3,
+            'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_ATTACK_HAPPENED'),
         ]);
     }
 }

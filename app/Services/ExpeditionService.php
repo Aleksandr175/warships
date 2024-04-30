@@ -43,7 +43,6 @@ class ExpeditionService
 
             Message::create([
                 'user_id'        => $user->id,
-                'content'        => 'Expedition Fleet found nothing.',
                 'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_NOTHING'),
                 'event_type'     => 'Expedition',
                 'archipelago_id' => $city->archipelago_id,
@@ -108,7 +107,6 @@ class ExpeditionService
             // TODO: add message info about resources
             Message::create([
                 'user_id'        => $user->id,
-                'content'        => 'Expedition Fleet found resources.',
                 'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_RESOURCES'),
                 'event_type'     => 'Expedition',
                 'archipelago_id' => $city->archipelago_id,
@@ -131,7 +129,6 @@ class ExpeditionService
 
         Message::create([
             'user_id'        => $user->id,
-            'content'        => 'Expedition Fleet was lost.',
             'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_LOST'),
             'event_type'     => 'Expedition',
             'archipelago_id' => $city->archipelago_id,
@@ -161,7 +158,6 @@ class ExpeditionService
 
             Message::create([
                 'user_id'        => $user->id,
-                'content'        => 'Expedition Fleet was lost.',
                 'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_LOST'),
                 'event_type'     => 'Expedition',
                 'archipelago_id' => $city->archipelago_id,

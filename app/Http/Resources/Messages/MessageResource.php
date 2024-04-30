@@ -26,6 +26,8 @@ class MessageResource extends JsonResource
             "coordY"        => $this->coord_y,
             "battleLogId"   => $this->battle_log_id,
             "createdAt"     => $this->created_at,
+            "cityId"        => $this->city_id,
+            "targetCityId"  => $this->target_city_id,
             "resources"     => MessageFleetResourceResource::collection($this->resources),
             "fleetDetails"  => MessageFleetDetailResource::collection($this->fleetDetails)
         ];

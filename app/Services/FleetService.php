@@ -403,8 +403,6 @@ class FleetService
                         'user_id'        => $city->user_id,
                         'content'        => 'Merchant fleet is back.',
                         'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_IS_BACK'),
-                        /*'gold'           => $fleet->gold,
-                        'population'     => $fleet->population,*/
                         'event_type'     => 'Fleet',
                         'city_id'        => $fleet->target_city_id,
                         'target_city_id' => $city->id,

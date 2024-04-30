@@ -26,12 +26,13 @@ return new class extends Migration
             $table->integer('city_id')->nullable();
             $table->integer('target_city_id')->nullable();
 
-            $table->integer('gold')->nullable();
-            $table->integer('population')->nullable();
-
+            $table->unsignedBigInteger('message_fleet_resources_id')->nullable();
+            $table->unsignedBigInteger('message_fleet_details_id')->nullable();
             $table->unsignedBigInteger('battle_log_id')->nullable();
 
             $table->foreign('battle_log_id')->references('id')->on('battle_logs')->onDelete('set null');
+            // $table->foreign('message_fleet_resources_id')->references('message_id')->on('message_fleet_resources')->onDelete('set null');
+            // $table->foreign('message_fleet_details_id')->references('message_id')->on('message_fleet_details')->onDelete('set null');
 
             $table->timestamps();
         });

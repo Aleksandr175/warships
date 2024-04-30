@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Messages;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -25,7 +25,9 @@ class MessageResource extends JsonResource
             "coordX"        => $this->coord_x,
             "coordY"        => $this->coord_y,
             "battleLogId"   => $this->battle_log_id,
-            "createdAt"     => $this->created_at
+            "createdAt"     => $this->created_at,
+            "resources"     => MessageFleetResourceResource::collection($this->resources),
+            "fleetDetails"  => MessageFleetDetailResource::collection($this->fleetDetails)
         ];
     }
 }

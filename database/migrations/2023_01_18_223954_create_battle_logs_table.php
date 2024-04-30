@@ -24,9 +24,6 @@ class CreateBattleLogsTable extends Migration
             $table->integer('city_id')->nullable();
             $table->string('winner')->nullable();
 
-            $table->integer('gold')->default(0);
-            $table->integer('population')->default(0);
-
             $table->integer('round')->default(1);
 
             $table->timestamps();

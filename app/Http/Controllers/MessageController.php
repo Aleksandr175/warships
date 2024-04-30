@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\CityShortInfoResource;
-use App\Http\Resources\MessageResource;
+use App\Http\Resources\Messages\MessageResource;
 use App\Models\City;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +36,9 @@ class MessageController extends Controller
 
         if ($message['user_id'] === $user->id) {
             $message->update(['is_read' => 1]);
+
+            // get message with additional resources and fleet details info
+            $message->with('resources', 'fleetDetails');
 
             return [
                 'message' => new MessageResource($message),

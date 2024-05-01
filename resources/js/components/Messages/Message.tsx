@@ -9,6 +9,7 @@ import { formatDate, getResourceSlug } from "../../utils";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import styled from "styled-components";
 import { ICityShort } from "../../types/types";
+import { SDate, SMessageCity, SMessageHeader } from "./styles";
 
 export const Message = () => {
   const [message, setMessage] = useState<IMessage>();
@@ -37,9 +38,9 @@ export const Message = () => {
     });
   };
 
-  const getMessageHeader = () => {
+  const getMessageHeader = (messageItem: IMessage) => {
     let title = dictionaries?.messageTemplates?.find(
-      (template) => template.templateId === message?.templateId
+      (template) => template.templateId === messageItem?.templateId
     )?.title;
 
     return title || "";
@@ -56,7 +57,12 @@ export const Message = () => {
       <NavLink to={"/messages"}>Back to Messages</NavLink>
       <SMessageHeader>
         <SH1>
-          {getMessageHeader()} ({city?.title} [{city?.coordX}:{city?.coordY}])
+          {getMessageHeader(message)}{" "}
+          {city && (
+            <SMessageCity>
+              ({city?.title} [{city?.coordX}:{city?.coordY}])
+            </SMessageCity>
+          )}
         </SH1>
         <SDate>{formatDate(message?.createdAt || "")}</SDate>
       </SMessageHeader>
@@ -119,15 +125,6 @@ const SResources = styled.div`
 const SResource = styled.div`
   display: flex;
   gap: 5px;
-`;
-
-const SDate = styled.div`
-  font-size: 11px;
-`;
-
-const SMessageHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
 `;
 
 const SMessage = styled.div`

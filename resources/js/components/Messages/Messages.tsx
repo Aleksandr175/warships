@@ -1,30 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { SContent, SH1 } from "../styles";
 import ReactPaginate from "react-paginate";
-import { httpClient } from "../../httpClient/httpClient";
-import dayjs from "dayjs";
 import { NavLink } from "react-router-dom";
 import { IMessage } from "./types";
+import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
+import { formatDate } from "../../utils";
+import { SDate, SMessageBadge, SMessageCity, SMessageHeader } from "./styles";
+import { useFetchMessages } from "../../hooks/useFetchMessages";
 
 export const Messages = ({}) => {
-  const [messages, setMessages] = useState<IMessage[]>([]);
-  const [messagesNumber, setMessagesNumber] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    // get messages
-    getMessages(1);
-  }, []);
+  const queryDictionaries = useFetchDictionaries();
 
-  const getMessages = (page: number) => {
-    setIsLoading(true);
+  const dictionaries = queryDictionaries.data;
 
-    httpClient.get("/messages?page=" + page).then((resp) => {
-      console.log(resp.data);
-      setMessages(resp.data.messages);
-      setMessagesNumber(resp.data.messagesNumber);
-      setIsLoading(false);
-    });
+  const { data, isPending: isLoading } = useFetchMessages(page);
+
+  const messages = data?.messages || [];
+  const messagesNumber = data?.messagesNumber || 0;
+  const cities = data?.cities || [];
+
+  const getMessageHeader = (messageItem: IMessage) => {
+    let title = dictionaries?.messageTemplates?.find(
+      (template) => template.templateId === messageItem?.templateId
+    )?.title;
+
+    return title || "";
+  };
+
+  const getCity = (cityId: number) => {
+    return cities?.find((city) => city.id === cityId);
   };
 
   return (
@@ -33,19 +39,23 @@ export const Messages = ({}) => {
 
       {!messages?.length && <>No messages yet</>}
 
-      {messages.map((message) => {
+      {messages?.map((message) => {
+        const city = getCity(message.cityId || 0);
+
         return (
           <div key={message.id}>
-            <div className={"row"}>
-              <div className={"col-6"}>
-                {!message.isRead ? "New!" : ""}{" "}
-                {dayjs(message.createdAt).format("DD MMM, YYYY HH:mm:ss")}
-              </div>
-            </div>
-
-            <div className={"row"}>
-              <div className={"col-12"}>{message.content}</div>
-            </div>
+            <SMessageHeader>
+              <SH1>
+                {!message.isRead && <SMessageBadge>New</SMessageBadge>}
+                {getMessageHeader(message)}
+                {city && (
+                  <SMessageCity>
+                    ({city?.title} [{city?.coordX}:{city?.coordY}])
+                  </SMessageCity>
+                )}
+              </SH1>
+              <SDate>{formatDate(message?.createdAt || "")}</SDate>
+            </SMessageHeader>
 
             <NavLink to={"/messages/" + message.id}>Show</NavLink>
 
@@ -59,8 +69,7 @@ export const Messages = ({}) => {
           breakLabel="..."
           nextLabel="next >"
           onPageChange={(page) => {
-            getMessages(page.selected + 1);
-            console.log("change page");
+            setPage(page.selected + 1);
           }}
           pageRangeDisplayed={10}
           pageCount={Math.ceil(messagesNumber / 10)}

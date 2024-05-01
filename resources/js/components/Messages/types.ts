@@ -1,4 +1,4 @@
-import { IFleetWarshipsData, IResource } from "../../types/types";
+import { ICityShort, IFleetWarshipsData, IResource } from "../../types/types";
 
 export interface IMessage {
   id: number;
@@ -15,4 +15,11 @@ export interface IMessage {
   targetCityId?: number;
   fleetDetails: IFleetWarshipsData[];
   resources: IResource[];
+}
+
+export interface IMessagesData {
+  messages: IMessage[];
+  messagesNumber: number;
+  messagesUnread: number;
+  cities: ICityShort[];
 }

@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import { IBattleLogDetail } from "./Log";
+import { IBattleLogDetail } from "./MessageBattleLog";
 
-export const LogWarship = ({
+export const BattleLogWarship = ({
   data,
   mode = "light",
 }: {

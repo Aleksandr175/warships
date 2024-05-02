@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class BattleLogController extends Controller
 {
+    // TODO: do i need this controller now?
     public function get()
     {
         $userId = Auth::user()->id;

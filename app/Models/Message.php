@@ -30,4 +30,12 @@ class Message extends Model
     {
         return $this->hasMany(MessageFleetDetail::class);
     }
+
+    public function battleLog() {
+        return $this->hasOne(BattleLog::class, 'battle_log_id', 'battle_log_id');
+    }
+
+    public function battleLogDetails() {
+        return $this->hasMany(BattleLogDetail::class, 'battle_log_id', 'battle_log_id');
+    }
 }

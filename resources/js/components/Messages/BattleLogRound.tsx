@@ -1,6 +1,6 @@
 import React from "react";
-import { IBattleLogDetail } from "./Log";
-import { LogWarship } from "./LogWarship";
+import { IBattleLogDetail } from "./MessageBattleLog";
+import { BattleLogWarship } from "./BattleLogWarship";
 import styled from "styled-components";
 import { Icon } from "../Common/Icon";
 
@@ -11,7 +11,7 @@ interface IProps {
   round: number;
 }
 
-export const Round = ({
+export const BattleLogRound = ({
   roundData,
   firstUserId,
   secondUserId,
@@ -27,7 +27,7 @@ export const Round = ({
     const warshipLogData = getWarshipLog(userId, warshipId);
 
     if (warshipLogData) {
-      return <LogWarship data={warshipLogData} />;
+      return <BattleLogWarship data={warshipLogData} />;
     }
 
     return null;

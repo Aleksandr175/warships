@@ -40,7 +40,7 @@ class MessageController extends Controller
             $cities = City::whereIn('id', [$message->city_id, $message->target_city_id])->get();
 
             // get message with additional resources and fleet details info
-            $message->with('resources', 'fleetDetails');
+            $message->with('resources', 'fleetDetails', 'battleLog', 'battleLogDetails');
 
             return [
                 'message' => new MessageResource($message),

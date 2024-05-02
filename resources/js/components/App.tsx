@@ -15,8 +15,6 @@ import { Map } from "./Map/Map";
 import { SendingFleet } from "./SendingFleet/SendingFleet";
 import { useAppLogic } from "./hooks/useAppLogic";
 import { Fleets } from "./Fleets";
-import { Logs } from "./Logs/Logs";
-import { Log } from "./Logs/Log";
 import { Icon } from "./Common/Icon";
 import { SAppContainer, SColumn } from "./styles";
 import { Messages } from "./Messages/Messages";
@@ -159,14 +157,6 @@ const App = () => {
               >
                 Map
               </NavLink>
-              <NavLink
-                to={"/logs"}
-                className={({ isActive }) =>
-                  isActive ? "link selected-link" : "link"
-                }
-              >
-                Battle Logs
-              </NavLink>
               <SSeparator />
               <NavLink className={"link"} to={"/"} onClick={logout}>
                 Logout
@@ -260,16 +250,11 @@ const App = () => {
                       />
                     }
                   />
-                  <Route
-                    path="logs/:id"
-                    element={<Log userId={userId || 0} />}
-                  />
-                  <Route
-                    path={"logs"}
-                    element={<Logs userId={userId || 0} />}
-                  />
                   <Route path={"messages"} element={<Messages />} />
-                  <Route path={"messages/:id"} element={<Message />} />
+                  <Route
+                    path={"messages/:id"}
+                    element={<Message userId={userId || 0} />}
+                  />
                 </Routes>
               )}
             </div>

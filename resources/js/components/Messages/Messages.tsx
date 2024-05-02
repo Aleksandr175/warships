@@ -37,6 +37,8 @@ export const Messages = ({}) => {
     <SContent>
       <SH1>Messages</SH1>
 
+      {isLoading && <>Loading...</>}
+
       {!messages?.length && <>No messages yet</>}
 
       {messages?.map((message) => {

@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class MessageFleetDetail extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
 }

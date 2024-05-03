@@ -148,6 +148,7 @@ export interface IDictionary {
 export interface IMessageTemplate {
   templateId: number;
   title: string;
+  content: string;
 }
 
 export interface IBuilding {

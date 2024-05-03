@@ -112,12 +112,9 @@ class UserController extends Controller
                     'title'      => 'Fleet is back',
                 ],
                 [
-                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_WENT_BACK'),
-                    'title'      => 'Fleet is back',
-                ],
-                [
                     'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_RESOURCES'),
                     'title'      => 'Expedition Fleet found resources',
+                    'content'    => 'Expedition has success. Your fleet found some resources.'
                 ],
                 [
                     'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_STORM'),
@@ -131,6 +128,7 @@ class UserController extends Controller
                 [
                     'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_NOTHING'),
                     'title'      => 'Expedition Fleet found nothing',
+                    'content'    => 'Expedition Fleet is returning with nothing'
                 ],
                 [
                     'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_IS_BACK'),

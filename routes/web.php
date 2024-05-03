@@ -113,6 +113,7 @@ Route::get('/test-production-resources', function (\App\Services\ResourceService
 });
 
 Route::get('/test-expedition', function (\App\Services\ExpeditionService $expeditionService) {
+    dump('test-expedition');
     $fleetQueue = Fleet::where('fleet_task_id', config('constants.FLEET_TASKS.EXPEDITION'))->get();
 
     foreach ($fleetQueue as $fleet) {

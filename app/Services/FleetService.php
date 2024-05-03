@@ -395,17 +395,21 @@ class FleetService
                     $city         = City::find($fleet->city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
 
-                    // move all resources from Fleet to City
-                    $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
-
-                    Message::create([
+                    $messageId = Message::create([
                         'user_id'        => $city->user_id,
                         'content'        => 'Merchant fleet is back.',
                         'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_IS_BACK'),
                         'event_type'     => 'Fleet',
                         'city_id'        => $fleet->target_city_id,
                         'target_city_id' => $city->id,
-                    ]);
+                    ])->id;
+                    (new MessageService())->addMessageAboutResources($fleet, $messageId);
+                    (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
+
+
+                    // move all resources from Fleet to City
+                    $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
+
 
                     if ($fleet->repeating) {
                         dump('trade: fleet repeats trade task, going to target');
@@ -434,20 +438,23 @@ class FleetService
 
                     if ($city->user_id === $targetCity->user_id) {
                         dump('move: fleet moved to another island');
+
+                        $messageId = Message::create([
+                            'user_id'        => $city->user_id,
+                            'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_DONE'),
+                            'event_type'     => 'Fleet',
+                            'city_id'        => $fleet->city_id,
+                            'target_city_id' => $fleet->target_city_id,
+                        ])->id;
+                        (new MessageService())->addMessageAboutResources($fleet, $messageId);
+                        (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
+
                         // transfer fleet to warships in the island
                         $this->convertFleetDetailsToWarships($fleetDetails, $targetCity);
 
                         $this->moveResourcesFromFleetToCityOrUser($fleet, $targetCity, $resourcesDictionary);
 
                         $shouldDeleteFleet = true;
-
-                        Message::create([
-                            'user_id'        => $city->user_id,
-                            'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_DONE'),
-                            'event_type'     => 'Fleet',
-                            'city_id'        => $fleet->city_id,
-                            'target_city_id' => $fleet->target_city_id,
-                        ]);
                     } else {
                         dump('move: fleet is returning to original island');
                         // return fleet back
@@ -474,20 +481,22 @@ class FleetService
                     $city         = City::find($fleet->city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
 
+                    $messageId = Message::create([
+                        'user_id'        => $city->user_id,
+                        'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_WENT_BACK'),
+                        'event_type'     => 'Fleet',
+                        'city_id'        => $fleet->target_city_id,
+                        'target_city_id' => $fleet->city_id,
+                    ])->id;
+                    (new MessageService())->addMessageAboutResources($fleet, $messageId);
+                    (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
+
                     // transfer fleet to warships in the island
                     $this->convertFleetDetailsToWarships($fleetDetails, $city);
 
                     $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
 
                     $shouldDeleteFleet = true;
-
-                    Message::create([
-                        'user_id'        => $city->user_id,
-                        'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_MOVE_WENT_BACK'),
-                        'event_type'     => 'Fleet',
-                        'city_id'        => $fleet->target_city_id,
-                        'target_city_id' => $fleet->city_id,
-                    ]);
                 }
             }
 
@@ -553,6 +562,17 @@ class FleetService
                     $city         = City::find($fleet->city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
 
+                    $messageId = Message::create([
+                        'user_id'        => $city->user_id,
+                        'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_IS_BACK'),
+                        'event_type'     => 'Expedition',
+                        'archipelago_id' => $city->archipelago_id,
+                        'coord_x'        => $city->coord_x,
+                        'coord_y'        => $city->coord_y,
+                    ])->id;
+                    (new MessageService())->addMessageAboutResources($fleet, $messageId);
+                    (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
+
                     $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
 
                     if ($fleet->repeating) {
@@ -569,15 +589,6 @@ class FleetService
 
                         $shouldDeleteFleet = true;
                     }
-
-                    Message::create([
-                        'user_id'        => $city->user_id,
-                        'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_IS_BACK'),
-                        'event_type'     => 'Expedition',
-                        'archipelago_id' => $city->archipelago_id,
-                        'coord_x'        => $city->coord_x,
-                        'coord_y'        => $city->coord_y,
-                    ]);
                 }
             }
 

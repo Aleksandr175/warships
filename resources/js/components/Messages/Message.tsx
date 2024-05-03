@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { SContent, SH1 } from "../styles";
 import { NavLink, useParams } from "react-router-dom";
 import { IMessage } from "./types";
@@ -7,14 +7,11 @@ import { FleetWarships } from "../Common/FleetWarships";
 import { formatDate, getResourceSlug } from "../../utils";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import styled from "styled-components";
-import { ICityShort } from "../../types/types";
 import { SDate, SMessageCity, SMessageHeader } from "./styles";
 import { MessageBattleLog } from "./MessageBattleLog";
 import { useFetchMessage } from "../../hooks/useFetchMessage";
 
 export const Message = ({ userId }: { userId: number }) => {
-  const [cities, setCities] = useState<ICityShort[]>();
-
   const queryDictionaries = useFetchDictionaries();
 
   const dictionaries = queryDictionaries.data;
@@ -33,7 +30,15 @@ export const Message = ({ userId }: { userId: number }) => {
     return title || "";
   };
 
-  const city = cities?.find((city) => city.id === message?.targetCityId);
+  const getMessageContent = (messageItem: IMessage) => {
+    let content = dictionaries?.messageTemplates?.find(
+      (template) => template.templateId === messageItem?.templateId
+    )?.content;
+
+    return content || "";
+  };
+
+  const city = data?.cities?.find((city) => city.id === message?.targetCityId);
 
   if (!dictionaries || !message) {
     return <></>;
@@ -59,7 +64,7 @@ export const Message = ({ userId }: { userId: number }) => {
           </SMessageHeader>
 
           <SMessage>
-            <div>{message.content}</div>
+            <div>{getMessageContent(message)}</div>
 
             {message.fleetDetails && message.fleetDetails.length > 0 && (
               <div>

@@ -104,46 +104,58 @@ class ExpeditionService
             $city = City::find($fleet->city_id);
             $user = User::find($city->user_id);
 
-            // TODO: add message info about resources
-            Message::create([
+            $messageId = Message::create([
                 'user_id'        => $user->id,
                 'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_RESOURCES'),
                 'event_type'     => 'Expedition',
                 'archipelago_id' => $city->archipelago_id,
                 'coord_x'        => $city->coord_x,
                 'coord_y'        => $city->coord_y,
-            ]);
+            ])->id;
+            (new MessageService())->addMessageAboutResources($fleet, $messageId);
         }
     }
 
     public function loseEntireFleet(Fleet $fleet, $fleetDetails): void
     {
-        $fleet->delete();
-
-        foreach ($fleetDetails as $fleetDetail) {
-            $fleetDetail->delete();
-        }
-
         $city = City::find($fleet->city_id);
         $user = User::find($city->user_id);
 
-        Message::create([
+        $fleet->resources()->delete();
+        $fleet->delete();
+
+        $messageId = Message::create([
             'user_id'        => $user->id,
             'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_LOST'),
             'event_type'     => 'Expedition',
             'archipelago_id' => $city->archipelago_id,
             'coord_x'        => $city->coord_x,
             'coord_y'        => $city->coord_y,
-        ]);
+        ])->id;
+        // info about damaged/lost warships
+        (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
 
+        foreach ($fleetDetails as $fleetDetail) {
+            $fleetDetail->delete();
+        }
 
         dump('delete fleet');
     }
 
     public function handleStormDamage(Fleet $fleet, $fleetDetails): void
     {
+        $messageFleetDetails = [];
+
         foreach ($fleetDetails as $fleetDetail) {
-            $fleetDetail->update(['qty' => floor($fleetDetail['qty'] * 0.8)]);
+            $newQty = floor($fleetDetail['qty'] * 0.8);
+
+            $messageFleetDetails[] = [
+                'qty'        => $fleetDetail['qty'] - $newQty,
+                'warship_id' => $fleetDetail['warship_id'],
+                'fleet_id'   => $fleet->id
+            ];
+
+            $fleetDetail->update(['qty' => $newQty]);
 
             if ($fleetDetail['qty'] < 1) {
                 $fleetDetail->delete();
@@ -154,9 +166,10 @@ class ExpeditionService
         $user = User::find($city->user_id);
 
         if (!count($fleetDetails)) {
+            $fleet->resources()->delete();
             $fleet->delete();
 
-            Message::create([
+            $messageId = Message::create([
                 'user_id'        => $user->id,
                 'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_LOST'),
                 'event_type'     => 'Expedition',
@@ -165,17 +178,19 @@ class ExpeditionService
                 'coord_y'        => $city->coord_y,
             ]);
         } else {
-            // TODO: add info about damaged warships
-            Message::create([
+            $messageId = Message::create([
                 'user_id'        => $user->id,
-                'content'        => 'Expedition Fleet was caught in a storm. Some warships have been destroyed',
                 'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_STORM'),
                 'event_type'     => 'Expedition',
                 'archipelago_id' => $city->archipelago_id,
                 'coord_x'        => $city->coord_x,
                 'coord_y'        => $city->coord_y,
-            ]);
+            ])->id;
+
         }
+
+        // info about damaged/lost warships
+        (new MessageService())->addMessageAboutFleetDetails($messageFleetDetails, $messageId);
 
         dump('handle storm damage');
     }

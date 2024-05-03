@@ -1,8 +1,14 @@
 import React from "react";
 import { BattleLogRound } from "./BattleLogRound";
+import { IMessage } from "./types";
+import { ICityShort } from "../../types/types";
+import { Icon } from "../Common/Icon";
+import styled from "styled-components";
 
 interface IProps {
   userId: number;
+  message: IMessage;
+  cities: ICityShort[];
   battleLog: IBattleLog;
   battleLogDetails: IBattleLogDetail[];
 }
@@ -26,6 +32,8 @@ export interface IBattleLogDetail {
 
 export const MessageBattleLog = ({
   userId,
+  message,
+  cities,
   battleLog,
   battleLogDetails,
 }: IProps) => {
@@ -54,33 +62,38 @@ export const MessageBattleLog = ({
       return (
         <BattleLogRound
           roundData={getRoundDetails(round + 1)}
-          firstUserId={userId}
-          secondUserId={secondUserId() || null}
+          attackerCity={attackerCity}
+          defenderCity={defenderCity}
           round={round + 1}
         />
       );
     });
   };
 
+  const getCity = (cityId: number) =>
+    cities?.find((city) => city.id === cityId);
+
+  const attackerCity = getCity(message.cityId || 0);
+  const defenderCity = getCity(message.targetCityId || 0);
+
   return (
     <>
-      <div className={"row"}>
-        <div className={"col-4"}>Type</div>
-        <div className={"col-4"}>Result</div>
-      </div>
-
-      <div className={"row"}>
-        <div className={"col-4"}>
-          {battleLog.attackerUserId === userId ? "Attack" : "Defend"}
-        </div>
-        <div className={"col-4"}>
-          {battleLog.winner === "attacker" ? "Victory" : "Defeat"}
-        </div>
-      </div>
+      <SAttackCities>
+        {attackerCity?.title} (
+        {battleLog.winner === "attacker" ? "Win" : "Lost"}){" "}
+        <Icon title={"attack"} /> {defenderCity?.title} (
+        {battleLog.winner === "attacker" ? "Lost" : "Win"})
+      </SAttackCities>
 
       <hr />
-
       {battleLogDetails && renderRounds()}
     </>
   );
 };
+
+const SAttackCities = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+`;

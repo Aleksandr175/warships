@@ -94,6 +94,7 @@ class UserController extends Controller
                 [
                     'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_START_TRADING'),
                     'title'      => 'Trade Fleet starts trading',
+                    'content'    => 'It will take some time'
                 ],
                 [
                     'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_IS_BACK'),

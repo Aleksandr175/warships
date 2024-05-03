@@ -3,27 +3,34 @@ import { IBattleLogDetail } from "./MessageBattleLog";
 import { BattleLogWarship } from "./BattleLogWarship";
 import styled from "styled-components";
 import { Icon } from "../Common/Icon";
+import { ICityShort } from "../../types/types";
 
 interface IProps {
   roundData: IBattleLogDetail[];
-  firstUserId: number | null;
-  secondUserId: number | null;
+  attackerCity: ICityShort | undefined;
+  defenderCity: ICityShort | undefined;
   round: number;
 }
 
 export const BattleLogRound = ({
   roundData,
-  firstUserId,
-  secondUserId,
+  attackerCity,
+  defenderCity,
   round,
 }: IProps) => {
-  const getWarshipLog = (userId: number | null, warshipId: number) => {
+  const getWarshipLog = (
+    userId: number | null | undefined,
+    warshipId: number
+  ) => {
     return roundData.find(
       (data) => data.userId === userId && data.warshipId === warshipId
     );
   };
 
-  const renderLogWarship = (userId: number | null, warshipId: number) => {
+  const renderLogWarship = (
+    userId: number | null | undefined,
+    warshipId: number
+  ) => {
     const warshipLogData = getWarshipLog(userId, warshipId);
 
     if (warshipLogData) {
@@ -33,7 +40,7 @@ export const BattleLogRound = ({
     return null;
   };
 
-  const renderLostWarships = (userId: number | null) => {
+  const renderLostWarships = (userId: number | null | undefined) => {
     const detailsOfDestroyedWarships = roundData.filter(
       (logDetail) => logDetail.userId === userId && logDetail.destroyed
     );
@@ -65,21 +72,21 @@ export const BattleLogRound = ({
             <div className={"offset-1 col-10 text-center"}>
               <SFirstRow className={"row"}>
                 <div className={"col-4"}>
-                  {renderLogWarship(firstUserId, 1)}
+                  {renderLogWarship(attackerCity?.userId, 1)}
                 </div>
                 <div className={"col-4"}>
-                  {renderLogWarship(firstUserId, 2)}
+                  {renderLogWarship(attackerCity?.userId, 2)}
                 </div>
                 <div className={"col-4"}>
-                  {renderLogWarship(firstUserId, 3)}
+                  {renderLogWarship(attackerCity?.userId, 3)}
                 </div>
               </SFirstRow>
               <div className={"row"}>
                 <div className={"col-6"}>
-                  {renderLogWarship(firstUserId, 4)}
+                  {renderLogWarship(attackerCity?.userId, 4)}
                 </div>
                 <div className={"col-6"}>
-                  {renderLogWarship(firstUserId, 5)}
+                  {renderLogWarship(attackerCity?.userId, 5)}
                 </div>
               </div>
             </div>
@@ -100,21 +107,21 @@ export const BattleLogRound = ({
             <div className={"offset-1 col-10 text-center"}>
               <div className={"row"}>
                 <div className={"col-4"}>
-                  {renderLogWarship(secondUserId, 1)}
+                  {renderLogWarship(defenderCity?.userId, 1)}
                 </div>
                 <div className={"col-4"}>
-                  {renderLogWarship(secondUserId, 2)}
+                  {renderLogWarship(defenderCity?.userId, 2)}
                 </div>
                 <div className={"col-4"}>
-                  {renderLogWarship(secondUserId, 3)}
+                  {renderLogWarship(defenderCity?.userId, 3)}
                 </div>
               </div>
               <div className={"row"}>
                 <div className={"col-6"}>
-                  {renderLogWarship(secondUserId, 4)}
+                  {renderLogWarship(defenderCity?.userId, 4)}
                 </div>
                 <div className={"col-6"}>
-                  {renderLogWarship(secondUserId, 5)}
+                  {renderLogWarship(defenderCity?.userId, 5)}
                 </div>
               </div>
             </div>
@@ -124,10 +131,10 @@ export const BattleLogRound = ({
 
       <br />
       <p>
-        <b>Round result:</b>
+        <b>Round Result:</b>
       </p>
-      <p>First player lost: {renderLostWarships(firstUserId)}</p>
-      <p>Second player lost: {renderLostWarships(secondUserId)}</p>
+      <p>Attacker Lost: {renderLostWarships(attackerCity?.userId)}</p>
+      <p>Defender Lost: {renderLostWarships(defenderCity?.userId)}</p>
 
       <br />
       <hr />

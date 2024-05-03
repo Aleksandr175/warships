@@ -18,6 +18,7 @@ class CityShortInfoResource extends JsonResource
         return [
             'id'            => $this->id,
             'title'         => $this->title,
+            'userId'        => $this->user_id,
             'archipelagoId' => $this->archipelago_id,
             'coordX'        => $this->coord_x,
             'coordY'        => $this->coord_y,

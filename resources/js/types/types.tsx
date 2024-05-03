@@ -15,6 +15,7 @@ export interface ICity {
 export interface ICityShort {
   id: number;
   title: string;
+  userId: number;
   archipelagoId: number;
   coordX: number;
   coordY: number;

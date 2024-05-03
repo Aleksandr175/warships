@@ -80,7 +80,7 @@ export const Message = ({ userId }: { userId: number }) => {
             {message.resources && message.resources.length > 0 && (
               <div>
                 <div>
-                  <strong>Fleet delivered resources</strong>
+                  <strong>Fleet has resources</strong>
                 </div>
                 <SResources>
                   {message.resources.map((resource) => {
@@ -103,6 +103,8 @@ export const Message = ({ userId }: { userId: number }) => {
             {message.battleLog && (
               <MessageBattleLog
                 userId={userId}
+                message={data.message}
+                cities={data.cities}
                 battleLog={message.battleLog}
                 battleLogDetails={message.battleLogDetails}
               />

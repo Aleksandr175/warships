@@ -145,6 +145,11 @@ class UserController extends Controller
                 ],
             ],
             'resourcesDictionary'     => ResourceDictionaryResource::collection($resourcesDictionary),
+            'resourcesDictionaryTypes'     => [
+                'common'   => config('constants.RESOURCE_TYPE_IDS.COMMON'),
+                'card'     => config('constants.RESOURCE_TYPE_IDS.CARD'),
+                'research' => config('constants.RESOURCE_TYPE_IDS.RESEARCH'),
+            ],
             'maxFleetNumbers'         => [
                 'trade'      => $tradeFleetNumber,
                 'expedition' => $expeditionFleetNumber

@@ -10,6 +10,7 @@ import styled from "styled-components";
 import { SDate, SMessageCity, SMessageHeader } from "./styles";
 import { MessageBattleLog } from "./MessageBattleLog";
 import { useFetchMessage } from "../../hooks/useFetchMessage";
+import { IResource } from "../../types/types";
 
 export const Message = ({ userId }: { userId: number }) => {
   const queryDictionaries = useFetchDictionaries();
@@ -39,6 +40,39 @@ export const Message = ({ userId }: { userId: number }) => {
   };
 
   const city = data?.cities?.find((city) => city.id === message?.targetCityId);
+
+  const findResource = (
+    resource: IResource,
+    type?: number
+  ): IResource | undefined => {
+    const dictRes = dictionaries?.resourcesDictionary.find(
+      (dictResource) => dictResource.id === resource.resourceId
+    );
+
+    if (dictRes?.type === type) {
+      return resource;
+    }
+  };
+
+  const resources = message?.resources?.filter((resource) => {
+    if (findResource(resource, dictionaries?.resourcesDictionaryTypes.common)) {
+      return resource;
+    }
+  });
+
+  const specialResources = message?.resources?.filter((resource) => {
+    if (
+      findResource(resource, dictionaries?.resourcesDictionaryTypes.research)
+    ) {
+      return resource;
+    }
+  });
+
+  const cardResources = message?.resources?.filter((resource) => {
+    if (findResource(resource, dictionaries?.resourcesDictionaryTypes.card)) {
+      return resource;
+    }
+  });
 
   if (!dictionaries || !message) {
     return <></>;
@@ -77,13 +111,59 @@ export const Message = ({ userId }: { userId: number }) => {
               </div>
             )}
 
-            {message.resources && message.resources.length > 0 && (
+            {resources && resources.length > 0 && (
               <div>
                 <div>
                   <strong>Fleet has resources</strong>
                 </div>
                 <SResources>
-                  {message.resources.map((resource) => {
+                  {resources.map((resource) => {
+                    return (
+                      <SResource key={resource.resourceId}>
+                        <Icon
+                          title={getResourceSlug(
+                            dictionaries.resourcesDictionary,
+                            resource.resourceId
+                          )}
+                        />
+                        {Math.floor(resource?.qty || 0)}
+                      </SResource>
+                    );
+                  })}
+                </SResources>
+              </div>
+            )}
+
+            {specialResources && specialResources.length > 0 && (
+              <div>
+                <div>
+                  <strong>Fleet has special resources</strong>
+                </div>
+                <SResources>
+                  {specialResources.map((resource) => {
+                    return (
+                      <SResource key={resource.resourceId}>
+                        <Icon
+                          title={getResourceSlug(
+                            dictionaries.resourcesDictionary,
+                            resource.resourceId
+                          )}
+                        />
+                        {Math.floor(resource?.qty || 0)}
+                      </SResource>
+                    );
+                  })}
+                </SResources>
+              </div>
+            )}
+
+            {cardResources && cardResources.length > 0 && (
+              <div>
+                <div>
+                  <strong>Fleet has special cards</strong>
+                </div>
+                <SResources>
+                  {cardResources.map((resource) => {
                     return (
                       <SResource key={resource.resourceId}>
                         <Icon

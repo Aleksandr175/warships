@@ -39,7 +39,7 @@ export const Messages = ({}) => {
 
       {isLoading && <>Loading...</>}
 
-      {!messages?.length && <>No messages yet</>}
+      {!messages?.length && !isLoading && <>No messages yet</>}
 
       {messages?.map((message) => {
         const city = getCity(message.cityId || 0);

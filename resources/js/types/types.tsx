@@ -139,6 +139,11 @@ export interface IDictionary {
   fleetTasksDictionary: IFleetTasksDictionary[];
   fleetStatusesDictionary: IFleetStatusesDictionary[];
   resourcesDictionary: IResourceDictionary[];
+  resourcesDictionaryTypes: {
+    common: number;
+    card: number;
+    research: number;
+  };
   messageTemplates: IMessageTemplate[];
   maxFleetNumbers: {
     trade: number;

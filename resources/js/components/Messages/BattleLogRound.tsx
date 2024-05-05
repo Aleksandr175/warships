@@ -21,7 +21,7 @@ export const BattleLogRound = ({
   const getWarshipLog = (
     userId: number | null | undefined,
     warshipId: number
-  ) => {
+  ): IBattleLogDetail | undefined => {
     return roundData.find(
       (data) => data.userId === userId && data.warshipId === warshipId
     );
@@ -34,7 +34,14 @@ export const BattleLogRound = ({
     const warshipLogData = getWarshipLog(userId, warshipId);
 
     if (warshipLogData) {
-      return <BattleLogWarship data={warshipLogData} />;
+      return (
+        <BattleLogWarship
+          data={{
+            warshipId: warshipLogData.warshipId,
+            qty: warshipLogData.qty,
+          }}
+        />
+      );
     }
 
     return null;
@@ -51,14 +58,15 @@ export const BattleLogRound = ({
 
     return detailsOfDestroyedWarships.map((detail) => {
       return (
-        <span>
-          <SWarshipIcon
-            style={{
-              backgroundImage: `url("../images/warships/simple/light/${detail.warshipId}.svg")`,
+        <SLostWarship>
+          <BattleLogWarship
+            mode={"dark"}
+            data={{
+              warshipId: detail.warshipId,
+              qty: detail.destroyed,
             }}
           />
-          {detail.destroyed}
-        </span>
+        </SLostWarship>
       );
     });
   };
@@ -195,4 +203,9 @@ const SFireIcons = styled.div`
   position: relative;
   display: flex;
   justify-content: space-between;
+`;
+
+const SLostWarship = styled.span`
+  display: inline-block;
+  padding-right: 10px;
 `;

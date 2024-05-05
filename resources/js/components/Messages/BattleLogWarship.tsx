@@ -1,12 +1,15 @@
 import React from "react";
 import styled from "styled-components";
-import { IBattleLogDetail } from "./MessageBattleLog";
+import { SBadge } from "../Common/styles";
 
 export const BattleLogWarship = ({
   data,
   mode = "light",
 }: {
-  data: IBattleLogDetail;
+  data: {
+    warshipId: number;
+    qty: number;
+  };
   mode?: "light" | "dark";
 }) => {
   return (
@@ -16,13 +19,13 @@ export const BattleLogWarship = ({
           backgroundImage: `url("../images/warships/simple/${mode}/${data.warshipId}.svg")`,
         }}
       />
-      {data.qty}
+      <SBadge>{data.qty}</SBadge>
     </SWrapper>
   );
 };
 
 const SWrapper = styled.div`
-  display: flex;
+  display: inline-flex;
   align-items: center;
 `;
 

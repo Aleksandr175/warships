@@ -36,12 +36,13 @@ return [
         //'EMBASSY' => 10,
     ],
     'RESEARCHES' => [
-        'SHIP_TECHNOLOGIES' => 1,
-        'SHIP_SAILS'        => 2,
-        'SHIP_GUNS'         => 3,
-        'SHIP_HOLD'         => 4,
-        'TRADE_SYSTEM'      => 5,
-        'EXPEDITION_SYSTEM' => 6,
+        'SHIP_TECHNOLOGIES'   => 1,
+        'SHIP_SAILS'          => 2,
+        'SHIP_GUNS'           => 3,
+        'SHIP_HOLD'           => 4,
+        'TRADE_SYSTEM'        => 5,
+        'EXPEDITION_SYSTEM'   => 6,
+        'GOVERNMENTAL_SYSTEM' => 7
     ],
     'WARSHIPS'   => [
         'LUGGER'     => 1,
@@ -57,6 +58,7 @@ return [
         'ATTACK'     => 1002,
         'TRANSPORT'  => 1003,
         'EXPEDITION' => 1004,
+        'TAKE_OVER'  => 1005,
     ],
 
     'FLEET_STATUSES' => [

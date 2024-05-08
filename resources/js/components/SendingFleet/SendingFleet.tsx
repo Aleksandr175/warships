@@ -296,6 +296,12 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
               >
                 Expedition
               </STaskType>
+              <STaskType
+                active={taskType === "takeOver"}
+                onClick={() => setTaskType("takeOver")}
+              >
+                Take Over
+              </STaskType>
             </>
           )}
         </div>

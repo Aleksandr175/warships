@@ -130,6 +130,16 @@ export const MapCell = ({
                       >
                         Transport
                       </button>
+                      <button
+                        className={"btn btn-primary"}
+                        onClick={() => {
+                          navigate(
+                            `/sending-fleets?coordX=${city?.coordX}&coordY=${city?.coordY}&taskType=takeOver&type=${mapType}`
+                          );
+                        }}
+                      >
+                        Take over the island
+                      </button>
                     </>
                   )}
                 </SPopoverButtons>

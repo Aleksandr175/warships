@@ -225,7 +225,13 @@ export interface IProductions {
   [resourceSlug: string]: IBuildingsProduction;
 }
 
-export type TTask = "attack" | "move" | "trade" | "transport" | "expedition";
+export type TTask =
+  | "attack"
+  | "move"
+  | "trade"
+  | "transport"
+  | "expedition"
+  | "takeOver";
 // TODO: refactor naming
 export type TType = "map" | "adventure";
 

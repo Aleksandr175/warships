@@ -237,5 +237,58 @@ class ResearchResourceSeeder extends Seeder
             'lvl'           => 3,
             'time_required' => 1000,
         ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 500,
+            'lvl'           => 1,
+            'time_required' => 10,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 3000,
+            'lvl'           => 2,
+            'time_required' => 100,
+        ]);
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.KNOWLEDGE'),
+            'qty'           => 50,
+            'lvl'           => 2,
+            'time_required' => 100,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 15000,
+            'lvl'           => 3,
+            'time_required' => 1000,
+        ]);
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.KNOWLEDGE'),
+            'qty'           => 150,
+            'lvl'           => 3,
+            'time_required' => 1000,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 50000,
+            'lvl'           => 4,
+            'time_required' => 3000,
+        ]);
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.KNOWLEDGE'),
+            'qty'           => 250,
+            'lvl'           => 4,
+            'time_required' => 3000,
+        ]);
     }
 }

@@ -48,5 +48,12 @@ class FleetTaskDictionarySeeder extends Seeder
             'slug' => 'expedition',
             'description' => 'Expedition'
         ]);
+
+        FleetTaskDictionary::create([
+            'id' => config('constants.FLEET_TASKS.TAKE_OVER'),
+            'title' => 'Take Over',
+            'slug' => 'takeOver',
+            'description' => 'Take over new island'
+        ]);
     }
 }

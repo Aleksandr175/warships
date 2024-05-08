@@ -51,6 +51,13 @@ class FleetService
             return 'no coordinates';
         }
 
+        // get player's city
+        $userCity = $user->city($this->cityId);
+
+        if (!($userCity && $userCity->id)) {
+            return 'it is not city of current user';
+        }
+
         // get archipelago id depending on type
         if ($this->type === 'adventure') {
             // send fleet to external archipelago / adventure
@@ -62,13 +69,6 @@ class FleetService
         } else {
             // send fleet inside our archipelago
             $archipelagoId = $user->archipelagoId();
-        }
-
-        // get player's city
-        $userCity = $user->city($this->cityId);
-
-        if (!($userCity && $userCity->id)) {
-            return 'it is not city of current user';
         }
 
         if ($this->taskTypeSlug !== 'expedition' && $this->taskTypeSlug !== 'trade') {
@@ -205,6 +205,32 @@ class FleetService
 
             if (count($expeditionFleets) >= $expeditionSystemLvl) {
                 return 'You cant send more expedition fleets';
+            }
+        }
+
+        // some logic for sending take over fleet
+        if ($this->type !== 'adventure' && $this->taskTypeId === config('constants.FLEET_TASKS.TAKE_OVER')) {
+            $userCityIds      = $user->cities->pluck('id')->toArray();
+            $numberOfCities = count($userCityIds);
+
+            // check research, if it is possible to take over more islands
+            $governmentalResearch = Research::find(config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'));
+
+            $availableNewCities = 0;
+            if ($governmentalResearch && $governmentalResearch->lvl) {
+                $availableNewCities = floor($governmentalResearch->lvl / 2);
+            }
+
+            if ($availableNewCities > $numberOfCities) {
+                return 'You can not take over more islands';
+            }
+
+            // get target city by coordinates and archipelago id
+            $targetCity = $this->getCityByCoords($archipelagoId, (int)$this->coordX, (int)$this->coordY);
+
+            // check that this island has user
+            if ($targetCity->user_id > 0) {
+                return 'Island is occupied';
             }
         }
 

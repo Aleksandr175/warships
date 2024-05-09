@@ -7,6 +7,7 @@ use App\Models\Archipelago;
 use App\Models\City;
 use App\Models\CityResource;
 use App\Models\Resource;
+use App\Models\User;
 
 class CityService
 {
@@ -75,7 +76,6 @@ class CityService
             'resource_id' => config('constants.RESOURCE_IDS.IRON'),
             'qty'         => random_int(0, $baseAmounts[config('constants.RESOURCE_IDS.IRON')] * $coefficient)
         ]);
-
 
 
         $city = City::create([
@@ -225,7 +225,8 @@ class CityService
         }
     }
 
-    public function subtractResourceFromCity(int $cityId, int $resourceId, int $qty): void {
+    public function subtractResourceFromCity(int $cityId, int $resourceId, int $qty): void
+    {
         $this->addResourceToCity($cityId, $resourceId, $qty * (-1));
     }
 
@@ -261,5 +262,12 @@ class CityService
                 }
             }
         }
+    }
+
+    public function takeOverCity(City $city, User $user): void
+    {
+        $city->update([
+            'user_id' => $user->id
+        ]);
     }
 }

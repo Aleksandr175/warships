@@ -5,8 +5,9 @@ return [
 
     'DEFAULT_USER_ID' => 5,
 
-    'DEFAULT_USER_CITY_ID'   => 10,
-    'DEFAULT_USER_CITY_ID_2' => 11,
+    'DEFAULT_USER_CITY_ID'       => 10,
+    'DEFAULT_USER_CITY_ID_2'     => 11,
+    'DEFAULT_EMPTY_USER_CITY_ID' => 213,
 
     'DEFAULT_USER_ID_2'      => 6,
     'DEFAULT_USER_2_CITY_ID' => 12,
@@ -81,6 +82,10 @@ return [
         'EXPEDITION_IN_PROGRESS'     => 42,
         'EXPEDITION_DONE'            => 43,
         'EXPEDITION_GOING_BACK'      => 41,
+
+        'TAKE_OVER_GOING_TO_TARGET' => 50,
+        'TAKE_OVER_DONE'            => 51,
+        'TAKE_OVER_GOING_BACK'      => 52,
     ],
 
     'MESSAGE_TEMPLATE_IDS' => [
@@ -99,6 +104,10 @@ return [
 
         'BATTLE_ATTACK_HAPPENED' => 100,
         'BATTLE_DEFEND_HAPPENED' => 101,
+
+        'FLEET_TAKE_OVER_DONE'         => 200,
+        'FLEET_TAKE_OVER_CANT_DONE'    => 201,
+        'FLEET_TAKE_OVER_DONE_IS_BACK' => 202,
     ],
 
     'ARCHIPELAGO_TYPES' => [
@@ -159,5 +168,7 @@ return [
         'EXPEDITION_GOING_TO'   => 10,
         'EXPEDITION_GOING_BACK' => 10,
         'EXPEDITION'            => 30 * 60,
+        'TAKE_OVER_GOING_TO'    => 15,
+        'TAKE_OVER_GOING_BACK'  => 15,
     ]
 ];

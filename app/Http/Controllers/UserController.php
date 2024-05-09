@@ -143,6 +143,18 @@ class UserController extends Controller
                     'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_DEFEND_HAPPENED'),
                     'title'      => 'Your island has been attacked',
                 ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TAKE_OVER_DONE'),
+                    'title'      => 'You took island over successfully',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TAKE_OVER_CANT_DONE'),
+                    'title'      => 'Fleet could not take the city over',
+                ],
+                [
+                    'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TAKE_OVER_DONE_IS_BACK'),
+                    'title'      => 'Take Over Fleet is back',
+                ],
             ],
             'resourcesDictionary'     => ResourceDictionaryResource::collection($resourcesDictionary),
             'resourcesDictionaryTypes'     => [

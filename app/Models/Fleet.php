@@ -62,6 +62,11 @@ class Fleet extends Model
         return $this->fleet_task_id === config('constants.FLEET_TASKS.EXPEDITION');
     }
 
+    public function isTakeOverTask()
+    {
+        return $this->fleet_task_id === config('constants.FLEET_TASKS.TAKE_OVER');
+    }
+
     public function isTradeGoingToTarget()
     {
         return $this->isTradeTask() && $this->status_id === config('constants.FLEET_STATUSES.TRADE_GOING_TO_TARGET');
@@ -135,6 +140,21 @@ class Fleet extends Model
     public function isExpeditionGoingBack()
     {
         return $this->isExpeditionTask() && $this->status_id === config('constants.FLEET_STATUSES.EXPEDITION_GOING_BACK');
+    }
+
+    public function isTakeOverFleetGoingToTarget()
+    {
+        return $this->isTakeOverTask() && $this->status_id === config('constants.FLEET_STATUSES.TAKE_OVER_GOING_TO_TARGET');
+    }
+
+    public function isTakeOverDone()
+    {
+        return $this->isTakeOverTask() && $this->status_id === config('constants.FLEET_STATUSES.TAKE_OVER_DONE');
+    }
+
+    public function isTakeOverGoingBack()
+    {
+        return $this->isTakeOverTask() && $this->status_id === config('constants.FLEET_STATUSES.TAKE_OVER_GOING_BACK');
     }
 
     public function resources() {

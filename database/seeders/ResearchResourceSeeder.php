@@ -290,5 +290,35 @@ class ResearchResourceSeeder extends Seeder
             'lvl'           => 4,
             'time_required' => 3000,
         ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 100000,
+            'lvl'           => 5,
+            'time_required' => 5000,
+        ]);
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.KNOWLEDGE'),
+            'qty'           => 350,
+            'lvl'           => 5,
+            'time_required' => 5000,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 200000,
+            'lvl'           => 6,
+            'time_required' => 8000,
+        ]);
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'),
+            'resource_id'   => config('constants.RESOURCE_IDS.KNOWLEDGE'),
+            'qty'           => 500,
+            'lvl'           => 6,
+            'time_required' => 8000,
+        ]);
     }
 }

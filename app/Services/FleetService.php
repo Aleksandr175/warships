@@ -210,27 +210,13 @@ class FleetService
 
         // some logic for sending take over fleet
         if ($this->type !== 'adventure' && $this->taskTypeId === config('constants.FLEET_TASKS.TAKE_OVER')) {
-            $userCityIds      = $user->cities->pluck('id')->toArray();
-            $numberOfCities = count($userCityIds);
-
-            // check research, if it is possible to take over more islands
-            $governmentalResearch = Research::find(config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'));
-
-            $availableNewCities = 0;
-            if ($governmentalResearch && $governmentalResearch->lvl) {
-                $availableNewCities = floor($governmentalResearch->lvl / 2);
-            }
-
-            if ($availableNewCities > $numberOfCities) {
-                return 'You can not take over more islands';
-            }
-
             // get target city by coordinates and archipelago id
             $targetCity = $this->getCityByCoords($archipelagoId, (int)$this->coordX, (int)$this->coordY);
 
-            // check that this island has user
-            if ($targetCity->user_id > 0) {
-                return 'Island is occupied';
+            $canTakeOverCity = $this->canTakeOverCity($user, $targetCity);
+
+            if ($canTakeOverCity['result'] === false) {
+                return $canTakeOverCity['message'];
             }
         }
 
@@ -592,9 +578,6 @@ class FleetService
                         'user_id'        => $city->user_id,
                         'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_IS_BACK'),
                         'event_type'     => 'Expedition',
-                        'archipelago_id' => $city->archipelago_id,
-                        'coord_x'        => $city->coord_x,
-                        'coord_y'        => $city->coord_y,
                     ])->id;
                     (new MessageService())->addMessageAboutResources($fleet, $messageId);
                     (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
@@ -615,6 +598,86 @@ class FleetService
 
                         $shouldDeleteFleet = true;
                     }
+                }
+            }
+
+            // task: take over new island
+            if ($fleet->isTakeOverTask()) {
+                $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
+
+                if ($fleet->isTakeOverFleetGoingToTarget()) {
+                    dump('take over: fleet reached new island, start taking over...');
+
+                    // get target city by coordinates and archipelago id
+                    $targetCity = City::find($fleet->target_city_id);
+                    $city       = City::find($fleet->city_id);
+                    $user       = User::find($city->user_id);
+
+                    $canTakeOverCity = $this->canTakeOverCity($user, $targetCity);
+
+                    // city has been taken over successfully
+                    if ($canTakeOverCity['result'] === true) {
+                        dump('take over: fleet took over the city successfully');
+                        $statusId = config('constants.FLEET_STATUSES.TAKE_OVER_DONE');
+
+                        $shouldDeleteFleet = true;
+
+                        // take over city
+                        (new CityService())->takeOverCity($targetCity, $user);
+
+                        $messageId = Message::create([
+                            'user_id'        => $city->user_id,
+                            'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TAKE_OVER_DONE'),
+                            'event_type'     => 'Take over',
+                            'target_city_id' => $targetCity->id,
+                        ])->id;
+                        (new MessageService())->addMessageAboutResources($fleet, $messageId);
+                        (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
+
+                        $this->moveResourcesFromFleetToCityOrUser($fleet, $targetCity, $resourcesDictionary);
+
+                        // transfer fleet to warships in the island
+                        $this->convertFleetDetailsToWarships($fleetDetails, $targetCity);
+                    } else {
+                        dump('take over: fleet could not take the city over');
+                        // something wrong with taking over
+                        $statusId = config('constants.FLEET_STATUSES.TAKE_OVER_GOING_BACK');
+
+                        $duration = config('constants.DURATION.TAKE_OVER_GOING_BACK');
+
+                        $deadline = Carbon::create($fleet->deadline)->addSeconds($duration);
+
+                        $messageId = Message::create([
+                            'user_id'        => $city->user_id,
+                            'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TAKE_OVER_CANT_DONE'),
+                            'event_type'     => 'Take over',
+                            'target_city_id' => $targetCity->id,
+                        ])->id;
+                        (new MessageService())->addMessageAboutResources($fleet, $messageId);
+                        (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
+                    }
+                }
+
+                if ($fleet->isTakeOverGoingBack()) {
+                    dump('take over: fleet returned');
+
+                    $city = City::find($fleet->city_id);
+
+                    $messageId = Message::create([
+                        'user_id'        => $city->user_id,
+                        'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TAKE_OVER_DONE_IS_BACK'),
+                        'event_type'     => 'Take over',
+                        'target_city_id' => $city->id,
+                    ])->id;
+                    (new MessageService())->addMessageAboutResources($fleet, $messageId);
+                    (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
+
+                    $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
+
+                    // transfer fleet to warships in the island
+                    $this->convertFleetDetailsToWarships($fleetDetails, $city);
+
+                    $shouldDeleteFleet = true;
                 }
             }
 
@@ -850,5 +913,39 @@ class FleetService
         }
 
         return $timeToTarget;
+    }
+
+    public function canTakeOverCity(User $user, City $city): array
+    {
+        $userCityIds    = $user->cities->pluck('id')->toArray();
+        $numberOfCities = count($userCityIds);
+
+        // check research, if it is possible to take over more islands
+        $governmentalResearch = Research::where('user_id', $user->id)->where('research_id', config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'))->first();
+
+        $availableCities = 0;
+        if ($governmentalResearch && $governmentalResearch->lvl) {
+            $availableCities = floor($governmentalResearch->lvl / 2);
+        }
+
+        if ($availableCities <= $numberOfCities) {
+            return [
+                'message' => 'You can not take over more islands',
+                'result'  => false
+            ];
+        }
+
+        // check that this island has user
+        if ($city->user_id > 0) {
+            return [
+                'message' => 'Island is occupied',
+                'result'  => false
+            ];
+        }
+
+        return [
+            'message' => '',
+            'result'  => true
+        ];
     }
 }

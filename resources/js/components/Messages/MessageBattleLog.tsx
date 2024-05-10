@@ -4,6 +4,7 @@ import { IMessage } from "./types";
 import { ICityShort } from "../../types/types";
 import { Icon } from "../Common/Icon";
 import styled from "styled-components";
+import { SBadge } from "../Common/styles";
 
 interface IProps {
   userId: number;
@@ -19,6 +20,7 @@ export interface IBattleLog {
   defenderUserId: number;
   winner: "attacker" | "defender";
   date: string;
+  fortressPercent: number;
 }
 
 export interface IBattleLogDetail {
@@ -76,6 +78,9 @@ export const MessageBattleLog = ({
   const attackerCity = getCity(message.cityId || 0);
   const defenderCity = getCity(message.targetCityId || 0);
 
+  const hasFortress = !!battleLog.fortressPercent;
+  const fortressPercent = battleLog.fortressPercent;
+
   return (
     <>
       <SAttackCities>
@@ -86,6 +91,13 @@ export const MessageBattleLog = ({
       </SAttackCities>
 
       <hr />
+      {hasFortress && (
+        <p>
+          Defender had Fortress, which increased attack of defender fleet by{" "}
+          <SBadge>{fortressPercent}%</SBadge>
+        </p>
+      )}
+
       {battleLogDetails && battleLogDetails.length > 0 && renderRounds()}
     </>
   );

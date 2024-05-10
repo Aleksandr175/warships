@@ -182,7 +182,7 @@ class BattleService
             'round'            => $round,
             'city_id'          => $targetCity->id,
             'winner'           => $winner,
-            'fortressPercent'  => $fortress?->lvl ? $fortress?->lvl + config('constants.FORTRESS_ATTACK_MULTIPLIER') : 0
+            'fortress_percent' => $fortress?->lvl ? $fortress?->lvl + config('constants.FORTRESS_ATTACK_MULTIPLIER') : 0
         ]);
 
         $fleetDetails = FleetDetail::where('fleet_id', $fleet->id)->get();

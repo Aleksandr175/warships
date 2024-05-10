@@ -16,13 +16,14 @@ class BattleLogResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'battleLogId'    => $this->battle_log_id,
-            'attackerUserId' => $this->attacker_user_id,
-            'defenderUserId' => $this->defender_user_id,
-            'date'           => $this->created_at,
-            'round'          => $this->round,
-            'winner'         => $this->winner,
-            'cityId'         => $this->city_id,
+            'battleLogId'     => $this->battle_log_id,
+            'attackerUserId'  => $this->attacker_user_id,
+            'defenderUserId'  => $this->defender_user_id,
+            'date'            => $this->created_at,
+            'round'           => $this->round,
+            'winner'          => $this->winner,
+            'cityId'          => $this->city_id,
+            'fortressPercent' => $this->fortress_percent,
         ];
     }
 }

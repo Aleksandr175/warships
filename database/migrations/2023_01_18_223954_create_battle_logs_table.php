@@ -25,7 +25,7 @@ class CreateBattleLogsTable extends Migration
             $table->string('winner')->nullable();
 
             $table->integer('round')->default(1);
-            $table->integer('fortressPercent')->default(0);
+            $table->integer('fortress_percent')->default(0);
 
             $table->timestamps();
         });

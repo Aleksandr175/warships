@@ -100,16 +100,33 @@ export const Message = ({ userId }: { userId: number }) => {
           <SMessage>
             <div>{getMessageContent(message)}</div>
 
-            {message.fleetDetails && message.fleetDetails.length > 0 && (
-              <div>
+            {/* Fleet info */}
+            {!message.battleLog &&
+              message.fleetDetails &&
+              message.fleetDetails.length > 0 && (
                 <div>
-                  <strong>Fleet</strong>
+                  <div>
+                    <strong>Fleet</strong>
+                  </div>
+                  <div>
+                    <FleetWarships warships={message.fleetDetails} />
+                  </div>
                 </div>
+              )}
+
+            {/* Fleet info if battle happened */}
+            {message.battleLog &&
+              message.fleetDetails &&
+              message.fleetDetails.length > 0 && (
                 <div>
-                  <FleetWarships warships={message.fleetDetails} />
+                  <div>
+                    <strong>Fleet Left</strong>
+                  </div>
+                  <div>
+                    <FleetWarships warships={message.fleetDetails} />
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {resources && resources.length > 0 && (
               <div>

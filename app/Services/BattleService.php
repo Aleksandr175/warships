@@ -188,15 +188,15 @@ class BattleService
         $fleetDetails = FleetDetail::where('fleet_id', $fleet->id)->get();
         // remove warships from fleet
         for ($i = 0, $iMax = count($fleetDetails); $i < $iMax; $i++) {
-            $actualFleetDetails = null;
+            $actualQty = 0;
             for ($j = 0, $jMax = count($attackingFleetDetails); $j < $jMax; $j++) {
                 if ($attackingFleetDetails[$j]['id'] === $fleetDetails[$i]->id) {
-                    $actualFleetDetails = $attackingFleetDetails[$j];
+                    $actualQty = $attackingFleetDetails[$j]['qty'];
                 }
             }
 
-            if ($actualFleetDetails) {
-                $fleetDetails[$i]->update(['qty' => ceil($actualFleetDetails['qty'])]);
+            if ($actualQty > 0) {
+                $fleetDetails[$i]->update(['qty' => ceil($actualQty)]);
             } else {
                 // remove fleet detail
                 FleetDetail::where('id', $fleetDetails[$i]->id)->delete();
@@ -215,15 +215,15 @@ class BattleService
         //dump('$defendingFleetDetails',$defendingFleetDetails);
         //dump('$defendingWarships',$defendingWarships);
         for ($i = 0, $iMax = count($defendingWarships); $i < $iMax; $i++) {
-            $actualDefendingWarships = null;
+            $actualQty = 0;
             for ($j = 0, $jMax = count($defendingFleetDetails); $j < $jMax; $j++) {
                 if ($defendingFleetDetails[$j]['warship_id'] === $defendingWarships[$i]->warship_id) {
-                    $actualDefendingWarships = $defendingFleetDetails[$j];
+                    $actualQty = $defendingFleetDetails[$j]['qty'];
                 }
             }
 
-            if ($actualDefendingWarships) {
-                $defendingWarships[$i]->update(['qty' => ceil($actualDefendingWarships['qty'])]);
+            if ($actualQty > 0) {
+                $defendingWarships[$i]->update(['qty' => ceil($actualQty)]);
             } else {
                 // remove warships from city
                 $defendingWarships[$i]->delete();
@@ -231,25 +231,29 @@ class BattleService
         }
 
         // for attacker
-        Message::create([
+        $messageId = Message::create([
             'user_id'        => $userId,
             'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_ATTACK_HAPPENED'),
             'event_type'     => 'Battle',
             'city_id'        => $city->id,
             'target_city_id' => $targetCity->id,
             'battle_log_id'  => $newBattleLogId
-        ]);
+        ])->id;
+
+        (new MessageService())->addMessageAboutResources($fleet, $messageId);
+        (new MessageService())->addMessageAboutFleetDetails($attackingFleetDetails, $messageId);
 
         // for defender
         if ($targetCityUserId) {
-            Message::create([
+            $messageId = Message::create([
                 'user_id'        => $targetCityUserId,
                 'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.BATTLE_DEFEND_HAPPENED'),
                 'event_type'     => 'Battle',
                 'city_id'        => $targetCity->id,
                 'target_city_id' => $city->id,
-            ]);
+            ])->id;
 
+            (new MessageService())->addMessageAboutFleetDetails($defendingFleetDetails, $messageId);
         }
 
         // TODO: notify user about result somehow (websockets)?

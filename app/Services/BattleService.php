@@ -18,11 +18,13 @@ class BattleService
     // handle battle process
     public function handle(Fleet $fleet): void
     {
-        $targetCity          = (new City)->find($fleet->target_city_id);
-        $city                = (new City)->find($fleet->city_id);
+        $targetCity          = City::find($fleet->target_city_id);
+        $city                = City::find($fleet->city_id);
         $userId              = $city->user_id;
         $targetCityUserId    = $targetCity->user_id;
         $targetArchipelagoId = City::where('id', $targetCity->id)->first()->archipelago_id;
+
+        $fortress = $targetCity->building(config('constants.BUILDINGS.FORTRESS'));
 
         $adventure = Adventure::where('archipelago_id', $targetArchipelagoId)->first();
 
@@ -84,8 +86,7 @@ class BattleService
                 $attackingForce = $this->calculateFleetAttack($attackingFleetDetails);
                 dump('Attacker Force: ', $attackingForce);
 
-                // TODO: add Fortress attack value
-                $defendingForce = $this->calculateFleetAttack($defendingFleetDetails);
+                $defendingForce = $this->calculateFleetAttack($defendingFleetDetails, $fortress);
                 dump('Defender Force: ', $defendingForce);
 
                 if ($attackingForce === 0 || $defendingForce === 0) {
@@ -103,7 +104,7 @@ class BattleService
         }
 
         // get latest battle id
-        $battleLog = (new \App\Models\BattleLog)->latest()->first();
+        $battleLog = BattleLog::latest()->first();
 
         if ($battleLog) {
             $newBattleLogId = $battleLog->battle_log_id + 1;
@@ -181,6 +182,7 @@ class BattleService
             'round'            => $round,
             'city_id'          => $targetCity->id,
             'winner'           => $winner,
+            'fortressPercent'  => $fortress?->lvl ? $fortress?->lvl + config('constants.FORTRESS_ATTACK_MULTIPLIER') : 0
         ]);
 
         $fleetDetails = FleetDetail::where('fleet_id', $fleet->id)->get();
@@ -306,8 +308,8 @@ class BattleService
         }
 
         // get all bonuses
-        $researchImprovements      = [];
-        $warshipImprovements       = WarshipImprovement::where('user_id', $userId)->get()->toArray();
+        $researchImprovements = [];
+        $warshipImprovements  = WarshipImprovement::where('user_id', $userId)->get()->toArray();
 
         return $this->addWarshipsImprovementsBonuses($fleetDetails, $warshipsDictionary, $warshipImprovements, $researchImprovements);
     }
@@ -328,12 +330,16 @@ class BattleService
         return $fleetDetails;
     }
 
-    public function calculateFleetAttack($fleetDetails): int
+    public function calculateFleetAttack($fleetDetails, $fortress = null): int
     {
         $attackForce = 0;
 
         foreach ($fleetDetails as $detail) {
             $attackForce += ceil($detail['qty']) * $detail['attack'];
+        }
+
+        if ($fortress && $fortress->lvl) {
+            $attackForce += floor($attackForce * (config('constants.FORTRESS_ATTACK_MULTIPLIER') + $fortress->lvl) / 100);
         }
 
         return $attackForce;

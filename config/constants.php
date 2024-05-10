@@ -170,5 +170,7 @@ return [
         'EXPEDITION'            => 30 * 60,
         'TAKE_OVER_GOING_TO'    => 15,
         'TAKE_OVER_GOING_BACK'  => 15,
-    ]
+    ],
+
+    'FORTRESS_ATTACK_MULTIPLIER' => 5 // 5%
 ];

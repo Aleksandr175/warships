@@ -9,7 +9,11 @@ Each round we calculate attack force for each side.
 Same for A and D.
 Attacker makes first shoot.
 
-Formula: 
+Formula with Fortress:
+Attack force = Sum of (warship qty) * (warship attack value) for all types of warship in fleet
+Attack force += floor(attack force * (Fortress lvl + 5) / 100)
+
+Formula without Fortress:
 Attack force = Sum of (warship qty) * (warship attack value) for all types of warship in fleet
 
 We divide whole attack force to number of warship types.

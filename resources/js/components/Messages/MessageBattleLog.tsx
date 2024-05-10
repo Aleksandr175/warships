@@ -86,7 +86,7 @@ export const MessageBattleLog = ({
       </SAttackCities>
 
       <hr />
-      {battleLogDetails && renderRounds()}
+      {battleLogDetails && battleLogDetails.length > 0 && renderRounds()}
     </>
   );
 };

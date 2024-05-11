@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BuildingDependencyResource;
 use App\Http\Resources\BuildingDictionaryResource;
+use App\Http\Resources\BuildingMaxLevelResource;
 use App\Http\Resources\BuildingProductionsResource;
 use App\Http\Resources\BuildingResourceResource;
 use App\Http\Resources\FleetStatusDictionaryResource;
 use App\Http\Resources\FleetTaskDictionaryResource;
 use App\Http\Resources\ResearchDependencyResource;
 use App\Http\Resources\ResearchDictionaryResource;
+use App\Http\Resources\ResearchMaxLevelResource;
 use App\Http\Resources\ResearchResourceResource;
 use App\Http\Resources\ResourceDictionaryResource;
 use App\Http\Resources\UserResearchResource;
@@ -30,6 +32,7 @@ use App\Models\Resource;
 use App\Models\WarshipDependency;
 use App\Models\WarshipDictionary;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -46,11 +49,17 @@ class UserController extends Controller
 
         $buildings            = BuildingDictionary::get();
         $buildingResources    = BuildingResource::get();
+        $buildingsMaxLevel    = BuildingResource::select('building_id', DB::raw('MAX(lvl) as lvl'))
+            ->groupBy('building_id')
+            ->get();
         $buildingProductions  = BuildingProduction::get();
         $buildingDependencies = BuildingDependency::get();
 
         $researches           = ResearchDictionary::get();
         $researchResources    = ResearchResource::get();
+        $researchesMaxLevel   = ResearchResource::select('research_id', DB::raw('MAX(lvl) as lvl'))
+            ->groupBy('research_id')
+            ->get();
         $researchDependencies = ResearchDependency::get();
         $userResearches       = $user->researches;
 
@@ -77,20 +86,22 @@ class UserController extends Controller
         }
 
         return [
-            'buildings'               => BuildingDictionaryResource::collection($buildings),
-            'buildingResources'       => BuildingResourceResource::collection($buildingResources),
-            'researches'              => ResearchDictionaryResource::collection($researches),
-            'researchResources'       => ResearchResourceResource::collection($researchResources),
-            'userResearches'          => UserResearchResource::collection($userResearches),
-            'warshipsDictionary'      => WarshipDictionaryResource::collection($warshipsDictionary->load('requiredResources')),
-            'buildingsProduction'     => BuildingProductionsResource::collection($buildingProductions),
-            'fleetTasksDictionary'    => FleetTaskDictionaryResource::collection($fleetTasksDictionary),
-            'fleetStatusesDictionary' => FleetStatusDictionaryResource::collection($fleetStatusesDictionary),
-            'buildingDependencies'    => BuildingDependencyResource::collection($buildingDependencies),
-            'researchDependencies'    => ResearchDependencyResource::collection($researchDependencies),
-            'warshipDependencies'     => WarshipDependencyResource::collection($warshipDependencies),
-            'unreadMessagesNumber'    => $unreadMessagesNumber,
-            'messageTemplates'        => [
+            'buildings'                => BuildingDictionaryResource::collection($buildings),
+            'buildingsMaxLevel'        => BuildingMaxLevelResource::collection($buildingsMaxLevel),
+            'buildingResources'        => BuildingResourceResource::collection($buildingResources),
+            'researches'               => ResearchDictionaryResource::collection($researches),
+            'researchResources'        => ResearchResourceResource::collection($researchResources),
+            'researchesMaxLevel'       => ResearchMaxLevelResource::collection($researchesMaxLevel),
+            'userResearches'           => UserResearchResource::collection($userResearches),
+            'warshipsDictionary'       => WarshipDictionaryResource::collection($warshipsDictionary->load('requiredResources')),
+            'buildingsProduction'      => BuildingProductionsResource::collection($buildingProductions),
+            'fleetTasksDictionary'     => FleetTaskDictionaryResource::collection($fleetTasksDictionary),
+            'fleetStatusesDictionary'  => FleetStatusDictionaryResource::collection($fleetStatusesDictionary),
+            'buildingDependencies'     => BuildingDependencyResource::collection($buildingDependencies),
+            'researchDependencies'     => ResearchDependencyResource::collection($researchDependencies),
+            'warshipDependencies'      => WarshipDependencyResource::collection($warshipDependencies),
+            'unreadMessagesNumber'     => $unreadMessagesNumber,
+            'messageTemplates'         => [
                 [
                     'templateId' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_START_TRADING'),
                     'title'      => 'Trade Fleet starts trading',
@@ -156,13 +167,13 @@ class UserController extends Controller
                     'title'      => 'Take Over Fleet is back',
                 ],
             ],
-            'resourcesDictionary'     => ResourceDictionaryResource::collection($resourcesDictionary),
-            'resourcesDictionaryTypes'     => [
+            'resourcesDictionary'      => ResourceDictionaryResource::collection($resourcesDictionary),
+            'resourcesDictionaryTypes' => [
                 'common'   => config('constants.RESOURCE_TYPE_IDS.COMMON'),
                 'card'     => config('constants.RESOURCE_TYPE_IDS.CARD'),
                 'research' => config('constants.RESOURCE_TYPE_IDS.RESEARCH'),
             ],
-            'maxFleetNumbers'         => [
+            'maxFleetNumbers'          => [
                 'trade'      => $tradeFleetNumber,
                 'expedition' => $expeditionFleetNumber
             ]

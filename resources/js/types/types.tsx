@@ -29,6 +29,7 @@ export interface ICityProductionCoefficient {
 
 export interface IMapCity {
   id: number;
+  userId: number | null;
   title: string;
   cityTypeId: number;
   cityAppearanceId: number;

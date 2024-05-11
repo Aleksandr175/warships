@@ -59,7 +59,7 @@ export const useAppLogic = () => {
           fleets: ICityFleet[];
           fleetsIncoming: IFleetIncoming[];
           fleetsDetails: IFleetWarshipsData[];
-          cities: ICity[];
+          cities: IMapCity[];
         }) => {
           console.log("new fleet data", event);
           setFleets(event.fleets);

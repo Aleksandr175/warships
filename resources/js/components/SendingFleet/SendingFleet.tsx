@@ -24,6 +24,7 @@ interface IProps {
   cities: ICity[];
   city: ICity;
   cityResources: ICityResource[];
+  fleetTask: TTask;
 }
 
 interface IResources {
@@ -31,7 +32,12 @@ interface IResources {
 }
 
 // TODO: add react hook form
-export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
+export const SendingFleet = ({
+  cities,
+  city,
+  cityResources,
+  fleetTask,
+}: IProps) => {
   const queryDictionaries = useFetchDictionaries();
   const queryWarshipImprovements = useFetchWarshipsImprovements();
 
@@ -41,7 +47,7 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
   const dictionaries = queryDictionaries.data;
 
   const [type, setType] = useState<TType>("map");
-  const [taskType, setTaskType] = useState<TTask>("trade");
+  const [taskType, setTaskType] = useState<TTask>(fleetTask);
   const [coordX, setCoordX] = useState<number>(0);
   const [coordY, setCoordY] = useState<number>(0);
   const [warships, setWarships] = useState<ICityWarship[] | undefined>();
@@ -75,7 +81,7 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
   const [fleet, setFleet] = useState<IFleet>(() => {
     return {
       repeating: 0,
-      taskType: "trade",
+      taskType,
       cityId: city.id,
     } as IFleet;
   });
@@ -236,11 +242,12 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
   }
 
   return (
-    <SContent>
+    <>
       <SH1>
         Send Fleet {type === "adventure" ? "to Adventure" : ""}
         {taskType === "trade" ? "to Trade" : ""}
         {taskType === "attack" ? "to Attack" : ""}
+        {taskType === "expedition" ? "to Expedition" : ""}
       </SH1>
 
       {dictionaries.warshipsDictionary.map((item) => {
@@ -458,7 +465,7 @@ export const SendingFleet = ({ cities, city, cityResources }: IProps) => {
           </button>
         </div>
       </div>
-    </SContent>
+    </>
   );
 };
 

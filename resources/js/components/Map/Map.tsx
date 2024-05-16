@@ -3,23 +3,58 @@ import { useEffect } from "react";
 import { httpClient } from "../../httpClient/httpClient";
 import styled from "styled-components";
 import {
+  ICity,
   ICityFleet,
+  ICityResource,
   IMapCity,
   IMapFleetWarshipsData,
+  TTask,
   TType,
 } from "../../types/types";
 import { SContent, SH1 } from "../styles";
 import { useNavigate } from "react-router-dom";
 import { MapCell } from "./MapCell";
 import { useFetchMap } from "../../hooks/useFetchMap";
+import Modal from "react-modal";
+import { SendingFleet } from "../SendingFleet/SendingFleet";
 
-export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
+const customStyles = {
+  overlay: {
+    background: "none",
+  },
+  content: {
+    width: "600px",
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    background: "var(--background-color)",
+    borderRadius: "var(--block-border-radius)",
+    padding: "var(--block-padding)",
+  },
+};
+
+export const Map = ({
+  fleets,
+  cities,
+  city,
+  cityResources,
+}: {
+  fleets: ICityFleet[] | undefined;
+  cities: ICity[];
+  city: ICity;
+  cityResources: ICityResource[];
+}) => {
   const size = 5 * 5;
-  const [cities, setCities] = useState<IMapCity[]>([]);
+  const [mapCities, setMapCities] = useState<IMapCity[]>([]);
   const [adventureLvl, setAdventureLvl] = useState<number>(0);
   const [adventureWarships, setAdventureWarships] = useState<
     IMapFleetWarshipsData[]
   >([]);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [fleetTask, setFleetTask] = useState<TTask>("trade");
 
   const [type, setType] = useState<TType>("map");
   const [cells, setCells] = useState<{ id: number }[]>(() => {
@@ -39,18 +74,19 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
 
   useEffect(() => {
     if (queryMap?.data && adventureLvl === 0) {
-      setCities(queryMap.data.cities);
+      setMapCities(queryMap.data.cities);
     }
   }, [queryMap?.data]);
 
   const isCityHere = (y: number, x: number): boolean => {
     return (
-      cities?.findIndex((city) => city.coordX === x && city.coordY === y) > -1
+      mapCities?.findIndex((city) => city.coordX === x && city.coordY === y) >
+      -1
     );
   };
 
   const getCity = (y: number, x: number) => {
-    return cities?.find((city) => city.coordX === x && city.coordY === y);
+    return mapCities?.find((city) => city.coordX === x && city.coordY === y);
   };
 
   const navigate = useNavigate();
@@ -60,7 +96,7 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
     setType("adventure");
 
     httpClient.get("/map/adventure").then((response) => {
-      setCities(response.data.cities);
+      setMapCities(response.data.cities);
       setAdventureWarships(response.data.warships);
       setAdventureLvl(response.data.adventureLevel || 0);
 
@@ -83,7 +119,7 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
   };
 
   const isIslandRaided = (cityId: number | undefined) => {
-    return !!cities?.find((city) => city.id === cityId)?.raided;
+    return !!mapCities?.find((city) => city.id === cityId)?.raided;
   };
 
   const getWarships = (cityId: number | undefined) => {
@@ -94,6 +130,17 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
     }
 
     return [];
+  };
+
+  const openSendingFleetPopup = (task: TTask) => {
+    console.log("open UI");
+    setFleetTask(task);
+    setIsPopoverOpen(true);
+  };
+
+  const closeModal = () => {
+    setFleetTask("trade");
+    setIsPopoverOpen(false);
   };
 
   if (queryMap.isPending) {
@@ -114,12 +161,12 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
               <strong>Expedition</strong>
 
               <p>
-                Send fleet to unknown islands and find gold or rare resources
+                Send fleet to unknown islands to find gold or rare resources
               </p>
 
               <button
                 className={"btn btn-primary"}
-                onClick={sendFleetToExpedition}
+                onClick={() => openSendingFleetPopup("expedition")}
               >
                 Send
               </button>
@@ -138,7 +185,10 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
 
               <p>Get some gold with trading!</p>
 
-              <button className={"btn btn-primary"} onClick={sendFleetToTrade}>
+              <button
+                className={"btn btn-primary"}
+                onClick={() => openSendingFleetPopup("trade")}
+              >
                 Trade
               </button>
             </SMapActionDescription>
@@ -154,7 +204,7 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
             <SMapActionDescription>
               <strong>Adventure</strong>
 
-              <p>Conquer unknown islands and get unique treasure!</p>
+              <p>Conquer unknown islands to get big treasure!</p>
 
               <button className={"btn btn-primary"} onClick={getAdventure}>
                 Adventure
@@ -191,6 +241,20 @@ export const Map = ({ fleets }: { fleets: ICityFleet[] | undefined }) => {
           );
         })}
       </SCells>
+
+      <Modal
+        isOpen={isPopoverOpen}
+        style={customStyles}
+        contentLabel="Sending Fleet"
+      >
+        <button onClick={closeModal}>close</button>
+        <SendingFleet
+          cities={cities}
+          city={city}
+          cityResources={cityResources}
+          fleetTask={fleetTask}
+        />
+      </Modal>
     </SContent>
   );
 };
@@ -207,7 +271,9 @@ const SRow = styled.div`
   margin-bottom: 30px;
 `;
 
-const SColumn = styled.div``;
+const SColumn = styled.div`
+  width: 33%;
+`;
 
 const SMapAction = styled.div`
   display: flex;

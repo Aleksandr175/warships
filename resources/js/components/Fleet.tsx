@@ -58,7 +58,7 @@ export const Fleet = ({
 
     if (fleetTask?.slug) {
       if (fleetTask.slug === "trade") {
-        return "refresh";
+        return "directions";
       }
       if (fleetTask.slug === "move") {
         return "pin-2";
@@ -117,7 +117,7 @@ export const Fleet = ({
           <div>
             {timeLeft ? (
               <>
-                <Icon title={"clock"} size={"small"} />
+                <Icon title={"speed"} />
                 <span>{convertSecondsToTime(timeLeft)}</span>
               </>
             ) : (

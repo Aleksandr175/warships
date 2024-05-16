@@ -229,7 +229,7 @@ const App = () => {
                     path={"warships-improvements"}
                     element={<WarshipsImprovements />}
                   />
-                  <Route
+                  {/*<Route
                     path={"sending-fleets"}
                     element={
                       <SendingFleet
@@ -238,8 +238,18 @@ const App = () => {
                         cityResources={city.resources}
                       />
                     }
+                  />*/}
+                  <Route
+                    path={"map"}
+                    element={
+                      <Map
+                        fleets={fleets}
+                        cities={cities}
+                        city={city}
+                        cityResources={city.resources}
+                      />
+                    }
                   />
-                  <Route path={"map"} element={<Map fleets={fleets} />} />
                   <Route
                     path={"refining"}
                     element={

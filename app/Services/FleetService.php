@@ -22,8 +22,7 @@ use Carbon\Carbon;
 class FleetService
 {
     private $cityId              = null;
-    private $coordX              = null;
-    private $coordY              = null;
+    private $targetCityId        = null;
     private $fleetDetails        = [];
     private $updatedFleetDetails = [];
     private $repeating           = false;
@@ -38,17 +37,16 @@ class FleetService
     public function send($params, $user)
     {
         $this->cityId              = $params->cityId;
-        $this->coordX              = $params->coordX;
-        $this->coordY              = $params->coordY;
         $this->fleetDetails        = $params->fleetDetails;
+        $this->targetCityId        = $params->targetCityId;
         $this->repeating           = $params->repeating ? 1 : 0;
         $this->taskTypeSlug        = $params->taskType;
         $this->updatedFleetDetails = [];
         $this->type                = $params->type; // map | adventure
         $this->resources           = $params['resources'] ?: [];
 
-        if ($this->taskTypeSlug !== 'expedition' && $this->taskTypeSlug !== 'trade' && (!$this->coordX || !$this->coordY)) {
-            return 'no coordinates';
+        if ($this->taskTypeSlug !== 'expedition' && $this->taskTypeSlug !== 'trade' && !$this->targetCityId) {
+            return 'no target city id';
         }
 
         // get player's city
@@ -71,13 +69,17 @@ class FleetService
             $archipelagoId = $user->archipelagoId();
         }
 
-        if ($this->taskTypeSlug !== 'expedition' && $this->taskTypeSlug !== 'trade') {
-            // get target city by coordinates and archipelago id
-            $this->targetCity = $this->getCityByCoords($archipelagoId, (int)$this->coordX, (int)$this->coordY);
+        // get target city by id
+        $this->targetCity = City::find($this->targetCityId);
 
+        if ($this->taskTypeSlug !== 'expedition' && $this->taskTypeSlug !== 'trade') {
             // we need target city, except for expedition
             if (!$this->isCity($this->targetCity)) {
                 return 'there is no island';
+            }
+
+            if ($this->targetCity->archipelago_id !== $archipelagoId) {
+                return 'You can transport/move/attack in this archipelago';
             }
 
             if ($this->targetCity->coord_y === $userCity->coord_y &&
@@ -210,10 +212,11 @@ class FleetService
 
         // some logic for sending take over fleet
         if ($this->type !== 'adventure' && $this->taskTypeId === config('constants.FLEET_TASKS.TAKE_OVER')) {
-            // get target city by coordinates and archipelago id
-            $targetCity = $this->getCityByCoords($archipelagoId, (int)$this->coordX, (int)$this->coordY);
+            if ($this->targetCity->archipelago_id !== $archipelagoId) {
+                return 'You can transport/move/attack in this archipelago';
+            }
 
-            $canTakeOverCity = $this->canTakeOverCity($user, $targetCity);
+            $canTakeOverCity = $this->canTakeOverCity($user, $this->targetCity);
 
             if ($canTakeOverCity['result'] === false) {
                 return $canTakeOverCity['message'];
@@ -575,9 +578,9 @@ class FleetService
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
 
                     $messageId = Message::create([
-                        'user_id'        => $city->user_id,
-                        'template_id'    => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_IS_BACK'),
-                        'event_type'     => 'Expedition',
+                        'user_id'     => $city->user_id,
+                        'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_EXPEDITION_IS_BACK'),
+                        'event_type'  => 'Expedition',
                     ])->id;
                     (new MessageService())->addMessageAboutResources($fleet, $messageId);
                     (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
@@ -790,35 +793,6 @@ class FleetService
             }
         }
     }
-
-    /*public function subtractResourcesFromCity($cityResources, $subtractResources, $resourcesDict): void
-    {
-        // $subtractResources: ['slug' => qty]
-        foreach ($subtractResources as $subtractResourceSlug => $subtractResourceQty) {
-            $resourceId = null;
-
-            foreach ($resourcesDict as $resDict) {
-                if ($resDict->slug === $subtractResourceSlug) {
-                    $resourceId = $resDict->id;
-                }
-            }
-
-            if ($resourceId) {
-                foreach ($cityResources as $cityResource) {
-                    if ($resourceId === $cityResource->resource_id) {
-                        // check max available qty we can take from island (to fleet)
-                        $maxQty = $subtractResourceQty;
-
-                        if ($maxQty > $cityResource->qty) {
-                            $maxQty = $cityResource->qty;
-                        }
-
-                        $cityResource->decrement('qty', $maxQty);
-                    }
-                }
-            }
-        }
-    }*/
 
     public function addResourceToFleet(int $fleetId, int $resourceId, int $qty): void
     {

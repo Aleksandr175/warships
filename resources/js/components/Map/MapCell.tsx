@@ -2,7 +2,7 @@ import { Popover } from "react-tiny-popover";
 import { Icon } from "../Common/Icon";
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
-import { IFleetWarshipsData, IMapCity, TType } from "../../types/types";
+import { IFleetWarshipsData, IMapCity, TTask } from "../../types/types";
 import {
   SCloseButton,
   SPopoverButtons,
@@ -22,7 +22,8 @@ interface IProps {
   isFleetMovingToIsland: boolean;
   isAdventure: boolean;
   warships: IFleetWarshipsData[];
-  mapType: TType;
+  onSendingFleet: (city: IMapCity, task: TTask) => void;
+  currentCityId: number;
 }
 export const MapCell = ({
   city,
@@ -32,7 +33,8 @@ export const MapCell = ({
   isIslandRaided,
   isAdventure,
   warships,
-  mapType,
+  onSendingFleet,
+  currentCityId,
 }: IProps) => {
   const navigate = useNavigate();
   const queryDictionaries = useFetchDictionaries();
@@ -96,55 +98,53 @@ export const MapCell = ({
                   <Icon title={"cross"} />
                 </SCloseButton>
 
-                <SPopoverButtons>
-                  {isAdventure || isPirates ? (
-                    <button
-                      className={"btn btn-primary"}
-                      onClick={() => {
-                        navigate(
-                          `/sending-fleets?coordX=${city?.coordX}&coordY=${city?.coordY}&taskType=attack&type=${mapType}`
-                        );
-                      }}
-                    >
-                      Attack
-                    </button>
-                  ) : (
-                    <>
+                {currentCityId !== city.id && (
+                  <SPopoverButtons>
+                    {isAdventure || isPirates ? (
                       <button
                         className={"btn btn-primary"}
                         onClick={() => {
-                          navigate(
-                            `/sending-fleets?coordX=${city?.coordX}&coordY=${city?.coordY}&taskType=move&type=${mapType}`
-                          );
+                          onSendingFleet(city, "attack");
+                          setIsPopoverOpen(false);
                         }}
                       >
-                        Move
+                        Attack
                       </button>
-                      <button
-                        className={"btn btn-primary"}
-                        onClick={() => {
-                          navigate(
-                            `/sending-fleets?coordX=${city?.coordX}&coordY=${city?.coordY}&taskType=transport&type=${mapType}`
-                          );
-                        }}
-                      >
-                        Transport
-                      </button>
-                      {!isPirates && !city.userId && (
+                    ) : (
+                      <>
                         <button
                           className={"btn btn-primary"}
                           onClick={() => {
-                            navigate(
-                              `/sending-fleets?coordX=${city?.coordX}&coordY=${city?.coordY}&taskType=takeOver&type=${mapType}`
-                            );
+                            onSendingFleet(city, "move");
+                            setIsPopoverOpen(false);
                           }}
                         >
-                          Take over the island
+                          Move
                         </button>
-                      )}
-                    </>
-                  )}
-                </SPopoverButtons>
+                        <button
+                          className={"btn btn-primary"}
+                          onClick={() => {
+                            onSendingFleet(city, "transport");
+                            setIsPopoverOpen(false);
+                          }}
+                        >
+                          Transport
+                        </button>
+                        {!isPirates && !city.userId && (
+                          <button
+                            className={"btn btn-primary"}
+                            onClick={() => {
+                              onSendingFleet(city, "takeOver");
+                              setIsPopoverOpen(false);
+                            }}
+                          >
+                            Take over the island
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </SPopoverButtons>
+                )}
               </SPopoverWrapper>
             }
           >

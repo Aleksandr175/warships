@@ -8,6 +8,7 @@ import {
   ICityWarship,
   IFleet,
   IFleetWarshipsData,
+  IMapCity,
   TTask,
   TType,
 } from "../../types/types";
@@ -21,10 +22,11 @@ import { useFetchWarshipsImprovements } from "../../hooks/useFetchWarshipsImprov
 import { getWarshipImprovementPercent } from "../../utils";
 
 interface IProps {
-  cities: ICity[];
   city: ICity;
   cityResources: ICityResource[];
   fleetTask: TTask;
+  targetCity?: IMapCity;
+  isAdventure?: boolean;
 }
 
 interface IResources {
@@ -33,10 +35,11 @@ interface IResources {
 
 // TODO: add react hook form
 export const SendingFleet = ({
-  cities,
   city,
+  targetCity,
   cityResources,
   fleetTask,
+  isAdventure,
 }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
   const queryWarshipImprovements = useFetchWarshipsImprovements();
@@ -46,10 +49,8 @@ export const SendingFleet = ({
 
   const dictionaries = queryDictionaries.data;
 
-  const [type, setType] = useState<TType>("map");
+  const [type, setType] = useState<TType>(isAdventure ? "adventure" : "map");
   const [taskType, setTaskType] = useState<TTask>(fleetTask);
-  const [coordX, setCoordX] = useState<number>(0);
-  const [coordY, setCoordY] = useState<number>(0);
   const [warships, setWarships] = useState<ICityWarship[] | undefined>();
   const [actualCityWarships, setActualCityWarships] = useState(warships);
 
@@ -100,24 +101,6 @@ export const SendingFleet = ({
   );
 
   const [searchParams, setSearchParams] = useSearchParams();
-
-  useEffect(() => {
-    if (searchParams.get("coordX")) {
-      setCoordX(Number(searchParams.get("coordX")));
-    }
-
-    if (searchParams.get("coordY")) {
-      setCoordY(Number(searchParams.get("coordY")));
-    }
-
-    if (searchParams.get("taskType")) {
-      setTaskType(searchParams.get("taskType") as TTask);
-    }
-
-    if (searchParams.get("type")) {
-      setType(searchParams.get("type") as TType);
-    }
-  }, [searchParams]);
 
   useEffect(() => {
     setActualCityWarships(warships);
@@ -172,8 +155,7 @@ export const SendingFleet = ({
         ...fleet,
         fleetDetails,
         resources: resourcesForFleet,
-        coordX,
-        coordY,
+        targetCityId: targetCity?.id,
         taskType,
         repeating,
         type,
@@ -186,11 +168,6 @@ export const SendingFleet = ({
         console.log("Fleet has been sent");
         setRenderKey(renderKey + 1);
       });
-  };
-
-  const chooseCity = (city: ICity): void => {
-    setCoordX(city.coordX);
-    setCoordY(city.coordY);
   };
 
   const getMaxCapacity = (): number => {
@@ -246,8 +223,11 @@ export const SendingFleet = ({
       <SH1>
         Send Fleet {type === "adventure" ? "to Adventure" : ""}
         {taskType === "trade" ? "to Trade" : ""}
+        {taskType === "move" ? "to Move" : ""}
+        {taskType === "transport" ? "to Transport" : ""}
         {taskType === "attack" ? "to Attack" : ""}
         {taskType === "expedition" ? "to Expedition" : ""}
+        {taskType === "takeOver" ? "to Take Over" : ""}
       </SH1>
 
       {dictionaries.warshipsDictionary.map((item) => {
@@ -265,101 +245,6 @@ export const SendingFleet = ({
       })}
 
       <div className={"row"}>
-        <div className={"col-12"}>
-          <div>
-            <strong>Task:</strong>
-          </div>
-          {/* TODO use dictionary for Task Types */}
-          <STaskType
-            active={taskType === "attack"}
-            onClick={() => setTaskType("attack")}
-          >
-            Attack
-          </STaskType>
-
-          {type !== "adventure" && taskType !== "attack" && (
-            <>
-              <STaskType
-                active={taskType === "trade"}
-                onClick={() => setTaskType("trade")}
-              >
-                Trade
-              </STaskType>
-              <STaskType
-                active={taskType === "transport"}
-                onClick={() => setTaskType("transport")}
-              >
-                Transport
-              </STaskType>
-              <STaskType
-                active={taskType === "move"}
-                onClick={() => setTaskType("move")}
-              >
-                Move
-              </STaskType>
-              <STaskType
-                active={taskType === "expedition"}
-                onClick={() => setTaskType("expedition")}
-              >
-                Expedition
-              </STaskType>
-              <STaskType
-                active={taskType === "takeOver"}
-                onClick={() => setTaskType("takeOver")}
-              >
-                Take Over
-              </STaskType>
-            </>
-          )}
-        </div>
-
-        {taskType !== "expedition" &&
-          taskType !== "trade" &&
-          taskType !== "attack" && (
-            <div className={"col-12"}>
-              <div>
-                <strong>Target Island:</strong>
-              </div>
-              {type === "map" && (
-                <div>
-                  {cities.map((city) => {
-                    return (
-                      <SCityPreset
-                        key={city.id}
-                        active={
-                          city.coordX === coordX && city.coordY === coordY
-                        }
-                        onClick={() => chooseCity(city)}
-                      >
-                        {city.title}
-                      </SCityPreset>
-                    );
-                  })}
-                </div>
-              )}
-
-              <SCoordinatesBlock>
-                <div>
-                  <strong>Or Coordinates:</strong>
-                </div>
-                <div>
-                  X:{" "}
-                  <InputNumberCoordinatesStyled
-                    value={coordX}
-                    onChange={(value) => setCoordX(value)}
-                    maxNumber={100}
-                  />
-                  Y:{" "}
-                  <InputNumberCoordinatesStyled
-                    value={coordY}
-                    onChange={(value) => setCoordY(value)}
-                    maxNumber={100}
-                  />
-                </div>
-              </SCoordinatesBlock>
-            </div>
-          )}
-
         {type === "map" && taskType === "attack" && (
           <div className={"col-12"}>
             <strong>Resources (Full Capacity: {maxCapacity})</strong>
@@ -457,7 +342,7 @@ export const SendingFleet = ({
               (taskType !== "expedition" &&
                 taskType !== "trade" &&
                 taskType !== "attack" &&
-                (!coordY || !coordX))
+                !targetCity)
             }
             onClick={sendFleet}
           >
@@ -487,35 +372,8 @@ const STaskType = styled.span<{ active?: boolean }>`
       : ""};
 `;
 
-const SCityPreset = styled.div<{ active?: boolean }>`
-  cursor: pointer;
-  display: inline-block;
-  padding: 3px 8px;
-  margin-right: 20px;
-  border-radius: 5px;
-
-  background: #39a0ff20;
-
-  ${({ active }) =>
-    active
-      ? css`
-          color: white;
-          background-color: #6f4ca4;
-        `
-      : ""};
-`;
-
-const SCoordinatesBlock = styled.div`
-  margin-top: var(--bs-gutter-y);
-`;
-
 const SItemWrapper = styled.div`
   display: inline-block;
-`;
-
-const InputNumberCoordinatesStyled = styled(InputNumber)`
-  width: 50px;
-  margin-right: 20px;
 `;
 
 const InputNumberStyled = styled(InputNumber)`

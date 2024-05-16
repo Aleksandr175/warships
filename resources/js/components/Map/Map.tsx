@@ -11,16 +11,18 @@ import {
   TTask,
   TType,
 } from "../../types/types";
-import { SContent, SH1 } from "../styles";
+import { SCloseButton, SContent, SH1 } from "../styles";
 import { useNavigate } from "react-router-dom";
 import { MapCell } from "./MapCell";
 import { useFetchMap } from "../../hooks/useFetchMap";
 import Modal from "react-modal";
 import { SendingFleet } from "../SendingFleet/SendingFleet";
+import { Icon } from "../Common/Icon";
 
 const customStyles = {
   overlay: {
     background: "none",
+    zIndex: 1,
   },
   content: {
     width: "600px",
@@ -55,6 +57,7 @@ export const Map = ({
   >([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [fleetTask, setFleetTask] = useState<TTask>("trade");
+  const [targetCity, setTargetCity] = useState<IMapCity | undefined>(undefined);
 
   const [type, setType] = useState<TType>("map");
   const [cells, setCells] = useState<{ id: number }[]>(() => {
@@ -104,14 +107,6 @@ export const Map = ({
     });
   };
 
-  const sendFleetToTrade = () => {
-    navigate(`/sending-fleets?taskType=trade`);
-  };
-
-  const sendFleetToExpedition = () => {
-    navigate(`/sending-fleets?taskType=expedition`);
-  };
-
   const isFleetMovingToIsland = (cityId: number | undefined): boolean => {
     return (
       (fleets || []).findIndex((fleet) => fleet.targetCityId === cityId) > -1
@@ -132,8 +127,8 @@ export const Map = ({
     return [];
   };
 
-  const openSendingFleetPopup = (task: TTask) => {
-    console.log("open UI");
+  const openSendingFleetPopup = (city: IMapCity | undefined, task: TTask) => {
+    setTargetCity(city);
     setFleetTask(task);
     setIsPopoverOpen(true);
   };
@@ -166,7 +161,7 @@ export const Map = ({
 
               <button
                 className={"btn btn-primary"}
-                onClick={() => openSendingFleetPopup("expedition")}
+                onClick={() => openSendingFleetPopup(undefined, "expedition")}
               >
                 Send
               </button>
@@ -187,7 +182,7 @@ export const Map = ({
 
               <button
                 className={"btn btn-primary"}
-                onClick={() => openSendingFleetPopup("trade")}
+                onClick={() => openSendingFleetPopup(undefined, "trade")}
               >
                 Trade
               </button>
@@ -222,21 +217,22 @@ export const Map = ({
         {cells?.map((cell, index) => {
           const y = Math.floor(index / 5) + 1;
           const x = (index % 5) + 1;
-          const city = getCity(y, x);
+          const mapCity = getCity(y, x);
           const isCity = isCityHere(y, x);
-          const isPirates = city?.cityTypeId === 2;
+          const isPirates = mapCity?.cityTypeId === 2;
 
           return (
             <MapCell
               key={cell.id}
               isCity={isCity}
-              city={city}
+              city={mapCity}
               isPirates={isPirates}
-              isFleetMovingToIsland={isFleetMovingToIsland(city?.id)}
-              isIslandRaided={isIslandRaided(city?.id)}
+              isFleetMovingToIsland={isFleetMovingToIsland(mapCity?.id)}
+              isIslandRaided={isIslandRaided(mapCity?.id)}
               isAdventure={!!adventureLvl}
-              warships={getWarships(city?.id)}
-              mapType={type}
+              warships={getWarships(mapCity?.id)}
+              onSendingFleet={(city, task) => openSendingFleetPopup(city, task)}
+              currentCityId={city?.id || 0}
             />
           );
         })}
@@ -247,12 +243,16 @@ export const Map = ({
         style={customStyles}
         contentLabel="Sending Fleet"
       >
-        <button onClick={closeModal}>close</button>
+        <SCloseButton onClick={closeModal}>
+          <Icon title={"cross"} size={"big"} />
+        </SCloseButton>
+
         <SendingFleet
-          cities={cities}
           city={city}
+          targetCity={targetCity}
           cityResources={cityResources}
           fleetTask={fleetTask}
+          isAdventure={!!adventureLvl}
         />
       </Modal>
     </SContent>

@@ -1,6 +1,5 @@
-import { Popover } from "react-tiny-popover";
-import { Icon } from "../Common/Icon";
 import React, { useState } from "react";
+import { Popover } from "react-tiny-popover";
 import styled, { css } from "styled-components";
 import { IFleetWarshipsData, IMapCity, TTask } from "../../types/types";
 import {
@@ -9,6 +8,7 @@ import {
   SPopoverHeader,
   SPopoverWrapper,
 } from "../styles";
+import { Icon } from "../Common/Icon";
 import { FleetWarships } from "../Common/FleetWarships";
 import { getResourceSlug } from "../../utils";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
@@ -26,40 +26,47 @@ interface IProps {
   currentCityId: number;
   isTakingOverDisabled?: boolean;
 }
+
 export const MapCell = ({
   city,
   isCity,
   isPirates,
-  isFleetMovingToIsland,
   isIslandRaided,
+  isFleetMovingToIsland,
   isAdventure,
   warships,
   onSendingFleet,
   currentCityId,
   isTakingOverDisabled,
 }: IProps) => {
-  const queryDictionaries = useFetchDictionaries();
-
-  const queryUserData = useFetchUserData();
-  const userId = queryUserData?.data?.userId;
-
-  const dictionaries = queryDictionaries.data;
+  const { data: dictionaries } = useFetchDictionaries();
+  const { data: userData } = useFetchUserData();
+  const userId = userData?.userId;
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-  // Sort the array of objects by coefficient in descending order
   const sortedResources = (city?.resourcesProductionCoefficient || []).sort(
     (a, b) => b.coefficient - a.coefficient
   );
 
-  const mainResources =
-    sortedResources?.filter((resource) => {
-      return resource.coefficient === sortedResources[0].coefficient;
-    }) || [];
+  const mainResources = sortedResources.filter(
+    (resource) => resource.coefficient === sortedResources[0].coefficient
+  );
 
   if (!dictionaries) {
-    return <></>;
+    return null;
   }
+
+  const handlePopoverClose = () => setIsPopoverOpen(false);
+
+  const handlePopoverOpen = () => setIsPopoverOpen(true);
+
+  const handleFleetAction = (task: TTask) => {
+    if (city) {
+      onSendingFleet(city, task);
+      handlePopoverClose();
+    }
+  };
 
   return (
     <SCell>
@@ -67,8 +74,8 @@ export const MapCell = ({
         <>
           <Popover
             isOpen={isPopoverOpen}
-            onClickOutside={() => setIsPopoverOpen(false)}
-            positions={["right", "left"]} // preferred positions by priority
+            onClickOutside={handlePopoverClose}
+            positions={["right", "left"]}
             content={
               <SPopoverWrapper>
                 <SPopoverHeader>{city.title}</SPopoverHeader>
@@ -77,71 +84,56 @@ export const MapCell = ({
                     <SResources>
                       {city.resources
                         ?.filter((resource) => resource.qty > 0)
-                        .map((resource) => {
-                          return (
-                            <SResource key={resource.resourceId}>
-                              <Icon
-                                title={getResourceSlug(
-                                  dictionaries.resourcesDictionary,
-                                  resource.resourceId
-                                )}
-                              />
-                              {resource.qty}
-                            </SResource>
-                          );
-                        })}
+                        .map((resource) => (
+                          <SResource key={resource.resourceId}>
+                            <Icon
+                              title={getResourceSlug(
+                                dictionaries.resourcesDictionary,
+                                resource.resourceId
+                              )}
+                            />
+                            {resource.qty}
+                          </SResource>
+                        ))}
                     </SResources>
-
-                    {warships && warships.length > 0 && (
+                    {warships.length > 0 && (
                       <FleetWarships warships={warships} />
                     )}
                   </SInfoWrapper>
                 )}
 
-                <SCloseButton onClick={() => setIsPopoverOpen(false)}>
-                  <Icon title={"cross"} />
+                <SCloseButton onClick={handlePopoverClose}>
+                  <Icon title="cross" />
                 </SCloseButton>
 
                 {currentCityId !== city.id && (
                   <SPopoverButtons>
                     {isAdventure || isPirates ? (
                       <button
-                        className={"btn btn-primary"}
-                        onClick={() => {
-                          onSendingFleet(city, "attack");
-                          setIsPopoverOpen(false);
-                        }}
+                        className="btn btn-primary"
+                        onClick={() => handleFleetAction("attack")}
                       >
                         Attack
                       </button>
                     ) : (
                       <>
                         <button
-                          className={"btn btn-primary"}
-                          onClick={() => {
-                            onSendingFleet(city, "move");
-                            setIsPopoverOpen(false);
-                          }}
+                          className="btn btn-primary"
+                          onClick={() => handleFleetAction("move")}
                         >
                           Move
                         </button>
                         <button
-                          className={"btn btn-primary"}
-                          onClick={() => {
-                            onSendingFleet(city, "transport");
-                            setIsPopoverOpen(false);
-                          }}
+                          className="btn btn-primary"
+                          onClick={() => handleFleetAction("transport")}
                         >
                           Transport
                         </button>
-                        {!isPirates && !city.userId && (
+                        {!city.userId && (
                           <button
-                            className={"btn btn-primary"}
+                            className="btn btn-primary"
                             disabled={isTakingOverDisabled}
-                            onClick={() => {
-                              onSendingFleet(city, "takeOver");
-                              setIsPopoverOpen(false);
-                            }}
+                            onClick={() => handleFleetAction("takeOver")}
                           >
                             Take over
                           </button>
@@ -155,48 +147,42 @@ export const MapCell = ({
           >
             <SIsland
               islandType={isPirates ? "pirates" : ""}
-              type={city?.cityAppearanceId}
-              onClick={() => {
-                setIsPopoverOpen(!isPopoverOpen);
-              }}
+              type={city.cityAppearanceId}
+              onClick={handlePopoverOpen}
             />
           </Popover>
           {isFleetMovingToIsland && (
             <SCityMarkFleet>
-              <Icon title={"attack"} />
+              <Icon title="attack" />
             </SCityMarkFleet>
           )}
           {isIslandRaided && (
             <SCityMarkStatus>
-              <Icon title={"check"} />
+              <Icon title="check" />
             </SCityMarkStatus>
           )}
-
-          {mainResources && (
-            <SCityMainResourceMark>
-              {mainResources.map((resource) => {
-                return (
-                  <Icon
-                    title={getResourceSlug(
-                      dictionaries.resourcesDictionary,
-                      resource.resourceId
-                    )}
-                  />
-                );
-              })}
-            </SCityMainResourceMark>
-          )}
+          <SCityMainResourceMark>
+            {mainResources.map((resource) => (
+              <Icon
+                key={resource.resourceId}
+                title={getResourceSlug(
+                  dictionaries.resourcesDictionary,
+                  resource.resourceId
+                )}
+              />
+            ))}
+          </SCityMainResourceMark>
         </>
       )}
     </SCell>
   );
 };
+
 const SCell = styled.div`
   position: relative;
   float: left;
   width: 140px;
   height: 140px;
-
   background: url("../../../images/islands/ocean.svg") no-repeat;
   background-size: contain;
 `;
@@ -208,6 +194,7 @@ const SCityMarkFleet = styled.div`
   width: 32px;
   height: 32px;
 `;
+
 const SCityMarkStatus = styled.div`
   position: absolute;
   top: 0;
@@ -231,17 +218,15 @@ const SIsland = styled.div<{ type?: number; islandType?: string }>`
   right: 0;
   bottom: 0;
   cursor: pointer;
-
   ${({ type, islandType }) =>
-    type
-      ? css`
-          background: url("../../../images/islands/${islandType
-              ? "/" + islandType + "/"
-              : ""}${type}.svg")
-            no-repeat;
-          background-size: contain;
-        `
-      : ""};
+    type &&
+    css`
+      background: url("../../../images/islands/${islandType
+          ? islandType + "/"
+          : ""}${type}.svg")
+        no-repeat;
+      background-size: contain;
+    `}
 `;
 
 const SResources = styled.div`
@@ -251,7 +236,6 @@ const SResources = styled.div`
 `;
 
 const SResource = styled.div`
-  position: relative;
   display: flex;
   align-items: center;
 `;
@@ -260,6 +244,5 @@ const SInfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-
   margin-bottom: 20px;
 `;

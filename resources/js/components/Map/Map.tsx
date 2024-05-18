@@ -105,9 +105,9 @@ export const Map = ({
     (queryMap?.data?.availableCitiesData?.availableCities || 0) <=
     cities.length;
 
-  if (queryMap.isFetching || queryMapAdventure.isFetching) {
+  /* if (queryMap.isFetching || queryMapAdventure.isFetching) {
     return <>Loading...</>;
-  }
+  } */
 
   return (
     <SContent>

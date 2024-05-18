@@ -1,5 +1,10 @@
 import dayjs from "dayjs";
-import { ICity, IWarshipImprovement, TImprovementType } from "./types/types";
+import {
+  ICity,
+  IResearch,
+  IWarshipImprovement,
+  TImprovementType,
+} from "./types/types";
 
 export const convertSecondsToTime = (seconds: number): string => {
   if (seconds < 0) {
@@ -60,4 +65,11 @@ export const getWarshipImprovementPercent = (
 // "2024-04-30T15:54:23.000000Z" -> 30 Apr, 2024, 17:54:23
 export const formatDate = (date: string) => {
   return dayjs(new Date(date)).utc(true).format("DD MMM, YYYY, HH:mm:ss");
+};
+
+export const getResearchTitleById = (
+  dictionary: IResearch[],
+  researchId: number | undefined
+): string | undefined => {
+  return dictionary.find((research) => research.id === researchId)?.title;
 };

@@ -360,9 +360,11 @@ export interface IAvailableCitiesData {
 }
 
 export interface IUserData {
-  cities: ICity[];
-  email: string;
-  name: string;
-  type: string;
-  userId: number;
+  data: {
+    cities: ICity[];
+    email: string;
+    name: string;
+    type: string;
+    userId: number;
+  };
 }

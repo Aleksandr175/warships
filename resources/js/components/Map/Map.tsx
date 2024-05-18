@@ -101,6 +101,8 @@ export const Map = ({
     setIsPopoverOpen(false);
   };
 
+  const availableCitiesData = queryMap?.data?.availableCitiesData;
+
   const isTakingOverDisabled = () =>
     (queryMap?.data?.availableCitiesData?.availableCities || 0) <=
     cities.length;
@@ -161,6 +163,7 @@ export const Map = ({
               onSendingFleet={(city, task) => openSendingFleetPopup(city, task)}
               currentCityId={city?.id || 0}
               isTakingOverDisabled={isTakingOverDisabled()}
+              availableCitiesData={availableCitiesData}
             />
           );
         })}

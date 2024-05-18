@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { Popover } from "react-tiny-popover";
 import styled, { css } from "styled-components";
-import { IFleetWarshipsData, IMapCity, TTask } from "../../types/types";
+import {
+  IAvailableCitiesData,
+  IFleetWarshipsData,
+  IMapCity,
+  TTask,
+} from "../../types/types";
 import {
   SCloseButton,
   SPopoverButtons,
@@ -10,7 +15,7 @@ import {
 } from "../styles";
 import { Icon } from "../Common/Icon";
 import { FleetWarships } from "../Common/FleetWarships";
-import { getResourceSlug } from "../../utils";
+import { getResearchTitleById, getResourceSlug } from "../../utils";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import { useFetchUserData } from "../../hooks/useFetchUserData";
 
@@ -25,6 +30,7 @@ interface IProps {
   onSendingFleet: (city: IMapCity, task: TTask) => void;
   currentCityId: number;
   isTakingOverDisabled?: boolean;
+  availableCitiesData?: IAvailableCitiesData;
 }
 
 export const MapCell = ({
@@ -38,10 +44,11 @@ export const MapCell = ({
   onSendingFleet,
   currentCityId,
   isTakingOverDisabled,
+  availableCitiesData,
 }: IProps) => {
   const { data: dictionaries } = useFetchDictionaries();
   const { data: userData } = useFetchUserData();
-  const userId = userData?.userId;
+  const userId = userData?.data.userId;
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -102,9 +109,24 @@ export const MapCell = ({
                   </SInfoWrapper>
                 )}
 
+                {!isAdventure && !city.userId && isTakingOverDisabled && (
+                  <>
+                    <p>Requirements:</p>
+                    <p>
+                      {getResearchTitleById(
+                        dictionaries.researches,
+                        availableCitiesData?.requirementsForNextCity.researchId
+                      )}
+                      : {availableCitiesData?.requirementsForNextCity.lvl}
+                    </p>
+                  </>
+                )}
+
                 <SCloseButton onClick={handlePopoverClose}>
                   <Icon title="cross" />
                 </SCloseButton>
+
+                {currentCityId === city.id && <p>Selected Island</p>}
 
                 {currentCityId !== city.id && (
                   <SPopoverButtons>
@@ -117,18 +139,22 @@ export const MapCell = ({
                       </button>
                     ) : (
                       <>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => handleFleetAction("move")}
-                        >
-                          Move
-                        </button>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => handleFleetAction("transport")}
-                        >
-                          Transport
-                        </button>
+                        {city.userId === userId && (
+                          <>
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => handleFleetAction("move")}
+                            >
+                              Move
+                            </button>
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => handleFleetAction("transport")}
+                            >
+                              Transport
+                            </button>
+                          </>
+                        )}
                         {!city.userId && (
                           <button
                             className="btn btn-primary"

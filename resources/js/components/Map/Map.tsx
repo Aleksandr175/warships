@@ -16,6 +16,7 @@ import Modal from "react-modal";
 import { SendingFleet } from "../SendingFleet/SendingFleet";
 import { Icon } from "../Common/Icon";
 import { useFetchAdventure } from "../../hooks/useFetchAdventure";
+import { MapAction } from "./MapAction";
 
 const customStyles = {
   overlay: {
@@ -47,29 +48,13 @@ export const Map = ({
   city: ICity;
   cityResources: ICityResource[];
 }) => {
-  const size = 5 * 5;
+  const size = 25; // 5 * 5 grid
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [fleetTask, setFleetTask] = useState<TTask>("trade");
   const [targetCity, setTargetCity] = useState<IMapCity | undefined>(undefined);
 
-  const [cells, setCells] = useState<{ id: number }[]>(() => {
-    let tCells = [];
-
-    for (let i = 0; i < size; i++) {
-      tCells[i] = {
-        id: i,
-      };
-    }
-
-    return tCells;
-  });
-
   const queryMap = useFetchMap();
   const queryMapAdventure = useFetchAdventure();
-
-  const getCity = (y: number, x: number) => {
-    return mapCities?.find((city) => city.coordX === x && city.coordY === y);
-  };
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -87,25 +72,23 @@ export const Map = ({
     adventureWarships = queryMapAdventure?.data?.warships || [];
   }
 
-  const isFleetMovingToIsland = (cityId: number | undefined): boolean => {
-    return (
-      (fleets || []).findIndex((fleet) => fleet.targetCityId === cityId) > -1
-    );
-  };
+  const cells = Array.from({ length: size }, (_, i) => ({ id: i }));
 
-  const isIslandRaided = (cityId: number | undefined) => {
-    return !!mapCities?.find((city) => city.id === cityId)?.raided;
-  };
+  const getCity = (y: number, x: number): IMapCity | undefined =>
+    mapCities?.find((city) => city.coordX === x && city.coordY === y);
 
-  const getWarships = (cityId: number | undefined) => {
-    if (cityId) {
-      return adventureWarships.filter(
-        (adventureWarshipsData) => adventureWarshipsData.cityId === cityId
-      );
-    }
+  const isFleetMovingToIsland = (cityId: number | undefined) =>
+    (fleets || []).some((fleet) => fleet.targetCityId === cityId);
 
-    return [];
-  };
+  const isIslandRaided = (cityId: number | undefined) =>
+    !!mapCities?.find((city) => city.id === cityId)?.raided;
+
+  const getWarships = (cityId: number | undefined) =>
+    cityId
+      ? adventureWarships.filter(
+          (adventureWarshipsData) => adventureWarshipsData.cityId === cityId
+        )
+      : [];
 
   const openSendingFleetPopup = (city: IMapCity | undefined, task: TTask) => {
     setTargetCity(city);
@@ -118,20 +101,9 @@ export const Map = ({
     setIsPopoverOpen(false);
   };
 
-  const isTakingOverDisabled = () => {
-    let disabled = false;
-
-    if (
-      queryMap?.data?.availableCitiesData?.availableCities &&
-      queryMap?.data?.availableCitiesData?.availableCities <= cities.length
-    ) {
-      disabled = true;
-    }
-
-    console.log("disabled", disabled);
-
-    return disabled;
-  };
+  const isTakingOverDisabled = () =>
+    (queryMap?.data?.availableCitiesData?.availableCities || 0) <=
+    cities.length;
 
   if (queryMap.isFetching || queryMapAdventure.isFetching) {
     return <>Loading...</>;
@@ -140,81 +112,36 @@ export const Map = ({
   return (
     <SContent>
       <SRow>
-        <SColumn>
-          <SMapAction>
-            <SMapActionLogo
-              style={{
-                backgroundImage: 'url("../../../images/islands/1.svg")',
-              }}
-            ></SMapActionLogo>
-            <SMapActionDescription>
-              <strong>Expedition</strong>
-
-              <p>
-                Send fleet to unknown islands to find gold or rare resources
-              </p>
-
-              <button
-                className={"btn btn-primary"}
-                onClick={() => openSendingFleetPopup(undefined, "expedition")}
-              >
-                Send
-              </button>
-            </SMapActionDescription>
-          </SMapAction>
-        </SColumn>
-        <SColumn>
-          <SMapAction>
-            <SMapActionLogoTrade
-              style={{
-                backgroundImage: 'url("../../../images/icons/directions.svg")',
-              }}
-            ></SMapActionLogoTrade>
-            <SMapActionDescription>
-              <strong>Trade</strong>
-
-              <p>Get some gold with trading!</p>
-
-              <button
-                className={"btn btn-primary"}
-                onClick={() => openSendingFleetPopup(undefined, "trade")}
-              >
-                Trade
-              </button>
-            </SMapActionDescription>
-          </SMapAction>
-        </SColumn>
-        <SColumn>
-          <SMapAction>
-            <SMapActionLogo
-              style={{
-                backgroundImage: 'url("../../../images/islands/pirates/1.svg")',
-              }}
-            ></SMapActionLogo>
-            <SMapActionDescription>
-              <strong>Adventure</strong>
-
-              <p>Conquer unknown islands to get big treasure!</p>
-
-              <button
-                className={"btn btn-primary"}
-                onClick={() => {
-                  navigate("/map?adventure=1");
-                }}
-              >
-                Adventure
-              </button>
-            </SMapActionDescription>
-          </SMapAction>
-        </SColumn>
+        <MapAction
+          title="Expedition"
+          description="Send fleet to unknown islands to find gold or rare resources"
+          logoUrl="../../../images/islands/1.svg"
+          onClick={() => openSendingFleetPopup(undefined, "expedition")}
+        />
+        <MapAction
+          title="Trade"
+          description="Get some gold with trading!"
+          logoUrl="../../../images/icons/directions.svg"
+          logoStyle={{
+            width: "70px",
+            height: "70px",
+            minWidth: "70px",
+            marginTop: "15px",
+          }}
+          onClick={() => openSendingFleetPopup(undefined, "trade")}
+        />
+        <MapAction
+          title="Adventure"
+          description="Conquer unknown islands to get big treasure!"
+          logoUrl="../../../images/islands/pirates/1.svg"
+          onClick={() => navigate("/map?adventure=1")}
+        />
       </SRow>
       <SH1>
-        {isAdventure
-          ? "Adventure, " + adventureLvl + " lvl."
-          : "Your Archipelago"}
+        {isAdventure ? `Adventure, ${adventureLvl} lvl.` : "Your Archipelago"}
       </SH1>
       <SCells>
-        {cells?.map((cell, index) => {
+        {cells.map((cell, index) => {
           const y = Math.floor(index / 5) + 1;
           const x = (index % 5) + 1;
           const mapCity = getCity(y, x);
@@ -270,35 +197,4 @@ const SRow = styled.div`
   align-items: flex-start;
   gap: 20px;
   margin-bottom: 30px;
-`;
-
-const SColumn = styled.div`
-  width: 33%;
-`;
-
-const SMapAction = styled.div`
-  display: flex;
-  gap: 10px;
-`;
-
-const SMapActionLogo = styled.div`
-  width: 100px;
-  height: 100px;
-  min-width: 100px;
-  background-size: contain;
-  background-repeat: no-repeat;
-`;
-
-const SMapActionLogoTrade = styled(SMapActionLogo)`
-  width: 70px;
-  height: 70px;
-  min-width: 70px;
-  margin-top: 15px;
-`;
-
-const SMapActionDescription = styled.div`
-  p {
-    font-size: 12px;
-    color: #949494;
-  }
 `;

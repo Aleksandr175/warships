@@ -6,6 +6,7 @@ use App\Models\Adventure;
 use App\Models\Archipelago;
 use App\Models\City;
 use App\Models\CityResource;
+use App\Models\Research;
 use App\Models\Resource;
 use App\Models\User;
 
@@ -262,6 +263,25 @@ class CityService
                 }
             }
         }
+    }
+
+    public function getAvailableCitiesData(User $user)
+    {
+        // check research, if it is possible to take over more islands
+        $governmentalResearch = Research::where('user_id', $user->id)->where('research_id', config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'))->first();
+
+        $availableCities = 0;
+        if ($governmentalResearch && $governmentalResearch->lvl) {
+            $availableCities = floor($governmentalResearch->lvl / 2);
+        }
+
+        return [
+            'availableCities'          => $availableCities,
+            'requirementsForNextCity' => [
+                'researchId' => config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'),
+                'lvl'         => $availableCities * 2 + 2
+            ]
+        ];
     }
 
     public function takeOverCity(City $city, User $user): void

@@ -13,6 +13,7 @@ import { FleetWarships } from "../Common/FleetWarships";
 import { useNavigate } from "react-router-dom";
 import { getResourceSlug } from "../../utils";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
+import { useFetchUserData } from "../../hooks/useFetchUserData";
 
 interface IProps {
   city: IMapCity | undefined;
@@ -24,6 +25,7 @@ interface IProps {
   warships: IFleetWarshipsData[];
   onSendingFleet: (city: IMapCity, task: TTask) => void;
   currentCityId: number;
+  isTakingOverDisabled?: boolean;
 }
 export const MapCell = ({
   city,
@@ -35,9 +37,13 @@ export const MapCell = ({
   warships,
   onSendingFleet,
   currentCityId,
+  isTakingOverDisabled,
 }: IProps) => {
   const navigate = useNavigate();
   const queryDictionaries = useFetchDictionaries();
+
+  const queryUserData = useFetchUserData();
+  const userId = queryUserData?.data?.userId;
 
   const dictionaries = queryDictionaries.data;
 
@@ -133,12 +139,13 @@ export const MapCell = ({
                         {!isPirates && !city.userId && (
                           <button
                             className={"btn btn-primary"}
+                            disabled={isTakingOverDisabled}
                             onClick={() => {
                               onSendingFleet(city, "takeOver");
                               setIsPopoverOpen(false);
                             }}
                           >
-                            Take over the island
+                            Take over
                           </button>
                         )}
                       </>

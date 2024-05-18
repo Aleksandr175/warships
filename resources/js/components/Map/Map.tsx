@@ -138,6 +138,21 @@ export const Map = ({
     setIsPopoverOpen(false);
   };
 
+  const isTakingOverDisabled = () => {
+    let disabled = false;
+
+    if (
+      queryMap?.data?.availableCitiesData?.availableCities &&
+      queryMap?.data?.availableCitiesData?.availableCities <= cities.length
+    ) {
+      disabled = true;
+    }
+
+    console.log("disabled", disabled);
+
+    return disabled;
+  };
+
   if (queryMap.isPending) {
     return <>Loading...</>;
   }
@@ -233,6 +248,7 @@ export const Map = ({
               warships={getWarships(mapCity?.id)}
               onSendingFleet={(city, task) => openSendingFleetPopup(city, task)}
               currentCityId={city?.id || 0}
+              isTakingOverDisabled={isTakingOverDisabled()}
             />
           );
         })}

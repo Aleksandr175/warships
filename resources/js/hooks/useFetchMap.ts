@@ -1,9 +1,9 @@
 import { useCustomQuery } from "./useCustomQuery";
-import { IMapCity } from "../types/types";
+import { IMap } from "../types/types";
 
 // TODO add types
 export const useFetchMap = (queryParams?: any) => {
-  return useCustomQuery<{ cities: IMapCity[] }>({
+  return useCustomQuery<IMap>({
     url: `/map`,
     queryParams: {
       ...queryParams,

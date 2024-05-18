@@ -339,3 +339,24 @@ export interface IResource {
   resourceId: number;
   qty: number;
 }
+
+export interface IMap {
+  cities: IMapCity[];
+  availableCitiesData: IAvailableCitiesData;
+}
+
+export interface IAvailableCitiesData {
+  availableCities: number;
+  requirementsForNextCity: {
+    lvl: number;
+    researchId: number;
+  };
+}
+
+export interface IUserData {
+  cities: ICity[];
+  email: string;
+  name: string;
+  type: string;
+  userId: number;
+}

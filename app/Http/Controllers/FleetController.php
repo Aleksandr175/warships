@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 
 class FleetController extends Controller
 {
-    public function get(Request $request)
+    public function get()
     {
         $userId = Auth::user()->id;
 

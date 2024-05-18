@@ -15,6 +15,7 @@ import { httpClient } from "../../httpClient/httpClient";
 import Echo from "laravel-echo";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import { REFETCH_INTERVAL_MS } from "../../hooks/useCustomQuery";
+import { useFetchUserData } from "../../hooks/useFetchUserData";
 
 export const useAppLogic = () => {
   const [city, setCity] = useState<ICity>();
@@ -31,7 +32,6 @@ export const useAppLogic = () => {
 
   const [queue, setQueue] = useState<ICityBuildingQueue>();
   const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
-  const [userId, setUserId] = useState<number>();
   const [unreadMessagesNumber, setUnreadMessagesNumber] = useState<number>(0);
 
   const setWebsockets = (userId: number): void => {
@@ -81,6 +81,12 @@ export const useAppLogic = () => {
     refetchInterval: REFETCH_INTERVAL_MS,
   });
 
+  const queryUserData = useFetchUserData({
+    refetchInterval: REFETCH_INTERVAL_MS,
+  });
+
+  const userId = queryUserData?.data?.userId;
+
   const dictionaries = queryDictionaries.data;
 
   useEffect(() => {
@@ -88,7 +94,6 @@ export const useAppLogic = () => {
       httpClient.get("/dictionaries").then((respDictionary) => {
         setCity(response.data.data.cities[0]);
         setCities(response.data.data.cities);
-        setUserId(response.data.data.userId);
 
         setUnreadMessagesNumber(respDictionary.data.unreadMessagesNumber);
 

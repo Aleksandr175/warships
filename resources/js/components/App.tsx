@@ -142,14 +142,6 @@ const App = () => {
                 Researches
               </NavLink>
               <NavLink
-                to={"/sending-fleets"}
-                className={({ isActive }) =>
-                  isActive ? "link selected-link" : "link"
-                }
-              >
-                Fleets
-              </NavLink>
-              <NavLink
                 to={"/map"}
                 className={({ isActive }) =>
                   isActive ? "link selected-link" : "link"

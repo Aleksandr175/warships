@@ -894,15 +894,9 @@ class FleetService
         $userCityIds    = $user->cities->pluck('id')->toArray();
         $numberOfCities = count($userCityIds);
 
-        // check research, if it is possible to take over more islands
-        $governmentalResearch = Research::where('user_id', $user->id)->where('research_id', config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'))->first();
+        $availableCitiesData = (new CityService())->getAvailableCitiesData($user);
 
-        $availableCities = 0;
-        if ($governmentalResearch && $governmentalResearch->lvl) {
-            $availableCities = floor($governmentalResearch->lvl / 2);
-        }
-
-        if ($availableCities <= $numberOfCities) {
+        if ($availableCitiesData['availableCities'] <= $numberOfCities) {
             return [
                 'message' => 'You can not take over more islands',
                 'result'  => false

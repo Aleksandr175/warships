@@ -10,7 +10,6 @@ import {
   SPopoverWrapper,
 } from "../styles";
 import { FleetWarships } from "../Common/FleetWarships";
-import { useNavigate } from "react-router-dom";
 import { getResourceSlug } from "../../utils";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import { useFetchUserData } from "../../hooks/useFetchUserData";
@@ -39,7 +38,6 @@ export const MapCell = ({
   currentCityId,
   isTakingOverDisabled,
 }: IProps) => {
-  const navigate = useNavigate();
   const queryDictionaries = useFetchDictionaries();
 
   const queryUserData = useFetchUserData();
@@ -64,7 +62,7 @@ export const MapCell = ({
   }
 
   return (
-    <SCell isHabited={isCity}>
+    <SCell>
       {city && isCity && (
         <>
           <Popover
@@ -193,7 +191,7 @@ export const MapCell = ({
     </SCell>
   );
 };
-const SCell = styled.div<{ isHabited?: boolean }>`
+const SCell = styled.div`
   position: relative;
   float: left;
   width: 140px;

@@ -345,6 +345,12 @@ export interface IMap {
   availableCitiesData: IAvailableCitiesData;
 }
 
+export interface IMapAdventure {
+  cities: IMapCity[];
+  adventureLevel: number;
+  warships: IMapFleetWarshipsData[];
+}
+
 export interface IAvailableCitiesData {
   availableCities: number;
   requirementsForNextCity: {

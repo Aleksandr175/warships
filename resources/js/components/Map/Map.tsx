@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { useEffect } from "react";
-import { httpClient } from "../../httpClient/httpClient";
 import styled from "styled-components";
 import {
   ICity,
@@ -9,15 +7,15 @@ import {
   IMapCity,
   IMapFleetWarshipsData,
   TTask,
-  TType,
 } from "../../types/types";
 import { SCloseButton, SContent, SH1 } from "../styles";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { MapCell } from "./MapCell";
 import { useFetchMap } from "../../hooks/useFetchMap";
 import Modal from "react-modal";
 import { SendingFleet } from "../SendingFleet/SendingFleet";
 import { Icon } from "../Common/Icon";
+import { useFetchAdventure } from "../../hooks/useFetchAdventure";
 
 const customStyles = {
   overlay: {
@@ -50,16 +48,10 @@ export const Map = ({
   cityResources: ICityResource[];
 }) => {
   const size = 5 * 5;
-  const [mapCities, setMapCities] = useState<IMapCity[]>([]);
-  const [adventureLvl, setAdventureLvl] = useState<number>(0);
-  const [adventureWarships, setAdventureWarships] = useState<
-    IMapFleetWarshipsData[]
-  >([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [fleetTask, setFleetTask] = useState<TTask>("trade");
   const [targetCity, setTargetCity] = useState<IMapCity | undefined>(undefined);
 
-  const [type, setType] = useState<TType>("map");
   const [cells, setCells] = useState<{ id: number }[]>(() => {
     let tCells = [];
 
@@ -71,41 +63,29 @@ export const Map = ({
 
     return tCells;
   });
-  const [isLoading, setIsLoading] = useState(true);
 
   const queryMap = useFetchMap();
-
-  useEffect(() => {
-    if (queryMap?.data && adventureLvl === 0) {
-      setMapCities(queryMap.data.cities);
-    }
-  }, [queryMap?.data]);
-
-  const isCityHere = (y: number, x: number): boolean => {
-    return (
-      mapCities?.findIndex((city) => city.coordX === x && city.coordY === y) >
-      -1
-    );
-  };
+  const queryMapAdventure = useFetchAdventure();
 
   const getCity = (y: number, x: number) => {
     return mapCities?.find((city) => city.coordX === x && city.coordY === y);
   };
 
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isAdventure = searchParams.get("adventure") === "1";
+
   const navigate = useNavigate();
 
-  const getAdventure = () => {
-    setIsLoading(true);
-    setType("adventure");
+  let mapCities: IMapCity[] = queryMap?.data?.cities || [];
+  let adventureLvl = 0;
+  let adventureWarships: IMapFleetWarshipsData[] = [];
 
-    httpClient.get("/map/adventure").then((response) => {
-      setMapCities(response.data.cities);
-      setAdventureWarships(response.data.warships);
-      setAdventureLvl(response.data.adventureLevel || 0);
-
-      setIsLoading(false);
-    });
-  };
+  if (isAdventure) {
+    mapCities = queryMapAdventure?.data?.cities || [];
+    adventureLvl = queryMapAdventure?.data?.adventureLevel || 0;
+    adventureWarships = queryMapAdventure?.data?.warships || [];
+  }
 
   const isFleetMovingToIsland = (cityId: number | undefined): boolean => {
     return (
@@ -153,7 +133,7 @@ export const Map = ({
     return disabled;
   };
 
-  if (queryMap.isPending) {
+  if (queryMap.isFetching || queryMapAdventure.isFetching) {
     return <>Loading...</>;
   }
 
@@ -216,7 +196,12 @@ export const Map = ({
 
               <p>Conquer unknown islands to get big treasure!</p>
 
-              <button className={"btn btn-primary"} onClick={getAdventure}>
+              <button
+                className={"btn btn-primary"}
+                onClick={() => {
+                  navigate("/map?adventure=1");
+                }}
+              >
                 Adventure
               </button>
             </SMapActionDescription>
@@ -224,16 +209,16 @@ export const Map = ({
         </SColumn>
       </SRow>
       <SH1>
-        {type === "map"
-          ? "Your Archipelago"
-          : "Adventure, " + adventureLvl + " lvl."}
+        {isAdventure
+          ? "Adventure, " + adventureLvl + " lvl."
+          : "Your Archipelago"}
       </SH1>
       <SCells>
         {cells?.map((cell, index) => {
           const y = Math.floor(index / 5) + 1;
           const x = (index % 5) + 1;
           const mapCity = getCity(y, x);
-          const isCity = isCityHere(y, x);
+          const isCity = Boolean(mapCity);
           const isPirates = mapCity?.cityTypeId === 2;
 
           return (
@@ -244,7 +229,7 @@ export const Map = ({
               isPirates={isPirates}
               isFleetMovingToIsland={isFleetMovingToIsland(mapCity?.id)}
               isIslandRaided={isIslandRaided(mapCity?.id)}
-              isAdventure={!!adventureLvl}
+              isAdventure={isAdventure}
               warships={getWarships(mapCity?.id)}
               onSendingFleet={(city, task) => openSendingFleetPopup(city, task)}
               currentCityId={city?.id || 0}
@@ -268,7 +253,7 @@ export const Map = ({
           targetCity={targetCity}
           cityResources={cityResources}
           fleetTask={fleetTask}
-          isAdventure={!!adventureLvl}
+          isAdventure={isAdventure}
         />
       </Modal>
     </SContent>

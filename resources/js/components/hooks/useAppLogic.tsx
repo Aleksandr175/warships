@@ -54,7 +54,7 @@ export const useAppLogic = () => {
 
     // @ts-ignore
     window.Echo.private("user." + userId)
-      /*.listen(
+      .listen(
         "FleetUpdatedEvent",
         (event: {
           fleets: ICityFleet[];
@@ -72,44 +72,11 @@ export const useAppLogic = () => {
       .listen("CityDataUpdatedEvent", (event: { cities: ICity[] }) => {
         console.log("new city data", event);
         setCities(event.cities);
-      })*/
+      })
+      // just for test localhost/test-event
       .listen("TestEvent", (event: { cities: ICity[] }) => {
         console.log("test event1", event);
       });
-
-    window.Echo.private("test")
-      /*.listen(
-        "FleetUpdatedEvent",
-        (event: {
-          fleets: ICityFleet[];
-          fleetsIncoming: IFleetIncoming[];
-          fleetsDetails: IFleetWarshipsData[];
-          cities: IMapCity[];
-        }) => {
-          console.log("new fleet data", event);
-          setFleets(event.fleets);
-          setFleetsIncoming(event.fleetsIncoming);
-          setFleetDetails(event.fleetsDetails);
-          setFleetCitiesDictionary(event.cities);
-        }
-      )
-      .listen("CityDataUpdatedEvent", (event: { cities: ICity[] }) => {
-        console.log("new city data", event);
-        setCities(event.cities);
-      })*/
-      .listen("TestEvent", (event: { cities: ICity[] }) => {
-        console.log("test event1", event);
-      });
-
-    /*var ws = new WebSocket(
-      "ws://127.0.0.1:6001/app/ASDF?protocol=7&client=js&version=4.4.0&flash=false"
-    );
-    ws.onopen = function () {
-      console.log("Connected");
-    };
-    ws.onerror = function (error) {
-      console.log("Error occurred:", error);
-    };*/
   };
 
   const queryDictionaries = useFetchDictionaries({

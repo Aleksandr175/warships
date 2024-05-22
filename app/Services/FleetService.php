@@ -300,14 +300,14 @@ class FleetService
 
         $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds))->get();
 
-        //FleetUpdatedEvent::dispatch($user, $fleets, $fleetsDetails, $cities);
+        FleetUpdatedEvent::dispatch($user, $fleets, $fleetsDetails, $cities);
     }
 
     public function sendCityDataUpdatedEvent($user)
     {
         $cities = $user->cities;
 
-        //CityDataUpdatedEvent::dispatch($user, $cities);
+        CityDataUpdatedEvent::dispatch($user, $cities);
     }
 
     public function isCity($city): bool

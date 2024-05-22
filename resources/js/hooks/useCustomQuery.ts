@@ -1,12 +1,11 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import qs from "qs";
-
 import { httpClient } from "../httpClient/httpClient";
 
 const DEFAULT_QUERY_RETRY = false;
 const DEFAULT_QUERY_RETRY_DELAY = 3000;
 const DEFAULT_QUERY_STALE_TIME_MS = 5000;
-export const REFETCH_INTERVAL_MS = 1000 * 60 * 10; // 10 min
+export const REFETCH_INTERVAL_MS = 1000 * 60 * 10; // 10 min;
 
 export type TParams = Record<string | number, unknown>;
 
@@ -26,7 +25,7 @@ const getQueryKey = (
   params?: GetQueryKeyParams,
   options?: GetQueryKeyOptions
 ): string[] => {
-  const result = [];
+  const result: string[] = [];
 
   if (url) {
     result.push(url);
@@ -48,7 +47,7 @@ const stringifyOptions: qs.IStringifyOptions = {
 };
 
 const stringifyQS = (
-  object = {},
+  object: Record<string, unknown> = {},
   options: qs.IStringifyOptions = {}
 ): string => {
   return qs.stringify(object, {

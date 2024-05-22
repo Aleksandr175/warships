@@ -35,6 +35,7 @@ export const useAppLogic = () => {
   const [unreadMessagesNumber, setUnreadMessagesNumber] = useState<number>(0);
 
   const setWebsockets = (userId: number): void => {
+    console.log("connect to websockets..., userId: ", userId);
     // @ts-ignore
     window.Echo = new Echo({
       broadcaster: "pusher",
@@ -42,7 +43,7 @@ export const useAppLogic = () => {
       //encrypted: false,
       //authEndpoint: "/api/broadcasting/auth",
       key: "ASDF",
-      wsHost: "127.0.0.1",
+      wsHost: "localhost",
       wsPort: 6001,
       //wssport: 8000,
       transports: ["websocket"],
@@ -53,7 +54,7 @@ export const useAppLogic = () => {
 
     // @ts-ignore
     window.Echo.private("user." + userId)
-      .listen(
+      /*.listen(
         "FleetUpdatedEvent",
         (event: {
           fleets: ICityFleet[];
@@ -71,10 +72,44 @@ export const useAppLogic = () => {
       .listen("CityDataUpdatedEvent", (event: { cities: ICity[] }) => {
         console.log("new city data", event);
         setCities(event.cities);
-      })
+      })*/
       .listen("TestEvent", (event: { cities: ICity[] }) => {
-        console.log("test event", event);
+        console.log("test event1", event);
       });
+
+    window.Echo.private("test")
+      /*.listen(
+        "FleetUpdatedEvent",
+        (event: {
+          fleets: ICityFleet[];
+          fleetsIncoming: IFleetIncoming[];
+          fleetsDetails: IFleetWarshipsData[];
+          cities: IMapCity[];
+        }) => {
+          console.log("new fleet data", event);
+          setFleets(event.fleets);
+          setFleetsIncoming(event.fleetsIncoming);
+          setFleetDetails(event.fleetsDetails);
+          setFleetCitiesDictionary(event.cities);
+        }
+      )
+      .listen("CityDataUpdatedEvent", (event: { cities: ICity[] }) => {
+        console.log("new city data", event);
+        setCities(event.cities);
+      })*/
+      .listen("TestEvent", (event: { cities: ICity[] }) => {
+        console.log("test event1", event);
+      });
+
+    /*var ws = new WebSocket(
+      "ws://127.0.0.1:6001/app/ASDF?protocol=7&client=js&version=4.4.0&flash=false"
+    );
+    ws.onopen = function () {
+      console.log("Connected");
+    };
+    ws.onerror = function (error) {
+      console.log("Error occurred:", error);
+    };*/
   };
 
   const queryDictionaries = useFetchDictionaries({
@@ -85,7 +120,13 @@ export const useAppLogic = () => {
     refetchInterval: REFETCH_INTERVAL_MS,
   });
 
-  const userId = queryUserData?.data?.userId;
+  const userId = queryUserData?.data?.data.userId;
+
+  useEffect(() => {
+    if (userId) {
+      setWebsockets(userId);
+    }
+  }, [userId]);
 
   const dictionaries = queryDictionaries.data;
 
@@ -97,7 +138,6 @@ export const useAppLogic = () => {
 
         setUnreadMessagesNumber(respDictionary.data.unreadMessagesNumber);
 
-        setWebsockets(response.data.data.userId);
         setIsLoading(false);
       });
     });

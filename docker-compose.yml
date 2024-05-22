@@ -11,8 +11,7 @@ services:
             - 'host.docker.internal:host-gateway'
         ports:
             - '${APP_PORT:-80}:80'
-            #- '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
-            - '${LARAVEL_WEBSOCKETS_PORT:-6001}:${LARAVEL_WEBSOCKETS_PORT:-6001}'
+            #- '${LARAVEL_WEBSOCKETS_PORT:-6001}:${LARAVEL_WEBSOCKETS_PORT:-6001}'
         environment:
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1
@@ -25,27 +24,23 @@ services:
             - sail
         depends_on:
             - mysql
-            #- redis
-            #- meilisearch
             - mailpit
             - selenium
-    #websocket:
-    #    build:
-    #        context: ./docker/8.2
-    #        target: laravel.test
-    #        args:
-    #            WWWGROUP: '${WWWGROUP}'
-    #    environment:
-    #        WWWUSER: '${WWWUSER}'
-    #        CONTAINER_ROLE: websocket
-    #    working_dir: '/var/www/html'
-    #    volumes:
-    #        - '.:/var/www/html'
-    #    ports:
-    #        - '6001:6001'
-    #    depends_on:
-    #        - mysql
-    #        - redis
+    websocket:
+        build:
+            context: ./docker/8.2
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            CONTAINER_ROLE: websocket
+        volumes:
+            - '.:/var/www/html'
+        ports:
+            - '6001:6001'
+        depends_on:
+            - laravel.test
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:

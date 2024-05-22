@@ -20,3 +20,9 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('user.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+
+Broadcast::channel('test', function ($user) {
+    // Only allow users with a specific role or attribute to subscribe
+    return true;
+    //return $user; // Assuming your User model has an isAdmin attribute
+});

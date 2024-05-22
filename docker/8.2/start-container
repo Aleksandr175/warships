@@ -1,17 +1,28 @@
 #!/usr/bin/env bash
 
+# Adjust the user ID if provided
 if [ ! -z "$WWWUSER" ]; then
     usermod -u $WWWUSER sail
 fi
 
+# Ensure the Composer cache directory exists and is writable
 if [ ! -d /.composer ]; then
     mkdir /.composer
 fi
-
 chmod -R ugo+rw /.composer
 
-if [ $# -gt 0 ]; then
-    exec gosu $WWWUSER "$@"
+# Check the container role and act accordingly
+if [ "$CONTAINER_ROLE" == "websocket" ]; then
+    # Command to start the Laravel Websockets server
+    echo "Starting Laravel Websockets server..."
+    exec php /var/www/html/artisan websockets:serve
 else
-    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+    # Check if there are any commands passed; if so, execute them
+    if [ $# -gt 0 ]; then
+        exec gosu $WWWUSER "$@"
+    else
+        # Default to starting supervisord if no commands are specified
+        echo "Starting Supervisord..."
+        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+    fi
 fi

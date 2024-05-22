@@ -42,6 +42,7 @@ class TestEvent implements ShouldBroadcast
     {
         //return new PrivateChannel('channel-name');
         //return new Channel('testChannel');
+        //return new PrivateChannel('test');
         return new PrivateChannel('user.5');
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Api\ResearchRequest;
-use App\Http\Resources\CityResourcesResource;
 use App\Http\Resources\CityResourceV2Resource;
 use App\Http\Resources\ResearchQueueResource;
 use App\Services\ResearchQueueService;

@@ -19,28 +19,20 @@ class FleetController extends Controller
     {
         $userId = Auth::user()->id;
 
-        $cities = City::where('user_id', $userId)->get();
-        $userCityIds     = $cities->pluck('id');
+        $fleetsData = (new FleetService())->getUserFleets($userId);
 
-        $fleets         = Fleet::whereIn('city_id', $userCityIds)->get();
-        $incomingFleets = Fleet::whereIn('target_city_id', $userCityIds)->whereNotIn('city_id', $userCityIds)->get();
-
-        $fleetIds     = $fleets->pluck('id');
-        $fleetDetails = FleetDetail::getFleetDetails($fleetIds);
-
-        $cityIds       = $fleets->pluck('city_id')->toArray();
-        $targetCityIds = $fleets->pluck('target_city_id')->toArray();
-
-        $incomingCityIds       = $incomingFleets->pluck('city_id')->toArray();
-        $incomingTargetCityIds = $incomingFleets->pluck('target_city_id')->toArray();
+        $cityIds               = $fleetsData['fleets']->pluck('city_id')->toArray();
+        $targetCityIds         = $fleetsData['fleets']->pluck('target_city_id')->toArray();
+        $incomingCityIds       = $fleetsData['incomingFleets']->pluck('city_id')->toArray();
+        $incomingTargetCityIds = $fleetsData['incomingFleets']->pluck('target_city_id')->toArray();
 
         $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds, $incomingCityIds, $incomingTargetCityIds))->get();
 
         return [
-            'fleets'         => FleetResource::collection($fleets),
-            'fleetDetails'   => FleetDetailResource::collection($fleetDetails),
+            'fleets'         => FleetResource::collection($fleetsData['fleets']),
+            'fleetDetails'   => FleetDetailResource::collection($fleetsData['fleetDetails']),
             'cities'         => CityShortInfoResource::collection($cities),
-            'fleetsIncoming' => FleetIncomingResource::collection($incomingFleets),
+            'fleetsIncoming' => FleetIncomingResource::collection($fleetsData['incomingFleets']),
         ];
     }
 
@@ -81,7 +73,7 @@ class FleetController extends Controller
 
     public function send(Request $request, FleetService $fleetService)
     {
-        $user = Auth::user();
+        $user     = Auth::user();
         $response = $fleetService->send($request, $user);
 
         return $response;

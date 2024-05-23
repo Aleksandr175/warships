@@ -239,7 +239,7 @@ class FleetService
 
         $this->moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleetId, $this->updatedFleetDetails);
 
-        $this->sendFleetUpdatedEvent($user, $userCity);
+        $this->sendFleetUpdatedEvent($user);
         $this->sendCityDataUpdatedEvent($user);
 
         return [
@@ -290,17 +290,18 @@ class FleetService
     }
 
     // send event via websockets
-    public function sendFleetUpdatedEvent($user, $city)
+    public function sendFleetUpdatedEvent($user)
     {
-        $fleets        = $city->fleets;
-        $fleetsDetails = FleetDetail::getFleetDetails($fleets->pluck('id'));
+        $fleetsData = $this->getUserFleets($user->id);
 
-        $cityIds       = $fleets->pluck('city_id')->toArray();
-        $targetCityIds = $fleets->pluck('target_city_id')->toArray();
+        $cityIds               = $fleetsData['fleets']->pluck('city_id')->toArray();
+        $targetCityIds         = $fleetsData['fleets']->pluck('target_city_id')->toArray();
+        $incomingCityIds       = $fleetsData['incomingFleets']->pluck('city_id')->toArray();
+        $incomingTargetCityIds = $fleetsData['incomingFleets']->pluck('target_city_id')->toArray();
 
-        $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds))->get();
+        $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds, $incomingCityIds, $incomingTargetCityIds))->get();
 
-        FleetUpdatedEvent::dispatch($user, $fleets, $fleetsDetails, $cities);
+        FleetUpdatedEvent::dispatch($user, $fleetsData['fleets'], $fleetsData['fleetDetails'], $cities);
     }
 
     public function sendCityDataUpdatedEvent($user)
@@ -735,7 +736,7 @@ class FleetService
                 dump('Dispatch new fleet event');
 
                 $user = User::find($city->user_id);
-                $this->sendFleetUpdatedEvent($user, $city);
+                $this->sendFleetUpdatedEvent($user);
             }
         }
 
@@ -914,6 +915,31 @@ class FleetService
         return [
             'message' => '',
             'result'  => true
+        ];
+    }
+
+    public function getUserFleets(int $userId): array
+    {
+        // Fetch all cities that belong to the user
+        $cities      = City::where('user_id', $userId)->get();
+        $userCityIds = $cities->pluck('id');
+
+        // Fetch all fleets sent from user's cities and incoming fleets targeting user's cities
+        $fleets         = Fleet::whereIn('city_id', $userCityIds)->get();
+        $incomingFleets = Fleet::whereIn('target_city_id', $userCityIds)->whereNotIn('city_id', $userCityIds)->get();
+
+        // Extract fleet IDs from both sets and merge into a unique collection
+        $fleetIds         = $fleets->pluck('id');
+        $incomingFleetIds = $incomingFleets->pluck('id');
+        $allFleetIds = $fleetIds->merge($incomingFleetIds)->unique();
+
+        // Retrieve details for all collected fleet IDs
+        $fleetDetails = FleetDetail::getFleetDetails($allFleetIds);
+
+        return [
+            'fleets'         => $fleets,
+            'fleetDetails'   => $fleetDetails,
+            'incomingFleets' => $incomingFleets,
         ];
     }
 }

@@ -256,6 +256,13 @@ export interface IFleet {
   taskType: TTask;
 }
 
+export interface IFleets {
+  fleets: ICityFleet[];
+  fleetsIncoming: ICityFleet[];
+  fleetDetails: IFleetWarshipsData[];
+  cities: IMapCity[];
+}
+
 export interface ICityFleet {
   id: number;
   cityId: number;

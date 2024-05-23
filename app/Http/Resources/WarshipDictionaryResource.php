@@ -22,8 +22,6 @@ class WarshipDictionaryResource extends JsonResource
             'speed' => $this->speed,
             'capacity' => $this->capacity,
             'health' => $this->health,
-            'gold' => $this->gold,
-            'population' => $this->population,
             'time' => $this->time,
             'requiredResources' => WarshipResourceResource::collection($this->requiredResources)
         ];

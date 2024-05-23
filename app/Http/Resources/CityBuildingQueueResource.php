@@ -18,8 +18,6 @@ class CityBuildingQueueResource extends JsonResource
         return [
             'buildingId' => $this->building_id,
             'cityId'     => $this->city_id,
-            'gold'       => $this->gold,
-            'population' => $this->population,
             'lvl'        => $this->lvl,
             'time'       => $this->time,
             'deadline'   => $this->deadline

@@ -22,7 +22,6 @@ class FleetResource extends JsonResource
             'fleetTaskId'   => $this->fleet_task_id,
             'fleetStatusId' => $this->status_id,
             'speed'         => $this->speed,
-            'gold'          => $this->gold,
             'recursive'     => $this->recursive,
             'time'          => $this->time,
             'deadline'      => $this->deadline,

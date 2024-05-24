@@ -19,6 +19,7 @@ import { REFETCH_INTERVAL_MS } from "../../hooks/useCustomQuery";
 import { useFetchUserData } from "../../hooks/useFetchUserData";
 import { useFetchFleets } from "../../hooks/useFetchFleets";
 import { useQueryClient } from "@tanstack/react-query";
+import { useFetchCityBuildings } from "../../hooks/useFetchCityBuildings";
 
 export const useAppLogic = () => {
   const queryClient = useQueryClient();
@@ -62,7 +63,6 @@ export const useAppLogic = () => {
           fleetDetails: IFleetWarshipsData[];
           cities: IMapCity[];
         }) => {
-          console.log("newFleetData", newFleetData);
           queryClient.setQueryData(["/fleets"], (oldFleets: IFleets) => {
             return { ...newFleetData };
           });
@@ -72,6 +72,30 @@ export const useAppLogic = () => {
         console.log("new city data", event);
         setCities(event.cities);
       })
+      .listen(
+        "CityBuildingDataUpdatedEvent",
+        (newCityBuildings: {
+          cityId: number;
+          cityBuildings: ICityBuilding[];
+          userId: number;
+        }) => {
+          console.log(
+            "new buildings data",
+            newCityBuildings,
+            "city id:",
+            city?.id
+          );
+          queryClient.setQueryData(
+            ["/buildings?cityId=" + newCityBuildings.cityId],
+            (oldCityBuildings: ICityBuilding[]) => {
+              return {
+                buildings: newCityBuildings.cityBuildings,
+                buildingsQueue: null,
+              };
+            }
+          );
+        }
+      )
       // just for test http://localhost/test-event
       .listen("TestEvent", (event: { cities: ICity[] }) => {
         console.log("test event1", event);
@@ -117,7 +141,6 @@ export const useAppLogic = () => {
 
   useEffect(() => {
     getCityResources();
-    getBuildings();
     getResearches();
   }, [city]);
 
@@ -125,7 +148,6 @@ export const useAppLogic = () => {
   useEffect(() => {
     const updateTimer = setInterval(() => {
       getCityResources();
-      getBuildings();
       getResearches();
     }, 5000);
 
@@ -162,6 +184,7 @@ export const useAppLogic = () => {
   };
 
   const queryFleets = useFetchFleets();
+  const queryCityBuildings = useFetchCityBuildings(city?.id);
 
   const getResearches = () => {
     httpClient.get("/researches").then((response) => {
@@ -194,10 +217,10 @@ export const useAppLogic = () => {
     fleetsIncoming: queryFleets?.data?.fleetsIncoming || [],
     dictionaries,
     updateCityResources,
-    buildings,
+    buildings: queryCityBuildings?.data?.buildings || [],
     setBuildings,
     getBuildings,
-    queue,
+    queue: queryCityBuildings?.data?.buildingQueue || undefined,
     setQueue,
     queueResearch,
     setQueueResearch,

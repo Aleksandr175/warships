@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Events\CityBuildingDataUpdatedEvent;
 use App\Http\Requests\Api\BuildRequest;
 use App\Models\BuildingDependency;
-use App\Models\BuildingProduction;
 use App\Models\BuildingResource;
 use App\Models\City;
 use App\Models\CityBuildingQueue;
@@ -38,13 +38,22 @@ class BuildingQueueService
             ]);
         }
 
-        if ($buildingId === config('constants.BUILDINGS.HOUSES')) {
-            $additionalPopulation = BuildingProduction::where('lvl', $buildingQueue->lvl)->where('resource', 'population')->first();
+        $resources = CityBuildingQueueResource::where('city_building_queue_id', $buildingQueue['id'])->get();
 
-            $city->increment('population', $additionalPopulation->qty);
+        foreach ($resources as $resource) {
+            $resource->delete();
         }
 
         $city->buildingQueue()->delete();
+
+        $this->sendCityBuildingDataUpdatedEvent($city->user_id, $city);
+    }
+
+    public function sendCityBuildingDataUpdatedEvent($userId, $city): void
+    {
+        $cityBuildings = $city->buildings;
+
+        CityBuildingDataUpdatedEvent::dispatch($userId, $city->id, $cityBuildings);
     }
 
     public function canBuild($city, $buildingId): bool

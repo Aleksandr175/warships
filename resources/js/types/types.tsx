@@ -61,6 +61,11 @@ export interface ICityResource {
   qty: number;
 }
 
+export interface ICityBuildingsData {
+  buildings: ICityBuilding[];
+  buildingQueue: ICityBuildingQueue;
+}
+
 export interface ICityBuilding {
   buildingId: number;
   cityId: number;

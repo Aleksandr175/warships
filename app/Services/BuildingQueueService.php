@@ -59,6 +59,12 @@ class BuildingQueueService
     public function canBuild($city, $buildingId): bool
     {
         $cityBuilding = $city->building($buildingId);
+        $cityBuildingQueue = $city->buildingQueue;
+
+        // we can only have one building order in one time
+        if ($cityBuildingQueue && $cityBuildingQueue->id) {
+            return false;
+        }
 
         if ($cityBuilding && $cityBuilding->id) {
             $this->nextLvl = $cityBuilding->lvl + 1;

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   ICity,
-  ICityBuilding,
   ICityResource,
   ICityWarship,
   ICityWarshipQueue,
@@ -24,14 +23,12 @@ interface IProps {
   city: ICity;
   updateCityResources: (cityResources: ICityResource[]) => void;
   cityResources: ICityResource[];
-  buildings: ICityBuilding[];
 }
 
 export const Warships = ({
   city,
   updateCityResources,
   cityResources,
-  buildings,
 }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
 
@@ -101,7 +98,6 @@ export const Warships = ({
             cityResources={cityResources}
             getWarships={getWarships}
             setQueue={setWarshipQueue}
-            buildings={buildings}
             researches={dictionaries.userResearches}
             getQty={getQty}
             setWarships={setWarships}

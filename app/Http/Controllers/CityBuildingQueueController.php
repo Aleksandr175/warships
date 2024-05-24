@@ -27,7 +27,7 @@ class CityBuildingQueueController extends Controller
         if ($queue && $queue->id) {
             return [
                 'buildings'     => BuildingResource::collection($city->buildings),
-                'queue'         => new CityBuildingQueueResource($city->buildingQueue),
+                'buildingQueue' => new CityBuildingQueueResource($city->buildingQueue),
                 'cityResources' => CityResourceV2Resource::collection($cityResources)
             ];
         }

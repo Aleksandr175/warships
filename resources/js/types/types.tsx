@@ -51,7 +51,6 @@ export interface IResourceDictionary {
 
 export interface ICityResources {
   cityResources?: ICityResource[];
-  buildings: ICityBuilding[] | undefined;
   city: ICity;
 }
 
@@ -62,8 +61,10 @@ export interface ICityResource {
 }
 
 export interface ICityBuildingsData {
+  cityId?: number;
+  userId?: number;
   buildings: ICityBuilding[];
-  buildingQueue: ICityBuildingQueue;
+  buildingQueue: ICityBuildingQueue | undefined;
 }
 
 export interface ICityBuilding {

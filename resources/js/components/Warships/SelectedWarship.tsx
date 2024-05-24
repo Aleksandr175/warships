@@ -25,6 +25,7 @@ import { InputNumber } from "../Common/InputNumber";
 import { Controller, useForm } from "react-hook-form";
 import { FieldErrors } from "react-hook-form/dist/types/errors";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
+import { useBuildings } from "../Buildings/hooks/useBuildings";
 
 interface IProps {
   selectedWarshipId: number;
@@ -37,7 +38,6 @@ interface IProps {
   setQueue: (q: ICityWarshipQueue[]) => void;
   getQty: (warshipId: number) => number;
   researches: IUserResearch[];
-  buildings: ICityBuilding[];
   hasAvailableSlots: boolean;
   warshipImprovements?: IWarshipImprovement[];
 }
@@ -56,7 +56,6 @@ type IGroupedCityResources = Record<number, ICityResource[]>;
 export const SelectedWarship = ({
   selectedWarshipId,
   cityId,
-  buildings,
   updateCityResources,
   cityResources,
   setQueue,
@@ -67,6 +66,7 @@ export const SelectedWarship = ({
   warshipImprovements,
 }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
+  const { buildings } = useBuildings({ cityId });
 
   const dictionaries = queryDictionaries.data;
 

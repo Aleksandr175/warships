@@ -12,7 +12,6 @@ import styled, { css } from "styled-components";
 import { CityResources } from "./CityResources";
 import { Warships } from "./Warships/Warships";
 import { Map } from "./Map/Map";
-import { SendingFleet } from "./SendingFleet/SendingFleet";
 import { useAppLogic } from "./hooks/useAppLogic";
 import { Fleets } from "./Fleets";
 import { Icon } from "./Common/Icon";
@@ -27,15 +26,10 @@ const App = () => {
     isLoading,
     city,
     cityResources,
-    setQueue,
-    queue,
     updateCityResources,
     cities,
     setQueueResearch,
     queueResearch,
-    buildings,
-    setBuildings,
-    getBuildings,
     getResearches,
     fleets,
     fleetDetails,
@@ -160,11 +154,7 @@ const App = () => {
               <div className={"row"}>
                 <div className={"col-12"}>
                   <SColumn>
-                    <CityResources
-                      cityResources={cityResources!}
-                      buildings={buildings}
-                      city={city}
-                    />
+                    <CityResources cityResources={cityResources!} city={city} />
                   </SColumn>
                 </div>
               </div>
@@ -181,11 +171,6 @@ const App = () => {
                         city={city}
                         updateCityResources={updateCityResources}
                         cityResources={city.resources}
-                        getBuildings={getBuildings}
-                        buildings={buildings}
-                        setBuildings={setBuildings}
-                        setQueue={setQueue}
-                        queue={queue}
                         // TODO: userResearches should not be in dictionaries
                         researches={dictionaries.userResearches}
                       />
@@ -213,7 +198,6 @@ const App = () => {
                         city={city}
                         updateCityResources={updateCityResources}
                         cityResources={city.resources}
-                        buildings={buildings!}
                       />
                     }
                   />

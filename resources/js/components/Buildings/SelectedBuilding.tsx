@@ -13,23 +13,18 @@ import {
   IBuilding,
   IBuildingResource,
   ICity,
-  ICityBuilding,
-  ICityBuildingQueue,
   ICityResource,
   IUserResearch,
 } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
+import { useBuildings } from "./hooks/useBuildings";
 
 interface IProps {
   selectedBuildingId: number;
   city: ICity;
   updateCityResources: (cityResources: ICityResource[]) => void;
   cityResources: ICityResource[];
-  buildings: ICityBuilding[] | undefined;
-  setBuildings: (buildings: ICityBuilding[]) => void;
-  queue?: ICityBuildingQueue;
-  setQueue: (q: ICityBuildingQueue | undefined) => void;
   researches: IUserResearch[];
   timeLeft: number;
   getLvl: (buildingId: number) => number;
@@ -37,18 +32,18 @@ interface IProps {
 
 export const SelectedBuilding = ({
   selectedBuildingId,
-  buildings,
-  setBuildings,
   city,
   updateCityResources,
   cityResources,
-  queue,
-  setQueue,
   researches,
   timeLeft,
   getLvl,
 }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
+
+  const { buildings, buildingQueue, updateCityBuildingData } = useBuildings({
+    cityId: city.id,
+  });
 
   const dictionaries = queryDictionaries.data;
 
@@ -76,8 +71,11 @@ export const SelectedBuilding = ({
         buildingId,
       })
       .then((response) => {
-        setBuildings(response.data.buildings);
-        setQueue(response.data.buildingQueue);
+        updateCityBuildingData({
+          buildings: response.data.buildings,
+          buildingQueue: response.data.buildingQueue,
+        });
+        // TODO: add hook for resources!
         updateCityResources(response.data.cityResources);
       });
   };
@@ -88,16 +86,19 @@ export const SelectedBuilding = ({
         cityId: city.id,
       })
       .then((response) => {
-        setBuildings(response.data.buildings);
-        setQueue(undefined);
+        console.log("build...");
+        updateCityBuildingData({
+          buildings: response.data.buildings,
+          buildingQueue: undefined,
+        });
 
         updateCityResources(response.data.cityResources);
       });
   };
 
   const isCurrentBuildingInProcess =
-    queue && queue.buildingId === selectedBuildingId;
-  const isSomeBuildingInProcess = queue && queue.buildingId > 0;
+    buildingQueue && buildingQueue.buildingId === selectedBuildingId;
+  const isSomeBuildingInProcess = buildingQueue && buildingQueue.buildingId > 0;
 
   const {
     hasRequirements,
@@ -156,7 +157,9 @@ export const SelectedBuilding = ({
           <Card
             objectId={selectedBuilding.id}
             labelText={lvl}
-            timer={queue?.buildingId === selectedBuildingId ? timeLeft : 0}
+            timer={
+              buildingQueue?.buildingId === selectedBuildingId ? timeLeft : 0
+            }
             imagePath={"buildings"}
           />
         </SCardWrapper>

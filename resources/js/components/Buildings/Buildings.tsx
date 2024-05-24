@@ -1,42 +1,29 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  ICity,
-  ICityBuilding,
-  ICityBuildingQueue,
-  ICityResource,
-  IUserResearch,
-} from "../../types/types";
+import { ICity, ICityResource, IUserResearch } from "../../types/types";
 import styled from "styled-components";
 import { Building } from "./Building";
 import { SContent, SH1 } from "../styles";
 import { getTimeLeft } from "../../utils";
 import { SelectedBuilding } from "./SelectedBuilding";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
+import { useBuildings } from "./hooks/useBuildings";
 
 interface IProps {
   city: ICity;
   updateCityResources: (cityResources: ICityResource[]) => void;
   cityResources: ICityResource[];
-  buildings: ICityBuilding[] | undefined;
-  setBuildings: (buildings: ICityBuilding[]) => void;
-  getBuildings: () => void;
-  queue?: ICityBuildingQueue;
-  setQueue: (q: ICityBuildingQueue | undefined) => void;
   researches: IUserResearch[];
 }
 
 export const Buildings = ({
-  buildings,
-  setBuildings,
-  getBuildings,
   city,
   updateCityResources,
   cityResources,
-  queue,
-  setQueue,
   researches,
 }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
+
+  const { buildings, buildingQueue } = useBuildings({ cityId: city.id });
 
   const dictionaries = queryDictionaries.data;
 
@@ -61,8 +48,8 @@ export const Buildings = ({
   };
 
   useEffect(() => {
-    if (getTimeLeft(queue?.deadline || "")) {
-      setTimeLeft(getTimeLeft(queue?.deadline || ""));
+    if (getTimeLeft(buildingQueue?.deadline || "")) {
+      setTimeLeft(getTimeLeft(buildingQueue?.deadline || ""));
 
       // @ts-ignore
       timer.current = setInterval(handleTimer, 1000);
@@ -73,15 +60,7 @@ export const Buildings = ({
     } else {
       setTimeLeft(0);
     }
-  }, [queue, selectedBuildingId]);
-
-  useEffect(() => {
-    // TODO strange decision
-    if (timeLeft === -1) {
-      clearInterval(timer.current);
-      getBuildings();
-    }
-  }, [timeLeft]);
+  }, [buildingQueue, selectedBuildingId]);
 
   const handleTimer = () => {
     setTimeLeft((lastTimeLeft) => {
@@ -100,16 +79,12 @@ export const Buildings = ({
       {selectedBuildingId && (
         <SelectedBuilding
           selectedBuildingId={selectedBuildingId}
-          buildings={buildings}
-          setBuildings={setBuildings}
           cityResources={cityResources}
           getLvl={getLvl}
           city={city}
           updateCityResources={updateCityResources}
-          setQueue={setQueue}
           researches={researches}
           timeLeft={timeLeft}
-          queue={queue}
         />
       )}
 
@@ -128,8 +103,8 @@ export const Buildings = ({
               key={item.id}
               building={item}
               timeLeft={
-                queue?.buildingId === item.id
-                  ? getTimeLeft(queue?.deadline || "")
+                buildingQueue?.buildingId === item.id
+                  ? getTimeLeft(buildingQueue?.deadline || "")
                   : 0
               }
               selected={selectedBuildingId === item.id}

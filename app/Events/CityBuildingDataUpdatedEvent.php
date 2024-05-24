@@ -14,7 +14,7 @@ class CityBuildingDataUpdatedEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $userId;
-    public $cityBuildings;
+    public $buildings;
     public $cityId;
 
     /**
@@ -24,7 +24,7 @@ class CityBuildingDataUpdatedEvent implements ShouldBroadcast
     {
         $this->userId        = $userId;
         $this->cityId        = $cityId;
-        $this->cityBuildings = BuildingResource::collection($cityBuildings);
+        $this->buildings = BuildingResource::collection($cityBuildings);
     }
 
     /**

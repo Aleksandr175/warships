@@ -11,6 +11,7 @@ import {
   IUserResearch,
   ICityResource,
   IFleets,
+  ICityBuildingsData,
 } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import Echo from "laravel-echo";
@@ -19,7 +20,7 @@ import { REFETCH_INTERVAL_MS } from "../../hooks/useCustomQuery";
 import { useFetchUserData } from "../../hooks/useFetchUserData";
 import { useFetchFleets } from "../../hooks/useFetchFleets";
 import { useQueryClient } from "@tanstack/react-query";
-import { useFetchCityBuildings } from "../../hooks/useFetchCityBuildings";
+import { useBuildings } from "../Buildings/hooks/useBuildings";
 
 export const useAppLogic = () => {
   const queryClient = useQueryClient();
@@ -28,12 +29,14 @@ export const useAppLogic = () => {
   const [cities, setCities] = useState<ICity[]>();
   const [cityResources, setCityResources] = useState<ICityResource[]>();
   const [isLoading, setIsLoading] = useState(true);
-  const [buildings, setBuildings] = useState<ICityBuilding[] | undefined>();
   const [researches, setResearches] = useState<IUserResearch[] | undefined>();
 
-  const [queue, setQueue] = useState<ICityBuildingQueue>();
   const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
   const [unreadMessagesNumber, setUnreadMessagesNumber] = useState<number>(0);
+
+  const { buildings, buildingQueue, updateCityBuildingData } = useBuildings({
+    cityId: city?.id,
+  });
 
   const setWebsockets = (userId: number): void => {
     console.log("connect to websockets..., userId: ", userId);
@@ -74,26 +77,8 @@ export const useAppLogic = () => {
       })
       .listen(
         "CityBuildingDataUpdatedEvent",
-        (newCityBuildings: {
-          cityId: number;
-          cityBuildings: ICityBuilding[];
-          userId: number;
-        }) => {
-          console.log(
-            "new buildings data",
-            newCityBuildings,
-            "city id:",
-            city?.id
-          );
-          queryClient.setQueryData(
-            ["/buildings?cityId=" + newCityBuildings.cityId],
-            (oldCityBuildings: ICityBuilding[]) => {
-              return {
-                buildings: newCityBuildings.cityBuildings,
-                buildingsQueue: null,
-              };
-            }
-          );
+        (newCityBuildings: ICityBuildingsData) => {
+          updateCityBuildingData(newCityBuildings);
         }
       )
       // just for test http://localhost/test-event
@@ -172,19 +157,7 @@ export const useAppLogic = () => {
     setCity(tempCity);
   };
 
-  const getBuildings = () => {
-    if (!city?.id) {
-      return;
-    }
-
-    httpClient.get("/buildings?cityId=" + city?.id).then((response) => {
-      setBuildings(response.data.buildings);
-      setQueue(response.data.buildingQueue);
-    });
-  };
-
   const queryFleets = useFetchFleets();
-  const queryCityBuildings = useFetchCityBuildings(city?.id);
 
   const getResearches = () => {
     httpClient.get("/researches").then((response) => {
@@ -217,11 +190,6 @@ export const useAppLogic = () => {
     fleetsIncoming: queryFleets?.data?.fleetsIncoming || [],
     dictionaries,
     updateCityResources,
-    buildings: queryCityBuildings?.data?.buildings || [],
-    setBuildings,
-    getBuildings,
-    queue: queryCityBuildings?.data?.buildingQueue || undefined,
-    setQueue,
     queueResearch,
     setQueueResearch,
     fleetDetails: queryFleets?.data?.fleetDetails || [],

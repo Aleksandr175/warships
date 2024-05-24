@@ -41,15 +41,15 @@ class AppServiceProvider extends ServiceProvider
             }
 
             if ($event->job->getQueue() === 'warshipQueue') {
-                WarshipQueueJob::dispatch()->onQueue('warshipQueue')->delay(now()->addSeconds(1));
+                WarshipQueueJob::dispatch()->onQueue('warshipQueue')->delay(now()->addSeconds(3));
             }
 
             if ($event->job->getQueue() === 'buildingQueue') {
-                BuildJob::dispatch()->onQueue('buildingQueue')->delay(now()->addSeconds(1));
+                BuildJob::dispatch()->onQueue('buildingQueue')->delay(now()->addSeconds(3));
             }
 
             if ($event->job->getQueue() === 'fleet') {
-                FleetJob::dispatch()->onQueue('fleet')->delay(now()->addSeconds(1));
+                FleetJob::dispatch()->onQueue('fleet')->delay(now()->addSeconds(3));
             }
 
             if ($event->job->getQueue() === 'pirateLogic') {
@@ -57,15 +57,15 @@ class AppServiceProvider extends ServiceProvider
             }
 
             if ($event->job->getQueue() === 'battle') {
-                BattleJob::dispatch()->onQueue('battle')->delay(now()->addSeconds(1));
+                BattleJob::dispatch()->onQueue('battle')->delay(now()->addSeconds(3));
             }
 
             if ($event->job->getQueue() === 'expedition') {
-                ExpeditionJob::dispatch()->onQueue('expedition')->delay(now()->addSeconds(1));
+                ExpeditionJob::dispatch()->onQueue('expedition')->delay(now()->addSeconds(3));
             }
 
             if ($event->job->getQueue() === 'refining') {
-                RefiningJob::dispatch()->onQueue('refining')->delay(now()->addSeconds(1));
+                RefiningJob::dispatch()->onQueue('refining')->delay(now()->addSeconds(3));
             }
         });
     }

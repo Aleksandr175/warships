@@ -122,17 +122,17 @@ export const useAppLogic = () => {
   const dictionaries = queryDictionaries.data;
 
   useEffect(() => {
-    httpClient.get("/user").then((response) => {
-      httpClient.get("/dictionaries").then((respDictionary) => {
-        setCity(response.data.data.cities[0]);
-        setCities(response.data.data.cities);
+    if (dictionaries) {
+      setUnreadMessagesNumber(dictionaries.unreadMessagesNumber);
+    }
+  }, [dictionaries]);
 
-        setUnreadMessagesNumber(respDictionary.data.unreadMessagesNumber);
-
-        setIsLoading(false);
-      });
-    });
-  }, []);
+  useEffect(() => {
+    if (queryUserData?.data) {
+      setCity(queryUserData.data.data.cities[0]);
+      setCities(queryUserData.data.data.cities);
+    }
+  }, [queryUserData?.data]);
 
   useEffect(() => {
     const cityInfo = cities?.find((c) => c.id === city?.id);
@@ -186,11 +186,9 @@ export const useAppLogic = () => {
   };
 
   return {
-    isLoading,
     city,
     cities,
     selectCity,
-    cityResources,
     fleets: queryFleets?.data?.fleets || [],
     fleetCitiesDictionary: queryFleets?.data?.cities || [],
     fleetsIncoming: queryFleets?.data?.fleetsIncoming || [],

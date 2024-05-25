@@ -151,6 +151,7 @@ export interface IDictionary {
     card: number;
     research: number;
   };
+  unreadMessagesNumber: number;
   messageTemplates: IMessageTemplate[];
   maxFleetNumbers: {
     trade: number;

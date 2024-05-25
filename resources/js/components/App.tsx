@@ -23,9 +23,7 @@ import { WarshipsImprovements } from "./WarshipsImprovements/WarshipsImprovement
 
 const App = () => {
   const {
-    isLoading,
     city,
-    cityResources,
     updateCityResources,
     cities,
     setQueueResearch,
@@ -41,10 +39,6 @@ const App = () => {
     unreadMessagesNumber,
     selectCity,
   } = useAppLogic();
-
-  if (isLoading) {
-    return <></>;
-  }
 
   return (
     <Router>

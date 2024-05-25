@@ -310,5 +310,6 @@ class DatabaseSeeder extends Seeder
         $this->call(BuildingQueueSlotSeeder::class);
         $this->call(WarshipImprovementRecipeSeeder::class);
         $this->call(WarshipImprovementSeeder::class);
+        $this->call(WarshipCombatMultipliersSeeder::class);
     }
 }

@@ -51,7 +51,7 @@ export interface IResourceDictionary {
 
 export interface ICityResources {
   cityResources?: ICityResource[];
-  city: ICity;
+  cityId: number;
 }
 
 export interface ICityResource {

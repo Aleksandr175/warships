@@ -1,26 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ICity, ICityResource, IUserResearch } from "../../types/types";
+import { ICity, IUserResearch } from "../../types/types";
 import styled from "styled-components";
 import { Building } from "./Building";
 import { SContent, SH1 } from "../styles";
 import { getTimeLeft } from "../../utils";
 import { SelectedBuilding } from "./SelectedBuilding";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
-import { useBuildings } from "./hooks/useBuildings";
+import { useBuildings } from "../hooks/useBuildings";
 
 interface IProps {
   city: ICity;
-  updateCityResources: (cityResources: ICityResource[]) => void;
-  cityResources: ICityResource[];
   researches: IUserResearch[];
 }
 
-export const Buildings = ({
-  city,
-  updateCityResources,
-  cityResources,
-  researches,
-}: IProps) => {
+export const Buildings = ({ city, researches }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
 
   const { buildings, buildingQueue } = useBuildings({ cityId: city.id });
@@ -79,10 +72,8 @@ export const Buildings = ({
       {selectedBuildingId && (
         <SelectedBuilding
           selectedBuildingId={selectedBuildingId}
-          cityResources={cityResources}
           getLvl={getLvl}
           city={city}
-          updateCityResources={updateCityResources}
           researches={researches}
           timeLeft={timeLeft}
         />

@@ -154,7 +154,7 @@ const App = () => {
               <div className={"row"}>
                 <div className={"col-12"}>
                   <SColumn>
-                    <CityResources cityResources={cityResources!} city={city} />
+                    <CityResources city={city} />
                   </SColumn>
                 </div>
               </div>
@@ -169,8 +169,6 @@ const App = () => {
                     element={
                       <Buildings
                         city={city}
-                        updateCityResources={updateCityResources}
-                        cityResources={city.resources}
                         // TODO: userResearches should not be in dictionaries
                         researches={dictionaries.userResearches}
                       />

@@ -1,15 +1,17 @@
 import React, { useRef } from "react";
-import { ICityResources } from "../types/types";
+import { ICity } from "../types/types";
 import { Icon } from "./Common/Icon";
 import styled from "styled-components";
 import { getCityResourceProductionCoefficient } from "../utils";
 import { useFetchDictionaries } from "../hooks/useFetchDictionaries";
-import { useBuildings } from "./Buildings/hooks/useBuildings";
+import { useBuildings } from "./hooks/useBuildings";
+import { useCityResources } from "./hooks/useCityResources";
 
-export const CityResources = ({ cityResources, city }: ICityResources) => {
+export const CityResources = ({ city }: { city: ICity }) => {
   const queryDictionaries = useFetchDictionaries();
 
   const { buildings } = useBuildings({ cityId: city.id });
+  const { cityResources } = useCityResources({ cityId: city.id });
 
   const dictionaries = queryDictionaries.data;
 

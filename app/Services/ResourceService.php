@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\CityResourcesDataUpdatedEvent;
 use App\Models\BuildingProduction;
 use App\Models\City;
 use App\Models\CityResource;
@@ -71,6 +72,13 @@ class ResourceService
             }
         }
 
-        //dd($buildingsInCity, $city);
+        $this->sendCityResourcesUpdatedEvent($city);
+    }
+
+    public function sendCityResourcesUpdatedEvent(City $city): void
+    {
+        $cityResources = $city->resources;
+
+        CityResourcesDataUpdatedEvent::dispatch($city->user_id, $city->id, $cityResources);
     }
 }

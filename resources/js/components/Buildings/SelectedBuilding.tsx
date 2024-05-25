@@ -13,18 +13,16 @@ import {
   IBuilding,
   IBuildingResource,
   ICity,
-  ICityResource,
   IUserResearch,
 } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
-import { useBuildings } from "./hooks/useBuildings";
+import { useBuildings } from "../hooks/useBuildings";
+import { useCityResources } from "../hooks/useCityResources";
 
 interface IProps {
   selectedBuildingId: number;
   city: ICity;
-  updateCityResources: (cityResources: ICityResource[]) => void;
-  cityResources: ICityResource[];
   researches: IUserResearch[];
   timeLeft: number;
   getLvl: (buildingId: number) => number;
@@ -33,8 +31,6 @@ interface IProps {
 export const SelectedBuilding = ({
   selectedBuildingId,
   city,
-  updateCityResources,
-  cityResources,
   researches,
   timeLeft,
   getLvl,
@@ -44,6 +40,12 @@ export const SelectedBuilding = ({
   const { buildings, buildingQueue, updateCityBuildingData } = useBuildings({
     cityId: city.id,
   });
+
+  const { cityResources } = useCityResources({
+    cityId: city.id,
+  });
+
+  const { updateCityResourcesData } = useCityResources({ cityId: city.id });
 
   const dictionaries = queryDictionaries.data;
 
@@ -72,11 +74,15 @@ export const SelectedBuilding = ({
       })
       .then((response) => {
         updateCityBuildingData({
+          cityId: response.data.cityId,
           buildings: response.data.buildings,
           buildingQueue: response.data.buildingQueue,
         });
-        // TODO: add hook for resources!
-        updateCityResources(response.data.cityResources);
+
+        updateCityResourcesData({
+          cityResources: response.data.cityResources,
+          cityId: response.data.cityId,
+        });
       });
   };
 
@@ -86,13 +92,16 @@ export const SelectedBuilding = ({
         cityId: city.id,
       })
       .then((response) => {
-        console.log("build...");
         updateCityBuildingData({
           buildings: response.data.buildings,
           buildingQueue: undefined,
+          cityId: response.data.cityId,
         });
 
-        updateCityResources(response.data.cityResources);
+        updateCityResourcesData({
+          cityResources: response.data.cityResources,
+          cityId: response.data.cityId,
+        });
       });
   };
 
@@ -122,7 +131,7 @@ export const SelectedBuilding = ({
 
   const isBuildingDisabled = (): boolean => {
     for (const resource of requiredResources) {
-      const cityResource = cityResources.find(
+      const cityResource = cityResources?.find(
         (cr) => cr.resourceId === resource.resourceId
       );
 

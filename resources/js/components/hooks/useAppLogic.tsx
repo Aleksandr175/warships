@@ -20,7 +20,8 @@ import { REFETCH_INTERVAL_MS } from "../../hooks/useCustomQuery";
 import { useFetchUserData } from "../../hooks/useFetchUserData";
 import { useFetchFleets } from "../../hooks/useFetchFleets";
 import { useQueryClient } from "@tanstack/react-query";
-import { useBuildings } from "../Buildings/hooks/useBuildings";
+import { useBuildings } from "./useBuildings";
+import { useCityResources } from "./useCityResources";
 
 export const useAppLogic = () => {
   const queryClient = useQueryClient();
@@ -34,7 +35,11 @@ export const useAppLogic = () => {
   const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
   const [unreadMessagesNumber, setUnreadMessagesNumber] = useState<number>(0);
 
-  const { buildings, buildingQueue, updateCityBuildingData } = useBuildings({
+  const { updateCityBuildingData } = useBuildings({
+    cityId: city?.id,
+  });
+
+  const { updateCityResourcesData } = useCityResources({
     cityId: city?.id,
   });
 
@@ -71,10 +76,21 @@ export const useAppLogic = () => {
           });
         }
       )
+      // TODO need?
       .listen("CityDataUpdatedEvent", (event: { cities: ICity[] }) => {
         console.log("new city data", event);
         setCities(event.cities);
       })
+      .listen(
+        "CityResourcesDataUpdatedEvent",
+        (newCityResourcesData: {
+          cityId: number;
+          cityResources: ICityResource[];
+        }) => {
+          console.log("new city resource data", newCityResourcesData);
+          updateCityResourcesData(newCityResourcesData);
+        }
+      )
       .listen(
         "CityBuildingDataUpdatedEvent",
         (newCityBuildings: ICityBuildingsData) => {
@@ -125,14 +141,12 @@ export const useAppLogic = () => {
   }, [cities]);
 
   useEffect(() => {
-    getCityResources();
     getResearches();
   }, [city]);
 
   // TODO: refactor it. Temporary solution for getting updates while Websockets isn't working
   useEffect(() => {
     const updateTimer = setInterval(() => {
-      getCityResources();
       getResearches();
     }, 5000);
 
@@ -140,14 +154,6 @@ export const useAppLogic = () => {
       clearTimeout(updateTimer);
     };
   }, [city]);
-
-  const getCityResources = () => {
-    if (!city) return;
-
-    httpClient.get("/city/" + city.id).then((response) => {
-      setCityResources(response.data.data);
-    });
-  };
 
   const updateCityResources = (cityResources: ICityResource[]) => {
     const tempCity = Object.assign({}, city);

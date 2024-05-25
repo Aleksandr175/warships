@@ -7,11 +7,15 @@ use Illuminate\Support\Facades\Auth;
 
 class CityController extends Controller
 {
-    public function getCityResources($cityId) {
+    public function getCityResources($cityId)
+    {
         $user = Auth::user();
 
         $cityResources = $user->cities()->where('id', $cityId)->first()->resources;
 
-        return CityResourceV2Resource::collection($cityResources);
+        return [
+            'cityId'        => (int)$cityId,
+            'cityResources' => CityResourceV2Resource::collection($cityResources)
+        ];
     }
 }

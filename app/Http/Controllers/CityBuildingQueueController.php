@@ -28,7 +28,8 @@ class CityBuildingQueueController extends Controller
             return [
                 'buildings'     => BuildingResource::collection($city->buildings),
                 'buildingQueue' => new CityBuildingQueueResource($city->buildingQueue),
-                'cityResources' => CityResourceV2Resource::collection($cityResources)
+                'cityResources' => CityResourceV2Resource::collection($cityResources),
+                'cityId'        => $cityId
             ];
         }
 
@@ -51,7 +52,8 @@ class CityBuildingQueueController extends Controller
             return [
                 'buildings'     => BuildingResource::collection($city->buildings),
                 'buildingQueue' => [],
-                'cityResources' => CityResourceV2Resource::collection($cityResources)
+                'cityResources' => CityResourceV2Resource::collection($cityResources),
+                'cityId'        => $city->id
             ];
         }
 

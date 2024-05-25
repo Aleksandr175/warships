@@ -25,7 +25,7 @@ import { InputNumber } from "../Common/InputNumber";
 import { Controller, useForm } from "react-hook-form";
 import { FieldErrors } from "react-hook-form/dist/types/errors";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
-import { useBuildings } from "../Buildings/hooks/useBuildings";
+import { useBuildings } from "../hooks/useBuildings";
 
 interface IProps {
   selectedWarshipId: number;

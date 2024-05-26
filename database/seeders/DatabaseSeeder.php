@@ -214,6 +214,17 @@ class DatabaseSeeder extends Seeder
             'coord_y'            => 1,
         ]);
 
+        \App\Models\City::factory(1)->create([
+            'id'                 => config('constants.DEFAULT_PIRATE_CITY_ID_2'),
+            'user_id'            => config('constants.DEFAULT_PIRATE_ID'),
+            'city_dictionary_id' => config('constants.CITY_TYPE_ID.PIRATE_BAY'),
+            'title'              => 'Pirate Bay',
+            'appearance_id'      => 2,
+            'archipelago_id'     => 2,
+            'coord_x'            => 2,
+            'coord_y'            => 1,
+        ]);
+
         \App\Models\CityResource::create([
             'city_id'     => config('constants.DEFAULT_PIRATE_CITY_ID'),
             'resource_id' => config('constants.RESOURCE_IDS.GOLD'),

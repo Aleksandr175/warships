@@ -5,6 +5,7 @@ use App\Models\Fleet;
 use App\Models\FleetDetail;
 use App\Models\FleetResource;
 use App\Models\RefiningQueue;
+use App\Models\Warship;
 use App\Services\PirateService;
 use App\Services\RefiningQueueService;
 use Illuminate\Support\Facades\Artisan;
@@ -53,9 +54,10 @@ Route::get('/server-start', function () {
 });
 
 Route::get('/test-battle', function (\App\Services\BattleService $battleService) {
+    // Add test fleet
     $fleet = Fleet::create([
         'city_id'        => config('constants.DEFAULT_USER_CITY_ID'),
-        'target_city_id' => config('constants.DEFAULT_PIRATE_CITY_ID'),
+        'target_city_id' => config('constants.DEFAULT_PIRATE_CITY_ID_2'),
         'speed'          => 70,
         'repeating'      => 0,
         'fleet_task_id'  => config('constants.FLEET_TASKS.ATTACK'),
@@ -78,17 +80,41 @@ Route::get('/test-battle', function (\App\Services\BattleService $battleService)
     FleetDetail::create([
         'fleet_id'   => $fleet->id,
         'warship_id' => config('constants.WARSHIPS.LUGGER'),
-        'qty'        => 20,
+        'qty'        => 30,
     ]);
     FleetDetail::create([
         'fleet_id'   => $fleet->id,
         'warship_id' => config('constants.WARSHIPS.CARAVEL'),
-        'qty'        => 10,
+        'qty'        => 20,
     ]);
     FleetDetail::create([
         'fleet_id'   => $fleet->id,
         'warship_id' => config('constants.WARSHIPS.GALERA'),
-        'qty'        => 5,
+        'qty'        => 10,
+    ]);
+
+    Warship::where('city_id', config('constants.DEFAULT_PIRATE_CITY_ID_2'))->delete();
+
+    // Add warships in pirate island for test
+    Warship::create([
+        'warship_id' => config('constants.WARSHIPS.LUGGER'),
+        'city_id'    => config('constants.DEFAULT_PIRATE_CITY_ID_2'),
+        'user_id'    => config('constants.DEFAULT_PIRATE_ID'),
+        'qty'        => 20
+    ]);
+
+    Warship::create([
+        'warship_id' => config('constants.WARSHIPS.CARAVEL'),
+        'city_id'    => config('constants.DEFAULT_PIRATE_CITY_ID_2'),
+        'user_id'    => config('constants.DEFAULT_PIRATE_ID'),
+        'qty'        => 10
+    ]);
+
+    Warship::create([
+        'warship_id' => config('constants.WARSHIPS.GALERA'),
+        'city_id'    => config('constants.DEFAULT_PIRATE_CITY_ID_2'),
+        'user_id'    => config('constants.DEFAULT_PIRATE_ID'),
+        'qty'        => 5
     ]);
 
     $battleService->handle($fleet);

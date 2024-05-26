@@ -2,6 +2,7 @@
 return [
     'DEFAULT_PIRATE_ID'      => 1,
     'DEFAULT_PIRATE_CITY_ID' => 212,
+    'DEFAULT_PIRATE_CITY_ID_2' => 214,
 
     'DEFAULT_USER_ID' => 5,
 

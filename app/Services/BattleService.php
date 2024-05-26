@@ -10,6 +10,7 @@ use App\Models\Fleet;
 use App\Models\FleetDetail;
 use App\Models\FleetResource;
 use App\Models\Message;
+use App\Models\WarshipCombatMultiplier;
 use App\Models\WarshipDictionary;
 use App\Models\WarshipImprovement;
 
@@ -81,23 +82,27 @@ class BattleService
 
             dump('Populated defending fleet details with bonuses: ', $defendingFleetDetails);
 
+            $multipliers = WarshipCombatMultiplier::getMultipliers();  // Retrieve multipliers once at the beginning of the battle
+
             // calculate rounds while we have warships on each side
             do {
-                $attackingForce = $this->calculateFleetAttack($attackingFleetDetails);
-                dump('Attacker Force: ', $attackingForce);
+                // Calculate attack force per warship type
+                $attackForces = $this->calculateFleetAttackForEachType($attackingFleetDetails, $fortress);
+                $defendForces = $this->calculateFleetAttackForEachType($defendingFleetDetails, $fortress);
 
-                $defendingForce = $this->calculateFleetAttack($defendingFleetDetails, $fortress);
-                dump('Defender Force: ', $defendingForce);
+                //dump('$attackForces', $attackForces);
+                //dump('$defendForces', $defendForces);
 
-                if ($attackingForce === 0 || $defendingForce === 0) {
-                    break;
-                }
+                // Distribute this attack force across enemy warships considering multipliers
+                $attackerDamage = $this->distributeDamage($attackForces, $defendingFleetDetails, $multipliers);
+                $defenderDamage = $this->distributeDamage($defendForces, $attackingFleetDetails, $multipliers);
 
-                $attackingDamageToEachType = $attackingForce / count($defendingWarships);
-                $defendingDamageToEachType = $defendingForce / count($attackingFleetDetails);
+                //dump('$attackerDamage', $attackerDamage);
+                //dump('$defenderDamage', $defenderDamage);
 
-                [$defendingFleetDetails, $logAttacking[$round]] = $this->shoot($attackingDamageToEachType, $defendingFleetDetails);
-                [$attackingFleetDetails, $logDefending[$round]] = $this->shoot($defendingDamageToEachType, $attackingFleetDetails);
+                // Apply the distributed damage
+                [$defendingFleetDetails, $logAttacking[$round]] = $this->shoot($attackerDamage, $defendingFleetDetails);
+                [$attackingFleetDetails, $logDefending[$round]] = $this->shoot($defenderDamage, $attackingFleetDetails);
 
                 $round++;
             } while (count($defendingFleetDetails) > 0 && count($attackingFleetDetails) > 0);
@@ -270,7 +275,58 @@ class BattleService
             // get warships for player's bay
             // TODO: do it later
         }
+    }
 
+    /**
+     * @param $attackForces
+     * @param $targetFleetDetails
+     * @param $multipliers
+     *
+     * We calculate damage from each attacker warship type to defender warship type,
+     * we use multipliers to calculate damage from each attacker warship type to defender warship type,
+     * we divide damage from each attacker warship type to defender warship type by number of defender warship types,
+     * because we want to distribute damage equally between defender warship types
+     *
+     * @return array
+     */
+    private function distributeDamage($attackForces, $targetFleetDetails, $multipliers): array
+    {
+        $damageDistribution = [];
+        $targetWarshipTypes = count($targetFleetDetails);
+
+        foreach ($attackForces as $attackerType => $force) {
+            foreach ($targetFleetDetails as $target) {
+                $multiplier = $multipliers[$attackerType][$target['warship_id']] ?? 1;
+
+                if (!isset($damageDistribution[$target['warship_id']])) {
+                    $damageDistribution[$target['warship_id']] = 0;
+                }
+                $damageDistribution[$target['warship_id']] += ceil($force * $multiplier / $targetWarshipTypes);
+            }
+        }
+
+        return $damageDistribution;
+    }
+
+    private function calculateFleetAttackForEachType($fleetDetails, $fortress = null)
+    {
+        $forces = [];
+        foreach ($fleetDetails as $detail) {
+            $forces[$detail['warship_id']] = $this->calculateIndividualWarshipAttack($detail, $fortress);
+        }
+
+        return $forces;
+    }
+
+    public function calculateIndividualWarshipAttack($fleetDetail, $fortress = null)
+    {
+        $attackForce = ceil($fleetDetail['qty']) * $fleetDetail['attack'];
+
+        if ($fortress && $fortress->lvl) {
+            $attackForce += floor($attackForce * (config('constants.FORTRESS_ATTACK_MULTIPLIER') + $fortress->lvl) / 100);
+        }
+
+        return $attackForce;
     }
 
     // get available capacity of fleet, we check if fleet already had some resources
@@ -318,6 +374,7 @@ class BattleService
         return $this->addWarshipsImprovementsBonuses($fleetDetails, $warshipsDictionary, $warshipImprovements, $researchImprovements);
     }
 
+    // improve attack / health / capacity of warships by cards bonuses
     public function addWarshipsImprovementsBonuses($fleetDetails, $warshipsDictionary, $warshipImprovements, $researchImprovements)
     {
         // TODO: add researches bonuses
@@ -377,45 +434,38 @@ class BattleService
     }
 
     /**
-     * @param $damageToEachWarshipType - int
-     * @param $warships
+     * @param array $damageDistribution
+     * @param array $warshipGroups
      *
      * @return array
      */
-    public function shoot($damageToEachWarshipType, $warshipGroups): array
+    public function shoot(array $damageDistribution, array $warshipGroups): array
     {
-        $restDamage = 0;
-        $log        = [];
-
-        //dump('SHOOT');
-
+        $log = [];
         for ($i = 0, $iMax = count($warshipGroups); $i < $iMax; $i++) {
-            $initialQty  = ceil($warshipGroups[$i]['qty']);
-            $wholeHealth = $warshipGroups[$i]['qty'] * $warshipGroups[$i]['health'];
-            $restDamage  += $damageToEachWarshipType;
-            $logDamage   = $restDamage;
+            $warshipType        = $warshipGroups[$i]['warship_id'];  // warship type we shoot in now
+            $initialQty         = ceil($warshipGroups[$i]['qty']);
+            $warshipGroupHealth = $warshipGroups[$i]['qty'] * $warshipGroups[$i]['health'];
 
-            // if we did 100 damage, but health was 80 -> it means that 20 damage will be done to next warship type
-            // we save 20 to $restDamage
-            if ($wholeHealth < $restDamage) {
-                $restDamage  -= $wholeHealth;
-                $wholeHealth = 0;
+            $damage    = $damageDistribution[$warshipGroups[$i]['warship_id']] ?? 0;
+            $logDamage = $damage;
+
+            if ($warshipGroupHealth < $damage) {
+                $warshipGroupHealth = 0;
             } else {
-                $wholeHealth -= $restDamage;
-                $restDamage  = 0;
+                $warshipGroupHealth -= $damage;
             }
 
-            $warshipGroups[$i]['qty'] = $wholeHealth / $warshipGroups[$i]['health'];
-            //dump('$warshipGroups[$i]', $warshipGroups[$i], $wholeHealth, $restDamage);
+            $warshipGroups[$i]['qty'] = $warshipGroupHealth / $warshipGroups[$i]['health'];
 
             $log[] = [
                 'qty'        => $initialQty,
                 'destroyed'  => $initialQty - ceil($warshipGroups[$i]['qty']),
-                'warship_id' => $warshipGroups[$i]['warship_id'],
+                'warship_id' => $warshipType,
                 'damage'     => $logDamage,
             ];
 
-            if ($wholeHealth === 0) {
+            if ($warshipGroupHealth === 0) {
                 array_splice($warshipGroups, $i, 1);
                 $i--;
                 $iMax--;

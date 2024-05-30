@@ -33,4 +33,9 @@ class WarshipDictionary extends Model
     {
         return $this->hasMany(WarshipResource::class, 'warship_id');
     }
+
+    public function multipliers()
+    {
+        return $this->hasMany(WarshipCombatMultiplier::class, 'warship_attacker_id');
+    }
 }

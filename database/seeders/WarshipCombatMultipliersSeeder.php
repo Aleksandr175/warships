@@ -24,9 +24,9 @@ class WarshipCombatMultipliersSeeder extends Seeder
             ['warship_attacker_id' => config('constants.WARSHIPS.FRIGATE'), 'warship_defender_id' => config('constants.WARSHIPS.GALERA'), 'multiplier' => 2.0],
             ['warship_attacker_id' => config('constants.WARSHIPS.FRIGATE'), 'warship_defender_id' => config('constants.WARSHIPS.BATTLESHIP'), 'multiplier' => 2.0],
 
-            ['warship_attacker_id' => config('constants.WARSHIPS.FRIGATE'), 'warship_defender_id' => config('constants.WARSHIPS.LUGGER'), 'multiplier' => 10.0],
-            ['warship_attacker_id' => config('constants.WARSHIPS.FRIGATE'), 'warship_defender_id' => config('constants.WARSHIPS.CARAVEL'), 'multiplier' => 5.0],
-            ['warship_attacker_id' => config('constants.WARSHIPS.FRIGATE'), 'warship_defender_id' => config('constants.WARSHIPS.GALERA'), 'multiplier' => 5.0],
+            ['warship_attacker_id' => config('constants.WARSHIPS.BATTLESHIP'), 'warship_defender_id' => config('constants.WARSHIPS.LUGGER'), 'multiplier' => 10.0],
+            ['warship_attacker_id' => config('constants.WARSHIPS.BATTLESHIP'), 'warship_defender_id' => config('constants.WARSHIPS.CARAVEL'), 'multiplier' => 5.0],
+            ['warship_attacker_id' => config('constants.WARSHIPS.BATTLESHIP'), 'warship_defender_id' => config('constants.WARSHIPS.GALERA'), 'multiplier' => 5.0],
         ];
 
         foreach ($multipliers as $multiplier) {

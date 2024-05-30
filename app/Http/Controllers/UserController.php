@@ -93,7 +93,7 @@ class UserController extends Controller
             'researchResources'        => ResearchResourceResource::collection($researchResources),
             'researchesMaxLevel'       => ResearchMaxLevelResource::collection($researchesMaxLevel),
             'userResearches'           => UserResearchResource::collection($userResearches),
-            'warshipsDictionary'       => WarshipDictionaryResource::collection($warshipsDictionary->load('requiredResources')),
+            'warshipsDictionary'       => WarshipDictionaryResource::collection($warshipsDictionary->load('requiredResources', 'multipliers')),
             'buildingsProduction'      => BuildingProductionsResource::collection($buildingProductions),
             'fleetTasksDictionary'     => FleetTaskDictionaryResource::collection($fleetTasksDictionary),
             'fleetStatusesDictionary'  => FleetStatusDictionaryResource::collection($fleetStatusesDictionary),

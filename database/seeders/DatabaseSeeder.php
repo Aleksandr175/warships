@@ -252,6 +252,7 @@ class DatabaseSeeder extends Seeder
         // Colonies for test
 
         \App\Models\City::factory(1)->create([
+            'id'                 => config('constants.DEFAULT_EMPTY_USER_CITY_ID'),
             'user_id'            => null,
             'city_dictionary_id' => config('constants.CITY_TYPE_ID.COLONY'),
             'title'              => 'Colony',

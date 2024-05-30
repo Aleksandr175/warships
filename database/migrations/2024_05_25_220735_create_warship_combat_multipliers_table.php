@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -19,9 +18,10 @@ return new class extends Migration
             $table->timestamps();
 
             // Foreign keys assuming 'warships' as the reference table for warship types
-            $table->foreign('warship_attacker_id')->references('id')->on('warships')->onDelete('cascade');
-            $table->foreign('warship_defender_id')->references('id')->on('warships')->onDelete('cascade');
-        });    }
+            $table->foreign('warship_attacker_id')->references('id')->on('warship_dictionary')->onDelete('cascade');
+            $table->foreign('warship_defender_id')->references('id')->on('warship_dictionary')->onDelete('cascade');
+        });
+    }
 
     /**
      * Reverse the migrations.

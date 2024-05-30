@@ -21,8 +21,6 @@ class WarshipDictionarySeeder extends Seeder
             'attack'      => 50,
             'speed'       => 10,
             'capacity'    => 100,
-            'gold'        => 100,
-            'population'  => 10,
             'time'        => (100 + 10) / 10,
             'health'      => 100,
         ]);
@@ -34,8 +32,6 @@ class WarshipDictionarySeeder extends Seeder
             'attack'      => 70,
             'speed'       => 5,
             'capacity'    => 500,
-            'gold'        => 200,
-            'population'  => 30,
             'time'        => (200 + 30) / 10,
             'health'      => 300,
         ]);
@@ -47,8 +43,6 @@ class WarshipDictionarySeeder extends Seeder
             'attack'      => 150,
             'speed'       => 12,
             'capacity'    => 200,
-            'gold'        => 300,
-            'population'  => 50,
             'time'        => (300 + 50) / 10,
             'health'      => 200,
         ]);
@@ -60,8 +54,6 @@ class WarshipDictionarySeeder extends Seeder
             'attack'      => 300,
             'speed'       => 8,
             'capacity'    => 300,
-            'gold'        => 1000,
-            'population'  => 200,
             'time'        => (1000 + 200) / 10,
             'health'      => 1000,
         ]);
@@ -73,8 +65,6 @@ class WarshipDictionarySeeder extends Seeder
             'attack'      => 700,
             'speed'       => 5,
             'capacity'    => 1000,
-            'gold'        => 3000,
-            'population'  => 500,
             'time'        => (3000 + 500) / 10,
             'health'      => 5000,
         ]);

@@ -213,6 +213,11 @@ export interface IWarship extends IBuilding {
   gold: number;
   population: number;
   requiredResources: IWarshipRequiredResource[];
+  multipliers: {
+    warshipAttackerId: number;
+    warshipDefenderId: number;
+    multiplier: number;
+  }[];
 }
 
 export interface IUserResearch {

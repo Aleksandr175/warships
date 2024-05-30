@@ -10,7 +10,6 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
 import {
-  ICityBuilding,
   ICityResource,
   ICityWarship,
   ICityWarshipQueue,
@@ -18,7 +17,6 @@ import {
   IWarship,
   IWarshipImprovement,
   IWarshipRequiredResource,
-  TImprovementType,
 } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
 import { InputNumber } from "../Common/InputNumber";
@@ -340,6 +338,21 @@ export const SelectedWarship = ({
                 );
               }
             )}
+          </>
+        )}
+
+        {selectedWarship.multipliers.length > 0 && (
+          <>
+            <SText>Attack Multipliers:</SText>
+            {selectedWarship.multipliers?.map((multiplier) => {
+              const oppositeWarship = getWarship(multiplier.warshipDefenderId);
+
+              return (
+                <SText key={multiplier.warshipDefenderId}>
+                  Against {oppositeWarship?.title}: x{multiplier.multiplier}
+                </SText>
+              );
+            })}
           </>
         )}
       </div>

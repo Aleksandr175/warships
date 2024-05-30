@@ -19,7 +19,7 @@ return new class extends Migration
 
             $table->integer('qty');
 
-            $table->foreign('warship_id')->references('id')->on('warships')->onDelete('cascade');
+            $table->foreign('warship_id')->references('id')->on('warship_dictionary')->onDelete('cascade');
             $table->foreign('resource_id')->references('id')->on('resources')->onDelete('cascade');
 
             $table->timestamps();

@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Events\CityWarshipsDataUpdatedEvent;
 use App\Models\Adventure;
 use App\Models\Archipelago;
+use App\Models\BuildingQueueSlot;
 use App\Models\City;
 use App\Models\Warship;
 use App\Models\WarshipDictionary;
@@ -13,7 +15,7 @@ class WarshipService
     public function generateWarshipsForAdventureCities(Adventure $adventure, Archipelago $newArchipelago)
     {
         $adventureLvl = $adventure->adventure_level;
-        $difficult = (1.15 ** $adventureLvl);
+        $difficult    = (1.15 ** $adventureLvl);
 
         $cities = City::where('archipelago_id', $newArchipelago->id)->get();
 
@@ -24,8 +26,8 @@ class WarshipService
                     // nothing
                     break;
                 case config('constants.CITY_TYPE_ID.ADVENTURE_VILLAGE'):
-                    $baseAmount = 3 * $difficult;
-                    $luggerAmount    = random_int(1, $baseAmount);
+                    $baseAmount    = 3 * $difficult;
+                    $luggerAmount  = random_int(1, $baseAmount);
                     $caravelAmount = random_int(1, $baseAmount * 0.7);
 
                     if ($luggerAmount) {
@@ -48,11 +50,11 @@ class WarshipService
 
                     break;
                 case config('constants.CITY_TYPE_ID.ADVENTURE_RICH_CITY'):
-                    $baseAmount = 8 * $difficult;
-                    $luggerAmount    = random_int(1, $baseAmount);
-                    $caravelAmount = random_int(1, $baseAmount * 0.7);
-                    $galeraAmount = random_int(0, $baseAmount * 0.5);
-                    $frigateAmount = random_int(0, $baseAmount * 0.3);
+                    $baseAmount       = 8 * $difficult;
+                    $luggerAmount     = random_int(1, $baseAmount);
+                    $caravelAmount    = random_int(1, $baseAmount * 0.7);
+                    $galeraAmount     = random_int(0, $baseAmount * 0.5);
+                    $frigateAmount    = random_int(0, $baseAmount * 0.3);
                     $battleshipAmount = random_int(0, $baseAmount * 0.1);
 
                     if ($luggerAmount) {
@@ -102,10 +104,10 @@ class WarshipService
 
                     break;
                 case config('constants.CITY_TYPE_ID.ADVENTURE_PIRATE_BAY'):
-                    $baseAmount = 5 * $difficult;
-                    $luggerAmount    = random_int(1, $baseAmount);
+                    $baseAmount    = 5 * $difficult;
+                    $luggerAmount  = random_int(1, $baseAmount);
                     $caravelAmount = random_int(1, $baseAmount * 0.7);
-                    $galeraAmount = random_int(0, $baseAmount * 0.5);
+                    $galeraAmount  = random_int(0, $baseAmount * 0.5);
                     $frigateAmount = random_int(0, $baseAmount * 0.3);
 
                     if ($luggerAmount) {
@@ -150,7 +152,8 @@ class WarshipService
     }
 
     // get quantity of warships we can build in city
-    public function hasResourceToBuildWarships(City $city, $warshipId, $qtyToBuild) {
+    public function hasResourceToBuildWarships(City $city, $warshipId, $qtyToBuild)
+    {
         $warshipDict   = WarshipDictionary::find($warshipId)->load('requiredResources');
         $cityResources = $city->resources;
 
@@ -178,12 +181,36 @@ class WarshipService
         return $maxBuildableQty;
     }
 
-    public function subtractResourcesForWarships(int $cityId, WarshipDictionary $warshipDict, int $qty): void {
+    public function subtractResourcesForWarships(int $cityId, WarshipDictionary $warshipDict, int $qty): void
+    {
         $cityService = new CityService();
 
         foreach ($warshipDict->requiredResources as $requiredResource) {
             $requiredResourceQty = $requiredResource->qty * $qty * (-1);
             $cityService->addResourceToCity($cityId, $requiredResource->resource_id, $requiredResourceQty);
         }
+    }
+
+    public function sendCityWarshipsDataUpdatedEvent($userId, $cityId, $warships, $warshipQueue, $warshipSlots): void
+    {
+        CityWarshipsDataUpdatedEvent::dispatch($userId, $cityId, $warships, $warshipQueue, $warshipSlots);
+    }
+
+    public function getMaxWarshipSlots(City $city): int
+    {
+        $maxWarshipSlots  = 0;
+        $shipyardBuilding = $city->building(config('constants.BUILDINGS.SHIPYARD'));
+
+        if ($shipyardBuilding) {
+            $lvl = $shipyardBuilding->lvl;
+
+            $slotsData = BuildingQueueSlot::slots($shipyardBuilding->building_id, $lvl);
+
+            if ($slotsData) {
+                $maxWarshipSlots = $slotsData->slots;
+            }
+        }
+
+        return $maxWarshipSlots;
     }
 }

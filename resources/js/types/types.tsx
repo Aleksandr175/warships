@@ -73,6 +73,14 @@ export interface ICityBuilding {
   lvl: number;
 }
 
+export interface ICityWarshipsData {
+  cityId: number;
+  warships?: ICityWarship[];
+  warshipSlots?: number;
+  warshipImprovements?: IWarshipImprovement[];
+  warshipQueue?: ICityWarshipQueue[];
+}
+
 export interface ICityWarship {
   warshipId: number;
   cityId: number;

@@ -186,11 +186,7 @@ const App = () => {
                   <Route
                     path={"warships"}
                     element={
-                      <Warships
-                        city={city}
-                        updateCityResources={updateCityResources}
-                        cityResources={city.resources}
-                      />
+                      <Warships city={city} cityResources={city.resources} />
                     }
                   />
                   <Route

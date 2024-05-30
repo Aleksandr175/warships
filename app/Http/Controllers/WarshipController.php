@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CityWarshipQueueResource;
 use App\Http\Resources\WarshipImprovementResource;
 use App\Http\Resources\WarshipResource;
-use App\Models\BuildingQueueSlot;
 use App\Models\City;
+use App\Services\WarshipService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,19 +23,7 @@ class WarshipController extends Controller
             return abort(403);
         }
 
-        $maxWarshipSlots = 0;
-
-        $shipyardBuilding = $city->building(config('constants.BUILDINGS.SHIPYARD'));
-
-        if ($shipyardBuilding) {
-            $lvl = $shipyardBuilding->lvl;
-
-            $slotsData = BuildingQueueSlot::slots($shipyardBuilding->building_id, $lvl);
-
-            if ($slotsData) {
-                $maxWarshipSlots = $slotsData->slots;
-            }
-        }
+        $maxWarshipSlots = (new WarshipService())->getMaxWarshipSlots($city);
 
         $warshipImprovements = $user->warshipImprovements;
 
@@ -43,7 +31,7 @@ class WarshipController extends Controller
             return [
                 'warships'            => $city->warships ? WarshipResource::collection($city->warships) : [],
                 'warshipSlots'        => $maxWarshipSlots,
-                'queue'               => $city->warshipQueue && count($city->warshipQueue) ? CityWarshipQueueResource::collection($city->warshipQueue) : [],
+                'warshipQueue'        => $city->warshipQueue && count($city->warshipQueue) ? CityWarshipQueueResource::collection($city->warshipQueue) : [],
                 'warshipImprovements' => WarshipImprovementResource::collection($warshipImprovements),
             ];
         }

@@ -17,7 +17,7 @@ class WarshipQueueController extends Controller
         $data   = $request->only('cityId');
         $cityId = $data['cityId'];
 
-        $queue = $warshipQueueService->store($user->id, $request);
+        $warshipQueue = $warshipQueueService->store($user->id, $request);
 
         $city = City::where('id', $cityId)->where('user_id', $user->id)->first();
 
@@ -25,8 +25,9 @@ class WarshipQueueController extends Controller
 
         return [
             'warships'      => [],//BuildingResource::collection($city->buildings),
-            'queue'         => WarshipQueueResource::collection($queue),
-            'cityResources' => CityResourceV2Resource::collection($cityResources)
+            'warshipQueue'  => WarshipQueueResource::collection($warshipQueue),
+            'cityResources' => CityResourceV2Resource::collection($cityResources),
+            'cityId'        => $cityId
         ];
     }
 }

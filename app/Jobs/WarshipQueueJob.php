@@ -2,8 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Models\City;
 use App\Models\Warship;
 use App\Models\WarshipQueue;
+use App\Services\WarshipService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -45,14 +47,24 @@ class WarshipQueueJob implements ShouldQueue
                 $warshipInfo->increment('qty', $queue->qty);
             } else {
                 Warship::create([
-                    'user_id' => $queue->user_id,
+                    'user_id'    => $queue->user_id,
                     'warship_id' => $queue->warship_id,
-                    'city_id' => $queue->city_id,
-                    'qty' => $queue->qty
+                    'city_id'    => $queue->city_id,
+                    'qty'        => $queue->qty
                 ]);
             }
 
             $queue->delete();
+
+            $city = City::find($queue->city_id);
+
+            if ($city && $city->id) {
+                $maxWarshipSlots = (new WarshipService())->getMaxWarshipSlots($city);
+
+                // websockets, notification about warships updates
+                (new WarshipService())->sendCityWarshipsDataUpdatedEvent($queue->user_id, $queue->city_id, $city->warships, $city->warshipQueue, $maxWarshipSlots);
+            }
         }
     }
+
 }

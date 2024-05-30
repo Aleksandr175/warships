@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   ICity,
-  ICityBuilding,
-  ICityBuildingQueue,
   ICityFleet,
   ICityResearchQueue,
   IFleetWarshipsData,
@@ -12,6 +10,7 @@ import {
   ICityResource,
   IFleets,
   ICityBuildingsData,
+  ICityWarshipsData,
 } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import Echo from "laravel-echo";
@@ -22,14 +21,13 @@ import { useFetchFleets } from "../../hooks/useFetchFleets";
 import { useQueryClient } from "@tanstack/react-query";
 import { useBuildings } from "./useBuildings";
 import { useCityResources } from "./useCityResources";
+import { useCityWarships } from "./useCityWarships";
 
 export const useAppLogic = () => {
   const queryClient = useQueryClient();
 
   const [city, setCity] = useState<ICity>();
   const [cities, setCities] = useState<ICity[]>();
-  const [cityResources, setCityResources] = useState<ICityResource[]>();
-  const [isLoading, setIsLoading] = useState(true);
   const [researches, setResearches] = useState<IUserResearch[] | undefined>();
 
   const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
@@ -40,6 +38,10 @@ export const useAppLogic = () => {
   });
 
   const { updateCityResourcesData } = useCityResources({
+    cityId: city?.id,
+  });
+
+  const { updateCityWarshipsData } = useCityWarships({
     cityId: city?.id,
   });
 
@@ -89,6 +91,13 @@ export const useAppLogic = () => {
         }) => {
           console.log("new city resource data", newCityResourcesData);
           updateCityResourcesData(newCityResourcesData);
+        }
+      )
+      .listen(
+        "CityWarshipsDataUpdatedEvent",
+        (newCityWarshipsData: ICityWarshipsData) => {
+          console.log("new city warships data", newCityWarshipsData);
+          updateCityWarshipsData(newCityWarshipsData);
         }
       )
       .listen(

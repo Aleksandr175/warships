@@ -11,8 +11,6 @@ import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
 import {
   ICityResource,
-  ICityWarship,
-  ICityWarshipQueue,
   IUserResearch,
   IWarship,
   IWarshipImprovement,
@@ -24,16 +22,12 @@ import { Controller, useForm } from "react-hook-form";
 import { FieldErrors } from "react-hook-form/dist/types/errors";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import { useBuildings } from "../hooks/useBuildings";
+import { useCityWarships } from "../hooks/useCityWarships";
+import { useCityResources } from "../hooks/useCityResources";
 
 interface IProps {
   selectedWarshipId: number;
   cityId: number;
-  updateCityResources: (cityResources: ICityResource[]) => void;
-  cityResources: ICityResource[];
-  setWarships: (warships: ICityWarship[]) => void;
-  getWarships: () => void;
-  queue?: ICityWarshipQueue[];
-  setQueue: (q: ICityWarshipQueue[]) => void;
   getQty: (warshipId: number) => number;
   researches: IUserResearch[];
   hasAvailableSlots: boolean;
@@ -54,17 +48,18 @@ type IGroupedCityResources = Record<number, ICityResource[]>;
 export const SelectedWarship = ({
   selectedWarshipId,
   cityId,
-  updateCityResources,
-  cityResources,
-  setQueue,
   researches,
   getQty,
-  setWarships,
   hasAvailableSlots,
   warshipImprovements,
 }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
   const { buildings } = useBuildings({ cityId });
+  const { updateCityWarshipsData, warships } = useCityWarships({ cityId });
+
+  const { updateCityResourcesData, cityResources = [] } = useCityResources({
+    cityId,
+  });
 
   const dictionaries = queryDictionaries.data;
 
@@ -151,6 +146,7 @@ export const SelectedWarship = ({
     }, Infinity);
   };
 
+  /* TODO: fix thet, it is not updated after press create */
   const availableWarships = calculateAvailableWarships(
     cityResources,
     requiredResources
@@ -168,9 +164,15 @@ export const SelectedWarship = ({
         qty,
       })
       .then((response) => {
-        setWarships(response.data.warships);
-        setQueue(response.data.queue);
-        updateCityResources(response.data.cityResources);
+        updateCityWarshipsData({
+          cityId,
+          warshipQueue: response.data.warshipQueue,
+        });
+
+        updateCityResourcesData({
+          cityId,
+          cityResources: response.data.cityResources,
+        });
       });
   }
 

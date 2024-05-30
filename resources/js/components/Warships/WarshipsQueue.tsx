@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ICityWarshipQueue } from "../../types/types";
+import React, { useEffect, useRef } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -7,50 +6,48 @@ import { SH2 } from "../styles";
 import styled from "styled-components";
 import { convertSecondsToTime, getTimeLeft } from "../../utils";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
+import { useCityWarships } from "../hooks/useCityWarships";
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
 interface IProps {
-  queue?: ICityWarshipQueue[];
-  sync: () => void;
-  warshipSlots: number;
+  cityId: number;
 }
 
-export const WarshipsQueue = ({ queue, sync, warshipSlots }: IProps) => {
+export const WarshipsQueue = ({ cityId }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
 
   const dictionaries = queryDictionaries.data;
 
+  const { warshipQueue, warshipSlots, updateCityWarshipsData } =
+    useCityWarships({ cityId });
+
   const timer = useRef();
-  const [tempQueue, setTempQueue] = useState(queue || []);
 
   useEffect(() => {
-    setTempQueue(queue || []);
-
     // @ts-ignore
     timer.current = setInterval(handleTimer, 1000);
 
     return () => {
       clearInterval(timer.current);
     };
-  }, [queue]);
+  }, []);
 
   function handleTimer() {
-    const q: ICityWarshipQueue[] = tempQueue;
+    const queue = warshipQueue;
 
-    const newQ = q?.map((item) => {
+    const newQueue = queue?.map((item) => {
       if (item.time > 0) {
         item.time -= 1;
-      }
-
-      if (item.time === 0) {
-        sync();
       }
 
       return item;
     });
 
-    setTempQueue(newQ);
+    updateCityWarshipsData({
+      cityId,
+      warshipQueue: newQueue || [],
+    });
   }
 
   function getWarshipName(warshipId: number): string | undefined {
@@ -62,7 +59,7 @@ export const WarshipsQueue = ({ queue, sync, warshipSlots }: IProps) => {
   return (
     <>
       <SH2>
-        Warships Queue ({queue?.length} / {warshipSlots})
+        Warships Queue ({warshipQueue?.length} / {warshipSlots})
       </SH2>
       <STable>
         <div>
@@ -72,7 +69,7 @@ export const WarshipsQueue = ({ queue, sync, warshipSlots }: IProps) => {
           <SCellHeader>Deadline</SCellHeader>
         </div>
 
-        {queue?.map((item) => {
+        {warshipQueue?.map((item) => {
           const time = getTimeLeft(item.deadline);
 
           return (
@@ -86,7 +83,10 @@ export const WarshipsQueue = ({ queue, sync, warshipSlots }: IProps) => {
                 {getWarshipName(item.warshipId)}
               </SCell>
               <SCell>{item.qty}</SCell>
-              <SCell>{convertSecondsToTime(time > 0 ? time : 0)}</SCell>
+
+              {/* TODO: fix time */}
+
+              <SCell>{convertSecondsToTime(getTimeLeft(item.deadline))}</SCell>
               <SCell>
                 {dayjs(item.deadline).format("DD MMM, YYYY HH:mm:ss")}
               </SCell>

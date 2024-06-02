@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\ResearchesDataUpdatedEvent;
 use App\Http\Requests\Api\ResearchRequest;
 use App\Models\City;
 use App\Models\Research;
@@ -19,6 +20,41 @@ class ResearchQueueService
     protected $researchId;
     protected $city;
     protected $nextLvl = 1;
+
+    public function handle(ResearchQueue $researchQueue)
+    {
+        $researchId = $researchQueue['research_id'];
+        $user       = User::find($researchQueue['user_id']);
+        $research   = $user->research($researchId);
+        $queue      = $user->researchesQueue()->first();
+
+        if ($queue) {
+            // add lvl
+            if ($research) {
+                $research->increment('lvl');
+            } else {
+                // create new research
+                $user->researches()->create([
+                    'research_id' => $researchId,
+                    'user_id'     => $user->id,
+                    'lvl'         => 1,
+                ]);
+            }
+
+            $queue->resources()->delete();
+            $queue->delete();
+            $user->researchesQueue()->delete();
+
+            $this->sendResearchesDataUpdatedEvent($user);
+        }
+    }
+
+    public function sendResearchesDataUpdatedEvent(User $user): void
+    {
+        $researches = $user->researches;
+
+        ResearchesDataUpdatedEvent::dispatch($user->id, $researches);
+    }
 
     public function canResearch($city, $researchId): bool
     {

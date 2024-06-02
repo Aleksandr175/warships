@@ -14,28 +14,7 @@ class ResearchController extends Controller
     {
         $userId = Auth::user()->id;
 
-        $user  = User::where('id', $userId)->first();
-        $queue = $user->researchesQueue()->first();
-
-        if ($queue && $queue->id) {
-            if ($queue->deadline <= Carbon::now()) {
-                // add lvl
-                if ($user->research($queue->research_id)) {
-                    $user->research($queue->research_id)->increment('lvl');
-                } else {
-                    // create new research
-                    $user->researches()->create([
-                        'research_id' => $queue->research_id,
-                        'user_id'     => $userId,
-                        'lvl'         => 1,
-                    ]);
-                }
-
-                $queue->resources()->delete();
-                $queue->delete();
-                $user->researchesQueue()->delete();
-            }
-        }
+        $user = User::where('id', $userId)->first();
 
         return [
             'researchQueue' => $user->researchesQueue ? new ResearchQueueResource($user->researchesQueue) : [],

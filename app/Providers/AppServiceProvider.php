@@ -8,6 +8,7 @@ use App\Jobs\ExpeditionJob;
 use App\Jobs\FleetJob;
 use App\Jobs\PirateJob;
 use App\Jobs\RefiningJob;
+use App\Jobs\ResearchJob;
 use App\Jobs\ResourceJob;
 use App\Jobs\WarshipQueueJob;
 use Illuminate\Queue\Events\JobProcessed;
@@ -66,6 +67,10 @@ class AppServiceProvider extends ServiceProvider
 
             if ($event->job->getQueue() === 'refining') {
                 RefiningJob::dispatch()->onQueue('refining')->delay(now()->addSeconds(3));
+            }
+
+            if ($event->job->getQueue() === 'researchQueue') {
+                ResearchJob::dispatch()->onQueue('researchQueue')->delay(now()->addSeconds(3));
             }
         });
     }

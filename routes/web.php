@@ -49,6 +49,7 @@ Route::get('/server-start', function () {
     \App\Jobs\BattleJob::dispatch()->onQueue('battle');
     \App\Jobs\ExpeditionJob::dispatch()->onQueue('expedition');
     \App\Jobs\RefiningJob::dispatch()->onQueue('refining');
+    \App\Jobs\ResearchJob::dispatch()->onQueue('researchQueue');
 
     return "Everything executed successfully!";
 });

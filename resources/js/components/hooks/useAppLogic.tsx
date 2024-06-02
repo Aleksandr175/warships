@@ -9,6 +9,7 @@ import {
   IFleets,
   ICityBuildingsData,
   ICityWarshipsData,
+  IResearchesData,
 } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import Echo from "laravel-echo";
@@ -39,6 +40,10 @@ export const useAppLogic = () => {
   });
 
   const { updateCityWarshipsData } = useCityWarships({
+    cityId: city?.id,
+  });
+
+  const { updateResearchesData } = useResearches({
     cityId: city?.id,
   });
 
@@ -101,6 +106,13 @@ export const useAppLogic = () => {
         "CityBuildingDataUpdatedEvent",
         (newCityBuildings: ICityBuildingsData) => {
           updateCityBuildingData(newCityBuildings);
+        }
+      )
+      .listen(
+        "ResearchesDataUpdatedEvent",
+        (newResearchesData: IResearchesData) => {
+          console.log("new researches data", newResearchesData);
+          updateResearchesData(newResearchesData);
         }
       )
       // just for test http://localhost/test-event

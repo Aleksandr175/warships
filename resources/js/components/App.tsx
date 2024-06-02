@@ -26,9 +26,6 @@ const App = () => {
     city,
     updateCityResources,
     cities,
-    setQueueResearch,
-    queueResearch,
-    getResearches,
     fleets,
     fleetDetails,
     fleetCitiesDictionary,
@@ -170,18 +167,7 @@ const App = () => {
                   />
                   <Route
                     path={"researches"}
-                    element={
-                      <Researches
-                        cityId={city.id}
-                        updateCityResources={updateCityResources}
-                        cityResources={city.resources}
-                        // TODO: userResearches should not be in dictionaries
-                        researches={dictionaries.userResearches}
-                        setQueue={setQueueResearch}
-                        queue={queueResearch}
-                        getResearches={getResearches}
-                      />
-                    }
+                    element={<Researches cityId={city.id} />}
                   />
                   <Route
                     path={"warships"}

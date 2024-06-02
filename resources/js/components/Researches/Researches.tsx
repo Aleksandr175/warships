@@ -1,38 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  ICityResearchQueue,
-  ICityResource,
-  IUserResearch,
-} from "../../types/types";
 import { Research } from "./Research";
 import { SContent, SH1 } from "../styles";
 import { getTimeLeft } from "../../utils";
 import styled from "styled-components";
 import { SelectedResearch } from "./SelectedResearch";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
+import { useResearches } from "../hooks/useResearches";
 
 interface IProps {
   cityId: number;
-  updateCityResources: (cityResources: ICityResource[]) => void;
-  cityResources: ICityResource[];
-  researches: IUserResearch[];
-  queue?: ICityResearchQueue;
-  setQueue: (q: ICityResearchQueue | undefined) => void;
-  getResearches: () => void;
 }
 
-export const Researches = ({
-  cityId,
-  updateCityResources,
-  cityResources,
-  researches,
-  queue,
-  setQueue,
-  getResearches,
-}: IProps) => {
+export const Researches = ({ cityId }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
 
   const dictionaries = queryDictionaries.data;
+
+  const { researchQueue, researches } = useResearches({
+    cityId,
+  });
 
   const [selectedResearchId, setSelectedResearchId] = useState(0);
   const [timeLeft, setTimeLeft] = useState<number>(0);
@@ -55,8 +41,8 @@ export const Researches = ({
   }
 
   useEffect(() => {
-    if (getTimeLeft(queue?.deadline || "")) {
-      setTimeLeft(getTimeLeft(queue?.deadline || ""));
+    if (getTimeLeft(researchQueue?.deadline || "")) {
+      setTimeLeft(getTimeLeft(researchQueue?.deadline || ""));
 
       // @ts-ignore
       timer.current = setInterval(handleTimer, 1000);
@@ -67,15 +53,7 @@ export const Researches = ({
     } else {
       setTimeLeft(0);
     }
-  }, [queue, selectedResearchId]);
-
-  useEffect(() => {
-    // TODO strange decision
-    if (timeLeft === -1) {
-      clearInterval(timer.current);
-      getResearches();
-    }
-  }, [timeLeft]);
+  }, [researchQueue, selectedResearchId]);
 
   function handleTimer() {
     setTimeLeft((lastTimeLeft) => {
@@ -94,12 +72,7 @@ export const Researches = ({
       {selectedResearchId && (
         <SelectedResearch
           selectedResearchId={selectedResearchId}
-          researches={researches}
           cityId={cityId}
-          updateCityResources={updateCityResources}
-          cityResources={cityResources}
-          queue={queue}
-          setQueue={setQueue}
           timeLeft={timeLeft}
           getLvl={getLvl}
         />
@@ -120,8 +93,8 @@ export const Researches = ({
               key={item.id}
               research={item}
               timeLeft={
-                queue?.researchId === item.id
-                  ? getTimeLeft(queue?.deadline || "")
+                researchQueue?.researchId === item.id
+                  ? getTimeLeft(researchQueue?.deadline || "")
                   : 0
               }
               selected={selectedResearchId === item.id}

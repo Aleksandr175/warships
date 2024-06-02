@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class ResearchController extends Controller
 {
-    public function get() {
+    public function get()
+    {
         $userId = Auth::user()->id;
 
-        $user = User::where('id', $userId)->first();
+        $user  = User::where('id', $userId)->first();
         $queue = $user->researchesQueue()->first();
 
         if ($queue && $queue->id) {
@@ -25,8 +26,8 @@ class ResearchController extends Controller
                     // create new research
                     $user->researches()->create([
                         'research_id' => $queue->research_id,
-                        'user_id' => $userId,
-                        'lvl' => 1,
+                        'user_id'     => $userId,
+                        'lvl'         => 1,
                     ]);
                 }
 
@@ -37,8 +38,8 @@ class ResearchController extends Controller
         }
 
         return [
-            'queue' => $user->researchesQueue ? new ResearchQueueResource($user->researchesQueue) : [],
-            'researches' => ResearchResource::collection($user->researches)
+            'researchQueue' => $user->researchesQueue ? new ResearchQueueResource($user->researchesQueue) : [],
+            'researches'    => ResearchResource::collection($user->researches)
         ];
     }
 }

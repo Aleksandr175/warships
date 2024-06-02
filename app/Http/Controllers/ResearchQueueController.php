@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Api\ResearchRequest;
 use App\Http\Resources\CityResourceV2Resource;
 use App\Http\Resources\ResearchQueueResource;
+use App\Http\Resources\ResearchResource;
 use App\Services\ResearchQueueService;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,9 +25,10 @@ class ResearchQueueController extends Controller
 
         if ($queue && $queue->id) {
             return [
-                'researches'    => [],//BuildingResource::collection($city->buildings),
-                'queue'         => new ResearchQueueResource($queue),
-                'cityResources' => CityResourceV2Resource::collection($cityResources)
+                'researches'    => ResearchResource::collection($user->researches),
+                'researchQueue' => new ResearchQueueResource($queue),
+                'cityResources' => CityResourceV2Resource::collection($cityResources),
+                'cityId'        => $cityId
             ];
         }
 
@@ -43,8 +45,10 @@ class ResearchQueueController extends Controller
             $cityResources = $city->resources;
 
             return [
-                'queue'         => [],
-                'cityResources' => CityResourceV2Resource::collection($cityResources)
+                'researches'    => ResearchResource::collection($user->researches),
+                'researchQueue' => [],
+                'cityResources' => CityResourceV2Resource::collection($cityResources),
+                'cityId'        => $city->id
             ];
         }
 

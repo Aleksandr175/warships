@@ -15,27 +15,23 @@ import {
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import { useFetchUserResources } from "../../hooks/useFetchUserResources";
+import { useCityResources } from "../hooks/useCityResources";
+import { useResearches } from "../hooks/useResearches";
 
 interface IProps {
   selectedResearchId: number;
   cityId: number;
-  updateCityResources: (cityResources: ICityResource[]) => void;
-  cityResources: ICityResource[];
-  queue?: ICityResearchQueue;
-  setQueue: (q: ICityResearchQueue | undefined) => void;
-  researches: IUserResearch[];
+  /*queue?: ICityResearchQueue;
+  setQueue: (q: ICityResearchQueue | undefined) => void;*/
   timeLeft: number;
   getLvl: (buildingId: number) => number;
 }
 
 export const SelectedResearch = ({
   selectedResearchId,
-  researches,
   cityId,
-  updateCityResources,
-  cityResources,
-  queue,
-  setQueue,
+  //queue,
+  //setQueue,
   timeLeft,
   getLvl,
 }: IProps) => {
@@ -48,6 +44,14 @@ export const SelectedResearch = ({
   }, []);
 
   const queryUserResources = useFetchUserResources();
+
+  const { updateResearchesData, researchQueue, researches } = useResearches({
+    cityId,
+  });
+
+  const { updateCityResourcesData, cityResources = [] } = useCityResources({
+    cityId,
+  });
 
   const userResources = queryUserResources?.data;
 
@@ -66,8 +70,8 @@ export const SelectedResearch = ({
   }
 
   const isCurrentResearchInProcess =
-    queue && queue.researchId === selectedResearchId;
-  const isSomeResearchInProcess = queue && queue.researchId > 0;
+    researchQueue && researchQueue.researchId === selectedResearchId;
+  const isSomeResearchInProcess = researchQueue && researchQueue.researchId > 0;
 
   const requiredResources = getResourcesForResearch(
     selectedResearchId,
@@ -123,9 +127,15 @@ export const SelectedResearch = ({
         researchId,
       })
       .then((response) => {
-        //setResearches(response.data.buildings);
-        setQueue(response.data.queue);
-        updateCityResources(response.data.cityResources);
+        updateResearchesData({
+          researches: response.data.researches,
+          researchQueue: response.data.researchQueue,
+        });
+
+        updateCityResourcesData({
+          cityResources: response.data.cityResources,
+          cityId: response.data.cityId,
+        });
       });
   }
 
@@ -133,8 +143,15 @@ export const SelectedResearch = ({
     httpClient
       .post("/researches/" + researchId + "/cancel")
       .then((response) => {
-        setQueue(undefined);
-        updateCityResources(response.data.cityResources);
+        updateResearchesData({
+          researches: response.data.researches,
+          researchQueue: response.data.researchQueue,
+        });
+
+        updateCityResourcesData({
+          cityResources: response.data.cityResources,
+          cityId: response.data.cityId,
+        });
       });
   }
 
@@ -165,7 +182,9 @@ export const SelectedResearch = ({
           <Card
             objectId={selectedResearch.id}
             labelText={lvl}
-            timer={queue?.researchId === selectedResearchId ? timeLeft : 0}
+            timer={
+              researchQueue?.researchId === selectedResearchId ? timeLeft : 0
+            }
             imagePath={"researches"}
           />
         </SCardWrapper>

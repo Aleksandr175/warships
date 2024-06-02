@@ -395,3 +395,10 @@ export interface IUserData {
     userId: number;
   };
 }
+
+export interface IResearchesData {
+  cityId?: number;
+  userId?: number;
+  researches: IUserResearch[];
+  researchQueue: ICityResearchQueue;
+}

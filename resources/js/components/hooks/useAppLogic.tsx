@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import {
   ICity,
   ICityFleet,
-  ICityResearchQueue,
   IFleetWarshipsData,
   IFleetIncoming,
   IMapCity,
-  IUserResearch,
   ICityResource,
   IFleets,
   ICityBuildingsData,
@@ -22,15 +20,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useBuildings } from "./useBuildings";
 import { useCityResources } from "./useCityResources";
 import { useCityWarships } from "./useCityWarships";
+import { useResearches } from "./useResearches";
 
 export const useAppLogic = () => {
   const queryClient = useQueryClient();
 
   const [city, setCity] = useState<ICity>();
   const [cities, setCities] = useState<ICity[]>();
-  const [researches, setResearches] = useState<IUserResearch[] | undefined>();
 
-  const [queueResearch, setQueueResearch] = useState<ICityResearchQueue>();
   const [unreadMessagesNumber, setUnreadMessagesNumber] = useState<number>(0);
 
   const { updateCityBuildingData } = useBuildings({
@@ -149,21 +146,6 @@ export const useAppLogic = () => {
     setCity(cityInfo);
   }, [cities]);
 
-  useEffect(() => {
-    getResearches();
-  }, [city]);
-
-  // TODO: refactor it. Temporary solution for getting updates while Websockets isn't working
-  useEffect(() => {
-    const updateTimer = setInterval(() => {
-      getResearches();
-    }, 5000);
-
-    return () => {
-      clearTimeout(updateTimer);
-    };
-  }, [city]);
-
   const updateCityResources = (cityResources: ICityResource[]) => {
     const tempCity = Object.assign({}, city);
 
@@ -173,13 +155,6 @@ export const useAppLogic = () => {
   };
 
   const queryFleets = useFetchFleets();
-
-  const getResearches = () => {
-    httpClient.get("/researches").then((response) => {
-      setResearches(response.data.researches);
-      setQueueResearch(response.data.queue);
-    });
-  };
 
   const selectCity = (c: ICity) => {
     setCity(c);
@@ -203,11 +178,8 @@ export const useAppLogic = () => {
     fleetsIncoming: queryFleets?.data?.fleetsIncoming || [],
     dictionaries,
     updateCityResources,
-    queueResearch,
-    setQueueResearch,
     fleetDetails: queryFleets?.data?.fleetDetails || [],
     userId,
-    getResearches,
     logout,
     unreadMessagesNumber,
   };

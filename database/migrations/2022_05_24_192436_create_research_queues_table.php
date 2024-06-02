@@ -25,7 +25,7 @@ class CreateResearchQueuesTable extends Migration
             $table->bigInteger('research_id')->unsigned();
             $table->foreign('research_id')->references('id')->on('research_dictionary');
 
-            $table->integer('lvl')->default(0);;
+            $table->integer('lvl')->default(0);
 
             $table->integer('time_required');
             $table->timestamp('deadline');

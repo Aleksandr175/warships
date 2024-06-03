@@ -6,6 +6,7 @@ use App\Http\Requests\Api\ResearchRequest;
 use App\Http\Resources\CityResourceV2Resource;
 use App\Http\Resources\ResearchQueueResource;
 use App\Http\Resources\ResearchResource;
+use App\Http\Resources\UserResourceResource;
 use App\Services\ResearchQueueService;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,6 +28,7 @@ class ResearchQueueController extends Controller
             return [
                 'researches'    => ResearchResource::collection($user->researches),
                 'researchQueue' => new ResearchQueueResource($queue),
+                'userResources' => UserResourceResource::collection($user->resources),
                 'cityResources' => CityResourceV2Resource::collection($cityResources),
                 'cityId'        => $cityId
             ];
@@ -47,6 +49,7 @@ class ResearchQueueController extends Controller
             return [
                 'researches'    => ResearchResource::collection($user->researches),
                 'researchQueue' => [],
+                'userResources' => UserResourceResource::collection($user->resources),
                 'cityResources' => CityResourceV2Resource::collection($cityResources),
                 'cityId'        => $city->id
             ];

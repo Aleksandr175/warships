@@ -3,6 +3,8 @@
 namespace App\Events;
 
 use App\Http\Resources\CityResourceV2Resource;
+use App\Http\Resources\UserResourceResource;
+use App\Http\Resources\UserShortResource;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -13,18 +15,20 @@ class CityResourcesDataUpdatedEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $userId;
+    public $user;
     public $cityResources;
     public $cityId;
+    public $userResources;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($userId, $cityId, $cityResources)
+    public function __construct($user, $cityId, $cityResources)
     {
-        $this->userId        = $userId;
+        $this->user          = new UserShortResource($user);
         $this->cityId        = $cityId;
         $this->cityResources = CityResourceV2Resource::collection($cityResources);
+        $this->userResources = UserResourceResource::collection($user->load('resources')->resources);
     }
 
     /**
@@ -34,6 +38,6 @@ class CityResourcesDataUpdatedEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('user.' . $this->userId);
+        return new PrivateChannel('user.' . $this->user->id);
     }
 }

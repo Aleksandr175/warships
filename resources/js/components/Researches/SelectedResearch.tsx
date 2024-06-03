@@ -2,27 +2,19 @@ import { Card } from "../Common/Card";
 import { SButtonsBlock, SH2, SParam, SParams, SText } from "../styles";
 import { Icon } from "../Common/Icon";
 import { convertSecondsToTime, getResourceSlug } from "../../utils";
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
-import {
-  ICityResearchQueue,
-  ICityResource,
-  IResearch,
-  IResearchResource,
-  IUserResearch,
-} from "../../types/types";
+import { IResearch, IResearchResource } from "../../types/types";
 import { useRequirementsLogic } from "../hooks/useRequirementsLogic";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
-import { useFetchUserResources } from "../../hooks/useFetchUserResources";
 import { useCityResources } from "../hooks/useCityResources";
 import { useResearches } from "../hooks/useResearches";
+import { useUserResources } from "../hooks/useUserResources";
 
 interface IProps {
   selectedResearchId: number;
   cityId: number;
-  /*queue?: ICityResearchQueue;
-  setQueue: (q: ICityResearchQueue | undefined) => void;*/
   timeLeft: number;
   getLvl: (buildingId: number) => number;
 }
@@ -30,21 +22,9 @@ interface IProps {
 export const SelectedResearch = ({
   selectedResearchId,
   cityId,
-  //queue,
-  //setQueue,
   timeLeft,
   getLvl,
 }: IProps) => {
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      queryUserResources.refetch();
-    }, 5000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  const queryUserResources = useFetchUserResources();
-
   const { updateResearchesData, researchQueue, researches } = useResearches({
     cityId,
   });
@@ -53,7 +33,7 @@ export const SelectedResearch = ({
     cityId,
   });
 
-  const userResources = queryUserResources?.data;
+  const { updateUserResourcesData, userResources } = useUserResources();
 
   const queryDictionaries = useFetchDictionaries();
 
@@ -96,7 +76,7 @@ export const SelectedResearch = ({
         (cr) => cr.resourceId === resource.resourceId
       );
 
-      const userResource = userResources?.resources.find(
+      const userResource = userResources?.find(
         (cr) => cr.resourceId === resource.resourceId
       );
 
@@ -136,6 +116,8 @@ export const SelectedResearch = ({
           cityResources: response.data.cityResources,
           cityId: response.data.cityId,
         });
+
+        updateUserResourcesData(response.data.userResources);
       });
   }
 
@@ -152,6 +134,8 @@ export const SelectedResearch = ({
           cityResources: response.data.cityResources,
           cityId: response.data.cityId,
         });
+
+        updateUserResourcesData(response.data.userResources);
       });
   }
 
@@ -162,7 +146,7 @@ export const SelectedResearch = ({
 
     if (knowledgeResourceId) {
       return (
-        userResources?.resources.find(
+        userResources?.find(
           (resource) => resource.resourceId === knowledgeResourceId
         )?.qty || 0
       );

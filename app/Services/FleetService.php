@@ -588,6 +588,8 @@ class FleetService
 
                     $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
 
+                    //$this->sendResourcesDataUpdatedEvent($user, $city);
+
                     if ($fleet->repeating) {
                         dump('expedition: fleet repeats expedition task, going to target');
                         // just repeat task

@@ -6,6 +6,7 @@ use App\Events\CityResourcesDataUpdatedEvent;
 use App\Models\BuildingProduction;
 use App\Models\City;
 use App\Models\CityResource;
+use App\Models\User;
 use Carbon\Carbon;
 
 class ResourceService
@@ -78,7 +79,8 @@ class ResourceService
     public function sendCityResourcesUpdatedEvent(City $city): void
     {
         $cityResources = $city->resources;
+        $user = User::find($city->user_id);
 
-        CityResourcesDataUpdatedEvent::dispatch($city->user_id, $city->id, $cityResources);
+        CityResourcesDataUpdatedEvent::dispatch($user, $city->id, $cityResources);
     }
 }

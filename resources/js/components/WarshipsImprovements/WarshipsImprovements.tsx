@@ -9,21 +9,13 @@ import { IUserResources, IWarshipImprovementRecipe } from "../../types/types";
 import { useMutateWarshipImprovement } from "../../hooks/useMutateWarshipImprovement";
 import { useFetchUserResources } from "../../hooks/useFetchUserResources";
 import { useQueryClient } from "@tanstack/react-query";
+import { useUserResources } from "../hooks/useUserResources";
 
 export const WarshipsImprovements = () => {
   const queryDictionaries = useFetchDictionaries();
   const queryWarshipImprovements = useFetchWarshipsImprovements();
-  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      queryUserResources.refetch();
-    }, 5000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  const queryUserResources = useFetchUserResources();
+  const { updateUserResourcesData, userResources } = useUserResources();
 
   const getCurrentImprovementValue = (recipe: IWarshipImprovementRecipe) => {
     return (
@@ -44,7 +36,7 @@ export const WarshipsImprovements = () => {
 
   const availableCards = (recipe: IWarshipImprovementRecipe) => {
     return (
-      userResources?.resources.find(
+      userResources?.find(
         (resource) => resource.resourceId === recipe.resourceId
       )?.qty || 0
     );
@@ -56,15 +48,7 @@ export const WarshipsImprovements = () => {
     data: queryWarshipImprovementData,
   } = useMutateWarshipImprovement({
     onSuccess: (resp) => {
-      queryClient.setQueryData(
-        ["/user/resources"],
-        (oldQueryData: IUserResources) => {
-          return {
-            ...oldQueryData,
-            resources: resp.data.userResources,
-          };
-        }
-      );
+      updateUserResourcesData(resp.data.userResources);
     },
   });
 
@@ -77,8 +61,6 @@ export const WarshipsImprovements = () => {
   const warshipImprovementRecipes =
     warshipImprovementData?.warshipImprovementRecipes ||
     queryWarshipImprovements.data?.warshipImprovementRecipes;
-
-  const userResources = queryUserResources?.data;
 
   if (queryWarshipImprovements.isLoading || queryDictionaries.isLoading) {
     return <></>;

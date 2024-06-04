@@ -81,6 +81,8 @@ class ResourceService
         $cityResources = $city->resources;
         $user = User::find($city->user_id);
 
-        CityResourcesDataUpdatedEvent::dispatch($user, $city->id, $cityResources);
+        if ($user) {
+            CityResourcesDataUpdatedEvent::dispatch($user, $city->id, $cityResources);
+        }
     }
 }

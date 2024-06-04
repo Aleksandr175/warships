@@ -28,7 +28,7 @@ class CityResourcesDataUpdatedEvent implements ShouldBroadcast
         $this->user          = new UserShortResource($user);
         $this->cityId        = $cityId;
         $this->cityResources = CityResourceV2Resource::collection($cityResources);
-        $this->userResources = UserResourceResource::collection($user->load('resources')->resources);
+        $this->userResources = UserResourceResource::collection($user->resources);
     }
 
     /**

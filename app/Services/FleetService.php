@@ -356,7 +356,6 @@ class FleetService
 
                     $deadline = Carbon::create($fleet->deadline)->addSeconds($duration);
 
-                    // check user of island (we can trade only with foreign islands)
                     $city       = City::find($fleet->city_id);
                     $targetCity = City::find($fleet->target_city_id);
                     $user       = User::find($city->user_id);
@@ -400,7 +399,6 @@ class FleetService
 
                     $targetCity = City::find($fleet->target_city_id);
 
-                    // TODO: change logic for trading
                     $cityService = new CityService();
                     $cityService->addResourceToCity($targetCity->id, config('constants.RESOURCE_IDS.GOLD'), $goldForIsland);
 
@@ -728,6 +726,8 @@ class FleetService
 
                     $city         = City::find($fleet->city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
+
+                    $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
 
                     $this->convertFleetDetailsToWarships($fleetDetails, $city);
 

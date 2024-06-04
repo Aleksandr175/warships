@@ -15,14 +15,6 @@ class MessageSeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i = 0; $i < 10; $i++) {
-            Message::create([
-                'user_id'     => config('constants.DEFAULT_USER_ID'),
-                'content'     => 'Test message',
-                'template_id' => config('constants.MESSAGE_TEMPLATE_IDS.FLEET_TRADE_START_TRADING'),
-            ]);
-        }
-
         Message::create([
             'user_id'     => config('constants.DEFAULT_USER_ID'),
             'content'     => 'Test message',

@@ -11,5 +11,9 @@ class WarshipQueue extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'deadline' => 'datetime',
+    ];
+
     protected $table = 'warship_queues';
 }

@@ -10,4 +10,8 @@ class CityBuildingQueue extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    protected $casts = [
+        'deadline' => 'datetime',
+    ];
 }

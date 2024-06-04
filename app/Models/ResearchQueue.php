@@ -17,6 +17,10 @@ class ResearchQueue extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'deadline' => 'datetime',
+    ];
+
     public function resources() {
         return $this->hasMany(ResearchQueueResource::class);
     }

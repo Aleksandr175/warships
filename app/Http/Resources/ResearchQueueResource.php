@@ -20,7 +20,7 @@ class ResearchQueueResource extends JsonResource
             'cityId'     => $this->city_id,
             'lvl'        => $this->lvl,
             'time'       => $this->time,
-            'deadline'   => $this->deadline
+            'deadline'   => $this->deadline ? $this->deadline->format('Y-m-d H:i:s') : null,
         ];
     }
 }

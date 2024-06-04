@@ -739,6 +739,7 @@ class FleetService
 
                 $user = User::find($city->user_id);
                 $this->sendFleetUpdatedEvent($user);
+                (new ResourceService())->sendCityResourcesUpdatedEvent($city);
             }
         }
 

@@ -359,6 +359,7 @@ class FleetService
                     // check user of island (we can trade only with foreign islands)
                     $city       = City::find($fleet->city_id);
                     $targetCity = City::find($fleet->target_city_id);
+                    $user       = User::find($city->user_id);
 
                     Message::create([
                         'user_id'        => $city->user_id,
@@ -367,6 +368,7 @@ class FleetService
                         'city_id'        => $city->id,
                         'target_city_id' => $targetCity->id,
                     ]);
+                    (new MessageService())->sendMessagesUpdatedEvent($user);
 
                     if ($city->user_id === $targetCity->user_id) {
                         // send fleet back because we cant trade with ourselves
@@ -410,6 +412,7 @@ class FleetService
 
                     $city         = City::find($fleet->city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
+                    $user         = User::find($city->user_id);
 
                     $messageId = Message::create([
                         'user_id'        => $city->user_id,
@@ -421,7 +424,7 @@ class FleetService
                     ])->id;
                     (new MessageService())->addMessageAboutResources($fleet, $messageId);
                     (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
-
+                    (new MessageService())->sendMessagesUpdatedEvent($user);
 
                     // move all resources from Fleet to City
                     $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
@@ -451,6 +454,7 @@ class FleetService
                     $city         = City::find($fleet->city_id);
                     $targetCity   = City::find($fleet->target_city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
+                    $user         = User::find($city->user_id);
 
                     if ($city->user_id === $targetCity->user_id) {
                         dump('move: fleet moved to another island');
@@ -464,6 +468,7 @@ class FleetService
                         ])->id;
                         (new MessageService())->addMessageAboutResources($fleet, $messageId);
                         (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
+                        (new MessageService())->sendMessagesUpdatedEvent($user);
 
                         // transfer fleet to warships in the island
                         $this->convertFleetDetailsToWarships($fleetDetails, $targetCity);
@@ -488,6 +493,7 @@ class FleetService
                             'city_id'        => $fleet->city_id,
                             'target_city_id' => $fleet->target_city_id,
                         ]);
+                        (new MessageService())->sendMessagesUpdatedEvent($user);
                     }
 
                 }
@@ -496,6 +502,7 @@ class FleetService
                     dump('move: fleet has returned');
                     $city         = City::find($fleet->city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
+                    $user         = User::find($city->user_id);
 
                     $messageId = Message::create([
                         'user_id'        => $city->user_id,
@@ -506,6 +513,7 @@ class FleetService
                     ])->id;
                     (new MessageService())->addMessageAboutResources($fleet, $messageId);
                     (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
+                    (new MessageService())->sendMessagesUpdatedEvent($user);
 
                     // transfer fleet to warships in the island
                     $this->convertFleetDetailsToWarships($fleetDetails, $city);
@@ -577,6 +585,7 @@ class FleetService
 
                     $city         = City::find($fleet->city_id);
                     $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
+                    $user         = User::find($city->user_id);
 
                     $messageId = Message::create([
                         'user_id'     => $city->user_id,
@@ -585,6 +594,7 @@ class FleetService
                     ])->id;
                     (new MessageService())->addMessageAboutResources($fleet, $messageId);
                     (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
+                    (new MessageService())->sendMessagesUpdatedEvent($user);
 
                     $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
 
@@ -639,6 +649,7 @@ class FleetService
                         ])->id;
                         (new MessageService())->addMessageAboutResources($fleet, $messageId);
                         (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
+                        (new MessageService())->sendMessagesUpdatedEvent($user);
 
                         $this->moveResourcesFromFleetToCityOrUser($fleet, $targetCity, $resourcesDictionary);
 
@@ -661,6 +672,7 @@ class FleetService
                         ])->id;
                         (new MessageService())->addMessageAboutResources($fleet, $messageId);
                         (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
+                        (new MessageService())->sendMessagesUpdatedEvent($user);
                     }
                 }
 
@@ -668,6 +680,7 @@ class FleetService
                     dump('take over: fleet returned');
 
                     $city = City::find($fleet->city_id);
+                    $user = User::find($city->user_id);
 
                     $messageId = Message::create([
                         'user_id'        => $city->user_id,
@@ -677,6 +690,7 @@ class FleetService
                     ])->id;
                     (new MessageService())->addMessageAboutResources($fleet, $messageId);
                     (new MessageService())->addMessageAboutFleetDetails($fleetDetails, $messageId);
+                    (new MessageService())->sendMessagesUpdatedEvent($user);
 
                     $this->moveResourcesFromFleetToCityOrUser($fleet, $city, $resourcesDictionary);
 
@@ -934,7 +948,7 @@ class FleetService
         // Extract fleet IDs from both sets and merge into a unique collection
         $fleetIds         = $fleets->pluck('id');
         $incomingFleetIds = $incomingFleets->pluck('id');
-        $allFleetIds = $fleetIds->merge($incomingFleetIds)->unique();
+        $allFleetIds      = $fleetIds->merge($incomingFleetIds)->unique();
 
         // Retrieve details for all collected fleet IDs
         $fleetDetails = FleetDetail::getFleetDetails($allFleetIds);

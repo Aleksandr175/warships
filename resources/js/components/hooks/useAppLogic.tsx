@@ -22,6 +22,7 @@ import { useBuildings } from "./useBuildings";
 import { useCityResources } from "./useCityResources";
 import { useCityWarships } from "./useCityWarships";
 import { useResearches } from "./useResearches";
+import { IMessagesData } from "../Messages/types";
 
 export const useAppLogic = () => {
   const queryClient = useQueryClient();
@@ -115,6 +116,10 @@ export const useAppLogic = () => {
           updateResearchesData(newResearchesData);
         }
       )
+      .listen("MessagesDataUpdatedEvent", (newMessagesData: IMessagesData) => {
+        console.log("new messages data", newMessagesData);
+        setUnreadMessagesNumber(newMessagesData.messagesUnread);
+      })
       // just for test http://localhost/test-event
       .listen("TestEvent", (event: { cities: ICity[] }) => {
         console.log("test event1", event);

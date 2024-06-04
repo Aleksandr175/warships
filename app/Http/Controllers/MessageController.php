@@ -6,6 +6,7 @@ use App\Http\Resources\CityShortInfoResource;
 use App\Http\Resources\Messages\MessageResource;
 use App\Models\City;
 use App\Models\Message;
+use App\Services\MessageService;
 use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
@@ -14,19 +15,13 @@ class MessageController extends Controller
     {
         $user = Auth::user();
 
-        $messages       = Message::where('user_id', $user->id)->orderBy('id', 'desc')->paginate(10);
-        $messagesUnread = Message::where('user_id', $user->id)->where('is_read', 0)->count();
-
-        $cityIds       = $messages->pluck('city_id')->toArray();
-        $targetCityIds = $messages->pluck('target_city_id')->toArray();
-
-        $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds))->get();
+        $messagesData = MessageService::collectMessagesData($user);
 
         return [
-            'messages'       => MessageResource::collection($messages),
-            'messagesNumber' => $messages->total(),
-            'messagesUnread' => $messagesUnread,
-            'cities'         => CityShortInfoResource::collection($cities),
+            'messages'       => MessageResource::collection($messagesData['messages']),
+            'messagesNumber' => $messagesData['messagesNumber'],
+            'messagesUnread' => $messagesData['messagesUnread'],
+            'cities'         => CityShortInfoResource::collection($messagesData['cities']),
         ];
     }
 

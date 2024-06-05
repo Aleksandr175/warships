@@ -1,14 +1,18 @@
 import React from "react";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import { SContent, SH1, SH2 } from "../styles";
-import styled, { css } from "styled-components";
-import { Icon } from "../Common/Icon";
-import { ProgressBar } from "../Common/ProgressBar";
+import styled from "styled-components";
 import { ICity, ICityResource } from "../../types/types";
 import { useFetchRefiningRecipes } from "../../hooks/useFetchRefiningRecipes";
-import { getResourceSlug, getTimeLeft } from "../../utils";
+import { getTimeLeft } from "../../utils";
 import { RefiningRecipe } from "./RefiningRecipe";
 import { useCityRefining } from "../hooks/useCityRefining";
+import {
+  RefiningSlot,
+  SRefiningMaterials,
+  SRefiningMaterialTitle,
+  SRefiningSlot,
+} from "./RefiningSlot";
 
 export const Refining = ({
   city,
@@ -40,43 +44,10 @@ export const Refining = ({
         }
 
         slots.push(
-          <SRefiningSlot empty={false} key={refining.deadline}>
-            <SRefiningMaterials>
-              {dictionaries?.resourcesDictionary && (
-                <SRefiningMaterialSlot>
-                  <Icon
-                    title={getResourceSlug(
-                      dictionaries?.resourcesDictionary,
-                      refining.inputResourceId
-                    )}
-                    size={"big"}
-                  />
-                </SRefiningMaterialSlot>
-              )}
-              <SRefiningMaterialTitle>
-                {refining.outputQty}
-              </SRefiningMaterialTitle>
-              {dictionaries?.resourcesDictionary && (
-                <SRefiningMaterialSlot>
-                  <Icon
-                    title={getResourceSlug(
-                      dictionaries?.resourcesDictionary,
-                      refining.outputResourceId
-                    )}
-                    size={"big"}
-                  />
-                </SRefiningMaterialSlot>
-              )}
-            </SRefiningMaterials>
-
-            <SProgressWrapper>
-              <ProgressBar
-                percent={Math.ceil(
-                  ((refining.time - timeLeft) / refining.time) * 100
-                )}
-              />
-            </SProgressWrapper>
-          </SRefiningSlot>
+          <RefiningSlot
+            data={refining}
+            key={refining.deadline + "-" + refining.cityId}
+          />
         );
       } else {
         slots.push(
@@ -124,69 +95,4 @@ const SRefiningSlots = styled.div`
   flex-wrap: wrap;
   gap: 20px;
   margin-bottom: 40px;
-`;
-
-const SRefiningSlot = styled.div<{ empty?: boolean }>`
-  position: relative;
-  width: 160px;
-  height: 160px;
-  border-radius: var(--block-border-radius);
-  background: rgb(0, 0, 0);
-  background: linear-gradient(
-    0deg,
-    rgba(160, 205, 245, 1) 0%,
-    rgba(42, 97, 244, 1) 100%
-  );
-
-  &:after {
-    display: block;
-    position: absolute;
-    content: "";
-    width: 100px;
-    height: 100px;
-    top: 50%;
-    left: 50%;
-    margin-top: -40px;
-    margin-left: -50px;
-
-    ${({ empty }) =>
-      empty
-        ? css`
-            background: url("../../../images/icons/pot-empty.svg") no-repeat;
-            background-size: contain;
-          `
-        : css`
-            background: url("../../../images/icons/pot.svg") no-repeat;
-            background-size: contain;
-          `};
-  }
-`;
-
-const SRefiningMaterials = styled.div`
-  display: flex;
-  margin-top: 10px;
-  padding: 0 25px;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const SRefiningMaterialSlot = styled.div`
-  width: 32px;
-  height: 32px;
-  border-radius: var(--block-border-radius);
-  background: #e7ecfd;
-`;
-
-const SRefiningMaterialTitle = styled.div`
-  color: white;
-  font-size: 20px;
-  width: 100%;
-  text-align: center;
-`;
-
-const SProgressWrapper = styled.div`
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  right: 10px;
 `;

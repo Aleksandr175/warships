@@ -19,12 +19,12 @@ class RefiningController extends Controller
 
         $city = City::where('id', $cityId)->where('user_id', $userId)->first();
 
-
         $refiningService = new RefiningQueueService();
-        $refiningSlots = $refiningService->getMaxAvailableSlots($city);
+        $refiningSlots   = $refiningService->getMaxAvailableSlots($city);
 
         if ($city && $city->id) {
             return [
+                'cityId'        => $city->id,
                 'refiningQueue' => $city->refiningQueue ? RefiningQueueResource::collection($city->refiningQueue) : [],
                 'refiningSlots' => $refiningSlots
             ];

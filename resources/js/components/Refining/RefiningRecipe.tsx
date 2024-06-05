@@ -2,16 +2,13 @@ import React from "react";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import styled from "styled-components";
 import { Icon } from "../Common/Icon";
-import {
-  ICity,
-  ICityResource,
-  IRefiningQueue,
-  IRefiningRecipe,
-} from "../../types/types";
+import { ICity, ICityResource, IRefiningRecipe } from "../../types/types";
 import { getResourceSlug } from "../../utils";
 import { Controller, useForm } from "react-hook-form";
 import { InputNumber } from "../Common/InputNumber";
 import { useMutateRefiningQueue } from "../../hooks/useMutateRefiningQueue";
+import { useCityRefining } from "../hooks/useCityRefining";
+import { useCityResources } from "../hooks/useCityResources";
 
 interface IFormValues {
   qty: number;
@@ -21,26 +18,29 @@ export const RefiningRecipe = ({
   recipe,
   city,
   cityResources,
-  setQueue,
-  updateCityResources,
-  hasAvailableSlots,
 }: {
   recipe: IRefiningRecipe;
   cityResources: ICityResource[];
   city: ICity;
-  setQueue: (queue: IRefiningQueue[]) => void;
-  updateCityResources: (resources: ICityResource[]) => void;
-  hasAvailableSlots: boolean;
 }): React.ReactElement => {
   const queryDictionaries = useFetchDictionaries();
 
   const dictionaries = queryDictionaries.data;
+
+  const { refiningQueue, refiningSlots, updateCityRefiningData } =
+    useCityRefining({
+      cityId: city?.id,
+    });
+
+  const { updateCityResourcesData } = useCityResources({ cityId: city.id });
 
   const form = useForm<IFormValues>({
     defaultValues: {
       qty: 0,
     },
   });
+
+  const hasAvailableSlots = refiningQueue.length < refiningSlots;
 
   const maxAvailableRecipes = () => {
     const cityResourceAmount =
@@ -58,14 +58,18 @@ export const RefiningRecipe = ({
       reset({
         qty: 0,
       });
-      setQueue(response.data.queue);
-      updateCityResources(response.data.cityResources);
+      updateCityRefiningData(response.data);
+
+      updateCityResourcesData({
+        cityResources: response.data.cityResources,
+        cityId: response.data.cityId,
+      });
     },
   });
 
   const { isValid } = formState;
+
   const onSubmit = (data: IFormValues) => {
-    console.log(data);
     mutateRefiningQueue({
       cityId: city.id,
       qty: data.qty,

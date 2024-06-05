@@ -1,56 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import { SContent, SH1, SH2 } from "../styles";
 import styled, { css } from "styled-components";
 import { Icon } from "../Common/Icon";
 import { ProgressBar } from "../Common/ProgressBar";
-import { httpClient } from "../../httpClient/httpClient";
-import { ICity, ICityResource, IRefiningQueue } from "../../types/types";
+import { ICity, ICityResource } from "../../types/types";
 import { useFetchRefiningRecipes } from "../../hooks/useFetchRefiningRecipes";
 import { getResourceSlug, getTimeLeft } from "../../utils";
 import { RefiningRecipe } from "./RefiningRecipe";
+import { useCityRefining } from "../hooks/useCityRefining";
 
 export const Refining = ({
   city,
   cityResources,
-  updateCityResources,
 }: {
   city: ICity;
   cityResources: ICityResource[];
-  updateCityResources: (resources: ICityResource[]) => void;
 }) => {
   const queryDictionaries = useFetchDictionaries();
 
   const dictionaries = queryDictionaries.data;
 
-  const [refiningSlots, setRefiningSlot] = useState<number>(0);
-  const [refiningQueue, setRefiningQueue] = useState<IRefiningQueue[]>([]);
-  const [hasAvailableSlots, setHasAvailableSlots] = useState<boolean>(false);
-
-  const getRefiningQueue = () => {
-    if (!city?.id) {
-      return;
-    }
-
-    httpClient.get("/refining?cityId=" + city?.id).then((response) => {
-      setRefiningQueue(response.data.refiningQueue);
-      setRefiningSlot(response.data.refiningSlots);
-    });
-  };
-
-  useEffect(() => {
-    getRefiningQueue();
-
-    const intervalId = setInterval(() => {
-      getRefiningQueue();
-    }, 3000);
-
-    return () => clearInterval(intervalId);
-  }, [city]);
-
-  useEffect(() => {
-    setHasAvailableSlots(refiningQueue.length < refiningSlots);
-  }, [refiningQueue]);
+  const { refiningQueue, refiningSlots } = useCityRefining({
+    cityId: city?.id,
+  });
 
   const queryRefiningRecipes = useFetchRefiningRecipes();
 
@@ -139,9 +112,6 @@ export const Refining = ({
             recipe={recipe}
             city={city}
             cityResources={cityResources}
-            setQueue={setRefiningQueue}
-            updateCityResources={updateCityResources}
-            hasAvailableSlots={hasAvailableSlots}
           />
         );
       })}

@@ -402,3 +402,11 @@ export interface IResearchesData {
   researches: IUserResearch[];
   researchQueue: ICityResearchQueue;
 }
+
+export interface IRefiningData {
+  cityId: number;
+  cityResources: ICityResource[];
+  refiningQueue: IRefiningQueue[];
+  refiningSlots: number;
+  userId: number;
+}

@@ -12,7 +12,7 @@ class RefiningQueueController extends Controller
 {
     public function run(RefiningRequest $request, RefiningQueueService $refiningQueueService)
     {
-        $user   = Auth::user();
+        $user = Auth::user();
 
         if (!$user) {
             return false;
@@ -29,9 +29,14 @@ class RefiningQueueController extends Controller
 
         $queue = $city->refiningQueue;
 
+        $refiningService = new RefiningQueueService();
+        $refiningSlots   = $refiningService->getMaxAvailableSlots($city);
+
         if ($queue) {
             return [
-                'queue'         => RefiningQueueResource::collection($queue),
+                'cityId'        => $city->id,
+                'refiningSlots' => $refiningSlots,
+                'refiningQueue' => RefiningQueueResource::collection($queue),
                 'cityResources' => CityResourceV2Resource::collection($cityResources)
             ];
         }

@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Events\CityRefiningDataUpdatedEvent;
 use App\Http\Requests\Api\RefiningRequest;
 use App\Models\City;
 use App\Models\RefiningQueue;
 use App\Models\RefiningRecipe;
+use App\Models\User;
 use Carbon\Carbon;
 
 class RefiningQueueService
@@ -21,6 +23,14 @@ class RefiningQueueService
         $cityService->addResourceToCity($cityId, $refiningQueue->output_resource_id, $refiningQueue->output_qty);
 
         $refiningQueue->delete();
+
+        $city = City::find($cityId);
+
+        $refiningSlots = $this->getMaxAvailableSlots($city);
+
+        $actualRefiningQueue = $city->refiningQueue;
+
+        $this->sendRefiningDataUpdatedEvent($city, $actualRefiningQueue, $refiningSlots);
     }
 
     public function canStore(City $city, $recipeId, $qty): bool
@@ -67,7 +77,7 @@ class RefiningQueueService
     public function hasAllRequirements(City $city, RefiningRecipe $recipe, $qty): bool
     {
         // TODO: check refining lvl required
-        $requiredRefiningBuildingLvl = $recipe->refining_level_required;
+        // $requiredRefiningBuildingLvl = $recipe->refining_level_required;
 
         $hasAllRequirements = true;
 
@@ -137,5 +147,15 @@ class RefiningQueueService
         $workshop = $city->building(config('constants.BUILDINGS.WORKSHOP'));
 
         return $workshop->lvl ?? 0;
+    }
+
+    public function sendRefiningDataUpdatedEvent(City $city, $refiningQueue, $refiningSlots): void
+    {
+        $cityResources = $city->resources;
+        $user = User::find($city->user_id);
+
+        if ($user) {
+            CityRefiningDataUpdatedEvent::dispatch($user->id, $city->id, $refiningQueue, $refiningSlots, $cityResources);
+        }
     }
 }

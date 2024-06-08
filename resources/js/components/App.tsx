@@ -20,6 +20,8 @@ import { Messages } from "./Messages/Messages";
 import { Message } from "./Messages/Message";
 import { Refining } from "./Refining/Refining";
 import { WarshipsImprovements } from "./WarshipsImprovements/WarshipsImprovements";
+import { ToastContainer, Slide } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const {
@@ -219,6 +221,20 @@ const App = () => {
             </SColumn>
           </div>
         </div>
+
+        <ToastContainer
+          position="top-center"
+          autoClose={2000}
+          hideProgressBar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable={false}
+          pauseOnHover
+          theme="colored"
+          transition={Slide}
+        />
       </SAppContainer>
     </Router>
   );

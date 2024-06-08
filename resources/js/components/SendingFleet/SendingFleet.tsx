@@ -22,6 +22,7 @@ import { getWarshipImprovementPercent } from "../../utils";
 import { useFleets } from "../hooks/useFleets";
 import { useCityResources } from "../hooks/useCityResources";
 import { useCityWarships } from "../hooks/useCityWarships";
+import { toast } from "react-toastify";
 
 interface IProps {
   city: ICity;
@@ -29,6 +30,7 @@ interface IProps {
   fleetTask: TTask;
   targetCity?: IMapCity;
   isAdventure?: boolean;
+  onSuccessSend: () => void;
 }
 
 interface IResources {
@@ -42,6 +44,7 @@ export const SendingFleet = ({
   cityResources,
   fleetTask,
   isAdventure,
+  onSuccessSend,
 }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
   const queryWarshipImprovements = useFetchWarshipsImprovements();
@@ -64,6 +67,8 @@ export const SendingFleet = ({
   const { warships, updateCityWarshipsData } = useCityWarships({
     cityId: city.id,
   });
+
+  const notify = () => toast.success("Fleet sent");
 
   // TODO: refactor this shit
   const [renderKey, setRenderKey] = useState(0);
@@ -169,10 +174,10 @@ export const SendingFleet = ({
           warships: response.data.cityWarships,
         });
 
-        //setActualCityWarships(response.data.cityWarships);
         setResources({});
-        console.log("Fleet has been sent");
         setRenderKey(renderKey + 1);
+        notify();
+        onSuccessSend();
       });
   };
 

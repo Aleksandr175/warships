@@ -21,7 +21,7 @@ import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 
 const customStyles = {
   overlay: {
-    background: "none",
+    background: "#ffffff70",
     zIndex: 1,
   },
   content: {
@@ -185,6 +185,7 @@ export const Map = ({
         isOpen={isPopoverOpen}
         style={customStyles}
         contentLabel="Sending Fleet"
+        onRequestClose={() => setIsPopoverOpen(false)}
       >
         <SCloseButton onClick={closeModal}>
           <Icon title={"cross"} size={"big"} />
@@ -196,6 +197,7 @@ export const Map = ({
           cityResources={cityResources}
           fleetTask={fleetTask}
           isAdventure={isAdventure}
+          onSuccessSend={() => setIsPopoverOpen(false)}
         />
       </Modal>
     </SContent>

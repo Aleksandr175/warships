@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Archipelago;
 use App\Models\City;
 use App\Models\Fleet;
+use App\Models\User;
 use App\Models\WarshipDictionary;
 use Carbon\Carbon;
 
@@ -46,7 +47,8 @@ class PirateService
                 return false;
             }
 
-            $targetCityId = $userCities->random()->id;
+            $targetCity = $userCities->random();
+            $targetCityId = $targetCity->id;
 
             // create fleet and details
             $fleetId = (new Fleet)->create([
@@ -63,6 +65,12 @@ class PirateService
             (new FleetService)->moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleetId, $fleetDetails);
 
             dump('Pirate fleet has been sent to targetCityId: ' . $targetCityId);
+            $user = User::find($targetCity->user_id);
+
+            // notify user about pirate attack event
+            if ($user) {
+                (new FleetService())->sendFleetUpdatedEvent($user);
+            }
         } else {
             dump('Try to build new pirate warship');
 

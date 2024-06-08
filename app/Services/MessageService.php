@@ -25,13 +25,12 @@ class MessageService
         }
     }
 
-    public function addMessageAboutFleetDetails($fleetDetails, int $messageId): void
+    public function addMessageAboutFleetDetails(array $fleetDetails, int $messageId): void
     {
         foreach ($fleetDetails as $fleetDetail) {
             MessageFleetDetail::create([
                 'qty'        => $fleetDetail['qty'],
                 'warship_id' => $fleetDetail['warship_id'],
-                'fleet_id'   => $fleetDetail['fleet_id'],
                 'message_id' => $messageId,
             ]);
         }

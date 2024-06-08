@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Message;
 use App\Models\MessageFleetDetail;
 use App\Models\MessageFleetResource;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class MessageSeeder extends Seeder
@@ -31,13 +30,11 @@ class MessageSeeder extends Seeder
 
         MessageFleetDetail::create([
             'message_id' => $messageId,
-            'fleet_id'   => 1,
             'warship_id' => config('constants.WARSHIPS.LUGGER'),
             'qty'        => 3
         ]);
         MessageFleetDetail::create([
             'message_id' => $messageId,
-            'fleet_id'   => 1,
             'warship_id' => config('constants.WARSHIPS.CARAVEL'),
             'qty'        => 1
         ]);

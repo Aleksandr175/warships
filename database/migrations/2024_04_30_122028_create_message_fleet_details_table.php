@@ -16,7 +16,6 @@ return new class extends Migration
 
             $table->bigInteger('message_id')->unsigned();
 
-            $table->integer('fleet_id')->default(0);
             $table->integer('warship_id')->default(1);
             $table->integer('qty')->default(0);
 

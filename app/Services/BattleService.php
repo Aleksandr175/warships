@@ -513,6 +513,10 @@ class BattleService
     // $resource = array['resource_id' => 123, 'qty' => 100]
     public function moveResourceToFleet(Fleet $fleet, $resource)
     {
+        if ($resource['qty'] < 1) {
+            return;
+        }
+
         $fleetResource = $fleet->resource($resource['resource_id']);
 
         if ($fleetResource) {
@@ -531,6 +535,10 @@ class BattleService
         $cityService = new CityService();
 
         foreach ($resources as $resource) {
+            if ($resource['qty'] < 1) {
+                continue;
+            }
+
             $cityService->addResourceToCity($city->id, $resource['resource_id'], $resource['qty'] * (-1));
         }
     }

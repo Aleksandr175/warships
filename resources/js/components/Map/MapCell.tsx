@@ -24,7 +24,7 @@ interface IProps {
   isCity: boolean;
   isPirates: boolean;
   isIslandRaided: boolean;
-  isFleetMovingToIsland: boolean;
+  isAttackFleetMovingToIsland: boolean;
   isAdventure: boolean;
   warships: IFleetWarshipsData[];
   onSendingFleet: (city: IMapCity, task: TTask) => void;
@@ -38,7 +38,7 @@ export const MapCell = ({
   isCity,
   isPirates,
   isIslandRaided,
-  isFleetMovingToIsland,
+  isAttackFleetMovingToIsland,
   isAdventure,
   warships,
   onSendingFleet,
@@ -177,7 +177,7 @@ export const MapCell = ({
               onClick={handlePopoverOpen}
             />
           </Popover>
-          {isFleetMovingToIsland && (
+          {isAttackFleetMovingToIsland && (
             <SCityMarkFleet>
               <Icon title="attack" />
             </SCityMarkFleet>

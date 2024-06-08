@@ -1,8 +1,8 @@
 import { useCustomQuery } from "./useCustomQuery";
-import { IFleets } from "../types/types";
+import { IFleetsDataResponse } from "../types/types";
 
 export const useFetchFleets = () => {
-  return useCustomQuery<IFleets>({
+  return useCustomQuery<IFleetsDataResponse>({
     url: `/fleets`,
     queryParams: {},
   });

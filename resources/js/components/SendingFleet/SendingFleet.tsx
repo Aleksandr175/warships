@@ -14,12 +14,14 @@ import {
 } from "../../types/types";
 import { FleetCard } from "./FleetCard";
 import { InputNumber } from "../Common/InputNumber";
-import { SContent, SH1 } from "../styles";
-import { useSearchParams } from "react-router-dom";
+import { SH1 } from "../styles";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import { Icon } from "../Common/Icon";
 import { useFetchWarshipsImprovements } from "../../hooks/useFetchWarshipsImprovements";
 import { getWarshipImprovementPercent } from "../../utils";
+import { useFleets } from "../hooks/useFleets";
+import { useCityResources } from "../hooks/useCityResources";
+import { useCityWarships } from "../hooks/useCityWarships";
 
 interface IProps {
   city: ICity;
@@ -51,30 +53,17 @@ export const SendingFleet = ({
 
   const [type, setType] = useState<TType>(isAdventure ? "adventure" : "map");
   const [taskType, setTaskType] = useState<TTask>(fleetTask);
-  const [warships, setWarships] = useState<ICityWarship[] | undefined>();
-  const [actualCityWarships, setActualCityWarships] = useState(warships);
+  const [actualCityWarships, setActualCityWarships] = useState<ICityWarship[]>(
+    []
+  );
 
   const [resources, setResources] = useState<IResources>({});
 
-  useEffect(() => {
-    getWarships();
-
-    const intervalId = setInterval(() => {
-      getWarships();
-    }, 3000);
-
-    return () => clearInterval(intervalId);
-  }, [city]);
-
-  const getWarships = () => {
-    if (!city?.id) {
-      return;
-    }
-
-    httpClient.get("/warships?cityId=" + city?.id).then((response) => {
-      setWarships(response.data.warships);
-    });
-  };
+  const { updateFleetsData } = useFleets();
+  const { updateCityResourcesData } = useCityResources({ cityId: city.id });
+  const { warships, updateCityWarshipsData } = useCityWarships({
+    cityId: city.id,
+  });
 
   // TODO: refactor this shit
   const [renderKey, setRenderKey] = useState(0);
@@ -100,10 +89,10 @@ export const SendingFleet = ({
     [] as IFleetWarshipsData[]
   );
 
-  const [searchParams, setSearchParams] = useSearchParams();
-
   useEffect(() => {
-    setActualCityWarships(warships);
+    if (warships) {
+      setActualCityWarships(warships);
+    }
   }, [warships]);
 
   // set default values
@@ -163,7 +152,24 @@ export const SendingFleet = ({
       .then((response) => {
         console.log(response);
 
-        setActualCityWarships(response.data.warships);
+        updateFleetsData({
+          fleets: response.data.fleets,
+          fleetDetails: response.data.fleetDetails,
+          fleetsIncoming: response.data.fleetsIncoming,
+          cities: response.data.cities,
+        });
+
+        updateCityResourcesData({
+          cityResources: response.data.cityResources,
+          cityId: response.data.cityId,
+        });
+
+        updateCityWarshipsData({
+          cityId: response.data.cityId,
+          warships: response.data.cityWarships,
+        });
+
+        //setActualCityWarships(response.data.cityWarships);
         setResources({});
         console.log("Fleet has been sent");
         setRenderKey(renderKey + 1);
@@ -209,6 +215,7 @@ export const SendingFleet = ({
     return remainCapacity;
   };
 
+  // TODO: add constants
   // 1 - common, 2 - card
   const cityResourcesDictionary = dictionaries?.resourcesDictionary?.filter(
     (resource) => resource.type === 1

@@ -21,12 +21,7 @@ class FleetController extends Controller
 
         $fleetsData = (new FleetService())->getUserFleets($userId);
 
-        $cityIds               = $fleetsData['fleets']->pluck('city_id')->toArray();
-        $targetCityIds         = $fleetsData['fleets']->pluck('target_city_id')->toArray();
-        $incomingCityIds       = $fleetsData['incomingFleets']->pluck('city_id')->toArray();
-        $incomingTargetCityIds = $fleetsData['incomingFleets']->pluck('target_city_id')->toArray();
-
-        $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds, $incomingCityIds, $incomingTargetCityIds))->get();
+        $cities = (new FleetService())->getFleetCities($fleetsData);
 
         return [
             'fleets'         => FleetResource::collection($fleetsData['fleets']),

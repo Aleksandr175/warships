@@ -276,11 +276,21 @@ export interface IFleet {
   taskType: TTask;
 }
 
-export interface IFleets {
+export interface IFleetsData {
   fleets: ICityFleet[];
-  fleetsIncoming: ICityFleet[];
+  fleetsIncoming: IFleetIncoming[];
   fleetDetails: IFleetWarshipsData[];
   cities: IMapCity[];
+}
+
+export interface IFleetsDataResponse {
+  fleets: ICityFleet[];
+  fleetsIncoming: IFleetIncoming[];
+  fleetDetails: IFleetWarshipsData[];
+  cityWarships: ICityWarship[];
+  cities: IMapCity[];
+  cityResources: ICityResource[];
+  cityId: number;
 }
 
 export interface ICityFleet {
@@ -293,7 +303,6 @@ export interface ICityFleet {
   fleetTaskId: number;
   fleetStatusId: number;
   speed: number;
-  gold: number;
   time: number;
   deadline: string;
 }

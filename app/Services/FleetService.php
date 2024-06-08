@@ -4,6 +4,10 @@ namespace App\Services;
 
 use App\Events\CityDataUpdatedEvent;
 use App\Events\FleetUpdatedEvent;
+use App\Http\Resources\CityResourceV2Resource;
+use App\Http\Resources\CityShortInfoResource;
+use App\Http\Resources\FleetDetailResource;
+use App\Http\Resources\FleetIncomingResource;
 use App\Http\Resources\WarshipResource;
 use App\Jobs\BattleJob;
 use App\Models\City;
@@ -239,12 +243,17 @@ class FleetService
 
         $this->moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleetId, $this->updatedFleetDetails);
 
-        $this->sendFleetUpdatedEvent($user);
-        $this->sendCityDataUpdatedEvent($user);
+        $fleetsData = $this->getUserFleets($user->id);
+        $cities     = $this->getFleetCities($fleetsData);
 
         return [
-            'success'  => true,
-            'warships' => WarshipResource::collection($warshipGroupsInCity)
+            'fleets'         => \App\Http\Resources\FleetResource::collection($fleetsData['fleets']),
+            'fleetDetails'   => FleetDetailResource::collection($fleetsData['fleetDetails']),
+            'cities'         => CityShortInfoResource::collection($cities),
+            'fleetsIncoming' => FleetIncomingResource::collection($fleetsData['incomingFleets']),
+            'cityWarships'   => WarshipResource::collection($warshipGroupsInCity),
+            'cityResources'  => CityResourceV2Resource::collection($cityResources),
+            'cityId'         => $userCity->id,
         ];
     }
 
@@ -294,12 +303,7 @@ class FleetService
     {
         $fleetsData = $this->getUserFleets($user->id);
 
-        $cityIds               = $fleetsData['fleets']->pluck('city_id')->toArray();
-        $targetCityIds         = $fleetsData['fleets']->pluck('target_city_id')->toArray();
-        $incomingCityIds       = $fleetsData['incomingFleets']->pluck('city_id')->toArray();
-        $incomingTargetCityIds = $fleetsData['incomingFleets']->pluck('target_city_id')->toArray();
-
-        $cities = City::whereIn('id', array_merge($cityIds, $targetCityIds, $incomingCityIds, $incomingTargetCityIds))->get();
+        $cities = $this->getFleetCities($fleetsData);
 
         FleetUpdatedEvent::dispatch($user, $fleetsData['fleets'], $fleetsData['fleetDetails'], $cities);
     }
@@ -958,5 +962,15 @@ class FleetService
             'fleetDetails'   => $fleetDetails,
             'incomingFleets' => $incomingFleets,
         ];
+    }
+
+    public function getFleetCities($fleetsData)
+    {
+        $cityIds               = $fleetsData['fleets']->pluck('city_id')->toArray();
+        $targetCityIds         = $fleetsData['fleets']->pluck('target_city_id')->toArray();
+        $incomingCityIds       = $fleetsData['incomingFleets']->pluck('city_id')->toArray();
+        $incomingTargetCityIds = $fleetsData['incomingFleets']->pluck('target_city_id')->toArray();
+
+        return City::whereIn('id', array_merge($cityIds, $targetCityIds, $incomingCityIds, $incomingTargetCityIds))->get();
     }
 }

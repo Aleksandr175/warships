@@ -17,6 +17,7 @@ import { SendingFleet } from "../SendingFleet/SendingFleet";
 import { Icon } from "../Common/Icon";
 import { useFetchAdventure } from "../../hooks/useFetchAdventure";
 import { MapAction } from "./MapAction";
+import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 
 const customStyles = {
   overlay: {
@@ -52,6 +53,7 @@ export const Map = ({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [fleetTask, setFleetTask] = useState<TTask>("trade");
   const [targetCity, setTargetCity] = useState<IMapCity | undefined>(undefined);
+  const { data: dictionary } = useFetchDictionaries();
 
   const queryMap = useFetchMap();
   const queryMapAdventure = useFetchAdventure();
@@ -77,8 +79,16 @@ export const Map = ({
   const getCity = (y: number, x: number): IMapCity | undefined =>
     mapCities?.find((city) => city.coordX === x && city.coordY === y);
 
-  const isFleetMovingToIsland = (cityId: number | undefined) =>
-    (fleets || []).some((fleet) => fleet.targetCityId === cityId);
+  const isAttackFleetMovingToIsland = (cityId: number | undefined) => {
+    const attackFleetTaskId = dictionary?.fleetTasksDictionary.find(
+      (task) => task.slug === "attack"
+    )?.id;
+
+    return (fleets || []).some(
+      (fleet) =>
+        fleet.targetCityId === cityId && fleet.fleetTaskId === attackFleetTaskId
+    );
+  };
 
   const isIslandRaided = (cityId: number | undefined) =>
     !!mapCities?.find((city) => city.id === cityId)?.raided;
@@ -156,7 +166,9 @@ export const Map = ({
               isCity={isCity}
               city={mapCity}
               isPirates={isPirates}
-              isFleetMovingToIsland={isFleetMovingToIsland(mapCity?.id)}
+              isAttackFleetMovingToIsland={isAttackFleetMovingToIsland(
+                mapCity?.id
+              )}
               isIslandRaided={isIslandRaided(mapCity?.id)}
               isAdventure={isAdventure}
               warships={getWarships(mapCity?.id)}

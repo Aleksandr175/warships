@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import {
   ICity,
-  ICityFleet,
-  IFleetWarshipsData,
-  IFleetIncoming,
-  IMapCity,
   ICityResource,
-  IFleets,
+  IFleetsData,
   ICityBuildingsData,
   ICityWarshipsData,
   IResearchesData,
@@ -74,19 +70,12 @@ export const useAppLogic = () => {
 
     // @ts-ignore
     window.Echo.private("user." + userId)
-      .listen(
-        "FleetUpdatedEvent",
-        (newFleetData: {
-          fleets: ICityFleet[];
-          fleetsIncoming: IFleetIncoming[];
-          fleetDetails: IFleetWarshipsData[];
-          cities: IMapCity[];
-        }) => {
-          queryClient.setQueryData(["/fleets"], (oldFleets: IFleets) => {
-            return { ...newFleetData };
-          });
-        }
-      )
+      .listen("FleetUpdatedEvent", (newFleetData: IFleetsData) => {
+        console.log("new fleets data", newFleetData);
+        queryClient.setQueryData(["/fleets"], (oldFleets: IFleetsData) => {
+          return { ...newFleetData };
+        });
+      })
       // TODO need?
       .listen("CityDataUpdatedEvent", (event: { cities: ICity[] }) => {
         console.log("new city data", event);

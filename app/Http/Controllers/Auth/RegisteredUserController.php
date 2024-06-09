@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Archipelago;
-use App\Models\City;
-use App\Models\CityResource;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use App\Services\CityService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,44 +50,17 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        $this->createCity($user);
+        $archipelogo = $this->createArchipelogo();
+
+        (new CityService())->generateCitiesForNewPlayer($user, $archipelogo);
 
         Auth::login($user);
 
         return redirect(RouteServiceProvider::HOME);
     }
 
-    private function createCity($user): void
+    private function createArchipelogo(): Archipelago
     {
-        $archipelago = Archipelago::create();
-
-        $city = City::factory(1)->create([
-            'user_id'        => $user->id,
-            'archipelago_id' => $archipelago->id,
-            'coord_x'        => 3,
-            'coord_y'        => 3,
-            'title'          => 'Main Island'
-        ])[0];
-
-        CityResource::create([
-            'city_id' => $city->id,
-            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
-            'qty' => 1000
-        ]);
-
-        CityResource::create([
-            'city_id' => $city->id,
-            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
-            'qty' => 300
-        ]);
-
-        City::factory(1)->create([
-            'city_dictionary_id' => config('constants.CITY_TYPE_ID.PIRATE_BAY'),
-            'user_id'            => null,
-            'archipelago_id'     => $archipelago->id,
-            'coord_x'            => 5,
-            'coord_y'            => 4,
-            'title'              => 'Pirate Bay'
-        ]);
+        return Archipelago::create();
     }
 }

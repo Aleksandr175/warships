@@ -211,6 +211,148 @@ class CityService
         $this->generateWarshipCardsForCity($city, $numberOfWarships, $resourcesCardsDict);
     }
 
+    public function generateCitiesForNewPlayer(User $user, Archipelago $archipelago, $additionalData = [])
+    {
+        $cityId = \App\Models\City::factory(1)->create([
+            'title'              => 'Main Island',
+            'user_id'            => $user->id,
+            'city_dictionary_id' => config('constants.CITY_TYPE_ID.ISLAND'),
+            'archipelago_id'     => $archipelago->id,
+            'coord_x'            => 3,
+            'coord_y'            => 3,
+        ])[0]->id;
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'coefficient' => 1
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'coefficient' => 1
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.LOG'),
+            'coefficient' => 0.1
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.ORE'),
+            'coefficient' => 0.1
+        ]);
+
+        \App\Models\CityResource::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'         => 1000
+        ]);
+
+        \App\Models\CityResource::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'         => 500
+        ]);
+
+        \App\Models\CityResource::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.LOG'),
+            'qty'         => 20
+        ]);
+
+        \App\Models\UserResource::create([
+            'user_id'     => $user->id,
+            'resource_id' => config('constants.RESOURCE_IDS.KNOWLEDGE'),
+            'qty'         => 10
+        ]);
+
+        // second city
+
+        $cityId = \App\Models\City::factory(1)->create([
+            'user_id'            => null,
+            'title'              => 'Ore Island',
+            'archipelago_id'     => $archipelago->id,
+            'coord_x'            => 3,
+            'coord_y'            => 5,
+            'city_dictionary_id' => config('constants.CITY_TYPE_ID.COLONY')
+        ])[0]->id;
+
+        \App\Models\CityResource::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'         => 1000
+        ]);
+
+        \App\Models\CityResource::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'         => 300
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'coefficient' => 0.1
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'coefficient' => 0.1
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.ORE'),
+            'coefficient' => 1
+        ]);
+
+        // third city
+
+        $cityId = \App\Models\City::factory(1)->create([
+            'user_id'            => null,
+            'title'              => 'Wood Island',
+            'archipelago_id'     => $archipelago->id,
+            'coord_x'            => 4,
+            'coord_y'            => 2,
+            'city_dictionary_id' => config('constants.CITY_TYPE_ID.COLONY')
+        ])[0]->id;
+
+        \App\Models\CityResource::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'         => 1000
+        ]);
+
+        \App\Models\CityResource::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'qty'         => 300
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+            'coefficient' => 0.1
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+            'coefficient' => 0.1
+        ]);
+
+        \App\Models\CityResourcesProductionCoefficient::create([
+            'city_id'     => $cityId,
+            'resource_id' => config('constants.RESOURCE_IDS.LOG'),
+            'coefficient' => 1
+        ]);
+    }
+
     public function addResourceToCity(int $cityId, int $resourceId, int $qty): void
     {
         $resource = CityResource::where('city_id', $cityId)->where('resource_id', $resourceId)->first();
@@ -276,10 +418,10 @@ class CityService
         }
 
         return [
-            'availableCities'          => $availableCities,
+            'availableCities'         => $availableCities,
             'requirementsForNextCity' => [
                 'researchId' => config('constants.RESEARCHES.GOVERNMENTAL_SYSTEM'),
-                'lvl'         => $availableCities * 2 + 2
+                'lvl'        => $availableCities * 2 + 2
             ]
         ];
     }

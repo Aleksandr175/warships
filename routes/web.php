@@ -8,6 +8,7 @@ use App\Models\RefiningQueue;
 use App\Models\Warship;
 use App\Services\PirateService;
 use App\Services\RefiningQueueService;
+use App\Services\ResourceService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -163,6 +164,13 @@ Route::get('/test-refining', function (\App\Services\RefiningQueueService $refin
 
     foreach ($refiningQueue as $refiningQueueItem) {
         $refiningService->handle($refiningQueueItem);
+    }
+});
+
+Route::get('/test-resources', function (ResourceService $resourceService) {
+    $cities = City::where('user_id', '<>', null)->get();
+    foreach ($cities as $city) {
+        $resourceService->handle($city);
     }
 });
 

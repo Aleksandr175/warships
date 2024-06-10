@@ -21,8 +21,13 @@ class Building extends Model
         return $this->hasMany(BuildingResource::class);
     }
 
-    public function buildingProduction(int $lvl)
+    public function buildingProductions()
     {
-        return $this->hasMany(BuildingProduction::class)->where('lvl', $lvl);
+        return $this->hasMany(BuildingProduction::class, 'building_id', 'building_id');
+    }
+
+    public function getBuildingProductionByLevel($lvl)
+    {
+        return $this->buildingProductions()->where('lvl', $lvl)->get();
     }
 }

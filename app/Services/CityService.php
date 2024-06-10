@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Adventure;
 use App\Models\Archipelago;
+use App\Models\Building;
 use App\Models\City;
 use App\Models\CityResource;
 use App\Models\Research;
@@ -213,6 +214,7 @@ class CityService
 
     public function generateCitiesForNewPlayer(User $user, Archipelago $archipelago, $additionalData = [])
     {
+        // main island
         $cityId = \App\Models\City::factory(1)->create([
             'title'              => 'Main Island',
             'user_id'            => $user->id,
@@ -221,6 +223,18 @@ class CityService
             'coord_x'            => 3,
             'coord_y'            => 3,
         ])[0]->id;
+
+        Building::create([
+            'city_id'     => $cityId,
+            'building_id' => config('constants.BUILDINGS.MAIN'),
+            'lvl'         => 1
+        ]);
+
+        Building::create([
+            'city_id'     => $cityId,
+            'building_id' => config('constants.BUILDINGS.MINE'),
+            'lvl'         => 1
+        ]);
 
         \App\Models\CityResourcesProductionCoefficient::create([
             'city_id'     => $cityId,
@@ -350,6 +364,19 @@ class CityService
             'city_id'     => $cityId,
             'resource_id' => config('constants.RESOURCE_IDS.LOG'),
             'coefficient' => 1
+        ]);
+    }
+
+    public function generatePirateCityForNewPlayer(Archipelago $archipelago, $additionalData = [])
+    {
+        \App\Models\City::factory(1)->create([
+            'user_id'            => config('constants.DEFAULT_PIRATE_ID'),
+            'city_dictionary_id' => config('constants.CITY_TYPE_ID.PIRATE_BAY'),
+            'title'              => 'Pirate Bay',
+            'appearance_id'      => 2,
+            'archipelago_id'     => $archipelago->id,
+            'coord_x'            => 2,
+            'coord_y'            => 1,
         ]);
     }
 

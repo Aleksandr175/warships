@@ -53,6 +53,7 @@ class RegisteredUserController extends Controller
         $archipelogo = $this->createArchipelogo();
 
         (new CityService())->generateCitiesForNewPlayer($user, $archipelogo);
+        (new CityService())->generatePirateCityForNewPlayer($archipelogo);
 
         Auth::login($user);
 

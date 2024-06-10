@@ -32,7 +32,7 @@ class ResourceJob implements ShouldQueue
      */
     public function handle(ResourceService $resourceService)
     {
-        $cities = City::all();
+        $cities = City::where('user_id', '<>', null)->get();
         foreach ($cities as $city) {
             $resourceService->handle($city);
         }

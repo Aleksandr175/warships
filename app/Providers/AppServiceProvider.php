@@ -34,8 +34,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // TODO: add job for researches
-
         Queue::after(function (JobProcessed $event) {
             if ($event->job->getQueue() === 'resource') {
                 ResourceJob::dispatch()->onQueue('resource')->delay(now()->addMinutes(1));

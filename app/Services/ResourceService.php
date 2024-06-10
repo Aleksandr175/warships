@@ -25,7 +25,7 @@ class ResourceService
         $resourcesGap = [];
 
         foreach ($buildingsInCity as $building) {
-            $productionResources = $building->buildingProduction($building->lvl)->get();
+            $productionResources = $building->getBuildingProductionByLevel($building->lvl);
 
             foreach ($productionResources as $productionResource) {
                 $cityResource = CityResource::where('city_id', $city->id)->where('resource_id', $productionResource->resource_id)->first();

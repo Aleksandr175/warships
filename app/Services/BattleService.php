@@ -10,6 +10,7 @@ use App\Models\Fleet;
 use App\Models\FleetDetail;
 use App\Models\FleetResource;
 use App\Models\Message;
+use App\Models\User;
 use App\Models\WarshipCombatMultiplier;
 use App\Models\WarshipDictionary;
 use App\Models\WarshipImprovement;
@@ -171,8 +172,17 @@ class BattleService
             ]);
 
             if ($isUserAttackingAdventureIsland) {
+                $isThereSomeResources = false;
+
+                for ($i = 0, $iMax = count($cityResources); $i < $iMax; $i++) {
+                    if ($cityResources[$i]['qty'] > 0) {
+                        $isThereSomeResources = true;
+                        break;
+                    }
+                }
+
                 // mark island as raided if it doesn't have any resources
-                if (!count($cityResources)) {
+                if (!$isThereSomeResources) {
                     $targetCity->update([
                         'raided' => 1
                     ]);
@@ -248,6 +258,9 @@ class BattleService
         (new MessageService())->addMessageAboutResources($fleet, $messageId);
         (new MessageService())->addMessageAboutFleetDetails($attackingFleetDetails, $messageId);
 
+        $user = User::find($userId);
+        (new MessageService())->sendMessagesUpdatedEvent($user);
+
         // for defender
         if ($targetCityUserId) {
             $messageId = Message::create([
@@ -259,6 +272,9 @@ class BattleService
             ])->id;
 
             (new MessageService())->addMessageAboutFleetDetails($defendingFleetDetails, $messageId);
+
+            $targetCityUser = User::find($targetCityUserId);
+            (new MessageService())->sendMessagesUpdatedEvent($targetCityUser);
         }
 
         // TODO: notify user about result somehow (websockets)?

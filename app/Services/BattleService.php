@@ -165,6 +165,8 @@ class BattleService
             dump('Attacker WON');
             $this->moveResourcesToAttackerFleetAndRemoveItFromCity($fleet, $attackingFleetDetails, $targetCity);
 
+            // for getting actual city resources
+            $targetCity->refresh();
             $cityResources = $targetCity->resources->toArray();
 
             $fleet->update([
@@ -370,7 +372,7 @@ class BattleService
         return max($availableCapacity, 0);
     }
 
-    public function populateFleetDetailsWithCapacityAndHealth(int $userId, $fleetDetails, $warshipsDictionary)
+    public function populateFleetDetailsWithCapacityAndHealth(int|null $userId, $fleetDetails, $warshipsDictionary)
     {
         foreach ($warshipsDictionary as $warshipDictionary) {
             for ($i = 0, $iMax = count($fleetDetails); $i < $iMax; $i++) {
@@ -385,7 +387,11 @@ class BattleService
 
         // get all bonuses
         $researchImprovements = [];
-        $warshipImprovements  = WarshipImprovement::where('user_id', $userId)->get()->toArray();
+        $warshipImprovements = [];
+
+        if ($userId) {
+            $warshipImprovements  = WarshipImprovement::where('user_id', $userId)->get()->toArray();
+        }
 
         return $this->addWarshipsImprovementsBonuses($fleetDetails, $warshipsDictionary, $warshipImprovements, $researchImprovements);
     }
@@ -555,7 +561,7 @@ class BattleService
                 continue;
             }
 
-            $cityService->addResourceToCity($city->id, $resource['resource_id'], $resource['qty'] * (-1));
+            $cityService->subtractResourceFromCity($city->id, $resource['resource_id'], $resource['qty']);
         }
     }
 }

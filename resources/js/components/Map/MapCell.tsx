@@ -86,28 +86,29 @@ export const MapCell = ({
             content={
               <SPopoverWrapper>
                 <SPopoverHeader>{city.title}</SPopoverHeader>
-                {isAdventure && (
-                  <SInfoWrapper>
-                    <SResources>
-                      {city.resources
-                        ?.filter((resource) => resource.qty > 0)
-                        .map((resource) => (
-                          <SResource key={resource.resourceId}>
-                            <Icon
-                              title={getResourceSlug(
-                                dictionaries.resourcesDictionary,
-                                resource.resourceId
-                              )}
-                            />
-                            {resource.qty}
-                          </SResource>
-                        ))}
-                    </SResources>
-                    {warships.length > 0 && (
-                      <FleetWarships warships={warships} />
-                    )}
-                  </SInfoWrapper>
-                )}
+                {isAdventure &&
+                  (city.resources?.length > 0 || warships.length > 0) && (
+                    <SInfoWrapper>
+                      <SResources>
+                        {city.resources
+                          ?.filter((resource) => resource.qty > 0)
+                          .map((resource) => (
+                            <SResource key={resource.resourceId}>
+                              <Icon
+                                title={getResourceSlug(
+                                  dictionaries.resourcesDictionary,
+                                  resource.resourceId
+                                )}
+                              />
+                              {resource.qty}
+                            </SResource>
+                          ))}
+                      </SResources>
+                      {warships.length > 0 && (
+                        <FleetWarships warships={warships} />
+                      )}
+                    </SInfoWrapper>
+                  )}
 
                 {!isAdventure && !city.userId && isTakingOverDisabled && (
                   <>
@@ -126,9 +127,11 @@ export const MapCell = ({
                   <Icon title="cross" />
                 </SCloseButton>
 
+                {isIslandRaided && <p>Island is already raided</p>}
+
                 {currentCityId === city.id && <p>Selected Island</p>}
 
-                {currentCityId !== city.id && (
+                {currentCityId !== city.id && !isIslandRaided && (
                   <SPopoverButtons>
                     {isAdventure || isPirates ? (
                       <button

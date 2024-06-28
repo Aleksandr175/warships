@@ -81,6 +81,11 @@ export interface ICityWarshipsData {
   warshipQueue?: ICityWarshipQueue[];
 }
 
+export interface ICityWarshipsDataChanges {
+  cityId: number;
+  warships: ICityWarship[];
+}
+
 export interface ICityWarship {
   warshipId: number;
   cityId: number;

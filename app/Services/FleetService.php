@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Events\CityDataUpdatedEvent;
+use App\Events\CityWarshipsDataChangesEvent;
 use App\Events\FleetUpdatedEvent;
 use App\Http\Resources\CityResourceV2Resource;
 use App\Http\Resources\CityShortInfoResource;
@@ -638,8 +639,6 @@ class FleetService
                         dump('take over: fleet took over the city successfully');
                         $statusId = config('constants.FLEET_STATUSES.TAKE_OVER_DONE');
 
-                        $shouldDeleteFleet = true;
-
                         // take over city
                         (new CityService())->takeOverCity($targetCity, $user);
 
@@ -657,6 +656,8 @@ class FleetService
 
                         // transfer fleet to warships in the island
                         $this->convertFleetDetailsToWarships($fleetDetails, $targetCity);
+
+                        $shouldDeleteFleet = true;
                     } else {
                         dump('take over: fleet could not take the city over');
                         // something wrong with taking over
@@ -750,6 +751,13 @@ class FleetService
 
             if ($shouldDeleteFleet) {
                 $fleet->delete();
+
+                $userId = $city->user_id;
+
+                // notify user about warships changes
+                if ($userId && isset($fleetDetails)) {
+                    CityWarshipsDataChangesEvent::dispatch($userId, $city->id, $fleetDetails);
+                }
             }
 
             if ($statusId || $deadline || $shouldDeleteFleet) {

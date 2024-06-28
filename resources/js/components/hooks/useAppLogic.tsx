@@ -7,6 +7,7 @@ import {
   ICityWarshipsData,
   IResearchesData,
   IRefiningData,
+  ICityWarshipsDataChanges,
 } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import Echo from "laravel-echo";
@@ -38,9 +39,10 @@ export const useAppLogic = () => {
     cityId: city?.id,
   });
 
-  const { updateCityWarshipsData } = useCityWarships({
-    cityId: city?.id,
-  });
+  const { updateCityWarshipsData, applyCityWarshipsDataChanges } =
+    useCityWarships({
+      cityId: city?.id,
+    });
 
   const { updateResearchesData } = useResearches({
     cityId: city?.id,
@@ -96,6 +98,13 @@ export const useAppLogic = () => {
         (newCityWarshipsData: ICityWarshipsData) => {
           console.log("new city warships data", newCityWarshipsData);
           updateCityWarshipsData(newCityWarshipsData);
+        }
+      )
+      .listen(
+        "CityWarshipsDataChangesEvent",
+        (dataChanges: ICityWarshipsDataChanges) => {
+          console.log("new city warships changes data", dataChanges);
+          applyCityWarshipsDataChanges(dataChanges);
         }
       )
       .listen(

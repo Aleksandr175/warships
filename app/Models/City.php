@@ -77,7 +77,7 @@ class City extends Model
 
     public function resources()
     {
-        return $this->hasMany(CityResource::class);
+        return $this->hasMany(CityResource::class)->where('qty', '>', 0);
     }
 
     public function resource($resourceId)

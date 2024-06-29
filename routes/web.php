@@ -55,6 +55,7 @@ Route::get('/server-start', function () {
     return "Everything executed successfully!";
 });
 
+// user attacks pirate
 Route::get('/test-battle', function (\App\Services\BattleService $battleService) {
     // Add test fleet
     $fleet = Fleet::create([
@@ -116,6 +117,75 @@ Route::get('/test-battle', function (\App\Services\BattleService $battleService)
         'warship_id' => config('constants.WARSHIPS.GALERA'),
         'city_id'    => config('constants.DEFAULT_PIRATE_CITY_ID_2'),
         'user_id'    => config('constants.DEFAULT_PIRATE_ID'),
+        'qty'        => 5
+    ]);
+
+    $battleService->handle($fleet);
+});
+
+
+// pirate attacks default player
+Route::get('/test-battle-pirate', function (\App\Services\BattleService $battleService) {
+    // Add test fleet
+    $fleet = Fleet::create([
+        'city_id'        => config('constants.DEFAULT_PIRATE_CITY_ID_2'),
+        'target_city_id' => config('constants.DEFAULT_USER_CITY_ID'),
+        'speed'          => 70,
+        'repeating'      => 0,
+        'fleet_task_id'  => config('constants.FLEET_TASKS.ATTACK'),
+        'status_id'      => config('constants.FLEET_STATUSES.ATTACK_GOING_TO_TARGET'),
+        'time'           => 10,
+        'deadline'       => 123
+    ]);
+
+    FleetResource::create([
+        'fleet_id'    => $fleet->id,
+        'resource_id' => config('constants.RESOURCE_IDS.GOLD'),
+        'qty'         => 50
+    ]);
+    FleetResource::create([
+        'fleet_id'    => $fleet->id,
+        'resource_id' => config('constants.RESOURCE_IDS.POPULATION'),
+        'qty'         => 20
+    ]);
+
+    FleetDetail::create([
+        'fleet_id'   => $fleet->id,
+        'warship_id' => config('constants.WARSHIPS.LUGGER'),
+        'qty'        => 10,
+    ]);
+    FleetDetail::create([
+        'fleet_id'   => $fleet->id,
+        'warship_id' => config('constants.WARSHIPS.CARAVEL'),
+        'qty'        => 5,
+    ]);
+    FleetDetail::create([
+        'fleet_id'   => $fleet->id,
+        'warship_id' => config('constants.WARSHIPS.GALERA'),
+        'qty'        => 1,
+    ]);
+
+    Warship::where('city_id', config('constants.DEFAULT_USER_CITY_ID'))->delete();
+
+    // Add warships in pirate island for test
+    Warship::create([
+        'warship_id' => config('constants.WARSHIPS.LUGGER'),
+        'city_id'    => config('constants.DEFAULT_USER_CITY_ID'),
+        'user_id'    => config('constants.DEFAULT_USER_ID'),
+        'qty'        => 20
+    ]);
+
+    Warship::create([
+        'warship_id' => config('constants.WARSHIPS.CARAVEL'),
+        'city_id'    => config('constants.DEFAULT_USER_CITY_ID'),
+        'user_id'    => config('constants.DEFAULT_USER_ID'),
+        'qty'        => 10
+    ]);
+
+    Warship::create([
+        'warship_id' => config('constants.WARSHIPS.GALERA'),
+        'city_id'    => config('constants.DEFAULT_USER_CITY_ID'),
+        'user_id'    => config('constants.DEFAULT_USER_ID'),
         'qty'        => 5
     ]);
 

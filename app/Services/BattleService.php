@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\CityWarshipsDataChangesEvent;
 use App\Models\Adventure;
 use App\Models\BattleLog;
 use App\Models\BattleLogDetail;
@@ -67,6 +68,7 @@ class BattleService
         dump('Populated attacking fleet details with bonuses: ', $attackingFleetDetails);
 
         $defendingFleetDetails = [];
+        $initialDefendingFleetDetails = [];
         $defendingWarships     = $targetCity->warships;
 
         // if defender has no warships - skip this logic
@@ -80,6 +82,7 @@ class BattleService
 
             // set needed data for defender, like health and capacity
             $defendingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($defendingUserId, $defendingFleetDetails, $warshipsDictionary);
+            $initialDefendingFleetDetails = $defendingFleetDetails;
 
             dump('Populated defending fleet details with bonuses: ', $defendingFleetDetails);
 
@@ -277,11 +280,13 @@ class BattleService
 
             $targetCityUser = User::find($targetCityUserId);
             (new MessageService())->sendMessagesUpdatedEvent($targetCityUser);
+
+            dump('SEND NOTIFICATION');
+            $warshipsChanges = $this->calculateWarshipsLost($initialDefendingFleetDetails, $defendingFleetDetails);
+
+            // send warships changes for defender after battle
+            CityWarshipsDataChangesEvent::dispatch($targetCityUser->id, $targetCity->id, $warshipsChanges);
         }
-
-        // TODO: notify user about result somehow (websockets)?
-        // ...
-
 
         // do i need it? i dont think so
         if ($targetCity->city_dictionary_id === config('constants.CITY_TYPE_ID.ISLAND')) {
@@ -563,5 +568,39 @@ class BattleService
 
             $cityService->subtractResourceFromCity($city->id, $resource['resource_id'], $resource['qty']);
         }
+    }
+
+    // we compare initial warships data and data after battle, return difference of warships
+    public function calculateWarshipsLost(array $initialData, array $updatedData): array
+    {
+        $losses = [];
+
+        // Create a lookup array from the updated data for quick access
+        $updatedLookup = [];
+        foreach ($updatedData as $data) {
+            $updatedLookup[$data['warship_id']] = ceil($data['qty']);
+        }
+
+        // Iterate over initial data to calculate losses
+        foreach ($initialData as $data) {
+            $initialQty = $data['qty'];
+            $warshipId = $data['warship_id'];
+
+            // Get the updated quantity, or assume it's zero if not present
+            $updatedQty = $updatedLookup[$warshipId] ?? 0;
+
+            // Calculate loss
+            $lostQty = $initialQty - $updatedQty;
+
+            // Add to results if there was a loss
+            if ($lostQty > 0) {
+                $losses[] = [
+                    'warship_id' => $warshipId,
+                    'qty' => -$lostQty,
+                ];
+            }
+        }
+
+        return $losses;
     }
 }

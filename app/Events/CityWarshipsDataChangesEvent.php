@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Http\Resources\WarshipResource;
+use App\Http\Resources\WarshipChangeResource;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -20,10 +20,10 @@ class CityWarshipsDataChangesEvent implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct($userId, $cityId, $warships)
+    public function __construct($userId, $cityId, $warshipsChanges)
     {
         $this->userId       = $userId;
-        $this->warships     = WarshipResource::collection($warships);
+        $this->warships     = WarshipChangeResource::collection($warshipsChanges);
         $this->cityId       = $cityId;
     }
 

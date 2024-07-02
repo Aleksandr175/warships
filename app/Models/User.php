@@ -87,6 +87,11 @@ class User extends Authenticatable
         return $this->hasMany(ResearchImprovement::class);
     }
 
+    public function researchImprovement($researchId) {
+        return $this->researchImprovements()->where('research_id', $researchId)->first();
+    }
+
+
     public function resources() {
         return $this->hasMany(UserResource::class);
     }

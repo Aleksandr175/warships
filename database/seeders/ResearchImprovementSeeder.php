@@ -17,7 +17,7 @@ class ResearchImprovementSeeder extends Seeder
             'user_id'             => config('constants.DEFAULT_USER_ID'),
             'research_id'         => config('constants.RESEARCHES.SHIP_GUNS'),
             'improvement_type'    => 'attack',
-            'level'               => 2,
+            'level'               => 1,
             'percent_improvement' => 20
         ]);
 

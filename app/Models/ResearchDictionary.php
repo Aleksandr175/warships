@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property integer $id
+ * @property string  $improvement_type
+ * @property integer $base_increment
+ * @property string  $description
+ * @property string  $title
  *
  * @mixin Builder
  */

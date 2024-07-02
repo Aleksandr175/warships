@@ -119,6 +119,30 @@ class ResearchResourceSeeder extends Seeder
         ]);
 
         ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.SHIP_HOLD'),
+            'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
+            'qty'           => 1000,
+            'lvl'           => 2,
+            'time_required' => 20,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.SHIP_HOLD'),
+            'resource_id'   => config('constants.RESOURCE_IDS.LOG'),
+            'qty'           => 100,
+            'lvl'           => 2,
+            'time_required' => 20,
+        ]);
+
+        ResearchResource::create([
+            'research_id'   => config('constants.RESEARCHES.SHIP_HOLD'),
+            'resource_id'   => config('constants.RESOURCE_IDS.KNOWLEDGE'),
+            'qty'           => 20,
+            'lvl'           => 2,
+            'time_required' => 20,
+        ]);
+
+        ResearchResource::create([
             'research_id'   => config('constants.RESEARCHES.TRADE_SYSTEM'),
             'resource_id'   => config('constants.RESOURCE_IDS.GOLD'),
             'qty'           => 300,

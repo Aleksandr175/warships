@@ -7,6 +7,7 @@ use App\Http\Requests\Api\ResearchRequest;
 use App\Models\City;
 use App\Models\Research;
 use App\Models\ResearchDependency;
+use App\Models\ResearchDictionary;
 use App\Models\ResearchQueue;
 use App\Models\ResearchQueueResource;
 use App\Models\ResearchResource;
@@ -23,15 +24,27 @@ class ResearchQueueService
 
     public function handle(ResearchQueue $researchQueue)
     {
-        $researchId = $researchQueue['research_id'];
-        $user       = User::find($researchQueue['user_id']);
-        $research   = $user->research($researchId);
-        $queue      = $user->researchesQueue()->first();
+        $researchId   = $researchQueue['research_id'];
+        $user         = User::find($researchQueue['user_id']);
+        $research     = $user->research($researchId);
+        $queue        = $user->researchesQueue()->first();
+        $researchDict = ResearchDictionary::find($researchId);
 
         if ($queue) {
             // add lvl
             if ($research) {
                 $research->increment('lvl');
+
+                // Update research improvement
+                $researchImprovement = $user->researchImprovement($research->id);
+                if ($researchImprovement) {
+                    $researchImprovement->increment('level');
+                    // Assuming 10% improvement per level
+                    $researchImprovement->percent_improvement = $research->lvl * $researchDict->base_increment;
+                    $researchImprovement->save();
+                } else {
+                    $this->createResearchImprovement($user, $researchDict, $researchId);
+                }
             } else {
                 // create new research
                 $user->researches()->create([
@@ -39,6 +52,10 @@ class ResearchQueueService
                     'user_id'     => $user->id,
                     'lvl'         => 1,
                 ]);
+
+                if ($researchDict->improvement_type) {
+                    $this->createResearchImprovement($user, $researchDict, $researchId);
+                }
             }
 
             $queue->resources()->delete();
@@ -47,6 +64,18 @@ class ResearchQueueService
 
             $this->sendResearchesDataUpdatedEvent($user);
         }
+    }
+
+    public function createResearchImprovement(User $user, ResearchDictionary $researchDict, int $researchId): void
+    {
+        // Create research improvement for user
+        $user->researchImprovements()->create([
+            'research_id'         => $researchId,
+            'user_id'             => $user->id,
+            'improvement_type'    => $researchDict->improvement_type, // or other stat type
+            'level'               => 1,
+            'percent_improvement' => $researchDict->base_increment, // Initial improvement percentage
+        ]);
     }
 
     public function sendResearchesDataUpdatedEvent(User $user): void

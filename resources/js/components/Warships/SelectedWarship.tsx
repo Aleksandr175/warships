@@ -11,6 +11,7 @@ import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
 import {
   ICityResource,
+  IResearchImprovement,
   IUserResearch,
   IWarship,
   IWarshipImprovement,
@@ -32,6 +33,7 @@ interface IProps {
   researches: IUserResearch[];
   hasAvailableSlots: boolean;
   warshipImprovements?: IWarshipImprovement[];
+  researchImprovements?: IResearchImprovement[];
 }
 
 interface IFormValues {
@@ -52,6 +54,7 @@ export const SelectedWarship = ({
   getQty,
   hasAvailableSlots,
   warshipImprovements,
+  researchImprovements,
 }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
   const { buildings } = useBuildings({ cityId });
@@ -192,7 +195,7 @@ export const SelectedWarship = ({
     reset(DEFAULT_VALUES);
   };
 
-  if (!dictionaries || !warshipImprovements) {
+  if (!dictionaries || !warshipImprovements || !researchImprovements) {
     return null;
   }
 
@@ -241,6 +244,7 @@ export const SelectedWarship = ({
                   (capacity *
                     getWarshipImprovementPercent(
                       warshipImprovements,
+                      researchImprovements,
                       selectedWarshipId,
                       "capacity"
                     )) /
@@ -254,6 +258,7 @@ export const SelectedWarship = ({
                   (attack *
                     getWarshipImprovementPercent(
                       warshipImprovements,
+                      researchImprovements,
                       selectedWarshipId,
                       "attack"
                     )) /
@@ -267,6 +272,7 @@ export const SelectedWarship = ({
                   (health *
                     getWarshipImprovementPercent(
                       warshipImprovements,
+                      researchImprovements,
                       selectedWarshipId,
                       "health"
                     )) /

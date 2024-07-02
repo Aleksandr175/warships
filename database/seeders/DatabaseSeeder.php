@@ -323,5 +323,7 @@ class DatabaseSeeder extends Seeder
         $this->call(WarshipImprovementRecipeSeeder::class);
         $this->call(WarshipImprovementSeeder::class);
         $this->call(WarshipCombatMultipliersSeeder::class);
+
+        $this->call(ResearchImprovementSeeder::class);
     }
 }

@@ -75,7 +75,7 @@ class WarshipImprovementController extends Controller
         }
 
         $this->makeImprovement($improvementRecipe, $user);
-        (new UserService())->addResourceToUser($user->id, $improvementRecipe->resource_id, $improvementRecipe->qty * (-1));
+        (new UserService())->subtractResourceFromUser($user->id, $improvementRecipe->resource_id, $improvementRecipe->qty);
 
         $warshipImprovements = $user->warshipImprovements;
         $improvementRecipes  = $this->getWarshipImprovementRecipes();

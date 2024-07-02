@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\CityWarshipQueueResource;
+use App\Http\Resources\ResearchImprovementResource;
 use App\Http\Resources\WarshipImprovementResource;
 use App\Http\Resources\WarshipResource;
 use App\Models\City;
@@ -25,14 +26,16 @@ class WarshipController extends Controller
 
         $maxWarshipSlots = (new WarshipService())->getMaxWarshipSlots($city);
 
-        $warshipImprovements = $user->warshipImprovements;
+        $warshipImprovements  = $user->warshipImprovements;
+        $researchImprovements = $user->researchImprovements;
 
         if ($city && $city->id) {
             return [
-                'warships'            => $city->warships ? WarshipResource::collection($city->warships) : [],
-                'warshipSlots'        => $maxWarshipSlots,
-                'warshipQueue'        => $city->warshipQueue && count($city->warshipQueue) ? CityWarshipQueueResource::collection($city->warshipQueue) : [],
-                'warshipImprovements' => WarshipImprovementResource::collection($warshipImprovements),
+                'warships'             => $city->warships ? WarshipResource::collection($city->warships) : [],
+                'warshipSlots'         => $maxWarshipSlots,
+                'warshipQueue'         => $city->warshipQueue && count($city->warshipQueue) ? CityWarshipQueueResource::collection($city->warshipQueue) : [],
+                'warshipImprovements'  => WarshipImprovementResource::collection($warshipImprovements),
+                'researchImprovements' => ResearchImprovementResource::collection($researchImprovements),
             ];
         }
 

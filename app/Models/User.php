@@ -83,6 +83,10 @@ class User extends Authenticatable
         return $this->hasMany(WarshipImprovement::class);
     }
 
+    public function researchImprovements() {
+        return $this->hasMany(ResearchImprovement::class);
+    }
+
     public function resources() {
         return $this->hasMany(UserResource::class);
     }

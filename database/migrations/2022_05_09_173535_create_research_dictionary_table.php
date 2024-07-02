@@ -18,6 +18,8 @@ class CreateResearchDictionaryTable extends Migration
 
             $table->string('title', 50);
             $table->text('description');
+            $table->string('improvement_type')->nullable(); // e.g., 'attack', 'health', 'capacity'
+            $table->integer('base_increment')->nullable(); // ex. 10%
 
             $table->timestamps();
         });

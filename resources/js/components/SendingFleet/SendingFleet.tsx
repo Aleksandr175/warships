@@ -23,6 +23,7 @@ import { useFleets } from "../hooks/useFleets";
 import { useCityResources } from "../hooks/useCityResources";
 import { useCityWarships } from "../hooks/useCityWarships";
 import { toast } from "react-toastify";
+import { useFetchResearchImprovements } from "../../hooks/useFetchResearchImprovements";
 
 interface IProps {
   city: ICity;
@@ -48,9 +49,13 @@ export const SendingFleet = ({
 }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
   const queryWarshipImprovements = useFetchWarshipsImprovements();
+  const queryResearchImprovements = useFetchResearchImprovements();
 
   const warshipImprovements =
     queryWarshipImprovements?.data?.warshipImprovements;
+
+  const researchImprovements =
+    queryResearchImprovements?.data?.researchImprovements;
 
   const dictionaries = queryDictionaries.data;
 
@@ -189,13 +194,14 @@ export const SendingFleet = ({
         (warship) => warship.id === fDetail.warshipId
       );
 
-      if (dictWarship && warshipImprovements) {
+      if (dictWarship && warshipImprovements && researchImprovements) {
         maxCapacity +=
           (dictWarship.capacity +
             Math.floor(
               (dictWarship.capacity *
                 getWarshipImprovementPercent(
                   warshipImprovements,
+                  researchImprovements,
                   dictWarship.id,
                   "capacity"
                 )) /

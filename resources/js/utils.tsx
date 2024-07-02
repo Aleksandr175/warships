@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import {
   ICity,
   IResearch,
+  IResearchImprovement,
   IWarshipImprovement,
   TImprovementType,
 } from "./types/types";
@@ -49,16 +50,25 @@ export const getCityResourceProductionCoefficient = (
 
 export const getWarshipImprovementPercent = (
   warshipImprovements: IWarshipImprovement[],
+  researchImprovements: IResearchImprovement[],
   warshipId: number,
   improvementType: TImprovementType
-) => {
-  return (
+): number => {
+  let researchImprovementPercent = 0;
+  let warshipImprovementsPercent =
     warshipImprovements?.find(
       (improvement) =>
         improvement.improvementType === improvementType &&
         improvement.warshipId === warshipId
-    )?.percentImprovement || 0
-  );
+    )?.percentImprovement || 0;
+
+  researchImprovements?.forEach((improvement) => {
+    if (improvement.improvementType === improvementType) {
+      researchImprovementPercent += improvement.percentImprovement;
+    }
+  });
+
+  return researchImprovementPercent + warshipImprovementsPercent;
 };
 
 // format server date to local date

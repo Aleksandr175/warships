@@ -65,6 +65,7 @@ export const useCityWarships = ({ cityId }: { cityId?: number }) => {
     warshipQueue: queryCityWarships?.data?.warshipQueue,
     warshipSlots: queryCityWarships?.data?.warshipSlots,
     warshipImprovements: queryCityWarships?.data?.warshipImprovements,
+    researchImprovements: queryCityWarships?.data?.researchImprovements,
     updateCityWarshipsData,
     applyCityWarshipsDataChanges,
   };

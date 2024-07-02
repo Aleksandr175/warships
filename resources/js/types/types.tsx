@@ -77,8 +77,9 @@ export interface ICityWarshipsData {
   cityId: number;
   warships?: ICityWarship[];
   warshipSlots?: number;
-  warshipImprovements?: IWarshipImprovement[];
   warshipQueue?: ICityWarshipQueue[];
+  warshipImprovements?: IWarshipImprovement[];
+  researchImprovements?: IResearchImprovement[];
 }
 
 export interface ICityWarshipsDataChanges {
@@ -355,6 +356,14 @@ export interface IWarshipImprovements {
 export interface IWarshipImprovement {
   id: number;
   warshipId: number;
+  improvementType: TImprovementType;
+  level: number;
+  percentImprovement: number;
+}
+
+export interface IResearchImprovement {
+  id: number;
+  researchId: number;
   improvementType: TImprovementType;
   level: number;
   percentImprovement: number;

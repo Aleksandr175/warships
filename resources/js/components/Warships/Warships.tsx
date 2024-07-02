@@ -23,8 +23,13 @@ export const Warships = ({ city, cityResources }: IProps) => {
 
   const dictionaries = queryDictionaries.data;
 
-  const { warshipQueue, warshipImprovements, warshipSlots, warships } =
-    useCityWarships({ cityId: city?.id });
+  const {
+    warshipQueue,
+    warshipImprovements,
+    warshipSlots,
+    warships,
+    researchImprovements,
+  } = useCityWarships({ cityId: city?.id });
 
   const [selectedWarshipId, setSelectedWarshipId] = useState(0);
   const [hasAvailableSlots, setHasAvailableSlots] = useState<boolean>(false);
@@ -61,6 +66,7 @@ export const Warships = ({ city, cityResources }: IProps) => {
             getQty={getQty}
             hasAvailableSlots={hasAvailableSlots}
             warshipImprovements={warshipImprovements}
+            researchImprovements={researchImprovements}
           />
         )}
 

@@ -283,6 +283,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/warship-improvements', [\App\Http\Controllers\WarshipImprovementController::class, 'get']);
     Route::post('/api/warship-improvements', [\App\Http\Controllers\WarshipImprovementController::class, 'improve']);
 
+    Route::get('/api/research-improvements', [\App\Http\Controllers\ResearchImprovementController::class, 'get']);
+
     Route::get('/api/logout', [\App\Http\Controllers\Controller::class, 'logout']);
 });
 

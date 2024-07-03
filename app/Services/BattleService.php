@@ -67,9 +67,9 @@ class BattleService
 
         dump('Populated attacking fleet details with bonuses: ', $attackingFleetDetails);
 
-        $defendingFleetDetails = [];
+        $defendingFleetDetails        = [];
         $initialDefendingFleetDetails = [];
-        $defendingWarships     = $targetCity->warships;
+        $defendingWarships            = $targetCity->warships;
 
         // if defender has no warships - skip this logic
         if ($defendingWarships && count($defendingWarships) > 0) {
@@ -81,7 +81,7 @@ class BattleService
             }
 
             // set needed data for defender, like health and capacity
-            $defendingFleetDetails = $this->populateFleetDetailsWithCapacityAndHealth($defendingUserId, $defendingFleetDetails, $warshipsDictionary);
+            $defendingFleetDetails        = $this->populateFleetDetailsWithCapacityAndHealth($defendingUserId, $defendingFleetDetails, $warshipsDictionary);
             $initialDefendingFleetDetails = $defendingFleetDetails;
 
             dump('Populated defending fleet details with bonuses: ', $defendingFleetDetails);
@@ -379,23 +379,22 @@ class BattleService
 
     public function populateFleetDetailsWithCapacityAndHealth(int|null $userId, $fleetDetails, $warshipsDictionary)
     {
-        foreach ($warshipsDictionary as $warshipDictionary) {
-            for ($i = 0, $iMax = count($fleetDetails); $i < $iMax; $i++) {
-                if ($fleetDetails[$i]['warship_id'] === $warshipDictionary['id']) {
-                    $fleetDetails[$i]['health']   = $warshipDictionary['health'];
-                    $fleetDetails[$i]['capacity'] = $warshipDictionary['capacity'];
-                    $fleetDetails[$i]['attack']   = $warshipDictionary['attack'];
-                    break;
-                }
-            }
+        for ($i = 0, $iMax = count($fleetDetails); $i < $iMax; $i++) {
+            $warshipId        = $fleetDetails[$i]['warship_id'];
+            $warshipBaseStats = $this->getWarshipBaseStats($warshipId, $warshipsDictionary);
+
+            $fleetDetails[$i]['health']   = $warshipBaseStats['health'];
+            $fleetDetails[$i]['capacity'] = $warshipBaseStats['capacity'];
+            $fleetDetails[$i]['attack']   = $warshipBaseStats['attack'];
         }
 
         // get all bonuses
         $researchImprovements = [];
-        $warshipImprovements = [];
+        $warshipImprovements  = [];
 
         if ($userId) {
             $warshipImprovements  = WarshipImprovement::where('user_id', $userId)->get()->toArray();
+            $researchImprovements = User::find($userId)->researchImprovements()->get()->toArray();
         }
 
         return $this->addWarshipsImprovementsBonuses($fleetDetails, $warshipsDictionary, $warshipImprovements, $researchImprovements);
@@ -404,18 +403,47 @@ class BattleService
     // improve attack / health / capacity of warships by cards bonuses
     public function addWarshipsImprovementsBonuses($fleetDetails, $warshipsDictionary, $warshipImprovements, $researchImprovements)
     {
-        // TODO: add researches bonuses
+        // Add research bonuses
+        foreach ($researchImprovements as $researchImprovement) {
+            for ($i = 0, $iMax = count($fleetDetails); $i < $iMax; $i++) {
+                // Get base stats from warshipsDictionary
+                $warshipId        = $fleetDetails[$i]['warship_id'];
+                $warshipBaseStats = $this->getWarshipBaseStats($warshipId, $warshipsDictionary);
 
+                if ($warshipBaseStats && isset($fleetDetails[$i][$researchImprovement['improvement_type']])) {
+                    $fleetDetails[$i][$researchImprovement['improvement_type']] += floor($warshipBaseStats[$researchImprovement['improvement_type']] * $researchImprovement['percent_improvement'] / 100);
+                }
+            }
+        }
+
+        // Add warship improvements
         foreach ($warshipImprovements as $warshipImprovement) {
             for ($i = 0, $iMax = count($fleetDetails); $i < $iMax; $i++) {
                 if ($fleetDetails[$i]['warship_id'] === $warshipImprovement['warship_id']) {
-                    $fleetDetails[$i][$warshipImprovement['improvement_type']] += floor($fleetDetails[$i][$warshipImprovement['improvement_type']] * $warshipImprovement['percent_improvement'] / 100);
+                    // Get base stats from warshipsDictionary
+                    $warshipId        = $fleetDetails[$i]['warship_id'];
+                    $warshipBaseStats = $this->getWarshipBaseStats($warshipId, $warshipsDictionary);
+
+                    if ($warshipBaseStats && isset($fleetDetails[$i][$warshipImprovement['improvement_type']])) {
+                        $fleetDetails[$i][$warshipImprovement['improvement_type']] += floor($warshipBaseStats[$warshipImprovement['improvement_type']] * $warshipImprovement['percent_improvement'] / 100);
+                    }
                     break;
                 }
             }
         }
 
         return $fleetDetails;
+    }
+
+    private function getWarshipBaseStats($warshipId, $warshipsDictionary)
+    {
+        foreach ($warshipsDictionary as $warship) {
+            if ($warship['id'] === $warshipId) {
+                return $warship;
+            }
+        }
+
+        return null;
     }
 
     public function calculateFleetAttack($fleetDetails, $fortress = null): int
@@ -584,7 +612,7 @@ class BattleService
         // Iterate over initial data to calculate losses
         foreach ($initialData as $data) {
             $initialQty = $data['qty'];
-            $warshipId = $data['warship_id'];
+            $warshipId  = $data['warship_id'];
 
             // Get the updated quantity, or assume it's zero if not present
             $updatedQty = $updatedLookup[$warshipId] ?? 0;
@@ -596,7 +624,7 @@ class BattleService
             if ($lostQty > 0) {
                 $losses[] = [
                     'warship_id' => $warshipId,
-                    'qty' => -$lostQty,
+                    'qty'        => -$lostQty,
                 ];
             }
         }

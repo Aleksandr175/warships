@@ -1,5 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { ICityResources } from "../../types/types";
+import {
+  ICityResource,
+  ICityResources,
+  ICityResourcesChanges,
+} from "../../types/types";
 import { useFetchCityResources } from "../../hooks/useFetchCityResources";
 
 export const useCityResources = ({ cityId }: { cityId?: number }) => {
@@ -16,8 +20,33 @@ export const useCityResources = ({ cityId }: { cityId?: number }) => {
     });
   };
 
+  const applyCityResourcesChangesData = (
+    cityResourcesChanges: ICityResourcesChanges
+  ) => {
+    queryClient.setQueryData(
+      ["/city/" + cityResourcesChanges.cityId],
+      (oldData: { cityResources: ICityResource[] }) => {
+        const updatedResources = oldData.cityResources.map((resource) => {
+          const change = cityResourcesChanges.cityResourcesChanges.find(
+            (c) => c.resourceId === resource.resourceId
+          );
+          return {
+            ...resource,
+            qty: change ? resource.qty + change.qty : resource.qty,
+          };
+        });
+
+        return {
+          cityId: cityResourcesChanges.cityId,
+          cityResources: updatedResources,
+        };
+      }
+    );
+  };
+
   return {
     cityResources: queryCityResources?.data?.cityResources,
     updateCityResourcesData,
+    applyCityResourcesChangesData,
   };
 };

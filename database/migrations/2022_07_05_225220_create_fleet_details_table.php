@@ -20,7 +20,7 @@ class CreateFleetDetailsTable extends Migration
 
             $table->integer('warship_id')->default(1);
 
-            $table->integer('qty')->default(0);
+            $table->string('qty')->default(0);
 
             $table->timestamps();
         });

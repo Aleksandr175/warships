@@ -23,7 +23,7 @@ class CreateBuildingProductionsTable extends Migration
 
             $table->integer('resource_id');
 
-            $table->integer('qty')->default(0);
+            $table->string('qty')->default(0);
 
             $table->timestamps();
         });

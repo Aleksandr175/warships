@@ -67,8 +67,10 @@ export const SendingFleet = ({
 
   const [resources, setResources] = useState<IResources>({});
 
-  const { updateFleetsData } = useFleets();
-  const { updateCityResourcesData } = useCityResources({ cityId: city.id });
+  const { applyFleetsChangesData } = useFleets();
+  const { applyCityResourcesChangesData } = useCityResources({
+    cityId: city.id,
+  });
   const { warships, updateCityWarshipsData } = useCityWarships({
     cityId: city.id,
   });
@@ -162,18 +164,14 @@ export const SendingFleet = ({
       .then((response) => {
         console.log(response);
 
-        updateFleetsData({
-          fleets: response.data.fleets,
-          fleetDetails: response.data.fleetDetails,
-          fleetsIncoming: response.data.fleetsIncoming,
-          cities: response.data.cities,
-        });
+        applyFleetsChangesData(response.data);
 
-        updateCityResourcesData({
-          cityResources: response.data.cityResources,
+        applyCityResourcesChangesData({
+          cityResourcesChanges: response.data.cityResourcesChanges,
           cityId: response.data.cityId,
         });
 
+        // TODO: add changes for warships
         updateCityWarshipsData({
           cityId: response.data.cityId,
           warships: response.data.cityWarships,

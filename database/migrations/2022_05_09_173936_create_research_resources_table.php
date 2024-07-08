@@ -20,7 +20,7 @@ class CreateResearchResourcesTable extends Migration
             $table->integer('lvl');
             $table->integer('resource_id');
 
-            $table->integer('qty')->default(0);
+            $table->string('qty')->default(0);
             $table->integer('time_required')->default(0);
 
             $table->timestamps();

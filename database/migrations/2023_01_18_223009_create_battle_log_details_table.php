@@ -20,7 +20,7 @@ class CreateBattleLogDetailsTable extends Migration
             $table->integer('user_id')->nullable();
             $table->integer('round');
             $table->integer('warship_id');
-            $table->integer('qty');
+            $table->string('qty');
             $table->integer('destroyed');
 
             $table->timestamps();

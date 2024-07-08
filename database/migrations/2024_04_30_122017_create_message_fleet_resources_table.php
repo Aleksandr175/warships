@@ -17,7 +17,7 @@ return new class extends Migration
             $table->bigInteger('message_id')->unsigned();
             $table->bigInteger('resource_id')->unsigned();
 
-            $table->float('qty')->default(0);
+            $table->string('qty')->default(0);
 
             $table->foreign('resource_id')->references('id')->on('resources')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('message_id')->references('id')->on('messages')->onDelete('cascade')->onUpdate('cascade');

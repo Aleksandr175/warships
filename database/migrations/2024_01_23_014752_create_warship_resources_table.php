@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('warship_id');
             $table->unsignedBigInteger('resource_id');
 
-            $table->integer('qty');
+            $table->string('qty');
 
             $table->foreign('warship_id')->references('id')->on('warship_dictionary')->onDelete('cascade');
             $table->foreign('resource_id')->references('id')->on('resources')->onDelete('cascade');

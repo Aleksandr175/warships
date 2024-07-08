@@ -54,6 +54,14 @@ export interface ICityResources {
   cityId: number;
 }
 
+export interface ICityResourcesChanges {
+  cityResourcesChanges: {
+    resourceId?: number;
+    qty: number;
+  }[];
+  cityId: number;
+}
+
 export interface ICityResource {
   cityId: number;
   resourceId: number;
@@ -285,6 +293,13 @@ export interface IFleet {
 export interface IFleetsData {
   fleets: ICityFleet[];
   fleetsIncoming: IFleetIncoming[];
+  fleetDetails: IFleetWarshipsData[];
+  cities: IMapCity[];
+}
+
+export interface IFleetChangesData {
+  fleetChangeType?: "add" | "remove" | "update";
+  fleet: ICityFleet;
   fleetDetails: IFleetWarshipsData[];
   cities: IMapCity[];
 }

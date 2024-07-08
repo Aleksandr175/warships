@@ -20,7 +20,7 @@ class CreateWarshipsTable extends Migration
             $table->bigInteger('city_id')->unsigned();
             $table->bigInteger('user_id')->unsigned()->nullable();
 
-            $table->integer('qty')->default(0);
+            $table->string('qty')->default(0);
 
             $table->foreign('warship_id')->references('id')->on('warship_dictionary')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade')->onUpdate('cascade');

@@ -5,10 +5,11 @@ namespace App\Services;
 use App\Events\CityDataUpdatedEvent;
 use App\Events\CityWarshipsDataChangesEvent;
 use App\Events\FleetUpdatedEvent;
-use App\Http\Resources\CityResourceV2Resource;
+use App\Http\Resources\CityResourceChangeResource;
 use App\Http\Resources\CityShortInfoResource;
 use App\Http\Resources\FleetDetailResource;
 use App\Http\Resources\FleetIncomingResource;
+use App\Http\Resources\WarshipChangeResource;
 use App\Http\Resources\WarshipResource;
 use App\Jobs\BattleJob;
 use App\Models\City;
@@ -229,7 +230,7 @@ class FleetService
         }
 
         // create fleet and details
-        $fleetId = Fleet::create([
+        $fleet = Fleet::create([
             'city_id'        => $userCity->id,
             'target_city_id' => $this->targetCity?->id,
             'fleet_task_id'  => $this->taskTypeId,
@@ -238,24 +239,66 @@ class FleetService
             'repeating'      => $this->repeating,
             'status_id'      => $defaultFleetStatusId,
             'deadline'       => Carbon::now()->addSeconds($timeToTarget)
-        ])->id;
+        ]);
 
-        $this->transferResourcesFromCityToFleet($fleetId, $cityResources, $this->resources, $resourcesDict);
+        $transferredResources = $this->transferResourcesFromCityToFleet($fleet->id, $cityResources, $this->resources, $resourcesDict);
 
-        $this->moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleetId, $this->updatedFleetDetails);
+        $this->moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleet->id, $this->updatedFleetDetails);
 
         $fleetsData = $this->getUserFleets($user->id);
-        $cities     = $this->getFleetCities($fleetsData);
+        $fleetData  = $this->getUserFleetWithDetails($fleet);
+        $cities     = $this->getFleetCitiesV2($fleetData);
+
 
         return [
-            'fleets'         => \App\Http\Resources\FleetResource::collection($fleetsData['fleets']),
-            'fleetDetails'   => FleetDetailResource::collection($fleetsData['fleetDetails']),
-            'cities'         => CityShortInfoResource::collection($cities),
-            'fleetsIncoming' => FleetIncomingResource::collection($fleetsData['fleetsIncoming']),
-            'cityWarships'   => WarshipResource::collection($warshipGroupsInCity),
-            'cityResources'  => CityResourceV2Resource::collection($cityResources),
-            'cityId'         => $userCity->id,
+            'fleetChangeType'      => 'add',
+            'fleet'                => new \App\Http\Resources\FleetResource($fleet),
+            'fleetDetails'         => FleetDetailResource::collection($fleetData['fleetDetails']),
+            'cities'               => CityShortInfoResource::collection($cities),
+            'cityId'               => $userCity->id,
+            'cityResourcesChanges' => CityResourceChangeResource::collection($this->getCityResourceChanges($transferredResources, 'remove')),
+            'cityWarshipChanges'   => WarshipChangeResource::collection($this->getWarshipChanges($fleetData['fleetDetails'], 'remove')),
+
+            // TODO: add warships changes
+
+            // need?
+            'fleetsIncoming'       => FleetIncomingResource::collection($fleetsData['fleetsIncoming']),
+            'cityWarships'         => WarshipResource::collection($warshipGroupsInCity),
         ];
+    }
+
+    // type = add, remove
+    public function getWarshipChanges($fleetDetails, $type)
+    {
+        $changes = [];
+
+        foreach ($fleetDetails as $fleetDetail) {
+            $qty = $type === 'add' ? $fleetDetail['qty'] : -$fleetDetail['qty'];
+
+            $changes[] = [
+                'warship_id' => $fleetDetail['id'],
+                'qty'        => $qty,
+            ];
+        }
+
+        return $changes;
+    }
+
+    // type = add, remove
+    public function getCityResourceChanges($resourceChanges, $type)
+    {
+        $changes = [];
+
+        foreach ($resourceChanges as $resourceChange) {
+            $qty = $type === 'add' ? $resourceChange['qty'] : -$resourceChange['qty'];
+
+            $changes[] = [
+                'resource_id' => $resourceChange['resource_id'],
+                'qty'         => $qty,
+            ];
+        }
+
+        return $changes;
     }
 
     // check and correct fleet details, convert fleet details to backend format
@@ -791,37 +834,50 @@ class FleetService
         }
     }
 
-    public function transferResourcesFromCityToFleet(int $fleetId, $cityResources, $resources, $resourcesDict): void
+    public function transferResourcesFromCityToFleet(int $fleetId, $cityResources, $resources, $resourcesDict)
     {
-        // transfer resources from island to fleet
+        // Initialize an array to store transferred resources details
+        $transferredResources = [];
+
+        // Transfer resources from island to fleet
         foreach ($resources as $resourceSlug => $resourceAmount) {
             $resourceId = null;
 
+            // Find the resource ID from the resources dictionary
             foreach ($resourcesDict as $resDict) {
                 if ($resDict->slug === $resourceSlug) {
                     $resourceId = $resDict->id;
+                    break; // Stop the loop once the resource ID is found
                 }
             }
 
+            // Proceed if the resource ID was found
             if ($resourceId) {
                 foreach ($cityResources as $cityResource) {
                     if ($resourceId === $cityResource->resource_id) {
-                        // check max available qty we can transfer to fleet
-                        $maxQty    = floor((int)$resourceAmount);
-                        $qtyInCity = floor($cityResource->qty);
+                        // Check the maximum available quantity we can transfer to the fleet
+                        $maxQty = min(floor((int)$resourceAmount), floor($cityResource->qty));
 
-                        if ($maxQty > $qtyInCity) {
-                            $maxQty = $qtyInCity;
-                        }
-
+                        // Add resource to fleet
                         $this->addResourceToFleet($fleetId, $resourceId, $maxQty);
+
+                        // Decrement the resource quantity in the city
                         $cityResource->decrement('qty', $maxQty);
 
-                        break;
+                        // Store the transferred resource details
+                        $transferredResources[] = [
+                            'resource_id' => $resourceId,
+                            'qty'         => $maxQty
+                        ];
+
+                        break; // Break the loop once the resource is transferred
                     }
                 }
             }
         }
+
+        // Return the details of the transferred resources
+        return $transferredResources;
     }
 
     public function addResourceToFleet(int $fleetId, int $resourceId, int $qty): void
@@ -972,6 +1028,17 @@ class FleetService
         ];
     }
 
+    public function getUserFleetWithDetails($fleet): array
+    {
+        // Retrieve details for fleet ID
+        $fleetDetails = FleetDetail::getFleetDetails([$fleet->id]);
+
+        return [
+            'fleet'        => $fleet,
+            'fleetDetails' => $fleetDetails,
+        ];
+    }
+
     public function getFleetCities($fleetsData)
     {
         $cityIds               = $fleetsData['fleets']->pluck('city_id')->toArray();
@@ -980,5 +1047,13 @@ class FleetService
         $incomingTargetCityIds = $fleetsData['fleetsIncoming']->pluck('target_city_id')->toArray();
 
         return City::whereIn('id', array_merge($cityIds, $targetCityIds, $incomingCityIds, $incomingTargetCityIds))->get();
+    }
+
+    public function getFleetCitiesV2($fleetData)
+    {
+        $cityIds       = $fleetData['fleet']->pluck('city_id')->toArray();
+        $targetCityIds = $fleetData['fleet']->pluck('target_city_id')->toArray();
+
+        return City::whereIn('id', array_merge($cityIds, $targetCityIds))->get();
     }
 }

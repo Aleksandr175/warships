@@ -25,7 +25,7 @@ class CreateWarshipQueuesTable extends Migration
             $table->bigInteger('warship_id')->unsigned();
             $table->foreign('warship_id')->references('id')->on('warship_dictionary');
 
-            $table->integer('qty');
+            $table->string('qty');
 
             $table->integer('time');
             $table->timestamp('deadline');

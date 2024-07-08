@@ -20,7 +20,7 @@ return new class extends Migration
             $table->bigInteger('resource_id')->unsigned();
             $table->foreign('resource_id')->references('id')->on('resources');
 
-            $table->integer('qty');
+            $table->string('qty');
 
             $table->timestamps();
         });

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('improvement_type'); // e.g., 'attack', 'health', 'capacity'
             $table->integer('level');
             $table->integer('resource_id'); // ID of the resource required for improvement
-            $table->integer('qty'); // Quantity of the resource required
+            $table->string('qty'); // Quantity of the resource required
             $table->integer('percent_improvement');
             $table->timestamps();
         });

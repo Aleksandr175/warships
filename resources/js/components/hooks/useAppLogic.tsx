@@ -39,7 +39,7 @@ export const useAppLogic = () => {
     cityId: city?.id,
   });
 
-  const { updateCityWarshipsData, applyCityWarshipsDataChanges } =
+  const { updateCityWarshipsData, applyCityWarshipChangesData } =
     useCityWarships({
       cityId: city?.id,
     });
@@ -104,7 +104,7 @@ export const useAppLogic = () => {
         "CityWarshipsDataChangesEvent",
         (dataChanges: ICityWarshipsDataChanges) => {
           console.log("new city warships changes data", dataChanges);
-          applyCityWarshipsDataChanges(dataChanges);
+          applyCityWarshipChangesData(dataChanges);
         }
       )
       .listen(

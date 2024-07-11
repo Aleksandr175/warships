@@ -33,10 +33,10 @@ export const useCityWarships = ({ cityId }: { cityId?: number }) => {
     );
 
     // Apply changes
-    changes.warships.forEach((change) => {
+    changes.cityWarshipsChanges.forEach((change) => {
       if (warshipMap.has(change.warshipId)) {
         const existingWarship = warshipMap.get(change.warshipId)!;
-        existingWarship.qty += change.qty;
+        existingWarship.qty = Number(existingWarship.qty) + Number(change.qty);
       } else {
         // Add new warship with the current cityId
         warshipMap.set(change.warshipId, { ...change, cityId: changes.cityId });
@@ -50,7 +50,7 @@ export const useCityWarships = ({ cityId }: { cityId?: number }) => {
     return { ...oldData, warships: updatedWarships };
   };
 
-  const applyCityWarshipsDataChanges = (
+  const applyCityWarshipChangesData = (
     newCityWarshipsDataChanges: ICityWarshipsDataChanges
   ) => {
     queryClient.setQueryData(
@@ -67,6 +67,6 @@ export const useCityWarships = ({ cityId }: { cityId?: number }) => {
     warshipImprovements: queryCityWarships?.data?.warshipImprovements,
     researchImprovements: queryCityWarships?.data?.researchImprovements,
     updateCityWarshipsData,
-    applyCityWarshipsDataChanges,
+    applyCityWarshipChangesData,
   };
 };

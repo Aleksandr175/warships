@@ -14,7 +14,7 @@ class CityWarshipsDataChangesEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $userId;
-    public $warships;
+    public $cityWarshipsChanges;
     public $cityId;
 
     /**
@@ -22,9 +22,9 @@ class CityWarshipsDataChangesEvent implements ShouldBroadcast
      */
     public function __construct($userId, $cityId, $warshipsChanges)
     {
-        $this->userId       = $userId;
-        $this->warships     = WarshipChangeResource::collection($warshipsChanges);
-        $this->cityId       = $cityId;
+        $this->userId              = $userId;
+        $this->cityWarshipsChanges = WarshipChangeResource::collection($warshipsChanges);
+        $this->cityId              = $cityId;
     }
 
     /**

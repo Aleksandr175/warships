@@ -92,7 +92,7 @@ export interface ICityWarshipsData {
 
 export interface ICityWarshipsDataChanges {
   cityId: number;
-  warships: ICityWarship[];
+  cityWarshipsChanges: ICityWarship[];
 }
 
 export interface ICityWarship {

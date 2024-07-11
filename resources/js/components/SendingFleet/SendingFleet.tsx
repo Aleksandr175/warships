@@ -71,9 +71,10 @@ export const SendingFleet = ({
   const { applyCityResourcesChangesData } = useCityResources({
     cityId: city.id,
   });
-  const { warships, updateCityWarshipsData } = useCityWarships({
-    cityId: city.id,
-  });
+  const { warships, applyCityWarshipChangesData } =
+    useCityWarships({
+      cityId: city.id,
+    });
 
   const notify = () => toast.success("Fleet sent");
 
@@ -171,10 +172,9 @@ export const SendingFleet = ({
           cityId: response.data.cityId,
         });
 
-        // TODO: add changes for warships
-        updateCityWarshipsData({
+        applyCityWarshipChangesData({
           cityId: response.data.cityId,
-          warships: response.data.cityWarships,
+          cityWarshipsChanges: response.data.cityWarshipChanges,
         });
 
         setResources({});

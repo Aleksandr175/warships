@@ -276,7 +276,7 @@ class FleetService
             $qty = $type === 'add' ? $fleetDetail['qty'] : -$fleetDetail['qty'];
 
             $changes[] = [
-                'warship_id' => $fleetDetail['id'],
+                'warship_id' => $fleetDetail['warship_id'],
                 'qty'        => $qty,
             ];
         }

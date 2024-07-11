@@ -56,10 +56,19 @@ export interface ICityResources {
 
 export interface ICityResourcesChanges {
   cityResourcesChanges: {
-    resourceId?: number;
+    resourceId: number;
     qty: number;
   }[];
   cityId: number;
+}
+
+export interface IResourcesDataChanges {
+  resourceChanges: {
+    resourceId: number;
+    qty: number;
+  }[];
+  cityId: number;
+  userId: number;
 }
 
 export interface ICityResource {

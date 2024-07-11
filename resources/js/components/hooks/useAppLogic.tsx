@@ -8,6 +8,7 @@ import {
   IResearchesData,
   IRefiningData,
   ICityWarshipsDataChanges,
+  IResourcesDataChanges,
 } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import Echo from "laravel-echo";
@@ -35,9 +36,10 @@ export const useAppLogic = () => {
     cityId: city?.id,
   });
 
-  const { updateCityResourcesData } = useCityResources({
-    cityId: city?.id,
-  });
+  const { updateCityResourcesData, applyCityResourcesChangesData } =
+    useCityResources({
+      cityId: city?.id,
+    });
 
   const { updateCityWarshipsData, applyCityWarshipChangesData } =
     useCityWarships({
@@ -91,6 +93,23 @@ export const useAppLogic = () => {
         }) => {
           console.log("new city resource data", newCityResourcesData);
           updateCityResourcesData(newCityResourcesData);
+        }
+      )
+      .listen(
+        "CityResourcesDataChangesEvent",
+        (newCityResourcesDataChanges: IResourcesDataChanges) => {
+          console.log(
+            "!!!new city resource data changes",
+            newCityResourcesDataChanges
+          );
+
+          // TODO: filter resources, only resources for city should be updated
+          applyCityResourcesChangesData({
+            cityResourcesChanges: newCityResourcesDataChanges.resourceChanges,
+            cityId: newCityResourcesDataChanges.cityId,
+          });
+
+          // TODO: update user resources
         }
       )
       .listen(

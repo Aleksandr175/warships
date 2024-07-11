@@ -71,10 +71,9 @@ export const SendingFleet = ({
   const { applyCityResourcesChangesData } = useCityResources({
     cityId: city.id,
   });
-  const { warships, applyCityWarshipChangesData } =
-    useCityWarships({
-      cityId: city.id,
-    });
+  const { warships, applyCityWarshipChangesData } = useCityWarships({
+    cityId: city.id,
+  });
 
   const notify = () => toast.success("Fleet sent");
 

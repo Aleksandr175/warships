@@ -306,6 +306,14 @@ export interface IFleetsData {
   cities: IMapCity[];
 }
 
+export interface IFleetDataChanges {
+  userId: number;
+  action: "add" | "remove" | "update";
+  fleet: ICityFleet;
+  fleetDetails: IFleetWarshipsData[];
+  cities: IMapCity[];
+}
+
 export interface IFleetChangesData {
   fleetChangeType?: "add" | "remove" | "update";
   fleet: ICityFleet;

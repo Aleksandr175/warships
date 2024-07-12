@@ -9,6 +9,7 @@ import {
   IRefiningData,
   ICityWarshipsDataChanges,
   IResourcesDataChanges,
+  IFleetDataChanges,
 } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import Echo from "laravel-echo";
@@ -80,6 +81,12 @@ export const useAppLogic = () => {
           return { ...newFleetData };
         });
       })
+      .listen(
+        "FleetDataChangesEvent",
+        (fleetDataChanges: IFleetDataChanges) => {
+          console.log("Fleet data CHANGES", fleetDataChanges);
+        }
+      )
       // TODO need?
       .listen("CityDataUpdatedEvent", (event: { cities: ICity[] }) => {
         console.log("new city data", event);

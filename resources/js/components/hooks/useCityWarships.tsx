@@ -29,7 +29,7 @@ export const useCityWarships = ({ cityId }: { cityId?: number }) => {
   ): ICityWarshipsData => {
     // Create a map from the old data for quick lookup
     const warshipMap = new Map<number, ICityWarship>(
-      oldData.warships?.map((warship) => [warship.warshipId, warship]) ?? []
+      oldData?.warships?.map((warship) => [warship.warshipId, warship]) ?? []
     );
 
     // Apply changes

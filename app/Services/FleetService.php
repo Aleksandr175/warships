@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Events\CityDataUpdatedEvent;
 use App\Events\CityResourcesDataChangesEvent;
 use App\Events\CityWarshipsDataChangesEvent;
+use App\Events\FleetDataChangesEvent;
 use App\Events\FleetUpdatedEvent;
 use App\Http\Resources\CityResourceChangeResource;
 use App\Http\Resources\CityShortInfoResource;
@@ -386,7 +387,7 @@ class FleetService
     {
         // only if deadline is expired
         if ($fleet->deadline < Carbon::now()) {
-            $statusId          = null;
+            $newStatusId       = null;
             $deadline          = null;
             $repeating         = null;
             $shouldDeleteFleet = false;
@@ -399,7 +400,7 @@ class FleetService
             if ($fleet->isTradeTask()) {
                 if ($fleet->isTradeGoingToTarget()) {
                     dump('trade: fleet starts to trade');
-                    $statusId = config('constants.FLEET_STATUSES.TRADING');
+                    $newStatusId = config('constants.FLEET_STATUSES.TRADING');
 
                     $duration = config('constants.DURATION.TRADING');
 
@@ -420,7 +421,7 @@ class FleetService
 
                     if ($city->user_id === $targetCity->user_id) {
                         // send fleet back because we cant trade with ourselves
-                        $statusId = config('constants.FLEET_STATUSES.TRADE_GOING_BACK');
+                        $newStatusId = config('constants.FLEET_STATUSES.TRADE_GOING_BACK');
 
                         $duration = config('constants.DURATION.TRADING_GOING_BACK');
 
@@ -430,7 +431,7 @@ class FleetService
                 }
 
                 if ($fleet->isTrading()) {
-                    $statusId = config('constants.FLEET_STATUSES.TRADE_GOING_BACK');
+                    $newStatusId = config('constants.FLEET_STATUSES.TRADE_GOING_BACK');
 
                     $duration = config('constants.DURATION.TRADING_GOING_BACK');
 
@@ -481,7 +482,7 @@ class FleetService
                     if ($fleet->repeating) {
                         dump('trade: fleet repeats trade task, going to target');
                         // just repeat task
-                        $statusId = config('constants.FLEET_STATUSES.TRADE_GOING_TO_TARGET');
+                        $newStatusId = config('constants.FLEET_STATUSES.TRADE_GOING_TO_TARGET');
 
                         $duration = config('constants.DURATION.TRADING_GOING_TO');
 
@@ -489,6 +490,9 @@ class FleetService
                     } else {
                         // transfer fleet to warships in the island
                         $this->convertFleetDetailsToWarships($fleetDetails, $city);
+
+                        // send warships changes for user
+                        CityWarshipsDataChangesEvent::dispatch($city->user_id, $city->id, $fleetDetails);
 
                         $shouldDeleteFleet = true;
                     }
@@ -525,11 +529,14 @@ class FleetService
                         $resourceChanges      = CityResourceChangeResource::collection($this->getCityResourceChanges($transferredResources, 'add'));
                         CityResourcesDataChangesEvent::dispatch($targetCity->user_id, $targetCity->id, $resourceChanges);
 
+                        // send warships changes for user
+                        CityWarshipsDataChangesEvent::dispatch($targetCity->user_id, $targetCity->id, $fleetDetails);
+
                         $shouldDeleteFleet = true;
                     } else {
                         dump('move: fleet is returning to original island');
                         // return fleet back
-                        $statusId = config('constants.FLEET_STATUSES.MOVING_GOING_BACK');
+                        $newStatusId = config('constants.FLEET_STATUSES.MOVING_GOING_BACK');
 
                         $duration = config('constants.DURATION.MOVE_GOING_BACK');
 
@@ -572,6 +579,9 @@ class FleetService
                     $resourceChanges      = CityResourceChangeResource::collection($this->getCityResourceChanges($transferredResources, 'add'));
                     CityResourcesDataChangesEvent::dispatch($city->user_id, $city->id, $resourceChanges);
 
+                    // send warships changes for user
+                    CityWarshipsDataChangesEvent::dispatch($city->user_id, $city->id, $fleetDetails);
+
                     $shouldDeleteFleet = true;
                 }
             }
@@ -580,7 +590,7 @@ class FleetService
             if ($fleet->isTrasnsportTask()) {
                 if ($fleet->isTransportFleetGoingToTarget()) {
                     dump('transport: fleet delivered resource, fleet is going back');
-                    $statusId = config('constants.FLEET_STATUSES.TRANSPORT_GOING_BACK');
+                    $newStatusId = config('constants.FLEET_STATUSES.TRANSPORT_GOING_BACK');
 
                     $duration = config('constants.DURATION.TRADING_GOING_BACK');
 
@@ -605,6 +615,9 @@ class FleetService
                     $resourceChanges      = CityResourceChangeResource::collection($this->getCityResourceChanges($transferredResources, 'add'));
                     CityResourcesDataChangesEvent::dispatch($city->user_id, $city->id, $resourceChanges);
 
+                    // send warships changes for user
+                    CityWarshipsDataChangesEvent::dispatch($city->user_id, $city->id, $fleetDetails);
+
                     $shouldDeleteFleet = true;
                 }
             }
@@ -613,7 +626,7 @@ class FleetService
             if ($fleet->isExpeditionTask()) {
                 if ($fleet->isExpeditionFleetGoingToTarget()) {
                     dump('expedition: fleet reached unknown islands, start researching...');
-                    $statusId = config('constants.FLEET_STATUSES.EXPEDITION_IN_PROGRESS');
+                    $newStatusId = config('constants.FLEET_STATUSES.EXPEDITION_IN_PROGRESS');
 
                     $duration = config('constants.DURATION.EXPEDITION');
 
@@ -629,7 +642,7 @@ class FleetService
 
                 if ($fleet->isExpeditionDone()) {
                     dump('expedition: fleet completed expedition, we got something, going back...');
-                    $statusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_BACK');
+                    $newStatusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_BACK');
 
                     $duration = config('constants.DURATION.EXPEDITION_GOING_BACK');
 
@@ -659,7 +672,7 @@ class FleetService
                     if ($fleet->repeating) {
                         dump('expedition: fleet repeats expedition task, going to target');
                         // just repeat task
-                        $statusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_TO_TARGET');
+                        $newStatusId = config('constants.FLEET_STATUSES.EXPEDITION_GOING_TO_TARGET');
 
                         $duration = config('constants.DURATION.EXPEDITION_GOING_TO');
 
@@ -667,6 +680,9 @@ class FleetService
                     } else {
                         // transfer fleet to warships in the island
                         $this->convertFleetDetailsToWarships($fleetDetails, $city);
+
+                        // send warships changes for user
+                        CityWarshipsDataChangesEvent::dispatch($city->user_id, $city->id, $fleetDetails);
 
                         $shouldDeleteFleet = true;
                     }
@@ -690,7 +706,7 @@ class FleetService
                     // city has been taken over successfully
                     if ($canTakeOverCity['result'] === true) {
                         dump('take over: fleet took over the city successfully');
-                        $statusId = config('constants.FLEET_STATUSES.TAKE_OVER_DONE');
+                        $newStatusId = config('constants.FLEET_STATUSES.TAKE_OVER_DONE');
 
                         // take over city
                         (new CityService())->takeOverCity($targetCity, $user);
@@ -712,11 +728,14 @@ class FleetService
                         // transfer fleet to warships in the island
                         $this->convertFleetDetailsToWarships($fleetDetails, $targetCity);
 
+                        // send warships changes for user
+                        CityWarshipsDataChangesEvent::dispatch($targetCity->user_id, $targetCity->id, $fleetDetails);
+
                         $shouldDeleteFleet = true;
                     } else {
                         dump('take over: fleet could not take the city over');
                         // something wrong with taking over
-                        $statusId = config('constants.FLEET_STATUSES.TAKE_OVER_GOING_BACK');
+                        $newStatusId = config('constants.FLEET_STATUSES.TAKE_OVER_GOING_BACK');
 
                         $duration = config('constants.DURATION.TAKE_OVER_GOING_BACK');
 
@@ -757,6 +776,9 @@ class FleetService
                     // transfer fleet to warships in the island
                     $this->convertFleetDetailsToWarships($fleetDetails, $city);
 
+                    // send warships changes for user
+                    CityWarshipsDataChangesEvent::dispatch($city->user_id, $city->id, $fleetDetails);
+
                     $shouldDeleteFleet = true;
                 }
             }
@@ -765,7 +787,7 @@ class FleetService
             if ($fleet->isAttackTask()) {
                 if ($fleet->isAttackFleetGoingToTarget()) {
                     dump('attack fleet: fleet achieved target island');
-                    $statusId = config('constants.FLEET_STATUSES.ATTACK_IN_PROGRESS');
+                    $newStatusId = config('constants.FLEET_STATUSES.ATTACK_IN_PROGRESS');
 
                     // TODO: how long? // distance?
                     $deadline = Carbon::create($fleet->deadline);
@@ -775,7 +797,7 @@ class FleetService
 
                 if ($fleet->isAttackFleetAttackCompleted()) {
                     dump('fleets\'s attack is completed: fleet is going back');
-                    $statusId = config('constants.FLEET_STATUSES.ATTACK_GOING_BACK');
+                    $newStatusId = config('constants.FLEET_STATUSES.ATTACK_GOING_BACK');
 
                     $duration = config('constants.DURATION.ATTACK_GOING_BACK');
 
@@ -795,36 +817,38 @@ class FleetService
 
                     $this->convertFleetDetailsToWarships($fleetDetails, $city);
 
+                    // send warships changes for user
+                    CityWarshipsDataChangesEvent::dispatch($city->user_id, $city->id, $fleetDetails);
+
                     $shouldDeleteFleet = true;
                 }
             }
 
-            if ($deadline && $statusId) {
+            if ($deadline && $newStatusId) {
                 // update fleet
                 $fleet->update([
-                    'status_id' => $statusId,
+                    'status_id' => $newStatusId,
                     'deadline'  => $deadline,
-                    'repeating' => $repeating !== null ? $repeating : $fleet->repeating
+                    'repeating' => $repeating ?? $fleet->repeating
                 ]);
             }
 
             if ($shouldDeleteFleet) {
                 $fleet->delete();
-
-                $userId = $city->user_id;
-
-                // notify user about warships changes
-                if ($userId && isset($fleetDetails)) {
-                    CityWarshipsDataChangesEvent::dispatch($userId, $city->id, $fleetDetails);
-                }
             }
 
-            if ($statusId || $deadline || $shouldDeleteFleet) {
-                dump('Dispatch new fleet event');
+            if ($newStatusId || $deadline || $shouldDeleteFleet) {
+                dump('Send fleet changes event');
 
                 $user = User::find($city->user_id);
                 $this->sendFleetUpdatedEvent($user);
                 (new ResourceService())->sendCityResourcesUpdatedEvent($city);
+
+                if ($shouldDeleteFleet) {
+                    // TODO: get userId of city or targetCity
+                    $userId = $city->user_id;
+                    FleetDataChangesEvent::dispatch($userId, 'remove', $fleet, $fleetDetails, [$city, $targetCity]);
+                }
             }
         }
 

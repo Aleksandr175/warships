@@ -295,7 +295,6 @@ export interface IFleet {
 
 export interface IFleetsData {
   fleets: ICityFleet[];
-  fleetsIncoming: IFleetIncoming[];
   fleetDetails: IFleetWarshipsData[];
   cities: IMapCity[];
 }

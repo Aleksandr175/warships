@@ -23,9 +23,11 @@ export const useFleets = () => {
         fleet,
         fleetChangeType,
         fleetDetails: newFleetDetails,
+        cities: newCities,
       } = newFleetsData;
       let updatedFleets = oldFleetsData.fleets || [];
       let updatedFleetDetails = oldFleetsData.fleetDetails || [];
+      let updatedCities = oldFleetsData.cities || [];
 
       // Handle updates for fleets
       switch (fleetChangeType) {
@@ -90,6 +92,21 @@ export const useFleets = () => {
           break;
       }
 
+      // Handle city updates
+      newCities.forEach((newCity) => {
+        const cityIndex = updatedCities.findIndex((c) => c.id === newCity.id);
+        if (cityIndex > -1) {
+          // City exists, update it
+          updatedCities[cityIndex] = {
+            ...updatedCities[cityIndex],
+            ...newCity,
+          };
+        } else {
+          // New city, add it to the array
+          updatedCities.push(newCity);
+        }
+      });
+
       // TODO: merge cities correctly
       // Return the updated fleet data including updated fleet details
       return {
@@ -97,6 +114,7 @@ export const useFleets = () => {
         ...newFleetsData,
         fleets: updatedFleets,
         fleetDetails: updatedFleetDetails,
+        cities: updatedCities,
       };
     });
   };
@@ -104,7 +122,6 @@ export const useFleets = () => {
   return {
     fleets: queryFleets?.data?.fleets,
     fleetDetails: queryFleets?.data?.fleetDetails,
-    fleetsIncoming: queryFleets?.data?.fleetsIncoming,
     fleetCities: queryFleets?.data?.cities,
     updateFleetsData,
     applyFleetsChangesData,

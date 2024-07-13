@@ -16,7 +16,7 @@ class FleetDataChangesEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $fleet;
-    public $action;
+    public $fleetChangeType;
     public $fleetDetails;
     public $userId;
     public $cities;
@@ -26,13 +26,13 @@ class FleetDataChangesEvent implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($userId, $action, $fleet, $fleetsDetails, $cities)
+    public function __construct($userId, $fleetChangeType, $fleet, $fleetsDetails, $cities)
     {
-        $this->userId       = $userId;
-        $this->action       = $action;
-        $this->fleet        = new FleetResource($fleet);
-        $this->fleetDetails = FleetDetailResource::collection($fleetsDetails);
-        $this->cities       = CityShortInfoResource::collection($cities);
+        $this->userId          = $userId;
+        $this->fleetChangeType = $fleetChangeType;
+        $this->fleet           = new FleetResource($fleet);
+        $this->fleetDetails    = FleetDetailResource::collection($fleetsDetails);
+        $this->cities          = CityShortInfoResource::collection($cities);
     }
 
     /**

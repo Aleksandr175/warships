@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Events\CityWarshipsDataChangesEvent;
+use App\Events\FleetDataChangesEvent;
 use App\Models\Adventure;
 use App\Models\BattleLog;
 use App\Models\BattleLogDetail;
@@ -266,6 +267,11 @@ class BattleService
         $user = User::find($userId);
         (new MessageService())->sendMessagesUpdatedEvent($user);
 
+        if ($userId) {
+            // notify user about fleet changes after battle
+            FleetDataChangesEvent::dispatch($user->id, $fleetDetails ? 'update' : 'remove', $fleet, $fleetDetails ?? [], [$city]);
+        }
+
         // for defender
         if ($targetCityUserId) {
             $messageId = Message::create([
@@ -286,17 +292,6 @@ class BattleService
 
             // send warships changes for defender after battle
             CityWarshipsDataChangesEvent::dispatch($targetCityUser->id, $targetCity->id, $warshipsChanges);
-        }
-
-        // do i need it? i dont think so
-        if ($targetCity->city_dictionary_id === config('constants.CITY_TYPE_ID.ISLAND')) {
-            // TODO if we attack player's island
-            // get warships in target island
-            // summarize all fleets in city, all trade warships if exist (from other player)
-            // ...
-
-            // get warships for player's bay
-            // TODO: do it later
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\FleetDataChangesEvent;
 use App\Models\City;
 use App\Models\Fleet;
 use App\Models\FleetDetail;
@@ -120,6 +121,9 @@ class ExpeditionService
     {
         $city = City::find($fleet->city_id);
         $user = User::find($city->user_id);
+
+        // notify user
+        FleetDataChangesEvent::dispatch($user->id, 'remove', $fleet, $fleetDetails, [$city]);
 
         $fleet->resources()->delete();
         $fleet->delete();

@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { IFleetChangesData, IFleetsData } from '../../types/types';
+import { IFleetDataChanges, IFleetsData } from "../../types/types";
 import { useFetchFleets } from "../../hooks/useFetchFleets";
 
 export const useFleets = () => {
@@ -16,7 +16,7 @@ export const useFleets = () => {
     });
   };
 
-  const applyFleetsChangesData = (newFleetsData: IFleetChangesData) => {
+  const applyFleetsChangesData = (newFleetsData: IFleetDataChanges) => {
     queryClient.setQueryData([`/fleets`], (oldFleetsData: IFleetsData) => {
       // Extract relevant data from newFleetsData
       const {
@@ -34,7 +34,7 @@ export const useFleets = () => {
           if (fleetIndex > -1) {
             // Fleet already exists, update it
             updatedFleets = updatedFleets.map((f, index) =>
-              index === fleetIndex ? { ...f, ...fleet } : f
+              index === fleetIndex ? { ...fleet } : f
             );
           } else {
             // Fleet does not exist, add new fleet to the array
@@ -49,7 +49,7 @@ export const useFleets = () => {
           break;
         case "update":
           updatedFleets = updatedFleets.map((f) =>
-            f.id === fleet.id ? { ...f, ...fleet } : f
+            f.id === fleet.id ? { ...fleet } : f
           );
           break;
         default:
@@ -64,9 +64,13 @@ export const useFleets = () => {
           );
           if (detailIndex > -1) {
             updatedFleetDetails = updatedFleetDetails.map((fd, index) =>
-              index === detailIndex ? { ...fd, ...newFleetDetails[0] } : fd
+              index === detailIndex ? { ...newFleetDetails[0] } : fd
             );
           } else {
+            updatedFleetDetails = updatedFleetDetails.filter(
+              (fd) => fd.fleetId !== fleet.id
+            );
+
             updatedFleetDetails = [...updatedFleetDetails, ...newFleetDetails];
           }
           break;
@@ -76,9 +80,11 @@ export const useFleets = () => {
           );
           break;
         case "update":
-          updatedFleetDetails = updatedFleetDetails.map((fd) =>
-            fd.fleetId === fleet.id ? { ...fd, ...newFleetDetails[0] } : fd
+          updatedFleetDetails = updatedFleetDetails.filter(
+            (fd) => fd.fleetId !== fleet.id
           );
+
+          updatedFleetDetails = [...updatedFleetDetails, ...newFleetDetails];
           break;
         default:
           break;

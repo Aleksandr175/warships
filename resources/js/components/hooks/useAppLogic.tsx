@@ -24,6 +24,7 @@ import { useCityWarships } from "./useCityWarships";
 import { useResearches } from "./useResearches";
 import { IMessagesData } from "../Messages/types";
 import { useCityRefining } from "./useCityRefining";
+import { useFleets } from "./useFleets";
 
 export const useAppLogic = () => {
   const queryClient = useQueryClient();
@@ -55,6 +56,8 @@ export const useAppLogic = () => {
     cityId: city?.id,
   });
 
+  const { applyFleetsChangesData } = useFleets();
+
   const setWebsockets = (userId: number): void => {
     console.log("connect to websockets..., userId: ", userId);
     // @ts-ignore
@@ -85,6 +88,7 @@ export const useAppLogic = () => {
         "FleetDataChangesEvent",
         (fleetDataChanges: IFleetDataChanges) => {
           console.log("Fleet data CHANGES", fleetDataChanges);
+          applyFleetsChangesData(fleetDataChanges);
         }
       )
       // TODO need?

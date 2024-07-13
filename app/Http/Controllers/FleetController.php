@@ -23,7 +23,6 @@ class FleetController extends Controller
         return [
             'fleets'         => FleetResource::collection($fleetsData['fleets']),
             'fleetDetails'   => FleetDetailResource::collection($fleetsData['fleetDetails']),
-            'fleetsIncoming' => FleetIncomingResource::collection($fleetsData['fleetsIncoming']),
             'cities'         => CityShortInfoResource::collection($cities),
         ];
     }

@@ -8,6 +8,7 @@ use App\Models\Fleet;
 use App\Models\User;
 use App\Models\WarshipDictionary;
 use Carbon\Carbon;
+use App\Events\FleetDataChangesEvent;
 
 class PirateService
 {
@@ -22,11 +23,11 @@ class PirateService
 
             $warshipGroupsInCity = $city->warships;
 
-            dump('warshipGroupsInCity', $warshipGroupsInCity);
+            // dump('warshipGroupsInCity', $warshipGroupsInCity);
 
-            $fleetDetails = $this->getAvailableWarshipsForSending($warshipGroupsInCity);
+            $warships = $this->getAvailableWarshipsForSending($warshipGroupsInCity);
 
-            if (!count($fleetDetails)) {
+            if (!count($warships)) {
                 dump('Not enough warships for fleet');
 
                 return false;
@@ -51,7 +52,7 @@ class PirateService
             $targetCityId = $targetCity->id;
 
             // create fleet and details
-            $fleetId = (new Fleet)->create([
+            $fleet = (new Fleet)->create([
                 'city_id'        => $city->id,
                 'target_city_id' => $targetCityId,
                 'fleet_task_id'  => config('constants.FLEET_TASKS.ATTACK'),
@@ -60,16 +61,17 @@ class PirateService
                 'repeating'      => 0,
                 'status_id'      => config('constants.FLEET_STATUSES.ATTACK_GOING_TO_TARGET'),
                 'deadline'       => Carbon::now()->addSeconds($timeToTarget)
-            ])->id;
+            ]);
 
-            (new FleetService)->moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleetId, $fleetDetails);
+            $newFleetDetailsData = (new FleetService)->moveWarshipsFromCityToFleet($warshipGroupsInCity, $fleet->id, $warships);
 
             dump('Pirate fleet has been sent to targetCityId: ' . $targetCityId);
             $user = User::find($targetCity->user_id);
 
             // notify user about pirate attack event
             if ($user) {
-                (new FleetService())->sendFleetUpdatedEvent($user);
+                $newFleetDetailsData = collect($newFleetDetailsData);
+                FleetDataChangesEvent::dispatch($user->id, 'add', $fleet, $newFleetDetailsData, [$city, $targetCity]);
             }
         } else {
             dump('Try to build new pirate warship');

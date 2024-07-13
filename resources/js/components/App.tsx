@@ -26,18 +26,20 @@ import "react-toastify/dist/ReactToastify.css";
 const App = () => {
   const {
     city,
-    updateCityResources,
     cities,
     fleets,
     fleetDetails,
     fleetCitiesDictionary,
-    fleetsIncoming,
     dictionaries,
     userId,
     logout,
     unreadMessagesNumber,
     selectCity,
   } = useAppLogic();
+
+  if (!cities) {
+    return <></>;
+  }
 
   return (
     <Router>
@@ -212,10 +214,10 @@ const App = () => {
               {dictionaries && fleetCitiesDictionary && (
                 <Fleets
                   fleets={fleets}
-                  fleetsIncoming={fleetsIncoming}
                   fleetDetails={fleetDetails}
                   dictionaries={dictionaries}
                   fleetCitiesDictionary={fleetCitiesDictionary}
+                  myCities={cities}
                 />
               )}
             </SColumn>

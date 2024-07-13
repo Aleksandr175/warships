@@ -26,12 +26,12 @@ class FleetDataChangesEvent implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($userId, $fleetChangeType, $fleet, $fleetsDetails, $cities)
+    public function __construct($userId, $fleetChangeType, $fleet, $fleetDetails, $cities)
     {
         $this->userId          = $userId;
         $this->fleetChangeType = $fleetChangeType;
         $this->fleet           = new FleetResource($fleet);
-        $this->fleetDetails    = FleetDetailResource::collection($fleetsDetails);
+        $this->fleetDetails    = FleetDetailResource::collection($fleetDetails);
         $this->cities          = CityShortInfoResource::collection($cities);
     }
 

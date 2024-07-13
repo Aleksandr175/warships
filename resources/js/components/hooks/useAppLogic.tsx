@@ -231,7 +231,6 @@ export const useAppLogic = () => {
     selectCity,
     fleets: queryFleets?.data?.fleets || [],
     fleetCitiesDictionary: queryFleets?.data?.cities || [],
-    fleetsIncoming: queryFleets?.data?.fleetsIncoming || [],
     dictionaries,
     updateCityResources,
     fleetDetails: queryFleets?.data?.fleetDetails || [],

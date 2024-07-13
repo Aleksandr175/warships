@@ -1,8 +1,6 @@
 export interface ICity {
   id: number;
   title: string;
-  gold: number;
-  population: number;
   cityTypeId: number;
   cityAppearanceId: number;
   archipelagoId: number;
@@ -114,8 +112,6 @@ export interface ICityBuildingQueue {
   buildingId: number;
   cityId: number;
   lvl: number;
-  gold: number;
-  population: number;
   time: number;
   deadline: string;
 }
@@ -241,8 +237,6 @@ export interface IWarship extends IBuilding {
   capacity: number;
   health: number;
   time: number;
-  gold: number;
-  population: number;
   requiredResources: IWarshipRequiredResource[];
   multipliers: {
     warshipAttackerId: number;

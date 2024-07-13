@@ -5,26 +5,28 @@ import {
   ICityFleet,
   IDictionary,
   IFleetWarshipsData,
-  IFleetIncoming,
   IMapCity,
+  ICity,
 } from "../types/types";
 import { useFetchDictionaries } from "../hooks/useFetchDictionaries";
 
 export const Fleets = ({
   fleets,
-  fleetsIncoming,
   fleetCitiesDictionary,
   fleetDetails,
+  myCities,
 }: {
   fleets: ICityFleet[] | undefined;
-  fleetsIncoming: IFleetIncoming[] | undefined;
   dictionaries: IDictionary;
   fleetCitiesDictionary: IMapCity[];
   fleetDetails: IFleetWarshipsData[] | undefined;
+  myCities: ICity[];
 }) => {
   const queryDictionaries = useFetchDictionaries();
 
   const dictionaries = queryDictionaries.data;
+
+  const myCityIds = myCities.map((city) => city.id); // Extracting IDs for comparison
 
   const getFleetDetails = (fleetId: number): IFleetWarshipsData[] => {
     return fleetDetails?.filter((detail) => detail.fleetId === fleetId)!;
@@ -37,6 +39,13 @@ export const Fleets = ({
   const expeditionFleetTaskId = dictionaries?.fleetTasksDictionary?.find(
     (task) => task.slug === "expedition"
   )?.id;
+
+  // Calculate incoming fleets based on the condition provided
+  const fleetsIncoming = fleets?.filter(
+    (fleet) =>
+      !myCityIds.includes(fleet.cityId) &&
+      myCityIds.includes(fleet.targetCityId)
+  );
 
   const fleetsTrading = [...(fleets || []), ...(fleetsIncoming || [])].filter(
     (fleet) => fleet.fleetTaskId === tradeFleetTaskId

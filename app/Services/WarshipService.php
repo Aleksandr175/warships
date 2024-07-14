@@ -181,14 +181,22 @@ class WarshipService
         return $maxBuildableQty;
     }
 
-    public function subtractResourcesForWarships(int $cityId, WarshipDictionary $warshipDict, int $qty): void
+    public function subtractResourcesForWarships(int $cityId, WarshipDictionary $warshipDict, int $qty): array
     {
-        $cityService = new CityService();
+        $cityService     = new CityService();
+        $resourceChanges = [];
 
         foreach ($warshipDict->requiredResources as $requiredResource) {
-            $requiredResourceQty = $requiredResource->qty * $qty * (-1);
-            $cityService->addResourceToCity($cityId, $requiredResource->resource_id, $requiredResourceQty);
+            $requiredResourceQty = $requiredResource->qty * $qty;
+            $cityService->subtractResourceFromCity($cityId, $requiredResource->resource_id, $requiredResourceQty);
+
+            $resourceChanges[] = [
+                'resource_id' => $requiredResource->resource_id,
+                'qty'         => $requiredResourceQty
+            ];
         }
+
+        return $resourceChanges;
     }
 
     public function sendCityWarshipsDataUpdatedEvent($userId, $cityId, $warships, $warshipQueue, $warshipSlots): void

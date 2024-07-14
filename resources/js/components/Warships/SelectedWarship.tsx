@@ -60,9 +60,10 @@ export const SelectedWarship = ({
   const { buildings } = useBuildings({ cityId });
   const { updateCityWarshipsData, warships } = useCityWarships({ cityId });
 
-  const { updateCityResourcesData, cityResources = [] } = useCityResources({
-    cityId,
-  });
+  const { applyCityResourcesChangesData, cityResources = [] } =
+    useCityResources({
+      cityId,
+    });
 
   const dictionaries = queryDictionaries.data;
 
@@ -172,9 +173,9 @@ export const SelectedWarship = ({
           warshipQueue: response.data.warshipQueue,
         });
 
-        updateCityResourcesData({
-          cityId,
-          cityResources: response.data.cityResources,
+        applyCityResourcesChangesData({
+          cityResourcesChanges: response.data.resourceChanges,
+          cityId: response.data.cityId,
         });
       });
   }

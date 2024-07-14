@@ -38,9 +38,8 @@ class WarshipQueueService
         return abort(403);
     }
 
-    public function orderWarship($userId, $data)
+    public function orderWarship($userId, $data): void
     {
-        $queue     = null;
         $cityId    = $data['cityId'];
         $warshipId = $data['warshipId'];
         $qty       = $data['qty'];
@@ -53,10 +52,8 @@ class WarshipQueueService
 
         // TODO: should we check canBuild here? (especially for pirates)
         if ($this->city && $this->city->id) {
-            $queue = $this->updateWarshipQueue();
+            $this->updateWarshipQueue();
         }
-
-        return $queue;
     }
 
     public function canBuild($city)
@@ -144,7 +141,7 @@ class WarshipQueueService
 
     public function updateWarshipQueue()
     {
-        $warshipDict   = WarshipDictionary::find($this->warshipId)->load('requiredResources');
+        $warshipDict = WarshipDictionary::find($this->warshipId)->load('requiredResources');
 
         $warshipService = new WarshipService();
         // Determine the maximum number of warships that can be built with the available resources
@@ -168,9 +165,12 @@ class WarshipQueueService
             ]));
 
             // Subtract the required amount of each resource from the city
-            $warshipService->subtractResourcesForWarships($this->city->id, $warshipDict, $availableWarshipQtyToBuild);
+            $resourceChanges = $warshipService->subtractResourcesForWarships($this->city->id, $warshipDict, $availableWarshipQtyToBuild);
         }
 
-        return $queue;
+        return [
+            'queue'           => $queue,
+            'resourceChanges' => $resourceChanges ?? []
+        ];
     }
 }

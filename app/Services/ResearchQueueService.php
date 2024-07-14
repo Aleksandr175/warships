@@ -238,10 +238,11 @@ class ResearchQueueService
         return $researchQueue;
     }
 
-    public function cancel(int $userId): City
+    public function cancel(int $userId): array
     {
-        $researchQueue = ResearchQueue::where('user_id', $userId)->first();
-        $city          = null;
+        $researchQueue   = ResearchQueue::where('user_id', $userId)->first();
+        $city            = null;
+        $resourceChanges = [];
 
         if ($researchQueue && $researchQueue->id) {
             // find city
@@ -260,12 +261,20 @@ class ResearchQueueService
                     (new UserService())->addResourceToUser($userId, $resource->resource_id, $resource->qty);
                 }
 
+                $resourceChanges[] = [
+                    'resource_id' => $resource->resource_id,
+                    'qty'         => $resource->qty
+                ];
+
                 $resource->delete();
             }
 
             $researchQueue->delete();
         }
 
-        return $city;
+        return [
+            'city'      => $city,
+            'resourceChanges' => $resourceChanges
+        ];
     }
 }

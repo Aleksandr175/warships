@@ -29,9 +29,10 @@ export const SelectedResearch = ({
     cityId,
   });
 
-  const { updateCityResourcesData, cityResources = [] } = useCityResources({
-    cityId,
-  });
+  const { applyCityResourcesChangesData, cityResources = [] } =
+    useCityResources({
+      cityId,
+    });
 
   const { updateUserResourcesData, userResources } = useUserResources();
 
@@ -112,11 +113,12 @@ export const SelectedResearch = ({
           researchQueue: response.data.researchQueue,
         });
 
-        updateCityResourcesData({
-          cityResources: response.data.cityResources,
+        applyCityResourcesChangesData({
+          cityResourcesChanges: response.data.resourceChanges,
           cityId: response.data.cityId,
         });
 
+        // TODO apply changes for user resources
         updateUserResourcesData(response.data.userResources);
       });
   }
@@ -130,11 +132,12 @@ export const SelectedResearch = ({
           researchQueue: response.data.researchQueue,
         });
 
-        updateCityResourcesData({
-          cityResources: response.data.cityResources,
+        applyCityResourcesChangesData({
+          cityResourcesChanges: response.data.resourceChanges,
           cityId: response.data.cityId,
         });
 
+        // TODO apply changes for user resources
         updateUserResourcesData(response.data.userResources);
       });
   }

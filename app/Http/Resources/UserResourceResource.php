@@ -15,8 +15,8 @@ class UserResourceResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'resourceId' => $this->resource_id,
-            'qty'        => $this->qty
+            'resourceId' => $this->resource['resource_id'],
+            'qty'        => $this->resource['qty']
         ];
     }
 }

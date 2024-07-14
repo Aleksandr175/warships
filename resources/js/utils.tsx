@@ -3,6 +3,8 @@ import {
   ICity,
   IResearch,
   IResearchImprovement,
+  IResource,
+  IResourceDictionary,
   IWarshipImprovement,
   TImprovementType,
 } from "./types/types";
@@ -82,4 +84,32 @@ export const getResearchTitleById = (
   researchId: number | undefined
 ): string | undefined => {
   return dictionary.find((research) => research.id === researchId)?.title;
+};
+
+export const filterCityResources = (
+  resources: IResource[],
+  dictionary: IResourceDictionary[]
+) => {
+  // Create a map from the dictionary for quick lookup of types by resource ID
+  const typeMap = new Map(dictionary.map((item) => [item.id, item.type]));
+
+  // Filter resources where the corresponding type in the dictionary is greater than 1
+  return resources.filter((resource) => {
+    const resourceType = typeMap.get(resource.resourceId);
+    return resourceType === 1; // Only type === 1 is city resource
+  });
+};
+
+export const filterUserResources = (
+  resources: IResource[],
+  dictionary: IResourceDictionary[]
+) => {
+  // Create a map from the dictionary for quick lookup of types by resource ID
+  const typeMap = new Map(dictionary.map((item) => [item.id, item.type]));
+
+  // Filter resources where the corresponding type in the dictionary is greater than 1
+  return resources.filter((resource) => {
+    const resourceType = typeMap.get(resource.resourceId);
+    return resourceType ? resourceType > 1 : false; // Only include resources with a type > 1
+  });
 };

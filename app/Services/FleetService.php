@@ -281,18 +281,7 @@ class FleetService
     // type = add, remove
     public function getCityResourceChanges($resourceChanges, $type): array
     {
-        $changes = [];
-
-        foreach ($resourceChanges as $resourceChange) {
-            $qty = $type === 'add' ? $resourceChange['qty'] : -$resourceChange['qty'];
-
-            $changes[] = [
-                'resource_id' => $resourceChange['resource_id'],
-                'qty'         => $qty,
-            ];
-        }
-
-        return $changes;
+        return (new ResourceService())->getResourceChanges($resourceChanges, $type);
     }
 
     // check and correct fleet details, convert fleet details to backend format

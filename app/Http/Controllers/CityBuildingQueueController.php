@@ -8,7 +8,7 @@ use App\Http\Resources\BuildingResource;
 use App\Http\Resources\CityBuildingQueueResource;
 use App\Http\Resources\ResourceChangesResource;
 use App\Services\BuildingQueueService;
-use App\Services\FleetService;
+use App\Services\ResourceService;
 use Illuminate\Support\Facades\Auth;
 
 class CityBuildingQueueController extends Controller
@@ -30,7 +30,7 @@ class CityBuildingQueueController extends Controller
             return [
                 'buildings'       => BuildingResource::collection($city->buildings),
                 'buildingQueue'   => new CityBuildingQueueResource($city->buildingQueue),
-                'resourceChanges' => ResourceChangesResource::collection((new FleetService())->getCityResourceChanges($queueResources, 'remove')),
+                'resourceChanges' => ResourceChangesResource::collection((new ResourceService())->getResourceChanges($queueResources, 'remove')),
                 'cityId'          => $cityId
             ];
         }
@@ -52,7 +52,7 @@ class CityBuildingQueueController extends Controller
             return [
                 'buildings'       => BuildingResource::collection($city->buildings),
                 'buildingQueue'   => [],
-                'resourceChanges' => ResourceChangesResource::collection((new FleetService())->getCityResourceChanges($resourceChanges, 'add')),
+                'resourceChanges' => ResourceChangesResource::collection((new ResourceService())->getResourceChanges($resourceChanges, 'add')),
                 'cityId'          => $city->id
             ];
         }

@@ -25,6 +25,8 @@ import { useResearches } from "./useResearches";
 import { IMessagesData } from "../Messages/types";
 import { useCityRefining } from "./useCityRefining";
 import { useFleets } from "./useFleets";
+import { filterCityResources, filterUserResources } from "../../utils";
+import { useUserResources } from "./useUserResources";
 
 export const useAppLogic = () => {
   const queryClient = useQueryClient();
@@ -57,6 +59,8 @@ export const useAppLogic = () => {
   });
 
   const { applyFleetsChangesData } = useFleets();
+
+  const { applyUserResourcesChanges } = useUserResources();
 
   const setWebsockets = (userId: number): void => {
     console.log("connect to websockets..., userId: ", userId);
@@ -114,13 +118,22 @@ export const useAppLogic = () => {
             newCityResourcesDataChanges
           );
 
-          // TODO: filter resources, only resources for city should be updated
           applyCityResourcesChangesData({
-            cityResourcesChanges: newCityResourcesDataChanges.resourceChanges,
+            cityResourcesChanges: filterCityResources(
+              newCityResourcesDataChanges.resourceChanges,
+              // @ts-ignore
+              dictionaries?.resourcesDictionary
+            ),
             cityId: newCityResourcesDataChanges.cityId,
           });
 
-          // TODO: update user resources
+          applyUserResourcesChanges({
+            resourceChanges: filterUserResources(
+              newCityResourcesDataChanges.resourceChanges,
+              // @ts-ignore
+              dictionaries?.resourcesDictionary
+            ),
+          });
         }
       )
       .listen(

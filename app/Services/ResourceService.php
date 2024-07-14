@@ -81,4 +81,21 @@ class ResourceService
         // notify user about resources changes
         CityResourcesDataChangesEvent::dispatch($city->user_id, $city->id, $resourcesChanges);
     }
+
+    // type = add, remove
+    public function getResourceChanges($resourceChanges, $type): array
+    {
+        $changes = [];
+
+        foreach ($resourceChanges as $resourceChange) {
+            $qty = $type === 'add' ? $resourceChange['qty'] : -$resourceChange['qty'];
+
+            $changes[] = [
+                'resource_id' => $resourceChange['resource_id'],
+                'qty'         => $qty,
+            ];
+        }
+
+        return $changes;
+    }
 }

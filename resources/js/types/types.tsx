@@ -403,6 +403,13 @@ export interface IUserResources {
   resources: IResource[];
 }
 
+export interface IUserResourcesChanges {
+  resourceChanges: {
+    resourceId: number;
+    qty: number;
+  }[];
+}
+
 export interface IResource {
   resourceId: number;
   qty: number;

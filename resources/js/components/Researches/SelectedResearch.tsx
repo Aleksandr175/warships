@@ -1,7 +1,12 @@
 import { Card } from "../Common/Card";
 import { SButtonsBlock, SH2, SParam, SParams, SText } from "../styles";
 import { Icon } from "../Common/Icon";
-import { convertSecondsToTime, getResourceSlug } from "../../utils";
+import {
+  convertSecondsToTime,
+  filterCityResources,
+  filterUserResources,
+  getResourceSlug,
+} from "../../utils";
 import React from "react";
 import styled from "styled-components";
 import { httpClient } from "../../httpClient/httpClient";
@@ -34,7 +39,7 @@ export const SelectedResearch = ({
       cityId,
     });
 
-  const { updateUserResourcesData, userResources } = useUserResources();
+  const { applyUserResourcesChanges, userResources } = useUserResources();
 
   const queryDictionaries = useFetchDictionaries();
 
@@ -114,12 +119,21 @@ export const SelectedResearch = ({
         });
 
         applyCityResourcesChangesData({
-          cityResourcesChanges: response.data.resourceChanges,
+          cityResourcesChanges: filterCityResources(
+            response.data.resourceChanges,
+            // @ts-ignore
+            dictionaries?.resourcesDictionary
+          ),
           cityId: response.data.cityId,
         });
 
-        // TODO apply changes for user resources
-        updateUserResourcesData(response.data.userResources);
+        applyUserResourcesChanges({
+          resourceChanges: filterUserResources(
+            response.data.resourceChanges,
+            // @ts-ignore
+            dictionaries?.resourcesDictionary
+          ),
+        });
       });
   }
 
@@ -133,12 +147,21 @@ export const SelectedResearch = ({
         });
 
         applyCityResourcesChangesData({
-          cityResourcesChanges: response.data.resourceChanges,
+          cityResourcesChanges: filterCityResources(
+            response.data.resourceChanges,
+            // @ts-ignore
+            dictionaries?.resourcesDictionary
+          ),
           cityId: response.data.cityId,
         });
 
-        // TODO apply changes for user resources
-        updateUserResourcesData(response.data.userResources);
+        applyUserResourcesChanges({
+          resourceChanges: filterUserResources(
+            response.data.resourceChanges,
+            // @ts-ignore
+            dictionaries?.resourcesDictionary
+          ),
+        });
       });
   }
 

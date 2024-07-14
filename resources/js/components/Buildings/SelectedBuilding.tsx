@@ -45,7 +45,9 @@ export const SelectedBuilding = ({
     cityId: city.id,
   });
 
-  const { updateCityResourcesData } = useCityResources({ cityId: city.id });
+  const { applyCityResourcesChangesData } = useCityResources({
+    cityId: city.id,
+  });
 
   const dictionaries = queryDictionaries.data;
 
@@ -79,8 +81,8 @@ export const SelectedBuilding = ({
           buildingQueue: response.data.buildingQueue,
         });
 
-        updateCityResourcesData({
-          cityResources: response.data.cityResources,
+        applyCityResourcesChangesData({
+          cityResourcesChanges: response.data.resourceChanges,
           cityId: response.data.cityId,
         });
       });
@@ -98,8 +100,8 @@ export const SelectedBuilding = ({
           cityId: response.data.cityId,
         });
 
-        updateCityResourcesData({
-          cityResources: response.data.cityResources,
+        applyCityResourcesChangesData({
+          cityResourcesChanges: response.data.resourceChanges,
           cityId: response.data.cityId,
         });
       });

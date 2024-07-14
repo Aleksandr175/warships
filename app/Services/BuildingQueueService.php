@@ -58,7 +58,7 @@ class BuildingQueueService
 
     public function canBuild($city, $buildingId): bool
     {
-        $cityBuilding = $city->building($buildingId);
+        $cityBuilding      = $city->building($buildingId);
         $cityBuildingQueue = $city->buildingQueue;
 
         // we can only have one building order in one time
@@ -204,8 +204,10 @@ class BuildingQueueService
         return $cityBuildingQueue;
     }
 
-    public function cancel($city): void
+    public function cancel($city): array
     {
+        $resourceChanges = [];
+
         if ($city && $city->id) {
             $buildingQueue = $city->buildingQueue;
 
@@ -216,11 +218,18 @@ class BuildingQueueService
                     $cityResource = $city->resources->where('resource_id', $resource->resource_id)->first();
                     $cityResource->increment('qty', $resource->qty);
 
+                    $resourceChanges[] = [
+                        'resource_id' => $resource->resource_id,
+                        'qty'         => $resource->qty
+                    ];
+
                     $resource->delete();
                 }
 
                 $city->buildingQueue()->delete();
             }
         }
+
+        return $resourceChanges;
     }
 }

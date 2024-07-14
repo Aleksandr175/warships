@@ -14,4 +14,10 @@ class CityBuildingQueue extends Model
     protected $casts = [
         'deadline' => 'datetime',
     ];
+
+
+    public function resources()
+    {
+        return $this->hasMany(CityBuildingQueueResource::class);
+    }
 }

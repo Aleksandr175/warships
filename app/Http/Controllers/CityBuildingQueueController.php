@@ -6,8 +6,9 @@ use App\Http\Requests\Api\BuildingCancelRequest;
 use App\Http\Requests\Api\BuildRequest;
 use App\Http\Resources\BuildingResource;
 use App\Http\Resources\CityBuildingQueueResource;
-use App\Http\Resources\CityResourceV2Resource;
+use App\Http\Resources\ResourceChangesResource;
 use App\Services\BuildingQueueService;
+use App\Services\FleetService;
 use Illuminate\Support\Facades\Auth;
 
 class CityBuildingQueueController extends Controller
@@ -20,16 +21,17 @@ class CityBuildingQueueController extends Controller
 
         $queue = $buildingQueueService->store($user->id, $request);
 
-        $city = $user->cities()->where('id', $cityId)->first();
+        // get resources from queue
+        $queueResources = $queue->resources;
 
-        $cityResources = $city->resources;
+        $city = $user->cities()->where('id', $cityId)->first();
 
         if ($queue && $queue->id) {
             return [
-                'buildings'     => BuildingResource::collection($city->buildings),
-                'buildingQueue' => new CityBuildingQueueResource($city->buildingQueue),
-                'cityResources' => CityResourceV2Resource::collection($cityResources),
-                'cityId'        => $cityId
+                'buildings'       => BuildingResource::collection($city->buildings),
+                'buildingQueue'   => new CityBuildingQueueResource($city->buildingQueue),
+                'resourceChanges' => ResourceChangesResource::collection((new FleetService())->getCityResourceChanges($queueResources, 'remove')),
+                'cityId'          => $cityId
             ];
         }
 
@@ -44,16 +46,14 @@ class CityBuildingQueueController extends Controller
 
         $city = $user->cities()->where('id', $cityId)->first();
 
-        $cityResources = $city->resources;
-
         if ($city && $city->id) {
-            $buildingQueueService->cancel($city);
+            $resourceChanges = $buildingQueueService->cancel($city);
 
             return [
-                'buildings'     => BuildingResource::collection($city->buildings),
-                'buildingQueue' => [],
-                'cityResources' => CityResourceV2Resource::collection($cityResources),
-                'cityId'        => $city->id
+                'buildings'       => BuildingResource::collection($city->buildings),
+                'buildingQueue'   => [],
+                'resourceChanges' => ResourceChangesResource::collection((new FleetService())->getCityResourceChanges($resourceChanges, 'add')),
+                'cityId'          => $city->id
             ];
         }
 

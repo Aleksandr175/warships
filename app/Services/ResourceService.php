@@ -2,11 +2,10 @@
 
 namespace App\Services;
 
-use App\Events\CityResourcesDataUpdatedEvent;
+use App\Events\CityResourcesDataChangesEvent;
 use App\Models\BuildingProduction;
 use App\Models\City;
 use App\Models\CityResource;
-use App\Models\User;
 use Carbon\Carbon;
 
 class ResourceService
@@ -62,6 +61,7 @@ class ResourceService
             }
         }
 
+        $resourcesChanges = [];
         foreach ($resourcesGap as $resourceId => $resourceQty) {
             /* try not to change resource if gap is less than 1 */
             if ($resourceQty >= 1) {
@@ -70,19 +70,15 @@ class ResourceService
                     'qty'                   => $cityResource->qty + $resourceQty,
                     'resource_last_updated' => $now
                 ]);
+
+                $resourcesChanges[] = [
+                    'resource_id' => $resourceId,
+                    'qty' => $resourceQty
+                ];
             }
         }
 
-        $this->sendCityResourcesUpdatedEvent($city);
-    }
-
-    public function sendCityResourcesUpdatedEvent(City $city): void
-    {
-        $cityResources = $city->resources;
-        $user = User::find($city->user_id);
-
-        if ($user) {
-            CityResourcesDataUpdatedEvent::dispatch($user, $city->id, $cityResources);
-        }
+        // notify user about resources changes
+        CityResourcesDataChangesEvent::dispatch($city->user_id, $city->id, $resourcesChanges);
     }
 }

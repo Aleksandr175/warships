@@ -763,8 +763,6 @@ class FleetService
             if ($newStatusId || $deadline || $shouldDeleteFleet) {
                 dump('Send fleet changes event');
 
-                (new ResourceService())->sendCityResourcesUpdatedEvent($city);
-
                 $cities = [];
 
                 if ($city) {
@@ -1009,8 +1007,8 @@ class FleetService
         $fleetDetails = FleetDetail::getFleetDetails($allFleetIds);
 
         return [
-            'fleets'         => $combinedFleets,
-            'fleetDetails'   => $fleetDetails,
+            'fleets'       => $combinedFleets,
+            'fleetDetails' => $fleetDetails,
         ];
     }
 
@@ -1027,8 +1025,8 @@ class FleetService
 
     public function getFleetCities($fleetsData)
     {
-        $cityIds               = $fleetsData['fleets']->pluck('city_id')->toArray();
-        $targetCityIds         = $fleetsData['fleets']->pluck('target_city_id')->toArray();
+        $cityIds       = $fleetsData['fleets']->pluck('city_id')->toArray();
+        $targetCityIds = $fleetsData['fleets']->pluck('target_city_id')->toArray();
 
         return City::whereIn('id', array_merge($cityIds, $targetCityIds))->get();
     }

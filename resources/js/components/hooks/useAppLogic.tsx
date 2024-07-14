@@ -6,10 +6,10 @@ import {
   ICityBuildingsData,
   ICityWarshipsData,
   IResearchesData,
-  IRefiningData,
   ICityWarshipsDataChanges,
   IResourcesDataChanges,
   IFleetDataChanges,
+  IRefiningDataChanges,
 } from "../../types/types";
 import { httpClient } from "../../httpClient/httpClient";
 import Echo from "laravel-echo";
@@ -154,11 +154,22 @@ export const useAppLogic = () => {
         console.log("new messages data", newMessagesData);
         setUnreadMessagesNumber(newMessagesData.messagesUnread);
       })
-      .listen("CityRefiningDataUpdatedEvent", (newData: IRefiningData) => {
-        console.log("new refining data", newData);
-        updateCityRefiningData(newData);
-        updateCityResourcesData(newData);
-      })
+      .listen(
+        "CityRefiningDataChangesEvent",
+        (newData: IRefiningDataChanges) => {
+          console.log("!new refining data CHANGES", newData);
+          updateCityRefiningData({
+            cityId: newData.cityId,
+            refiningQueue: newData.refiningQueue,
+            refiningSlots: newData.maxRefiningSlots,
+          });
+
+          applyCityResourcesChangesData({
+            cityResourcesChanges: newData.resourceChanges,
+            cityId: newData.cityId,
+          });
+        }
+      )
       // just for test http://localhost/test-event
       .listen("TestEvent", (event: { cities: ICity[] }) => {
         console.log("test event1", event);

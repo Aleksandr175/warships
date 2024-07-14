@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\CityRefiningDataChangesEvent;
 use App\Events\CityRefiningDataUpdatedEvent;
 use App\Http\Requests\Api\RefiningRequest;
 use App\Models\City;
@@ -26,11 +27,18 @@ class RefiningQueueService
 
         $city = City::find($cityId);
 
-        $refiningSlots = $this->getMaxAvailableSlots($city);
+        $maxRefiningSlots = $this->getMaxAvailableSlots($city);
+
+        $resourceChanges = [
+            [
+                'resource_id' => $refiningQueue->output_resource_id,
+                'qty'         => $refiningQueue->output_qty
+            ]
+        ];
 
         $actualRefiningQueue = $city->refiningQueue;
 
-        $this->sendRefiningDataUpdatedEvent($city, $actualRefiningQueue, $refiningSlots);
+        CityRefiningDataChangesEvent::dispatch($city->user_id, $city->id, $actualRefiningQueue, $resourceChanges, $maxRefiningSlots);
     }
 
     public function canStore(City $city, $recipeId, $qty): bool
@@ -147,15 +155,5 @@ class RefiningQueueService
         $workshop = $city->building(config('constants.BUILDINGS.WORKSHOP'));
 
         return $workshop->lvl ?? 0;
-    }
-
-    public function sendRefiningDataUpdatedEvent(City $city, $refiningQueue, $refiningSlots): void
-    {
-        $cityResources = $city->resources;
-        $user = User::find($city->user_id);
-
-        if ($user) {
-            CityRefiningDataUpdatedEvent::dispatch($user->id, $city->id, $refiningQueue, $refiningSlots, $cityResources);
-        }
     }
 }

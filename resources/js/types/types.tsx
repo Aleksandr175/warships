@@ -446,8 +446,17 @@ export interface IResearchesData {
 
 export interface IRefiningData {
   cityId: number;
-  cityResources: ICityResource[];
   refiningQueue: IRefiningQueue[];
   refiningSlots: number;
+}
+
+export interface IRefiningDataChanges {
+  cityId: number;
+  resourceChanges: {
+    resourceId: number;
+    qty: number;
+  }[];
+  refiningQueue: IRefiningQueue[];
+  maxRefiningSlots: number;
   userId: number;
 }

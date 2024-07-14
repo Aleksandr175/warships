@@ -279,7 +279,7 @@ class FleetService
     }
 
     // type = add, remove
-    public function getCityResourceChanges($resourceChanges, $type)
+    public function getCityResourceChanges($resourceChanges, $type): array
     {
         $changes = [];
 

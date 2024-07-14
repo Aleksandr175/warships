@@ -22,8 +22,8 @@ class RefiningQueueSeeder extends Seeder
             'input_qty'          => 15,
             'output_resource_id' => config('constants.RESOURCE_IDS.PLANK'),
             'output_qty'         => 3,
-            'time'               => 30,
-            'deadline'           => $carbon::now()->addSeconds(30)
+            'time'               => 5,
+            'deadline'           => $carbon::now()->addSeconds(5)
         ]);
     }
 }

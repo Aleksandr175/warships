@@ -26,6 +26,14 @@ services:
             - mysql
             - mailpit
             - selenium
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 1G
+                reservations:
+                    cpus: '0.5'
+                    memory: 512M
     websocket:
         build:
             context: ./docker/8.2
@@ -41,6 +49,14 @@ services:
             - '6001:6001'
         depends_on:
             - laravel.test
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 512M
+                reservations:
+                    cpus: '0.25'
+                    memory: 256M
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -65,6 +81,14 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 1G
+                reservations:
+                    cpus: '0.5'
+                    memory: 512M
     #redis:
     #    image: 'redis:alpine'
     #    ports:
@@ -104,6 +128,14 @@ services:
             - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
         networks:
             - sail
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 512M
+                reservations:
+                    cpus: '0.25'
+                    memory: 256M
     selenium:
         image: seleniarm/standalone-chromium
         extra_hosts:
@@ -112,7 +144,201 @@ services:
             - '/dev/shm:/dev/shm'
         networks:
             - sail
-    job-listener-resources:
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 1G
+                reservations:
+                    cpus: '0.5'
+                    memory: 512M
+    #job-listener-resources:
+    #    build:
+    #        context: ./docker/8.2
+    #        dockerfile: Dockerfile
+    #        args:
+    #            WWWGROUP: '${WWWGROUP}'
+    #    volumes:
+    #        - '.:/var/www/html'
+    #    command: php artisan queue:listen --queue=resource
+    #    environment:
+    #        WWWUSER: '${WWWUSER}'
+    #        LARAVEL_SAIL: 1
+    #        XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+    #        XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+    #        IGNITION_LOCAL_SITES_PATH: '${PWD}'
+    #        DB_HOST: mysql
+    #    networks:
+    #        - sail
+    #job-listener-city-building-queue:
+    #    build:
+    #        context: ./docker/8.2
+    #        dockerfile: Dockerfile
+    #        args:
+    #            WWWGROUP: '${WWWGROUP}'
+    #    volumes:
+    #        - '.:/var/www/html'
+    #    command: php artisan queue:listen --queue=buildingQueue
+    #    environment:
+    #        WWWUSER: '${WWWUSER}'
+    #        LARAVEL_SAIL: 1
+    #        XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+    #        XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+    #        IGNITION_LOCAL_SITES_PATH: '${PWD}'
+    #        DB_HOST: mysql
+    #    networks:
+    #        - sail
+    #job-listener-researches-queue:
+    #    build:
+    #        context: ./docker/8.2
+    #        dockerfile: Dockerfile
+    #        args:
+    #            WWWGROUP: '${WWWGROUP}'
+    #    volumes:
+    #        - '.:/var/www/html'
+    #    command: php artisan queue:listen --queue=researchQueue
+    #    environment:
+    #        WWWUSER: '${WWWUSER}'
+    #        LARAVEL_SAIL: 1
+    #        XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+    #        XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+    #        IGNITION_LOCAL_SITES_PATH: '${PWD}'
+    #        DB_HOST: mysql
+    #    networks:
+    #        - sail
+    #job-listener-refining:
+    #    build:
+    #        context: ./docker/8.2
+    #        dockerfile: Dockerfile
+    #        args:
+    #            WWWGROUP: '${WWWGROUP}'
+    #    volumes:
+    #        - '.:/var/www/html'
+    #    command: php artisan queue:listen --queue=refining
+    #    environment:
+    #        WWWUSER: '${WWWUSER}'
+    #        LARAVEL_SAIL: 1
+    #        XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+    #        XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+    #        IGNITION_LOCAL_SITES_PATH: '${PWD}'
+    #        DB_HOST: mysql
+    #    networks:
+    #        - sail
+    #job-listener-fleet:
+    #    build:
+    #        context: ./docker/8.2
+    #        dockerfile: Dockerfile
+    #        args:
+    #            WWWGROUP: '${WWWGROUP}'
+    #    volumes:
+    #        - '.:/var/www/html'
+    #    command: php artisan queue:listen --queue=fleet
+    #    environment:
+    #        WWWUSER: '${WWWUSER}'
+    #        LARAVEL_SAIL: 1
+    #        XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+    #        XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+    #        IGNITION_LOCAL_SITES_PATH: '${PWD}'
+    #        DB_HOST: mysql
+    #        # Add other environment variables as needed
+    #    networks:
+    #        - sail
+    #job-listener-attack:
+    #    build:
+    #        context: ./docker/8.2
+    #        dockerfile: Dockerfile
+    #        args:
+    #            WWWGROUP: '${WWWGROUP}'
+    #    volumes:
+    #        - '.:/var/www/html'
+    #    command: php artisan queue:listen --queue=attack
+    #    environment:
+    #        WWWUSER: '${WWWUSER}'
+    #        LARAVEL_SAIL: 1
+    #        XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+    #        XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+    #        IGNITION_LOCAL_SITES_PATH: '${PWD}'
+    #        DB_HOST: mysql
+    #        # Add other environment variables as needed
+    #    networks:
+    #        - sail
+    #job-listener-warship-queue:
+    #    build:
+    #        context: ./docker/8.2
+    #        dockerfile: Dockerfile
+    #        args:
+    #            WWWGROUP: '${WWWGROUP}'
+    #    volumes:
+    #        - '.:/var/www/html'
+    #    command: php artisan queue:listen --queue=warshipQueue
+    #    environment:
+    #        WWWUSER: '${WWWUSER}'
+    #        LARAVEL_SAIL: 1
+    #        XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+    #        XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+    #        IGNITION_LOCAL_SITES_PATH: '${PWD}'
+    #        DB_HOST: mysql
+    #        # Add other environment variables as needed
+    #    networks:
+    #        - sail
+    #job-listener-battle:
+    #    build:
+    #        context: ./docker/8.2
+    #        dockerfile: Dockerfile
+    #        args:
+    #            WWWGROUP: '${WWWGROUP}'
+    #    volumes:
+    #        - '.:/var/www/html'
+    #    command: php artisan queue:listen --queue=battle
+    #    environment:
+    #        WWWUSER: '${WWWUSER}'
+    #        LARAVEL_SAIL: 1
+    #        XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+    #        XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+    #        IGNITION_LOCAL_SITES_PATH: '${PWD}'
+    #        DB_HOST: mysql
+    #        # Add other environment variables as needed
+    #    networks:
+    #        - sail
+    #job-listener-default:
+    #    build:
+    #        context: ./docker/8.2
+    #        dockerfile: Dockerfile
+    #        args:
+    #            WWWGROUP: '${WWWGROUP}'
+    #    volumes:
+    #        - '.:/var/www/html'
+    #    command: php artisan queue:listen --queue=default
+    #    environment:
+    #        WWWUSER: '${WWWUSER}'
+    #        LARAVEL_SAIL: 1
+    #        XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+    #        XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+    #        IGNITION_LOCAL_SITES_PATH: '${PWD}'
+    #        DB_HOST: mysql
+    #        # Add other environment variables as needed
+    #    networks:
+    #        - sail
+    #job-listener-pirate-logic:
+    #    build:
+    #        context: ./docker/8.2
+    #        dockerfile: Dockerfile
+    #        args:
+    #            WWWGROUP: '${WWWGROUP}'
+    #    volumes:
+    #        - '.:/var/www/html'
+    #    command: php artisan queue:listen --queue=pirateLogic
+    #    environment:
+    #        WWWUSER: '${WWWUSER}'
+    #        LARAVEL_SAIL: 1
+    #        XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+    #        XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+    #        IGNITION_LOCAL_SITES_PATH: '${PWD}'
+    #        DB_HOST: mysql
+    #        # Add other environment variables as needed
+    #    networks:
+    #        - sail
+    queue-workers:
         build:
             context: ./docker/8.2
             dockerfile: Dockerfile
@@ -120,7 +346,7 @@ services:
                 WWWGROUP: '${WWWGROUP}'
         volumes:
             - '.:/var/www/html'
-        command: php artisan queue:listen --queue=resource
+        command: php artisan queue:listen --queue=resource,buildingQueue,researchQueue,refining,fleet,attack,warshipQueue,battle,default,pirateLogic
         environment:
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1
@@ -128,180 +354,16 @@ services:
             XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
             DB_HOST: mysql
-            # Add other environment variables as needed
         networks:
             - sail
-    job-listener-city-building-queue:
-        build:
-            context: ./docker/8.2
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        volumes:
-            - '.:/var/www/html'
-        command: php artisan queue:listen --queue=buildingQueue
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            IGNITION_LOCAL_SITES_PATH: '${PWD}'
-            DB_HOST: mysql
-            # Add other environment variables as needed
-        networks:
-            - sail
-    job-listener-researches-queue:
-        build:
-            context: ./docker/8.2
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        volumes:
-            - '.:/var/www/html'
-        command: php artisan queue:listen --queue=researchQueue
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            IGNITION_LOCAL_SITES_PATH: '${PWD}'
-            DB_HOST: mysql
-            # Add other environment variables as needed
-        networks:
-            - sail
-    job-listener-refining:
-        build:
-            context: ./docker/8.2
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        volumes:
-            - '.:/var/www/html'
-        command: php artisan queue:listen --queue=refining
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            IGNITION_LOCAL_SITES_PATH: '${PWD}'
-            DB_HOST: mysql
-            # Add other environment variables as needed
-        networks:
-            - sail
-    job-listener-fleet:
-        build:
-            context: ./docker/8.2
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        volumes:
-            - '.:/var/www/html'
-        command: php artisan queue:listen --queue=fleet
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            IGNITION_LOCAL_SITES_PATH: '${PWD}'
-            DB_HOST: mysql
-            # Add other environment variables as needed
-        networks:
-            - sail
-    job-listener-attack:
-        build:
-            context: ./docker/8.2
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        volumes:
-            - '.:/var/www/html'
-        command: php artisan queue:listen --queue=attack
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            IGNITION_LOCAL_SITES_PATH: '${PWD}'
-            DB_HOST: mysql
-            # Add other environment variables as needed
-        networks:
-            - sail
-    job-listener-warship-queue:
-        build:
-            context: ./docker/8.2
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        volumes:
-            - '.:/var/www/html'
-        command: php artisan queue:listen --queue=warshipQueue
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            IGNITION_LOCAL_SITES_PATH: '${PWD}'
-            DB_HOST: mysql
-            # Add other environment variables as needed
-        networks:
-            - sail
-    job-listener-battle:
-        build:
-            context: ./docker/8.2
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        volumes:
-            - '.:/var/www/html'
-        command: php artisan queue:listen --queue=battle
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            IGNITION_LOCAL_SITES_PATH: '${PWD}'
-            DB_HOST: mysql
-            # Add other environment variables as needed
-        networks:
-            - sail
-    job-listener-default:
-        build:
-            context: ./docker/8.2
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        volumes:
-            - '.:/var/www/html'
-        command: php artisan queue:listen --queue=default
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            IGNITION_LOCAL_SITES_PATH: '${PWD}'
-            DB_HOST: mysql
-            # Add other environment variables as needed
-        networks:
-            - sail
-    job-listener-pirate-logic:
-        build:
-            context: ./docker/8.2
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        volumes:
-            - '.:/var/www/html'
-        command: php artisan queue:listen --queue=pirateLogic
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            IGNITION_LOCAL_SITES_PATH: '${PWD}'
-            DB_HOST: mysql
-            # Add other environment variables as needed
-        networks:
-            - sail
+        deploy:
+            resources:
+                limits:
+                    cpus: '1'
+                    memory: 1G
+                reservations:
+                    cpus: '0.5'
+                    memory: 512M
 networks:
     sail:
         driver: bridge

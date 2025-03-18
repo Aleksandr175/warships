@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -16,39 +16,23 @@ interface IProps {
 
 export const WarshipsQueue = ({ cityId }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
-
   const dictionaries = queryDictionaries.data;
-
   const { warshipQueue, warshipSlots, updateCityWarshipsData } =
     useCityWarships({ cityId });
-
-  const timer = useRef();
+  const [, setForceUpdate] = useState(0);
+  const timer = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    // @ts-ignore
-    timer.current = setInterval(handleTimer, 1000);
+    timer.current = setInterval(() => {
+      setForceUpdate((prev) => prev + 1);
+    }, 1000);
 
     return () => {
-      clearInterval(timer.current);
+      if (timer.current) {
+        clearInterval(timer.current);
+      }
     };
   }, []);
-
-  function handleTimer() {
-    const queue = warshipQueue;
-
-    const newQueue = queue?.map((item) => {
-      if (item.time > 0) {
-        item.time -= 1;
-      }
-
-      return item;
-    });
-
-    updateCityWarshipsData({
-      cityId,
-      warshipQueue: newQueue || [],
-    });
-  }
 
   function getWarshipName(warshipId: number): string | undefined {
     return dictionaries?.warshipsDictionary.find(
@@ -70,10 +54,12 @@ export const WarshipsQueue = ({ cityId }: IProps) => {
         </div>
 
         {warshipQueue?.map((item) => {
-          const time = getTimeLeft(item.deadline);
+          const deadline = dayjs.utc(item.deadline);
+          const timeLeft = deadline.diff(dayjs(), "second");
+          const localDeadline = deadline.local();
 
           return (
-            <div key={item.warshipId + "-" + time}>
+            <div key={item.warshipId + "-" + timeLeft}>
               <SCell>
                 <SWarshipIcon
                   style={{
@@ -83,13 +69,8 @@ export const WarshipsQueue = ({ cityId }: IProps) => {
                 {getWarshipName(item.warshipId)}
               </SCell>
               <SCell>{item.qty}</SCell>
-
-              {/* TODO: fix time */}
-
-              <SCell>{convertSecondsToTime(getTimeLeft(item.deadline))}</SCell>
-              <SCell>
-                {dayjs(item.deadline).format("DD MMM, YYYY HH:mm:ss")}
-              </SCell>
+              <SCell>{convertSecondsToTime(timeLeft)}</SCell>
+              <SCell>{localDeadline.format("DD MMM, YYYY HH:mm:ss")}</SCell>
             </div>
           );
         })}

@@ -48,6 +48,14 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Configure Xdebug
+#RUN echo 'zend_extension=xdebug.so' >> /etc/php/8.2/cli/conf.d/20-xdebug.ini \
+#    && echo 'xdebug.mode=debug' >> /etc/php/8.2/cli/conf.d/20-xdebug.ini \
+#    && echo 'xdebug.start_with_request=yes' >> /etc/php/8.2/cli/conf.d/20-xdebug.ini \
+#    && echo 'xdebug.client_host=host.docker.internal' >> /etc/php/8.2/cli/conf.d/20-xdebug.ini \
+#    && echo 'xdebug.client_port=9003' >> /etc/php/8.2/cli/conf.d/20-xdebug.ini \
+#    && echo 'xdebug.log=/tmp/xdebug.log' >> /etc/php/8.2/cli/conf.d/20-xdebug.ini
+
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.2
 
 RUN groupadd --force -g $WWWGROUP sail

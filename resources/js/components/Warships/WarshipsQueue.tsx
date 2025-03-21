@@ -4,9 +4,18 @@ import utc from "dayjs/plugin/utc";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { SH2 } from "../styles";
 import styled from "styled-components";
-import { convertSecondsToTime, getTimeLeft } from "../../utils";
+import { convertSecondsToTime } from "../../utils";
 import { useFetchDictionaries } from "../../hooks/useFetchDictionaries";
 import { useCityWarships } from "../hooks/useCityWarships";
+import WebSocketService from '../../services/WebSocketService';
+
+interface WebSocketData {
+  cityId: number;
+  warshipQueue?: any[];//WarshipQueueItem[];
+  buildingQueue?: any[];
+  researchQueue?: any[];
+}
+
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
@@ -17,12 +26,13 @@ interface IProps {
 export const WarshipsQueue = ({ cityId }: IProps) => {
   const queryDictionaries = useFetchDictionaries();
   const dictionaries = queryDictionaries.data;
-  const { warshipQueue, warshipSlots, updateCityWarshipsData } =
-    useCityWarships({ cityId });
+  const { warshipQueue, warshipSlots, updateCityWarshipsData } = useCityWarships({ cityId });
   const [, setForceUpdate] = useState(0);
   const timer = useRef<NodeJS.Timeout>();
+  const wsService = WebSocketService.getInstance();
 
   useEffect(() => {
+    // Set up timer for countdown
     timer.current = setInterval(() => {
       setForceUpdate((prev) => prev + 1);
     }, 1000);
@@ -33,6 +43,26 @@ export const WarshipsQueue = ({ cityId }: IProps) => {
       }
     };
   }, []);
+
+  // TODO: move to root app ?
+  useEffect(() => {
+    // Set up WebSocket listeners
+    wsService.subscribeToUserUpdates((data: WebSocketData) => {
+      // Only update if the data is for this city
+      if (data.cityId === cityId) {
+        // Refresh warship queue data when updates are received
+        updateCityWarshipsData({
+          cityId,
+          warshipQueue: data.warshipQueue || [],
+        });
+      }
+    });
+
+    // Clean up WebSocket listeners on unmount
+    return () => {
+      wsService.unsubscribeFromUserUpdates();
+    };
+  }, [cityId]);
 
   function getWarshipName(warshipId: number): string | undefined {
     return dictionaries?.warshipsDictionary.find(

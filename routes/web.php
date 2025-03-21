@@ -11,6 +11,7 @@ use App\Services\RefiningQueueService;
 use App\Services\ResourceService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WebSocketController;
 
 /*
 |--------------------------------------------------------------------------
@@ -286,6 +287,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/research-improvements', [\App\Http\Controllers\ResearchImprovementController::class, 'get']);
 
     Route::get('/api/logout', [\App\Http\Controllers\Controller::class, 'logout']);
+});
+
+// WebSocket Authorization
+Route::middleware(['auth'])->group(function () {
+    Route::post('/broadcasting/auth', [WebSocketController::class, 'authorizeChannel']);
 });
 
 Route::get('/', function () {

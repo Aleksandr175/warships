@@ -188,8 +188,8 @@ export const useAppLogic = () => {
         }
       )
       // just for test http://localhost/test-event
-      .listen("TestEvent", (event: { cities: ICity[] }) => {
-        console.log("test event1", event);
+      .listen(".TestEvent", (event: { cities: ICity[] }) => {
+        console.log("test event received", event);
       });
   };
 

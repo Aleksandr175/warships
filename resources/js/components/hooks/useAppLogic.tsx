@@ -68,20 +68,22 @@ export const useAppLogic = () => {
     window.Echo = new Echo({
       broadcaster: "pusher",
       forceTLS: false,
-      //encrypted: false,
-      //authEndpoint: "/api/broadcasting/auth",
       key: "ASDF",
       wsHost: "localhost",
       wsPort: 6001,
-      //wssport: 8000,
       transports: ["websocket"],
-      //enabledTransports: ["ws", "wss"],
       enabledTransports: ["ws"],
-      //disableStats: true,
+      authEndpoint: "/broadcasting/auth",
+      auth: {
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+          'Accept': 'application/json'
+        }
+      }
     });
 
     // @ts-ignore
-    window.Echo.private("user." + userId)
+    window.Echo.private(`user.${userId}`)
       .listen("FleetUpdatedEvent", (newFleetData: IFleetsData) => {
         console.log("new fleets data", newFleetData);
         queryClient.setQueryData(["/fleets"], (oldFleets: IFleetsData) => {

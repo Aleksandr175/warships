@@ -22,7 +22,9 @@ Broadcast::channel('user.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('test', function ($user) {
-    // Only allow users with a specific role or attribute to subscribe
     return true;
-    //return $user; // Assuming your User model has an isAdmin attribute
+});
+
+Broadcast::channel('city.{id}', function ($user, $id) {
+    return $user->cities()->where('id', $id)->exists();
 });

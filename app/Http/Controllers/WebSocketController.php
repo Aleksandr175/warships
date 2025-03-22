@@ -68,30 +68,13 @@ class WebSocketController extends Controller
                 return response()->json(['message' => 'Invalid channel type'], 403);
         }
 
-        // Generate the auth signature
-        $auth = $this->generateAuthSignature($channelName);
-
-        return response()->json([
-            'channel_name' => $channelName,
-            'auth' => $auth
+        // Use Laravel's built-in broadcasting authorization
+        $authData = Broadcast::auth($request);
+        
+        Log::info('Broadcast Auth Response', [
+            'response' => $authData
         ]);
-    }
 
-    private function generateAuthSignature($channelName)
-    {
-        $appKey = config('broadcasting.connections.pusher.key');
-        $appSecret = config('broadcasting.connections.pusher.secret');
-        
-        // Generate a timestamp
-        $timestamp = time();
-        
-        // Create the string to sign
-        $stringToSign = $channelName . ':' . $timestamp;
-        
-        // Generate the signature
-        $signature = hash_hmac('sha256', $stringToSign, $appSecret);
-        
-        // Return the auth string in the format: key:timestamp:signature
-        return $appKey . ':' . $timestamp . ':' . $signature;
+        return response()->json($authData);
     }
 } 
